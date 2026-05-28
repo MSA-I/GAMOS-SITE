@@ -1,0 +1,105 @@
+/* =====================================================================
+ * motion-accordions.css
+ * Agent 09 — accordion styling + smooth height (paired with js/accordions.js).
+ *
+ * Strategy:
+ *   - Where the browser supports `interpolate-size: allow-keywords`, we
+ *     animate height between 0 and auto via CSS only (JS skips animation).
+ *   - Where it does not, JS drives the height animation via Element.animate.
+ *
+ * Tokens consumed from css/tokens.css.
+ * ===================================================================== */
+
+/* Opt into auto height interpolation in supporting browsers (Chrome 129+).
+ * Has no side effect for other browsers.                                  */
+@supports (interpolate-size: allow-keywords) {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+
+  details[data-accordion] {
+    block-size: auto;
+    overflow: clip;
+    transition: block-size var(--dur-base, 240ms)
+      var(--ease-out-cinema, cubic-bezier(0.2, 0.8, 0.2, 1));
+  }
+
+  /* When closed, only the summary's intrinsic block-size shows. */
+  details[data-accordion]:not([open]) {
+    block-size: var(--summary-block-size, auto);
+  }
+}
+
+/* ---------------------------------------------------------------------
+ * Summary — clickable header, no native marker (we render our own chevron).
+ * ------------------------------------------------------------------- */
+details[data-accordion] {
+  border-block-end: 1px solid var(--border, rgba(14, 14, 12, 0.12));
+}
+
+details[data-accordion] > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4, 1rem);
+  padding-block: var(--space-4, 1rem);
+  padding-inline: 0;
+  font-family: var(--font-display-he, "Frank Ruhl Libre", serif);
+  font-size: var(--text-md, 1.25rem);
+  font-weight: var(--fw-medium, 500);
+  color: var(--fg, #0e0e0c);
+  user-select: none;
+  outline: none;
+}
+
+/* Strip default marker arrow on Chromium / Webkit / Firefox. */
+details[data-accordion] > summary::-webkit-details-marker { display: none; }
+details[data-accordion] > summary::marker { content: ""; }
+
+/* Focus ring — 3px brass per Constitution §9. */
+details[data-accordion] > summary:focus-visible {
+  outline: 3px solid var(--accent, #b89766);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+/* Custom chevron — author can drop in any inline <svg> with [data-chevron]. */
+details[data-accordion] > summary [data-chevron],
+details[data-accordion] > summary svg {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  flex-shrink: 0;
+  transition: transform var(--dur-base, 240ms)
+    var(--ease-out-cinema, cubic-bezier(0.2, 0.8, 0.2, 1));
+  /* In RTL the chevron points the same way visually; rotation handles direction. */
+}
+
+details[data-accordion][open] > summary [data-chevron],
+details[data-accordion][open] > summary svg {
+  transform: rotate(180deg);
+}
+
+/* ---------------------------------------------------------------------
+ * Panel content — uniform block padding when open.
+ * ------------------------------------------------------------------- */
+details[data-accordion] > [data-accordion-content],
+details[data-accordion] > :not(summary) {
+  padding-block-end: var(--space-6, 1.5rem);
+  color: var(--fg-muted, #6b6b68);
+  line-height: var(--lh-normal, 1.5);
+}
+
+/* ---------------------------------------------------------------------
+ * Reduced motion — no chevron rotation, no height transition.
+ * ------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  details[data-accordion] {
+    transition: none !important;
+  }
+  details[data-accordion] > summary [data-chevron],
+  details[data-accordion] > summary svg {
+    transition: none !important;
+  }
+}

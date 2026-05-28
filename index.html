@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0E0E0C">
+  <meta name="color-scheme" content="dark light">
+
+  <!-- TODO(agent-01): Replace placeholder description with verified copy from full-tab-inventory.md -->
+  <title>גמוס — מתחם אירועים יוקרתי, גנים וריזורט</title>
+  <meta name="description" content="מתחם אירועים יוקרתי בלב הטבע — אולם, גנים, ריזורט וחדרי נופש. חתונות, בר-מצווה ואירועי חברה מהוקצעים.">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="he_IL">
+  <meta property="og:site_name" content="גמוס">
+  <meta property="og:title" content="גמוס — מתחם אירועים יוקרתי, גנים וריזורט">
+  <meta property="og:description" content="חוויית אירוע קולנועית — אולם מהודר, ריזורט בוטיקי וחדרי נופש בלב הטבע.">
+  <meta property="og:image" content="/assets/video/hero-poster.jpg">
+  <meta property="og:url" content="https://gamos.co.il/">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="גמוס — מתחם אירועים יוקרתי">
+  <meta name="twitter:description" content="חתונות, בר-מצווה ואירועי חברה במתחם בוטיקי.">
+  <meta name="twitter:image" content="/assets/video/hero-poster.jpg">
+
+  <!-- Favicon (TODO(agent-03): final favicon set) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+
+  <!-- Performance: preload LCP image (hero poster) -->
+  <link rel="preload" as="image" href="/assets/video/hero-poster.jpg" fetchpriority="high">
+
+  <!-- Performance: preload critical font (Hebrew display) -->
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="/assets/fonts/frank-ruhl-libre-400.woff2">
+
+  <!-- DNS / preconnect (only if external resources confirmed) -->
+  <!-- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> -->
+
+  <!-- Structured data: EventVenue (TODO(agent-01): verify address/phone/geo from gamos.co.il scrape) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "EventVenue",
+    "name": "גמוס",
+    "description": "מתחם אירועים יוקרתי, גנים וריזורט",
+    "url": "https://gamos.co.il/",
+    "image": "https://gamos.co.il/assets/video/hero-poster.jpg",
+    "telephone": "TODO-PHONE",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "TODO-STREET",
+      "addressLocality": "TODO-CITY",
+      "addressRegion": "TODO-REGION",
+      "postalCode": "TODO-POSTAL",
+      "addressCountry": "IL"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "TODO-LAT",
+      "longitude": "TODO-LNG"
+    },
+    "amenityFeature": [
+      { "@type": "LocationFeatureSpecification", "name": "אולם אירועים" },
+      { "@type": "LocationFeatureSpecification", "name": "ריזורט וחדרי נופש" },
+      { "@type": "LocationFeatureSpecification", "name": "גנים" },
+      { "@type": "LocationFeatureSpecification", "name": "מטבח קולינרי" }
+    ]
+  }
+  </script>
+
+  <!-- Stylesheets: foundation -->
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/utilities.css">
+
+  <!-- Stylesheets: per-section (one per architectural section, per Constitution §10.1) -->
+  <link rel="stylesheet" href="/css/sections/hero.css">
+  <link rel="stylesheet" href="/css/sections/portals.css">
+  <link rel="stylesheet" href="/css/sections/hall-venue.css">
+  <link rel="stylesheet" href="/css/sections/hall-resort.css">
+  <link rel="stylesheet" href="/css/sections/lounge.css">
+  <link rel="stylesheet" href="/css/sections/rooms.css">
+  <link rel="stylesheet" href="/css/sections/culinary.css">
+  <link rel="stylesheet" href="/css/sections/about.css">
+  <link rel="stylesheet" href="/css/sections/testimonials.css">
+  <link rel="stylesheet" href="/css/sections/contact.css">
+  <link rel="stylesheet" href="/css/sections/gallery.css">
+  <link rel="stylesheet" href="/css/sections/events.css">
+  <link rel="stylesheet" href="/css/sections/kosher.css">
+  <link rel="stylesheet" href="/css/sections/site-nav.css">
+  <link rel="stylesheet" href="/css/sections/site-footer.css">
+  <link rel="stylesheet" href="/css/sections/section-header.css">
+  <link rel="stylesheet" href="/css/sections/motion-reveals.css">
+  <link rel="stylesheet" href="/css/sections/motion-accordions.css">
+  <link rel="stylesheet" href="/css/sections/motion-slider.css">
+
+  <!-- Entry script: ESM, deferred -->
+  <script type="module" defer src="/js/main.js"></script>
+</head>
+<body>
+
+  <!-- A11y: skip-link must be first focusable -->
+  <a class="skip-link" href="#main-content">דלג לתוכן הראשי</a>
+
+  <!-- ========================================================================
+       SITE HEADER / TOP NAV
+       Constitution §10.1: HTML is the truth. Anchor IDs match section-order.md.
+       TODO(agent-01): Replace nav labels with verified labels from
+       full-tab-inventory.md (user-approved). Also confirm if a language
+       toggle is required.
+  ======================================================================== -->
+  <header class="site-nav" role="banner">
+    <nav class="site-nav__inner" aria-label="ניווט ראשי">
+      <a class="site-nav__brand" href="#hero" aria-label="גמוס — לדף הבית">
+        <span class="site-nav__brand-mark">גמוס</span>
+      </a>
+
+      <ul class="site-nav__links" role="list">
+        <li><a href="#hall-venue">אולם</a></li>
+        <li><a href="#hall-resort">ריזורט</a></li>
+        <li><a href="#lounge">לאונג'</a></li>
+        <li><a href="#rooms">חדרי נופש</a></li>
+        <li><a href="#culinary">קולינריה</a></li>
+        <li><a href="#about">אודות</a></li>
+        <li><a href="#testimonials">המלצות</a></li>
+        <li><a href="#gallery">גלריה</a></li>
+        <li><a href="#events">אירועים</a></li>
+        <li><a href="#kosher">כשרות</a></li>
+        <li><a href="#contact">צור קשר</a></li>
+      </ul>
+
+      <a class="site-nav__cta" href="#contact">
+        <span>קבעו פגישה</span>
+      </a>
+
+      <button class="site-nav__toggle" type="button"
+              aria-label="פתח תפריט"
+              aria-controls="site-nav-mobile"
+              aria-expanded="false">
+        <span class="site-nav__toggle-bar" aria-hidden="true"></span>
+        <span class="site-nav__toggle-bar" aria-hidden="true"></span>
+        <span class="site-nav__toggle-bar" aria-hidden="true"></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- ========================================================================
+       MAIN
+  ======================================================================== -->
+  <main id="main-content">
+
+    <!-- ====================================================================
+         #hero — scroll-driven cinematic video
+         DOM exactly per architecture/video-scrub-spec.md
+         Spacer = 5×100vh dictates scroll length.
+    ==================================================================== -->
+    <section id="hero" class="hero" aria-labelledby="hero-title">
+      <div class="hero__spacer" aria-hidden="true"></div>
+
+      <div class="hero__sticky">
+        <video class="hero__video"
+               muted playsinline preload="auto"
+               poster="/assets/video/hero-poster.jpg"
+               aria-hidden="true">
+          <source src="/assets/video/hero-master-1080.mp4" type="video/mp4"
+                  media="(min-width: 768px)">
+          <source src="/assets/video/hero-master-720.mp4" type="video/mp4">
+        </video>
+
+        <div class="hero__overlay">
+          <h1 id="hero-title" class="hero__title">
+            <span class="hero__title-line">חוויית אירועים</span>
+            <span class="hero__title-line hero__title-line--accent">קולנועית</span>
+          </h1>
+          <!-- TODO(agent-01): final tagline copy from inventory -->
+          <p class="hero__subtitle">מתחם בוטיקי בלב הטבע — אולם, גנים וריזורט.</p>
+          <span class="hero__scroll-hint" aria-hidden="true">גלול</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         #portals — two portal bubbles (אולם / ריזורט)
+         DOM exactly per architecture/portal-bubbles-spec.md
+         Reveal at hero progress >= 0.92. Click expands → routes to hall.
+    ==================================================================== -->
+    <aside id="portals" class="portals" aria-label="קיצורים לאולם וריזורט">
+      <button class="portal portal--venue"
+              type="button"
+              data-target="#hall-venue"
+              aria-label="עבור לאולם האירועים">
+        <video class="portal__video"
+               autoplay loop muted playsinline
+               src="/assets/video/portal-loop.mp4"
+               aria-hidden="true"></video>
+        <span class="portal__ring" aria-hidden="true"></span>
+        <span class="portal__label">אולם</span>
+      </button>
+
+      <button class="portal portal--resort"
+              type="button"
+              data-target="#hall-resort"
+              aria-label="עבור לריזורט וחדרי האירוח">
+        <video class="portal__video"
+               autoplay loop muted playsinline
+               src="/assets/video/portal-loop.mp4"
+               aria-hidden="true"></video>
+        <span class="portal__ring" aria-hidden="true"></span>
+        <span class="portal__label">ריזורט</span>
+      </button>
+    </aside>
+
+    <!-- ====================================================================
+         #hall-venue — אולם האירועים
+         TODO(agent-01,08): final copy + image manifest
+    ==================================================================== -->
+    <section id="hall-venue" class="hall hall--venue" aria-labelledby="hall-venue-title">
+      <header class="hall__header">
+        <p class="hall__eyebrow">אולם</p>
+        <h2 id="hall-venue-title" class="hall__title">האולם — מסגרת קולנועית לחתונות ולאירועים</h2>
+        <p class="hall__lede">
+          <!-- TODO(agent-01): replace with verified Hebrew copy -->
+          חלל מהוקצע עם תקרת זכוכית, אקוסטיקה מותאמת והפרדה אלגנטית בין רחבת הריקודים לאזור הסעודה.
+        </p>
+      </header>
+
+      <div class="hall__media" aria-hidden="true">
+        <!-- TODO(agent-03,08): hall hero image / video reel -->
+        <div class="hall__media-placeholder" data-placeholder="hall-venue-hero"></div>
+      </div>
+
+      <ul class="hall__features" role="list">
+        <li>קיבולת עד <bdi>800</bdi> אורחים</li>
+        <li>תקרה גבוהה ותאורה מותאמת</li>
+        <li>במה ומערכת סאונד מקצועית</li>
+        <li>חניה צמודה לאולם</li>
+      </ul>
+
+      <a class="hall__cta" href="#contact">קבעו סיור באולם</a>
+    </section>
+
+    <!-- ====================================================================
+         #hall-resort — ריזורט
+    ==================================================================== -->
+    <section id="hall-resort" class="hall hall--resort" aria-labelledby="hall-resort-title">
+      <header class="hall__header">
+        <p class="hall__eyebrow">ריזורט</p>
+        <h2 id="hall-resort-title" class="hall__title">ריזורט בוטיקי — חוויה מתמשכת מעבר לאירוע</h2>
+        <p class="hall__lede">
+          <!-- TODO(agent-01): replace with verified Hebrew copy -->
+          חדרי נופש מעוצבים, בריכה מחוממת וגינה אנגלית — לאירוע שנמשך אל תוך הסוף שבוע.
+        </p>
+      </header>
+
+      <div class="hall__media" aria-hidden="true">
+        <div class="hall__media-placeholder" data-placeholder="hall-resort-hero"></div>
+      </div>
+
+      <ul class="hall__features" role="list">
+        <li>חדרי נופש בעיצוב בוטיקי</li>
+        <li>בריכה מחוממת וג'קוזי</li>
+        <li>ספא וטיפולים</li>
+        <li>ארוחת בוקר שף</li>
+      </ul>
+
+      <a class="hall__cta" href="#contact">בדקו זמינות לאירוח</a>
+    </section>
+
+    <!-- ====================================================================
+         #lounge — teaser
+    ==================================================================== -->
+    <section id="lounge" class="lounge" aria-labelledby="lounge-title">
+      <header class="section-header">
+        <p class="section-header__eyebrow">לאונג'</p>
+        <h2 id="lounge-title" class="section-header__title">לאונג' — קבלת פנים אינטימית</h2>
+      </header>
+
+      <p class="lounge__lede">
+        <!-- TODO(agent-01): final copy -->
+        חלל קוקטיילים חמים — בר עץ, ספסלי קטיפה ותאורה דרמטית — לקבלת פנים מהוקצעת לפני שערי האולם.
+      </p>
+
+      <div class="lounge__media" aria-hidden="true">
+        <div class="hall__media-placeholder" data-placeholder="lounge-hero"></div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         #rooms — חדרי נופש
+    ==================================================================== -->
+    <section id="rooms" class="rooms" aria-labelledby="rooms-title">
+      <header class="section-header">
+        <p class="section-header__eyebrow">חדרי נופש</p>
+        <h2 id="rooms-title" class="section-header__title">חדרים — שינה רגועה בסוף ערב מושלם</h2>
+      </header>
+
+      <!-- TODO(agent-08): rooms slider with real images -->
+      <div class="rooms__gallery" role="list" aria-label="גלריית חדרי נופש">
+        <article class="rooms__card" role="listitem">
+          <div class="rooms__card-media" aria-hidden="true"
+               data-placeholder="room-suite"></div>
+          <h3 class="rooms__card-title">סוויטה</h3>
+          <p class="rooms__card-text">חלל מרווח עם אמבט עומד וחלון פנורמי.</p>
+        </article>
+        <article class="rooms__card" role="listitem">
+          <div class="rooms__card-media" aria-hidden="true"
+               data-placeholder="room-deluxe"></div>
+          <h3 class="rooms__card-title">דה-לוקס</h3>
+          <p class="rooms__card-text">חדר זוגי עם מרפסת אל הגן.</p>
+        </article>
+        <article class="rooms__card" role="listitem">
+          <div class="rooms__card-media" aria-hidden="true"
+               data-placeholder="room-classic"></div>
+          <h3 class="rooms__card-title">קלאסי</h3>
+          <p class="rooms__card-text">חדר זוגי קומפקטי בעיצוב חם.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         #culinary — קולינריה (gallery, NOT a hall)
+    ==================================================================== -->
+    <section id="culinary" class="culinary" aria-labelledby="culinary-title">
+      <header class="section-header">
+        <p class="section-header__eyebrow">קולינריה</p>
+        <h2 id="culinary-title" class="section-header__title">קולינריה — שפה של מנות מדויקות</h2>
+        <p class="section-header__lede">
+          <!-- TODO(agent-01): final culinary copy -->
+          תפריטים אישיים בליווי שף, חומרי גלם מקומיים ובחירה בין מטבח בשרי לחלבי עם הפרדה מלאה.
+        </p>
+      </header>
+
+      <!-- TODO(agent-08,09): culinary dish gallery — masonry / grid -->
+      <ul class="culinary__grid" role="list" aria-label="גלריית מנות">
+        <li class="culinary__item" data-placeholder="dish-1"></li>
+        <li class="culinary__item" data-placeholder="dish-2"></li>
+        <li class="culinary__item" data-placeholder="dish-3"></li>
+        <li class="culinary__item" data-placeholder="dish-4"></li>
+        <li class="culinary__item" data-placeholder="dish-5"></li>
+        <li class="culinary__item" data-placeholder="dish-6"></li>
+      </ul>
+    </section>
+
+    <!-- ====================================================================
+         #about — אודות / מי אנחנו
+    ==================================================================== -->
+    <section id="about" class="about" aria-labelledby="about-title">
+      <header class="section-header">
+        <p class="section-header__eyebrow">אודות</p>
+        <h2 id="about-title" class="section-header__title">מי אנחנו</h2>
+      </header>
+
+      <div class="about__body">
+        <p class="about__lede">
+          <!-- TODO(agent-01): real about copy from gamos.co.il -->
+          גמוס נוסד מתוך אהבה לאירועים שמרגישים כמו סיפור — לא רק חלל מהודר, אלא חוויה כוללת
+          בה כל פרט מתוכנן: האור, הצליל, הריח והטעם.
+        </p>
+
+        <dl class="about__stats">
+          <div class="about__stat">
+            <dt>שנות פעילות</dt>
+            <dd><bdi>20+</bdi></dd>
+          </div>
+          <div class="about__stat">
+            <dt>אירועים מאורגנים</dt>
+            <dd><bdi>3,000+</bdi></dd>
+          </div>
+          <div class="about__stat">
+            <dt>שביעות רצון</dt>
+            <dd><bdi>98%</bdi></dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         #testimonials — slider
+    ==================================================================== -->
+    <section id="testimonials" class="testimonials" aria-labelledby="testimonials-title">
+      <header class="section-header">
+        <p class="section-header__eyebrow">המלצות</p>
+        <h2 id="testimonials-title" class="section-header__title">מה מספרים על האירוע אצלנו</h2>
+      </header>
+
+      <!-- TODO(agent-08): real testimonials carousel from inventory -->
+      <div class="testimonials__track" role="region" aria-label="המלצות לקוחות"
+           data-slider="testimonials">
+        <article class="testimonial" role="group" aria-roledescription="המלצה">
+          <blockquote class="testimonial__quote">
+            <p>החתונה שלנו הרגישה כמו סרט. כל פרט קטן הוקדש לתשומת לב.</p>
+          </blockquote>
+          <footer class="testimonial__author">
+            <cite>שירה ויואב</cite>
+            <span class="testimonial__meta">חתונה, <bdi>2025</bdi></span>
+          </footer>
+        </article>
+
+        <article class="testimonial" role="group" aria-roledescription="המלצה">
+          <blockquote class="testimonial__quote">
+            <p>צוות שמבין באירוע ואוכל מצוין — האורחים עוד מדברים.</p>
+          </blockquote>
+          <footer class="testimonial__author">
+            <cite>משפחת לוי</cite>
+            <span class="testimonial__meta">בר-מצווה, <bdi>2025</bdi></span>
+          </footer>
+        </article>
+
+        <article class="testimonial" role="group" aria-roledescription="המלצה">
+          <blockquote class="testimonial__quote">
+            <p>אירוע חברה ל-<bdi>250</bdi> איש שעבר חלק לחלוטין. נחזור.</p>
+          </blockquote>
+          <footer class="testimonial__author">
+            <cite>חברת היי-טק</cite>
+            <span class="testimonial__meta">אירוע חברה, <bdi>2024</bdi></span>
+          </footer>
+        </article>
+      </div>
+
+      <div class="testimonials__controls" role="group" aria-label="ניווט המלצות">
+        <button type="button" class="testimonials__btn testimonials__btn--prev"
+                aria-label="המלצה קודמת">
+          <span aria-hidden="true">‹</span>
+        </button>
+        <button type="button" class="testimonials__btn testimonials__btn--next"
+                aria-label="המלצה הבאה">
+          <span aria-hidden="true">›</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         #gallery — mixed media
+         TODO(agent-01): confirm if a dedicated gallery exists on gamos.co.il
+    ==================================================================== -->
+    <section id="gallery" class="gallery" aria-labelledby="gallery-title">
+      <header class="section-header">
+        <p class="section-header__eyebrow">גלריה</p>
+        <h2 id="gallery-title" class="section-header__title">רגעים מהמתחם</h2>
+      </header>
+
+      <ul class="gallery__grid" role="list">
+        <li class="gallery__item" data-placeholder="gallery-1"></li>
+        <li class="gallery__item" data-placeholder="gallery-2"></li>
+        <li class="gallery__item" data-placeholder="gallery-3"></li>
+        <li class="gallery__item" data-placeholder="gallery-4"></li>
+        <li class="gallery__item" data-placeholder="gallery-5"></li>
+        <li class="gallery__item" data-placeholder="gallery-6"></li>
+        <li class="gallery__item" data-placeholder="gallery-7"></li>
+        <li class="gallery__item" data-placeholder="gallery-8"></li>
+      </ul>
+    </section>
+
+    <!-- ====================================================================
+         #events — accordion of event categories
+    ==================================================================== -->
+    <section id="events" class="events" aria-labelledby="events-title">
+      <header class="section-header">
+        <p class="section-header__eyebrow">אירועים</p>
+        <h2 id="events-title" class="section-header__title">סוגי אירועים</h2>
+      </header>
+
+      <div class="events__accordion" data-accordion>
+        <details class="events__item" name="events-accordion" open>
+          <summary class="events__summary">
+            <span>חתונות</span>
+            <span class="events__chevron" aria-hidden="true">›</span>
+          </summary>
+          <div class="events__content">
+            <p>חופה בגן, סעודה באולם וריקודים עד הבוקר. תפריטי שף וצוות אישי מלווה.</p>
+          </div>
+        </details>
+
+        <details class="events__item" name="events-accordion">
+          <summary class="events__summary">
+            <span>בר ובת מצווה</span>
+            <span class="events__chevron" aria-hidden="true">›</span>
+          </summary>
+          <div class="events__content">
+            <p>חוויה משפחתית עם הפרדה אלגנטית בין מבוגרים לילדים — אזור פעילות, DJ ואטרקציות.</p>
+          </div>
+        </details>
+
+        <details class="events__item" name="events-accordion">
+          <summary class="events__summary">
+            <span>אירועי חברה</span>
+            <span class="events__chevron" aria-hidden="true">›</span>
+          </summary>
+          <div class="events__content">
+            <p>כנסים, השקות וערבי גיבוש. תשתית טכנית מלאה, אודיו-וידאו וצוות הפקה.</p>
+          </div>
+        </details>
+
+        <details class="events__item" name="events-accordion">
+          <summary class="events__summary">
+            <span>אירועים פרטיים</span>
+            <span class="events__chevron" aria-hidden="true">›</span>
+          </summary>
+          <div class="events__content">
+            <p>ימי הולדת, אירוסין וערבי הוקרה — באולם, בלאונג' או בגן.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         #kosher — כשרות / רבנות
+    ==================================================================== -->
+    <section id="kosher" class="kosher" aria-labelledby="kosher-title">
+      <header class="section-header">
+        <p class="section-header__eyebrow">כשרות</p>
+        <h2 id="kosher-title" class="section-header__title">כשרות ורבנות</h2>
+      </header>
+
+      <p class="kosher__body">
+        <!-- TODO(agent-01): verify exact wording from gamos.co.il (rabbinate name + level) -->
+        המתחם פועל בכשרות מהודרת בהשגחת רבנות מקומית, עם הפרדה מלאה בין בשרי לחלבי.
+        תעודות הכשרות זמינות לעיון במשרדי המתחם.
+      </p>
+    </section>
+
+    <!-- ====================================================================
+         #contact — form + Waze + map + phones
+    ==================================================================== -->
+    <section id="contact" class="contact" aria-labelledby="contact-title">
+      <header class="section-header">
+        <p class="section-header__eyebrow">צור קשר</p>
+        <h2 id="contact-title" class="section-header__title">בואו נתחיל לתכנן</h2>
+      </header>
+
+      <div class="contact__grid">
+
+        <form class="contact__form" novalidate
+              aria-describedby="contact-form-help">
+          <p id="contact-form-help" class="sr-only">
+            כל השדות חובה. נחזור אליכם בתוך יום עסקים.
+          </p>
+
+          <div class="contact__field">
+            <label for="contact-name">שם מלא</label>
+            <input type="text" id="contact-name" name="name"
+                   autocomplete="name" required aria-required="true">
+          </div>
+
+          <div class="contact__field">
+            <label for="contact-phone">טלפון</label>
+            <input type="tel" id="contact-phone" name="phone"
+                   autocomplete="tel" inputmode="tel"
+                   required aria-required="true"
+                   dir="ltr">
+          </div>
+
+          <div class="contact__field">
+            <label for="contact-email">דוא"ל</label>
+            <input type="email" id="contact-email" name="email"
+                   autocomplete="email" inputmode="email"
+                   required aria-required="true"
+                   dir="ltr">
+          </div>
+
+          <div class="contact__field">
+            <label for="contact-event-type">סוג אירוע</label>
+            <select id="contact-event-type" name="eventType" required aria-required="true">
+              <option value="">בחרו סוג אירוע</option>
+              <option value="wedding">חתונה</option>
+              <option value="bar-mitzvah">בר/בת מצווה</option>
+              <option value="company">אירוע חברה</option>
+              <option value="private">אירוע פרטי</option>
+              <option value="other">אחר</option>
+            </select>
+          </div>
+
+          <div class="contact__field contact__field--full">
+            <label for="contact-message">הודעה</label>
+            <textarea id="contact-message" name="message" rows="4"></textarea>
+          </div>
+
+          <div class="contact__submit-wrap">
+            <button type="submit" class="contact__submit">שלחו פנייה</button>
+            <p class="contact__feedback" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+
+        <aside class="contact__details" aria-label="פרטי קשר וגישה">
+          <h3 class="contact__details-title">דברו איתנו</h3>
+
+          <ul class="contact__channels" role="list">
+            <li>
+              <span class="contact__channel-label">טלפון</span>
+              <!-- TODO(agent-01): real phone -->
+              <a href="tel:+972000000000" class="contact__channel-value">
+                <bdi>053-000-0000</bdi>
+              </a>
+            </li>
+            <li>
+              <span class="contact__channel-label">דוא"ל</span>
+              <a href="mailto:info@gamos.co.il" class="contact__channel-value" dir="ltr">
+                info@gamos.co.il
+              </a>
+            </li>
+            <li>
+              <span class="contact__channel-label">ווטסאפ</span>
+              <a href="https://wa.me/972000000000" class="contact__channel-value"
+                 target="_blank" rel="noopener noreferrer">
+                <bdi>053-000-0000</bdi>
+              </a>
+            </li>
+            <li>
+              <span class="contact__channel-label">כתובת</span>
+              <span class="contact__channel-value">
+                <!-- TODO(agent-01): real address -->
+                כתובת המתחם, ישראל
+              </span>
+            </li>
+          </ul>
+
+          <div class="contact__cta-row">
+            <a class="contact__cta contact__cta--waze" href="#"
+               aria-label="פתח ניווט ב-Waze">
+              <span>נווטו ב-Waze</span>
+            </a>
+            <a class="contact__cta contact__cta--maps" href="#"
+               aria-label="פתח ב-Google Maps">
+              <span>פתחו ב-Google Maps</span>
+            </a>
+          </div>
+
+          <!-- TODO(agent-08): embed actual map iframe (lazy-loaded) -->
+          <div class="contact__map" role="img"
+               aria-label="מפת המתחם — טוען..."
+               data-placeholder="map"></div>
+        </aside>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================
+       FOOTER
+  ======================================================================== -->
+  <footer id="footer" class="site-footer" role="contentinfo">
+    <div class="site-footer__inner">
+
+      <div class="site-footer__brand">
+        <span class="site-footer__brand-mark">גמוס</span>
+        <p class="site-footer__tagline">
+          <!-- TODO(agent-01): final tagline -->
+          מתחם אירועים בוטיקי בלב הטבע
+        </p>
+      </div>
+
+      <nav class="site-footer__nav" aria-label="ניווט תחתון">
+        <ul role="list">
+          <li><a href="#hall-venue">אולם</a></li>
+          <li><a href="#hall-resort">ריזורט</a></li>
+          <li><a href="#rooms">חדרי נופש</a></li>
+          <li><a href="#culinary">קולינריה</a></li>
+          <li><a href="#about">אודות</a></li>
+          <li><a href="#events">אירועים</a></li>
+          <li><a href="#kosher">כשרות</a></li>
+          <li><a href="#contact">צור קשר</a></li>
+        </ul>
+      </nav>
+
+      <ul class="site-footer__social" role="list" aria-label="רשתות חברתיות">
+        <!-- TODO(agent-01): verify which socials gamos.co.il actually uses -->
+        <li>
+          <a href="#" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+            <span aria-hidden="true">IG</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+            <span aria-hidden="true">FB</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
+            <span aria-hidden="true">YT</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" aria-label="TikTok" target="_blank" rel="noopener noreferrer">
+            <span aria-hidden="true">TT</span>
+          </a>
+        </li>
+      </ul>
+
+      <ul class="site-footer__legal" role="list">
+        <li><a href="#">מדיניות פרטיות</a></li>
+        <li><a href="#">תנאי שימוש</a></li>
+        <li><a href="#">הצהרת נגישות</a></li>
+      </ul>
+
+      <p class="site-footer__copy">
+        <bdi>© 2026</bdi> גמוס. כל הזכויות שמורות.
+      </p>
+
+    </div>
+  </footer>
+
+</body>
+</html>

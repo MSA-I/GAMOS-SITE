@@ -1,0 +1,75 @@
+/* =====================================================================
+ * motion-reveals.css
+ * Agent 09 — reveal-on-scroll patterns (paired with js/reveals.js).
+ * Variants: fade, fade-up, mask, scale.
+ * Tokens consumed from css/tokens.css (Agent 02).
+ * ===================================================================== */
+
+/* ---------------------------------------------------------------------
+ * Initial states — every [data-reveal] starts hidden + offset.
+ * The default variant is "fade-up". JS adds .is-visible on intersect.
+ * ------------------------------------------------------------------- */
+[data-reveal] {
+  opacity: 0;
+  will-change: opacity, transform, clip-path;
+  transition-property: opacity, transform, clip-path;
+  transition-duration: var(--dur-deluxe, 600ms);
+  transition-timing-function: var(--ease-out-cinema, cubic-bezier(0.2, 0.8, 0.2, 1));
+}
+
+/* Default + explicit fade-up: opacity + slide up */
+[data-reveal],
+[data-reveal="fade-up"] {
+  transform: translate3d(0, 24px, 0);
+}
+
+/* Pure fade — no transform */
+[data-reveal="fade"] {
+  transform: none;
+  transition-duration: var(--dur-slow, 360ms);
+}
+
+/* Mask reveal — clip-path inset (used on large display headings) */
+[data-reveal="mask"] {
+  transform: none;
+  clip-path: inset(0 0 100% 0);
+  transition-duration: var(--dur-cinema, 1000ms);
+}
+
+/* Scale reveal — gentle inset zoom */
+[data-reveal="scale"] {
+  transform: scale(0.94);
+  transition-duration: var(--dur-deluxe, 600ms);
+}
+
+/* ---------------------------------------------------------------------
+ * Final states — JS adds .is-visible when target intersects viewport.
+ * ------------------------------------------------------------------- */
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+  clip-path: inset(0 0 0 0);
+}
+
+/* ---------------------------------------------------------------------
+ * Stagger container — child reveal delays are JS-driven (80ms step).
+ * No CSS work needed here besides documenting the contract.
+ * ------------------------------------------------------------------- */
+[data-stagger] {
+  /* Layout untouched — purely a hook for js/reveals.js. */
+}
+
+/* ---------------------------------------------------------------------
+ * Reduced motion — instant final state. JS also short-circuits, this
+ * is a belt-and-braces guarantee per architecture/rtl-and-a11y.md §
+ * "Reduced Motion".
+ * ------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+    transition: none !important;
+    will-change: auto;
+  }
+}

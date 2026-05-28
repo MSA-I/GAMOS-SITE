@@ -1,0 +1,370 @@
+/* ============================================================
+   GAMOS-SITE — utilities.css
+   Single-purpose utility classes.
+   Logical properties only. !important is permitted ONLY here
+   per Constitution §10.2 to guarantee override of components.
+   ============================================================ */
+
+@layer base, layout, utilities, sections;
+
+@layer utilities {
+
+  /* ============================================================
+     Spacing — logical (margin-block / margin-inline)
+     Naming: .mt = margin-block-start (top in LTR, top in RTL too)
+             .mb = margin-block-end
+             .ms = margin-inline-start (right in RTL)
+             .me = margin-inline-end   (left  in RTL)
+             .mx = margin-inline (start + end)
+             .my = margin-block  (start + end)
+     Same pattern for .p* (padding).
+     ============================================================ */
+
+  /* margin-block-start */
+  .mt-0  { margin-block-start: 0 !important; }
+  .mt-1  { margin-block-start: var(--space-1) !important; }
+  .mt-2  { margin-block-start: var(--space-2) !important; }
+  .mt-3  { margin-block-start: var(--space-3) !important; }
+  .mt-4  { margin-block-start: var(--space-4) !important; }
+  .mt-6  { margin-block-start: var(--space-6) !important; }
+  .mt-8  { margin-block-start: var(--space-8) !important; }
+  .mt-12 { margin-block-start: var(--space-12) !important; }
+  .mt-16 { margin-block-start: var(--space-16) !important; }
+  .mt-24 { margin-block-start: var(--space-24) !important; }
+  .mt-32 { margin-block-start: var(--space-32) !important; }
+
+  /* margin-block-end */
+  .mb-0  { margin-block-end: 0 !important; }
+  .mb-1  { margin-block-end: var(--space-1) !important; }
+  .mb-2  { margin-block-end: var(--space-2) !important; }
+  .mb-3  { margin-block-end: var(--space-3) !important; }
+  .mb-4  { margin-block-end: var(--space-4) !important; }
+  .mb-6  { margin-block-end: var(--space-6) !important; }
+  .mb-8  { margin-block-end: var(--space-8) !important; }
+  .mb-12 { margin-block-end: var(--space-12) !important; }
+  .mb-16 { margin-block-end: var(--space-16) !important; }
+  .mb-24 { margin-block-end: var(--space-24) !important; }
+  .mb-32 { margin-block-end: var(--space-32) !important; }
+
+  /* margin-inline-start (= "right" in RTL) */
+  .ms-0  { margin-inline-start: 0 !important; }
+  .ms-1  { margin-inline-start: var(--space-1) !important; }
+  .ms-2  { margin-inline-start: var(--space-2) !important; }
+  .ms-3  { margin-inline-start: var(--space-3) !important; }
+  .ms-4  { margin-inline-start: var(--space-4) !important; }
+  .ms-6  { margin-inline-start: var(--space-6) !important; }
+  .ms-8  { margin-inline-start: var(--space-8) !important; }
+  .ms-auto { margin-inline-start: auto !important; }
+
+  /* margin-inline-end (= "left" in RTL) */
+  .me-0  { margin-inline-end: 0 !important; }
+  .me-1  { margin-inline-end: var(--space-1) !important; }
+  .me-2  { margin-inline-end: var(--space-2) !important; }
+  .me-3  { margin-inline-end: var(--space-3) !important; }
+  .me-4  { margin-inline-end: var(--space-4) !important; }
+  .me-6  { margin-inline-end: var(--space-6) !important; }
+  .me-8  { margin-inline-end: var(--space-8) !important; }
+  .me-auto { margin-inline-end: auto !important; }
+
+  /* mx / my shortcuts */
+  .mx-auto { margin-inline: auto !important; }
+  .mx-0    { margin-inline: 0 !important; }
+  .mx-2    { margin-inline: var(--space-2) !important; }
+  .mx-4    { margin-inline: var(--space-4) !important; }
+  .mx-6    { margin-inline: var(--space-6) !important; }
+
+  .my-0  { margin-block: 0 !important; }
+  .my-2  { margin-block: var(--space-2) !important; }
+  .my-4  { margin-block: var(--space-4) !important; }
+  .my-6  { margin-block: var(--space-6) !important; }
+  .my-8  { margin-block: var(--space-8) !important; }
+  .my-12 { margin-block: var(--space-12) !important; }
+  .my-16 { margin-block: var(--space-16) !important; }
+
+  /* padding-block-start */
+  .pt-0  { padding-block-start: 0 !important; }
+  .pt-2  { padding-block-start: var(--space-2) !important; }
+  .pt-4  { padding-block-start: var(--space-4) !important; }
+  .pt-6  { padding-block-start: var(--space-6) !important; }
+  .pt-8  { padding-block-start: var(--space-8) !important; }
+  .pt-12 { padding-block-start: var(--space-12) !important; }
+  .pt-16 { padding-block-start: var(--space-16) !important; }
+  .pt-24 { padding-block-start: var(--space-24) !important; }
+  .pt-32 { padding-block-start: var(--space-32) !important; }
+
+  /* padding-block-end */
+  .pb-0  { padding-block-end: 0 !important; }
+  .pb-2  { padding-block-end: var(--space-2) !important; }
+  .pb-4  { padding-block-end: var(--space-4) !important; }
+  .pb-6  { padding-block-end: var(--space-6) !important; }
+  .pb-8  { padding-block-end: var(--space-8) !important; }
+  .pb-12 { padding-block-end: var(--space-12) !important; }
+  .pb-16 { padding-block-end: var(--space-16) !important; }
+  .pb-24 { padding-block-end: var(--space-24) !important; }
+  .pb-32 { padding-block-end: var(--space-32) !important; }
+
+  /* px / py shortcuts (logical) */
+  .px-0 { padding-inline: 0 !important; }
+  .px-2 { padding-inline: var(--space-2) !important; }
+  .px-4 { padding-inline: var(--space-4) !important; }
+  .px-6 { padding-inline: var(--space-6) !important; }
+  .px-8 { padding-inline: var(--space-8) !important; }
+
+  .py-0  { padding-block: 0 !important; }
+  .py-2  { padding-block: var(--space-2) !important; }
+  .py-4  { padding-block: var(--space-4) !important; }
+  .py-6  { padding-block: var(--space-6) !important; }
+  .py-8  { padding-block: var(--space-8) !important; }
+  .py-12 { padding-block: var(--space-12) !important; }
+  .py-16 { padding-block: var(--space-16) !important; }
+
+  /* ============================================================
+     Accessibility helpers
+     ============================================================ */
+
+  .sr-only {
+    position: absolute !important;
+    inline-size: 1px !important;
+    block-size: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    clip-path: inset(50%) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  .not-sr-only {
+    position: static !important;
+    inline-size: auto !important;
+    block-size: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    clip: auto !important;
+    clip-path: none !important;
+    white-space: normal !important;
+  }
+
+  /* Hide visually but keep in flow for assistive tech (alternative) */
+  .visually-hidden {
+    clip-path: inset(50%) !important;
+    block-size: 1px !important;
+    inline-size: 1px !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    white-space: nowrap !important;
+  }
+
+  /* ============================================================
+     Bidi isolation — for LTR digits inside Hebrew text
+     ============================================================ */
+
+  .bidi-iso {
+    unicode-bidi: isolate !important;
+    direction: ltr !important;
+    display: inline-block !important;
+  }
+
+  .bidi-iso--block {
+    unicode-bidi: isolate !important;
+    direction: ltr !important;
+    display: block !important;
+  }
+
+  /* ============================================================
+     Typography size utilities
+     ============================================================ */
+
+  .text-xs    { font-size: var(--text-xs) !important; }
+  .text-sm    { font-size: var(--text-sm) !important; }
+  .text-base  { font-size: var(--text-base) !important; }
+  .text-md    { font-size: var(--text-md) !important; }
+  .text-lg    { font-size: var(--text-lg) !important; }
+  .text-xl    { font-size: var(--text-xl) !important; }
+  .text-2xl   { font-size: var(--text-2xl) !important; }
+  .text-3xl   { font-size: var(--text-3xl) !important; }
+  .text-4xl   { font-size: var(--text-4xl) !important; }
+  .text-hero  { font-size: var(--text-hero) !important; line-height: var(--lh-tight) !important; }
+
+  /* Text alignment (RTL-safe) */
+  .text-start   { text-align: start !important; }
+  .text-end     { text-align: end !important; }
+  .text-center  { text-align: center !important; }
+  .text-justify { text-align: justify !important; }
+
+  /* Line heights */
+  .leading-tight  { line-height: var(--lh-tight) !important; }
+  .leading-snug   { line-height: var(--lh-snug) !important; }
+  .leading-normal { line-height: var(--lh-normal) !important; }
+  .leading-loose  { line-height: var(--lh-loose) !important; }
+
+  /* Tracking */
+  .tracking-tight   { letter-spacing: var(--tracking-tight) !important; }
+  .tracking-normal  { letter-spacing: var(--tracking-normal) !important; }
+  .tracking-wide    { letter-spacing: var(--tracking-wide) !important; }
+  .tracking-eyebrow { letter-spacing: var(--tracking-eyebrow) !important; }
+
+  /* Transform */
+  .uppercase   { text-transform: uppercase !important; }
+  .lowercase   { text-transform: lowercase !important; }
+  .capitalize  { text-transform: capitalize !important; }
+  .normal-case { text-transform: none !important; }
+
+  /* Decoration */
+  .underline    { text-decoration: underline !important; }
+  .no-underline { text-decoration: none !important; }
+
+  /* Truncation */
+  .truncate {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .clamp-2 {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  .clamp-3 {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  /* ============================================================
+     Color utilities
+     ============================================================ */
+
+  .color-ink         { color: var(--ink-deep) !important; }
+  .color-ink-medium  { color: var(--ink-medium) !important; }
+  .color-ivory       { color: var(--ivory) !important; }
+  .color-ivory-warm  { color: var(--ivory-warm) !important; }
+  .color-brass       { color: var(--brass) !important; }
+  .color-brass-deep  { color: var(--brass-deep) !important; }
+  .color-brass-glow  { color: var(--brass-glow) !important; }
+  .color-sage        { color: var(--sage) !important; }
+  .color-gold        { color: var(--gold) !important; }
+  .color-fg          { color: var(--fg) !important; }
+  .color-fg-muted    { color: var(--fg-muted) !important; }
+  .color-fg-on-dark  { color: var(--fg-on-dark) !important; }
+  .color-accent      { color: var(--accent) !important; }
+
+  /* ============================================================
+     Background utilities
+     ============================================================ */
+
+  .bg-ivory      { background-color: var(--ivory) !important; }
+  .bg-ivory-warm { background-color: var(--ivory-warm) !important; }
+  .bg-ink-deep   { background-color: var(--ink-deep) !important; }
+  .bg-ink-medium { background-color: var(--ink-medium) !important; }
+  .bg-brass      { background-color: var(--brass) !important; }
+  .bg-brass-deep { background-color: var(--brass-deep) !important; }
+  .bg-sage       { background-color: var(--sage) !important; }
+  .bg-transparent { background-color: transparent !important; }
+  .bg-bg         { background-color: var(--bg) !important; }
+  .bg-bg-alt     { background-color: var(--bg-alt) !important; }
+
+  /* ============================================================
+     Font family + weight utilities
+     ============================================================ */
+
+  .font-display-he { font-family: var(--font-display-he) !important; }
+  .font-display-en { font-family: var(--font-display-en) !important; }
+  .font-body       { font-family: var(--font-body) !important; }
+  .font-mono       { font-family: var(--font-mono) !important; }
+
+  .weight-400 { font-weight: 400 !important; }
+  .weight-500 { font-weight: 500 !important; }
+  .weight-600 { font-weight: 600 !important; }
+  .weight-700 { font-weight: 700 !important; }
+
+  /* ============================================================
+     Eyebrow (small uppercase label, common premium pattern)
+     ============================================================ */
+
+  .eyebrow {
+    font-family: var(--font-body) !important;
+    font-size: var(--text-xs) !important;
+    font-weight: var(--fw-semibold) !important;
+    letter-spacing: var(--tracking-eyebrow) !important;
+    text-transform: uppercase !important;
+    color: var(--brass) !important;
+    line-height: var(--lh-normal) !important;
+  }
+
+  .eyebrow--ivory { color: var(--ivory) !important; }
+  .eyebrow--muted { color: var(--fg-muted) !important; }
+
+  /* ============================================================
+     Display + visibility
+     ============================================================ */
+
+  .block        { display: block !important; }
+  .inline-block { display: inline-block !important; }
+  .inline       { display: inline !important; }
+  .hidden       { display: none !important; }
+
+  @media (max-width: 600px) {
+    .hidden-mobile { display: none !important; }
+  }
+
+  @media (min-width: 601px) {
+    .hidden-desktop { display: none !important; }
+  }
+
+  /* ============================================================
+     Border radius
+     ============================================================ */
+
+  .radius-sm     { border-radius: var(--radius-sm) !important; }
+  .radius-md     { border-radius: var(--radius-md) !important; }
+  .radius-lg     { border-radius: var(--radius-lg) !important; }
+  .radius-xl     { border-radius: var(--radius-xl) !important; }
+  .radius-pill   { border-radius: var(--radius-pill) !important; }
+  .radius-circle { border-radius: var(--radius-circle) !important; }
+  .radius-none   { border-radius: 0 !important; }
+
+  /* ============================================================
+     Shadows
+     ============================================================ */
+
+  .shadow-soft   { box-shadow: var(--shadow-soft) !important; }
+  .shadow-strong { box-shadow: var(--shadow-strong) !important; }
+  .shadow-none   { box-shadow: none !important; }
+
+  /* ============================================================
+     Position helpers
+     ============================================================ */
+
+  .relative { position: relative !important; }
+  .absolute { position: absolute !important; }
+  .fixed    { position: fixed !important; }
+  .sticky   { position: sticky !important; }
+  .static   { position: static !important; }
+
+  /* ============================================================
+     Overflow
+     ============================================================ */
+
+  .overflow-hidden { overflow: hidden !important; }
+  .overflow-auto   { overflow: auto !important; }
+  .overflow-x-hidden { overflow-x: hidden !important; }
+  .overflow-y-auto   { overflow-y: auto !important; }
+
+  /* ============================================================
+     Sizing
+     ============================================================ */
+
+  .w-full { inline-size: 100% !important; width: 100% !important; }
+  .h-full { block-size: 100% !important; height: 100% !important; }
+  .min-h-screen { min-block-size: 100vh !important; min-block-size: 100dvh !important; }
+
+}

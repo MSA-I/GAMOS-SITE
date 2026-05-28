@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+.cache/
+
+# Workbench
+.tmp/
+*.local
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+npm-debug.log*
+
+# Remotion (subproject manages its own build + heavy media)
+remotion/out/
+remotion/public/
+remotion/node_modules/
+
+# Source asset library — READ-ONLY, multi-GB, lives outside repo history
+תמונות לאנימציית האתר/
+
+# Compiled / processed media — too heavy for git, generated on-demand
+assets/video/
+assets/images/
+
+# AgentDB / ruflo local state
+ruvector.db
+.claude-cache/
+.claude/

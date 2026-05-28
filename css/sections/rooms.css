@@ -1,0 +1,192 @@
+/* =============================================================================
+   Section: #rooms (חדרי נופש) — masonry via CSS columns
+   Owner  : Agent 08 (Phase 4b — Hall Sections Engineer)
+   --------------------------------------------------------------------------
+   Layout : Header + multi-column masonry. Cards each show a picture +
+            caption; hover reveals zoom + brass underline.
+   Rules  : Logical properties only. Tokens for every value. RTL-safe —
+            CSS columns flow per the document direction automatically.
+   ========================================================================== */
+
+.rooms {
+  position: relative;
+  background-color: var(--bg);
+  color: var(--fg);
+  padding-block: var(--space-32);
+  isolation: isolate;
+  overflow: clip;
+}
+
+.rooms__container {
+  max-inline-size: var(--container-wide);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* HEADER --------------------------------------------------------------- */
+.rooms__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-block-end: var(--space-12);
+  max-inline-size: var(--container-narrow);
+}
+
+.rooms__eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--brass);
+  margin: 0;
+}
+
+.rooms__title {
+  font-family: var(--font-display-he);
+  font-size: clamp(var(--text-2xl), 5vw, var(--text-4xl));
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--ink-deep);
+  margin: 0;
+  text-wrap: balance;
+}
+
+.rooms__body {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: var(--lh-loose);
+  color: var(--fg);
+  max-inline-size: 56ch;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------------- *
+ *  MASONRY (CSS columns)                                                  *
+ * ---------------------------------------------------------------------- */
+.rooms__grid {
+  columns: 1;
+  column-gap: var(--space-4);
+}
+
+@media (min-width: 560px) {
+  .rooms__grid {
+    columns: 2;
+    column-gap: var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .rooms__grid {
+    columns: 3;
+    column-gap: var(--space-6);
+  }
+}
+
+/* ITEM ----------------------------------------------------------------- */
+.rooms__item {
+  break-inside: avoid;
+  page-break-inside: avoid;          /* legacy */
+  -webkit-column-break-inside: avoid;
+  display: block;
+  margin-block-end: var(--space-6);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background-color: var(--bg);
+  box-shadow: var(--shadow-soft);
+  transition:
+    transform var(--dur-deluxe) var(--ease-out-cinema),
+    box-shadow var(--dur-deluxe) var(--ease-out-cinema);
+}
+
+.rooms__item:hover,
+.rooms__item:focus-within {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-strong);
+}
+
+.rooms__media {
+  position: relative;
+  display: block;
+  inline-size: 100%;
+  overflow: hidden;
+  background-color: var(--ink-medium);
+}
+
+.rooms__media img {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  object-fit: cover;
+  transition: transform var(--dur-cinema) var(--ease-out-cinema);
+}
+
+/* Aspect-ratio modifiers create masonry rhythm ------------------------- */
+.rooms__item--tall     .rooms__media img { aspect-ratio: 3 / 4; }
+.rooms__item--wide     .rooms__media img { aspect-ratio: 4 / 3; }
+.rooms__item--square   .rooms__media img { aspect-ratio: 1 / 1; }
+.rooms__item--portrait .rooms__media img { aspect-ratio: 4 / 5; }
+
+.rooms__item:hover .rooms__media img,
+.rooms__item:focus-within .rooms__media img {
+  transform: scale(1.06);
+}
+
+/* CAPTION -------------------------------------------------------------- */
+.rooms__caption {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-block: var(--space-4) var(--space-6);
+  padding-inline: var(--space-5);
+}
+
+.rooms__name {
+  font-family: var(--font-display-he);
+  font-size: var(--text-md);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-snug);
+  color: var(--ink-deep);
+  margin: 0;
+}
+
+.rooms__name::after {
+  content: "";
+  display: block;
+  inline-size: 0;
+  block-size: 1px;
+  background-color: var(--brass);
+  margin-block-start: var(--space-2);
+  transition: inline-size var(--dur-deluxe) var(--ease-out-cinema);
+}
+
+.rooms__item:hover .rooms__name::after,
+.rooms__item:focus-within .rooms__name::after {
+  inline-size: var(--space-12);
+}
+
+.rooms__desc {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: var(--lh-normal);
+  color: var(--fg-muted);
+  margin: 0;
+}
+
+/* Reduced motion ------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .rooms__item,
+  .rooms__media img,
+  .rooms__name::after {
+    transition: none;
+  }
+  .rooms__item:hover,
+  .rooms__item:focus-within {
+    transform: none;
+  }
+  .rooms__item:hover .rooms__media img,
+  .rooms__item:focus-within .rooms__media img {
+    transform: none;
+  }
+}

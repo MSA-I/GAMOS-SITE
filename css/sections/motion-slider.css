@@ -1,0 +1,154 @@
+/* =====================================================================
+ * motion-slider.css
+ * Agent 09 — touch + keyboard slider styling (paired with js/slider.js).
+ *
+ * The track uses translateX. JS computes the sign per dir (RTL/LTR).
+ * Tokens consumed from css/tokens.css.
+ * ===================================================================== */
+
+/* ---------------------------------------------------------------------
+ * Container — clip overflow, position relative for absolute children.
+ * Focus ring sits on the root for keyboard users (tabindex=0 set by JS).
+ * ------------------------------------------------------------------- */
+[data-slider] {
+  position: relative;
+  overflow: hidden;
+  inline-size: 100%;
+  /* Reserve a stable height when items load asynchronously. */
+  contain: layout paint;
+}
+
+[data-slider]:focus-visible {
+  outline: 3px solid var(--accent, #b89766);
+  outline-offset: 4px;
+  border-radius: var(--radius-md, 8px);
+}
+
+/* ---------------------------------------------------------------------
+ * Track — flex row, each item full width. JS drives translateX.
+ *
+ * RTL caveat: in `dir="rtl"` flex-direction: row reverses visually.
+ *   - We keep flex-direction: row (no override).
+ *   - JS uses sign +1 in RTL for translateX, -1 in LTR.
+ * ------------------------------------------------------------------- */
+[data-slider-track] {
+  display: flex;
+  flex-direction: row;
+  inline-size: 100%;
+  will-change: transform;
+  /* Touch action: pan-y allows vertical page scroll, JS handles horizontal. */
+  touch-action: pan-y;
+  /* Disable text selection during drag — prevents long-press surprises. */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Each slide takes the full track width. */
+[data-slider-item] {
+  flex: 0 0 100%;
+  inline-size: 100%;
+  min-inline-size: 0;
+  /* Ensure inner media never spills. */
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------
+ * Prev / Next buttons — neutral skeleton; section-specific styling lives
+ * in the consuming section's CSS. Default places them at the inline edges.
+ * Uses logical inset properties so RTL flips automatically.
+ * ------------------------------------------------------------------- */
+[data-slider-prev],
+[data-slider-next] {
+  position: absolute;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  z-index: var(--z-content, 10);
+  inline-size: 3rem;
+  block-size: 3rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(245, 239, 230, 0.85); /* var(--ivory) at 85% */
+  color: var(--ink-deep, #0e0e0c);
+  border: 1px solid var(--border, rgba(14, 14, 12, 0.12));
+  border-radius: var(--radius-pill, 9999px);
+  cursor: pointer;
+  transition: background var(--dur-base, 240ms) var(--ease-out-cinema, cubic-bezier(0.2, 0.8, 0.2, 1)),
+              transform var(--dur-base, 240ms) var(--ease-out-cinema, cubic-bezier(0.2, 0.8, 0.2, 1));
+}
+
+[data-slider-prev] {
+  inset-inline-start: var(--space-4, 1rem);
+}
+
+[data-slider-next] {
+  inset-inline-end: var(--space-4, 1rem);
+}
+
+[data-slider-prev]:hover,
+[data-slider-next]:hover {
+  background: var(--ivory, #f5efe6);
+  transform: translateY(-50%) scale(1.05);
+}
+
+[data-slider-prev]:focus-visible,
+[data-slider-next]:focus-visible {
+  outline: 3px solid var(--accent, #b89766);
+  outline-offset: 3px;
+}
+
+/* In RTL, mirror inline arrow icons inside the buttons (chevrons etc.). */
+[dir="rtl"] [data-slider-prev] svg,
+[dir="rtl"] [data-slider-next] svg {
+  transform: scaleX(-1);
+}
+
+/* ---------------------------------------------------------------------
+ * Dots — built programmatically by JS into [data-slider-dots].
+ * Each dot is a <button>. Active dot grows + uses brass accent.
+ * ------------------------------------------------------------------- */
+[data-slider-dots] {
+  position: absolute;
+  inset-block-end: var(--space-4, 1rem);
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  z-index: var(--z-content, 10);
+}
+
+[data-slider-dots] [data-slider-dot] {
+  inline-size: 0.5rem;
+  block-size: 0.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill, 9999px);
+  background: rgba(245, 239, 230, 0.5);
+  cursor: pointer;
+  transition: inline-size var(--dur-base, 240ms) var(--ease-out-cinema, cubic-bezier(0.2, 0.8, 0.2, 1)),
+              background var(--dur-base, 240ms) var(--ease-out-cinema, cubic-bezier(0.2, 0.8, 0.2, 1));
+}
+
+[data-slider-dots] [data-slider-dot].is-active {
+  background: var(--accent, #b89766);
+  inline-size: 1.5rem;
+}
+
+[data-slider-dots] [data-slider-dot]:focus-visible {
+  outline: 3px solid var(--accent, #b89766);
+  outline-offset: 3px;
+}
+
+/* ---------------------------------------------------------------------
+ * Reduced motion — kill all transitions; JS already skips animation.
+ * ------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  [data-slider-track],
+  [data-slider-prev],
+  [data-slider-next],
+  [data-slider-dots] [data-slider-dot] {
+    transition: none !important;
+  }
+}

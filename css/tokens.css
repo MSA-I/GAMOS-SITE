@@ -1,0 +1,252 @@
+/* ===========================================================================
+   tokens.css — GAMOS-SITE single source of design truth
+   ---------------------------------------------------------------------------
+   Spec:        architecture/tokens.md  (LOCKED 2026-05-28 by Agent 02)
+   Constitution: CLAUDE.md §4 (Typography), §5 (Palette), §10.2 (Tokens are
+                 single-source — any hard-coded value elsewhere is a bug).
+   Owner:       Agent 02 — Brand & Typography
+   ---------------------------------------------------------------------------
+   RULES
+   - No raw hex outside the brand block. Every semantic token references a
+     brand token via var(...).
+   - All numeric scales reference each other where possible.
+   - WOFF2 only, self-hosted at /assets/fonts/, font-display: swap mandatory.
+   ========================================================================= */
+
+
+/* ---------------------------------------------------------------------------
+   1. @font-face — self-hosted WOFF2 (font-display: swap, unicode-range hints)
+   ---------------------------------------------------------------------------
+   The browser only downloads a face when a glyph in its unicode-range is
+   actually rendered, so listing Hebrew + Latin sub-faces lets the cascade
+   pick the right file per glyph automatically (covers numerals/punctuation
+   inside Hebrew copy without forcing two full webfonts).
+   --------------------------------------------------------------------------- */
+
+/* ---- Frank Ruhl Libre (Hebrew display) ---- */
+@font-face {
+  font-family: "Frank Ruhl Libre";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/frank-ruhl-libre-400.woff2") format("woff2");
+  unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F, U+0020-007E;
+}
+@font-face {
+  font-family: "Frank Ruhl Libre";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../assets/fonts/frank-ruhl-libre-500.woff2") format("woff2");
+  unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F, U+0020-007E;
+}
+@font-face {
+  font-family: "Frank Ruhl Libre";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fonts/frank-ruhl-libre-700.woff2") format("woff2");
+  unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F, U+0020-007E;
+}
+
+/* ---- Heebo (Hebrew + Latin body) ---- */
+@font-face {
+  font-family: "Heebo";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/heebo-400.woff2") format("woff2");
+  unicode-range: U+0020-007E, U+00A0-00FF, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: "Heebo";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../assets/fonts/heebo-500.woff2") format("woff2");
+  unicode-range: U+0020-007E, U+00A0-00FF, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: "Heebo";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../assets/fonts/heebo-600.woff2") format("woff2");
+  unicode-range: U+0020-007E, U+00A0-00FF, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+
+/* ---- Playfair Display (Latin display only — used for English flourishes) ---- */
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/playfair-display-400.woff2") format("woff2");
+  unicode-range: U+0020-007E, U+00A0-00FF, U+0152-0153, U+02BB-02BC, U+2010-2027, U+20AC;
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fonts/playfair-display-700.woff2") format("woff2");
+  unicode-range: U+0020-007E, U+00A0-00FF, U+0152-0153, U+02BB-02BC, U+2010-2027, U+20AC;
+}
+
+
+/* ---------------------------------------------------------------------------
+   2. :root tokens
+   --------------------------------------------------------------------------- */
+
+:root {
+
+  /* ===== 2.1 Brand palette (LOCKED 2026-05-28 by Agent 01 — CLAUDE.md §5) =====
+     Pulled from gamos.co.il scrape (BRANDING.JSON) and upgraded per
+     "Luxury or nothing" principle. Maximum 5 active colors at a time. */
+  --brass:          #CFAE83;   /* PRIMARY — live brand color, unchanged */
+  --brass-deep:     #8B6F46;   /* hover/active — derived */
+  --brass-glow:     #D4B98A;   /* glow / highlight */
+  --cocoa:          #534133;   /* SECONDARY — live brand color, unchanged */
+  --ivory:          #F5EFE6;   /* surface — replaces live #FFFFFF */
+  --ivory-warm:     #ECE3D3;   /* warm tint */
+  --mist:           #E8DFD3;   /* surface tint, light fade */
+  --ink-deep:       #1A1410;   /* body text — warm near-black, replaces #000 */
+  --ink-medium:     #2A2A28;   /* subtle borders */
+  --accent-rose:    #B8576F;   /* CTA accent — replaces live #CC3366 */
+
+  /* ===== 2.2 Semantic colors (reference brand only) ===== */
+  --bg:             var(--ivory);
+  --bg-alt:         var(--ivory-warm);
+  --bg-tint:        var(--mist);
+  --bg-dark:        var(--ink-deep);
+  --bg-cocoa:       var(--cocoa);
+  --fg:             var(--ink-deep);
+  --fg-muted:       #6B6B68;
+  --fg-on-dark:     var(--ivory);
+  --accent:         var(--brass);
+  --accent-hover:   var(--brass-deep);
+  --accent-glow:    var(--brass-glow);
+  --accent-cta:     var(--accent-rose);
+  --border:         rgba(26, 20, 16, 0.12);
+  --border-strong:  rgba(26, 20, 16, 0.24);
+  --shadow-soft:    0 8px 24px rgba(26, 20, 16, 0.06);
+  --shadow-strong:  0 24px 60px rgba(26, 20, 16, 0.16);
+  --focus-ring:     0 0 0 3px var(--brass);
+
+  /* ===== 2.3 Typography — families ===== */
+  --font-display-he: "Frank Ruhl Libre", "David Libre", "Times New Roman", serif;
+  --font-display-en: "Playfair Display", "Times New Roman", serif;
+  --font-body:       "Heebo", "Arial", sans-serif;
+  --font-mono:       ui-monospace, "Menlo", "Consolas", monospace;
+
+  /* ===== 2.4 Type scale (modular ratio 1.250) ===== */
+  --text-xs:    0.75rem;       /* 12px */
+  --text-sm:    0.875rem;      /* 14px */
+  --text-base:  1rem;          /* 16px */
+  --text-md:    1.25rem;       /* 20px */
+  --text-lg:    1.563rem;      /* 25px */
+  --text-xl:    1.953rem;      /* 31px */
+  --text-2xl:   2.441rem;      /* 39px */
+  --text-3xl:   3.052rem;      /* 49px */
+  --text-4xl:   3.815rem;      /* 61px */
+  --text-hero:  clamp(3.5rem, 9vw, 8rem); /* 56–128px */
+
+  /* ===== 2.5 Weights ===== */
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  /* ===== 2.6 Line heights ===== */
+  --lh-tight:   1.05;
+  --lh-snug:    1.2;
+  --lh-normal:  1.5;
+  --lh-loose:   1.7;
+
+  /* ===== 2.7 Letter spacing ===== */
+  --tracking-tight:    -0.02em;
+  --tracking-normal:   0;
+  --tracking-wide:     0.05em;
+  --tracking-eyebrow:  0.18em;
+
+  /* ===== 2.8 Spacing (4px base) ===== */
+  --space-1:   0.25rem;   /* 4px */
+  --space-2:   0.5rem;    /* 8px */
+  --space-3:   0.75rem;   /* 12px */
+  --space-4:   1rem;      /* 16px */
+  --space-6:   1.5rem;    /* 24px */
+  --space-8:   2rem;      /* 32px */
+  --space-12:  3rem;      /* 48px */
+  --space-16:  4rem;      /* 64px */
+  --space-24:  6rem;      /* 96px */
+  --space-32:  8rem;      /* 128px */
+
+  /* ===== 2.9 Radii ===== */
+  --radius-sm:     4px;
+  --radius-md:     8px;
+  --radius-lg:     16px;
+  --radius-xl:     24px;
+  --radius-pill:   9999px;
+  --radius-circle: 50%;
+
+  /* ===== 2.10 Layout ===== */
+  --container-max:    1320px;
+  --container-narrow: 880px;
+  --container-wide:   1480px;
+  --gutter:           clamp(1rem, 4vw, 2.5rem);
+
+  /* ===== 2.11 Motion durations ===== */
+  --dur-fast:    160ms;
+  --dur-base:    240ms;
+  --dur-slow:    360ms;
+  --dur-deluxe:  600ms;
+  --dur-cinema:  1000ms;
+
+  /* ===== 2.12 Easings ===== */
+  --ease-out-cinema: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in-cinema:  cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-out-back:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-linear:     linear;
+
+  /* ===== 2.13 Z-index scale ===== */
+  --z-base:     0;
+  --z-content:  10;
+  --z-sticky:   100;
+  --z-overlay:  1000;
+  --z-modal:    2000;
+  --z-toast:    3000;
+}
+
+
+/* ---------------------------------------------------------------------------
+   3. Global typography defaults — referenced everywhere via these tokens.
+      Sets Hebrew body as default; display tokens applied per-element.
+   --------------------------------------------------------------------------- */
+
+html {
+  /* Smooth Hebrew + Latin shaping; harmless on modern engines. */
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: var(--fw-regular);
+  font-size: var(--text-base);
+  line-height: var(--lh-normal);
+  color: var(--fg);
+  background: var(--bg);
+}
+
+/* Reduced-motion respect at the token layer (per CLAUDE.md §8). */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast:    0.01ms;
+    --dur-base:    0.01ms;
+    --dur-slow:    0.01ms;
+    --dur-deluxe:  0.01ms;
+    --dur-cinema:  0.01ms;
+  }
+}

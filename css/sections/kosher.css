@@ -1,0 +1,51 @@
+/* ===========================================================================
+   kosher.css — kashrut / certification badge section
+   ========================================================================= */
+@layer sections {
+
+.kosher {
+  padding-block: var(--space-16);
+  padding-inline: var(--gutter);
+  background: var(--bg-cocoa);
+  color: var(--fg-on-dark);
+}
+
+.kosher__container {
+  max-width: var(--container-narrow);
+  margin-inline: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.kosher__badge {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display-he);
+  font-size: var(--text-md);
+  font-weight: var(--fw-bold);
+  color: var(--accent);
+}
+
+.kosher__title {
+  font-family: var(--font-display-he);
+  font-size: var(--text-2xl);
+  font-weight: var(--fw-bold);
+  margin: 0;
+}
+
+.kosher__body {
+  font-family: var(--font-body);
+  line-height: var(--lh-loose);
+  color: rgba(245, 239, 230, 0.85);
+  max-width: 56ch;
+  margin: 0;
+}
+
+}  /* @layer */

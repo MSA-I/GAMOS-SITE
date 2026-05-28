@@ -1,0 +1,292 @@
+/* ============================================================
+   GAMOS-SITE — base.css
+   Modern reset + RTL-aware typography defaults + a11y primitives
+   All visual values derive from var(--*) tokens (css/tokens.css).
+   Cascade order: tokens → base → layout → utilities → sections/*
+   ============================================================ */
+
+@layer base, layout, utilities, sections;
+
+@layer base {
+
+  /* ----- Modern reset (Andy Bell-flavoured) ----- */
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  h1, h2, h3, h4, h5, h6,
+  p,
+  figure,
+  blockquote,
+  dl,
+  dd,
+  ul,
+  ol {
+    margin: 0;
+    padding: 0;
+  }
+
+  ul[role="list"],
+  ol[role="list"] {
+    list-style: none;
+  }
+
+  /* Form elements inherit typography by default */
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    background: none;
+    border: 0;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  /* Avoid orphans on paragraphs */
+  p,
+  li,
+  figcaption {
+    text-wrap: pretty;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    text-wrap: balance;
+  }
+
+  /* ----- Root + body ----- */
+
+  html {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: var(--lh-normal);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+    /* RTL is set on <html dir="rtl" lang="he"> in HTML; CSS uses logical props. */
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-size: var(--text-base);
+    line-height: var(--lh-normal);
+    font-weight: var(--fw-regular);
+    font-feature-settings: "kern" 1, "liga" 1;
+    min-height: 100vh;
+    min-height: 100dvh;
+    text-align: start;
+    overflow-x: hidden;
+  }
+
+  /* ----- Headings (Hebrew display by default) ----- */
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display-he);
+    font-weight: var(--fw-bold);
+    color: var(--fg);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  h1 {
+    font-size: var(--text-4xl);
+    line-height: var(--lh-tight);
+  }
+
+  h2 {
+    font-size: var(--text-3xl);
+    line-height: var(--lh-tight);
+  }
+
+  h3 {
+    font-size: var(--text-2xl);
+    line-height: var(--lh-snug);
+  }
+
+  h4 {
+    font-size: var(--text-xl);
+    line-height: var(--lh-snug);
+    font-weight: var(--fw-semibold);
+  }
+
+  h5 {
+    font-size: var(--text-lg);
+    line-height: var(--lh-snug);
+    font-weight: var(--fw-semibold);
+  }
+
+  h6 {
+    font-size: var(--text-md);
+    line-height: var(--lh-normal);
+    font-weight: var(--fw-medium);
+  }
+
+  /* ----- Paragraph + inline text ----- */
+
+  p {
+    max-inline-size: 70ch;
+    line-height: var(--lh-normal);
+  }
+
+  small {
+    font-size: var(--text-sm);
+  }
+
+  strong, b {
+    font-weight: var(--fw-bold);
+  }
+
+  em, i {
+    font-style: italic;
+  }
+
+  /* ----- Links ----- */
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--dur-fast) var(--ease-out-cinema);
+  }
+
+  a:hover,
+  a:focus-visible {
+    color: var(--accent);
+  }
+
+  /* ----- Lists ----- */
+
+  ul,
+  ol {
+    padding-inline-start: var(--space-6);
+  }
+
+  /* ----- Media ----- */
+
+  img,
+  video,
+  picture,
+  svg,
+  canvas {
+    max-inline-size: 100%;
+    max-width: 100%;
+    display: block;
+    block-size: auto;
+    height: auto;
+  }
+
+  img {
+    font-style: italic; /* alt text styling fallback */
+  }
+
+  /* ----- Forms ----- */
+
+  input,
+  textarea,
+  select {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding-block: var(--space-2);
+    padding-inline: var(--space-3);
+    color: var(--fg);
+    text-align: start;
+  }
+
+  textarea {
+    resize: vertical;
+    min-block-size: 6rem;
+  }
+
+  /* ----- Tables ----- */
+
+  table {
+    border-collapse: collapse;
+    inline-size: 100%;
+  }
+
+  th,
+  td {
+    text-align: start;
+    padding-block: var(--space-2);
+    padding-inline: var(--space-3);
+  }
+
+  /* ----- Horizontal rule ----- */
+
+  hr {
+    border: 0;
+    border-block-start: 1px solid var(--border);
+    margin-block: var(--space-8);
+  }
+
+  /* ----- Selection ----- */
+
+  ::selection {
+    background: var(--brass);
+    color: var(--ink-deep);
+  }
+
+  /* ----- Focus visible (3px brass ring) ----- */
+
+  :focus {
+    outline: none;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--brass);
+    outline-offset: 4px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* ----- Skip link (visually hidden until focused) ----- */
+
+  .skip-link {
+    position: absolute;
+    inset-block-start: var(--space-2);
+    inset-inline-start: var(--space-2);
+    z-index: var(--z-toast);
+    padding-block: var(--space-2);
+    padding-inline: var(--space-4);
+    background: var(--ink-deep);
+    color: var(--ivory);
+    border-radius: var(--radius-sm);
+    font-weight: var(--fw-semibold);
+    transform: translateY(-200%);
+    transition: transform var(--dur-fast) var(--ease-out-cinema);
+  }
+
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    transform: translateY(0);
+    color: var(--ivory);
+  }
+
+  /* ----- Reduced motion (global override) ----- */
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+}

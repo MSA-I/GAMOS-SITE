@@ -1,0 +1,56 @@
+/* ===========================================================================
+   section-header.css — global section header pattern (eyebrow + title + lede)
+   Used by: lounge, rooms, culinary, about, testimonials, gallery, events, ...
+   ========================================================================= */
+@layer sections {
+
+.section-header {
+  margin-block-end: var(--space-12);
+  max-width: 64ch;
+}
+
+.section-header--center {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.section-header__eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-4) 0;
+}
+
+.section-header__title {
+  font-family: var(--font-display-he);
+  font-size: var(--text-3xl);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  font-weight: var(--fw-bold);
+  color: var(--fg);
+  margin: 0 0 var(--space-4) 0;
+  max-width: 22ch;
+}
+
+.section-header--center .section-header__title { max-width: none; }
+
+.section-header__lede {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: var(--lh-snug);
+  color: var(--fg-muted);
+  margin: 0;
+  max-width: 56ch;
+}
+
+.section-header--on-dark .section-header__title { color: var(--fg-on-dark); }
+.section-header--on-dark .section-header__lede  { color: rgba(245, 239, 230, 0.78); }
+
+@media (min-width: 768px) {
+  .section-header__title { font-size: var(--text-4xl); }
+}
+
+}  /* @layer */

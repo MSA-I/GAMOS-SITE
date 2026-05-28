@@ -1,0 +1,61 @@
+/* ===========================================================================
+   events.css — events sub-categories accordion (חתונות / בר-מצווה / ...)
+   ========================================================================= */
+@layer sections {
+
+.events {
+  padding-block: var(--space-32);
+  padding-inline: var(--gutter);
+  background: var(--bg);
+}
+
+.events__container {
+  max-width: var(--container-narrow);
+  margin-inline: auto;
+}
+
+.events__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.events__item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-alt);
+  overflow: hidden;
+}
+
+.events__summary {
+  font-family: var(--font-display-he);
+  font-size: var(--text-lg);
+  font-weight: var(--fw-medium);
+  padding: var(--space-6);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  list-style: none;
+}
+
+.events__summary::-webkit-details-marker { display: none; }
+
+.events__summary::after {
+  content: "+";
+  font-size: var(--text-xl);
+  color: var(--accent);
+  transition: transform var(--dur-base) var(--ease-out-cinema);
+}
+
+.events__item[open] .events__summary::after { transform: rotate(45deg); }
+
+.events__body {
+  padding: 0 var(--space-6) var(--space-6);
+  font-family: var(--font-body);
+  line-height: var(--lh-loose);
+  color: var(--fg-muted);
+}
+
+}  /* @layer */
