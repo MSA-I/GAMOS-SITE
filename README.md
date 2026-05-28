@@ -122,26 +122,43 @@ GAMOS-SITE/
 ├─ progress.md          ← מצב phases נוכחי
 │
 ├─ index.html           ← entry point
-├─ css/                 ← tokens, base, layout, sections
-│   ├─ tokens.css       ← single-source-of-truth לערכים ויזואליים
-│   ├─ base.css         ← reset + טיפוגרפיה
-│   ├─ layout.css       ← grid + spacing
-│   └─ sections/        ← styling per-section
-├─ js/                  ← ES modules (init/destroy pattern)
-│   ├─ main.js          ← bootstrap
-│   ├─ scroll-hero.js   ← GSAP scroll-driven video
-│   ├─ portals.js       ← bubble interactions
-│   └─ sections/        ← logic per-section
-├─ assets/              ← media מעובד (gitignored — generated)
-│   ├─ video/           ← hero + portal loops
-│   ├─ images/          ← compressed (webp/avif)
-│   ├─ fonts/           ← self-hosted WOFF2
-│   └─ icons/           ← SVG sprites
+├─ css/                       ← tokens, base, layout, sections
+│   ├─ tokens.css             ← single-source-of-truth לערכים ויזואליים
+│   ├─ base.css               ← reset + טיפוגרפיה
+│   ├─ layout.css             ← grid + spacing
+│   ├─ utilities.css          ← spacing, sr-only, bidi-iso, type, color
+│   └─ sections/              ← 19 stylesheets per-section
+│       ├─ hero.css                ← multi-stage hero (intro/scrub/outro)
+│       ├─ portals.css             ← bubble overlays + click feedback
+│       ├─ hall-{venue,resort}.css ← per-hall composition
+│       ├─ {lounge,rooms,culinary,about,testimonials,contact,gallery,events,kosher}.css
+│       ├─ site-{nav,footer}.css   ← global chrome
+│       ├─ section-header.css      ← shared eyebrow+title+lede pattern
+│       └─ motion-{reveals,accordions,slider}.css
+├─ js/                        ← ES modules (init/destroy pattern)
+│   ├─ main.js                ← ESM entry, calls each module's init({ motion })
+│   ├─ hero-video-scrub.js    ← native scroll + RAF (NO GSAP CDN dep)
+│   ├─ portals.js             ← reveal subscription + GSAP expand timeline
+│   ├─ reveals.js             ← IntersectionObserver [data-reveal]
+│   ├─ accordions.js          ← native <details> with FLIP fallback
+│   ├─ slider.js              ← RTL-aware touch+keyboard slider
+│   ├─ lenis.js               ← (placeholder for future smooth-scroll)
+│   └─ utils/                 ← rtl, media-query, debounce
+├─ assets/                    ← media מעובד (gitignored — generated)
+│   ├─ video/                 ← hero-master-{1080,720}.mp4, .webm, poster.jpg, portal-loop.mp4
+│   ├─ images/halls/{venue,resort,lounge,rooms}/  ← optimized webp+jpg variants
+│   ├─ images/culinary/       ← gallery (NOT a hall)
+│   ├─ images/brand/          ← hero-static.{webp,jpg}, logo-gold.{png,webp}
+│   └─ fonts/                 ← Frank Ruhl Libre + Heebo + Playfair WOFF2
 │
-├─ architecture/        ← SOPs ומסמכי ארכיטקטורה
-├─ PLANS/               ← תוכניות נושאיות (B.L.A.S.T. layers)
-├─ agent-plans/         ← תוכניות לפי בעלות (10 סוכנים)
-└─ remotion/            ← subproject נפרד (gitignored — heavy media)
+├─ architecture/              ← 8 SOPs (.md only)
+├─ PLANS/                     ← תוכניות נושאיות (B.L.A.S.T. layered)
+├─ agent-plans/               ← 10 agent task plans (one per role)
+├─ PROGRESS_SUMMARY.md        ← living progress doc (read first!)
+├─ findings.md                ← discoveries log
+├─ progress.md                ← phase-gate status table
+├─ task_plan.md               ← phase checklist
+└─ remotion/                  ← subproject נפרד (gitignored)
 ```
 
 ---

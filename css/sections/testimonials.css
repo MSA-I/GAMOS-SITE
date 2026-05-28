@@ -1,7 +1,7 @@
 /* ===========================================================================
    testimonials.css — slider of testimonials (powered by js/slider.js)
    ========================================================================= */
-@layer sections {
+
 
 .testimonials {
   padding-block: var(--space-32);
@@ -67,4 +67,4 @@
 
 .testimonials__dots button[aria-selected="true"] { background: var(--accent); }
 
-}  /* @layer */
+

@@ -177,8 +177,12 @@ function expandPortal({ button, gsap }) {
   const target    = resolveTarget(targetSel);
   const sibling   = state.buttons.find((b) => b !== button);
 
+  // Visual click confirmation — brass glow shadow ring (CSS-driven via attribute)
+  button.setAttribute("data-clicked", "");
+
   // Reduced-motion or no-GSAP fast path: skip the cinematic expand.
   if (state.reducedMotion || !gsap) {
+    setTimeout(() => button.removeAttribute("data-clicked"), 250);
     scrollToTarget(target);
     state.isExpanding = false;
     return;
@@ -203,6 +207,7 @@ function expandPortal({ button, gsap }) {
           }
           state.root?.classList.remove("is-leaving");
           button.classList.remove("is-expanding");
+          button.removeAttribute("data-clicked");
         } catch {
           /* ignore */
         }

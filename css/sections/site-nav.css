@@ -1,7 +1,7 @@
 /* ===========================================================================
    site-nav.css — sticky top navigation (RTL Hebrew)
    ========================================================================= */
-@layer sections {
+
 
 .site-nav {
   position: sticky;
@@ -98,4 +98,4 @@
   .site-nav__toggle { display: inline-flex; }
 }
 
-}  /* @layer */
+

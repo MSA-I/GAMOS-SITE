@@ -158,9 +158,19 @@
          Spacer = 5×100vh dictates scroll length.
     ==================================================================== -->
     <section id="hero" class="hero" aria-labelledby="hero-title">
+      <!-- spacer dictates scroll length: intro + scrub + portal hold -->
       <div class="hero__spacer" aria-hidden="true"></div>
 
       <div class="hero__sticky">
+
+        <!-- Layer 1: static intro background (frame-1.png — desert vista) -->
+        <picture class="hero__intro-bg" aria-hidden="true">
+          <source media="(max-width: 768px)" type="image/webp" srcset="/assets/images/brand/hero-static-mobile.webp">
+          <source type="image/webp" srcset="/assets/images/brand/hero-static.webp">
+          <img src="/assets/images/brand/hero-static.jpg" alt="" width="1920" height="1080" decoding="async">
+        </picture>
+
+        <!-- Layer 2: scroll-driven video — fades in after intro animation -->
         <video class="hero__video"
                muted playsinline preload="auto"
                poster="/assets/video/hero-poster.jpg"
@@ -170,13 +180,27 @@
           <source src="/assets/video/hero-master-720.mp4" type="video/mp4">
         </video>
 
-        <div class="hero__overlay">
-          <h1 id="hero-title" class="hero__title">
-            <span class="hero__title-line">חוויית אירועים</span>
-            <span class="hero__title-line hero__title-line--accent">קולנועית</span>
+        <!-- Layer 3: portal-loop video — fades in at end of scrub, holds while portals visible -->
+        <video class="hero__outro-loop"
+               muted playsinline loop preload="metadata"
+               aria-hidden="true">
+          <source src="/assets/video/portal-loop.mp4" type="video/mp4">
+        </video>
+
+        <!-- Layer 4: title + logo intro animation overlay -->
+        <div class="hero__intro" aria-hidden="false">
+          <h1 id="hero-title" class="hero__title-stack">
+            <span class="hero__title-word" data-word="GAMOS" aria-label="GAMOS">
+              <span class="hero__char">G</span><span class="hero__char">A</span><span class="hero__char">M</span><span class="hero__char">O</span><span class="hero__char">S</span>
+            </span>
+            <span class="hero__title-word hero__title-word--sub" data-word="EVENTS" aria-label="EVENTS">
+              <span class="hero__char">E</span><span class="hero__char">V</span><span class="hero__char">E</span><span class="hero__char">N</span><span class="hero__char">T</span><span class="hero__char">S</span>
+            </span>
           </h1>
-          <!-- TODO(agent-01): final tagline copy from inventory -->
-          <p class="hero__subtitle">מתחם בוטיקי בלב הטבע — אולם, גנים וריזורט.</p>
+          <picture class="hero__logo">
+            <source type="image/webp" srcset="/assets/images/brand/logo-gold.webp">
+            <img src="/assets/images/brand/logo-gold.png" alt="גמוס — לוגו" width="340" height="100" decoding="async">
+          </picture>
           <span class="hero__scroll-hint" aria-hidden="true">גלול</span>
         </div>
       </div>
@@ -188,18 +212,9 @@
          Reveal at hero progress >= 0.92. Click expands → routes to hall.
     ==================================================================== -->
     <aside id="portals" class="portals" aria-label="קיצורים לאולם וריזורט">
-      <button class="portal portal--venue"
-              type="button"
-              data-target="#hall-venue"
-              aria-label="עבור לאולם האירועים">
-        <video class="portal__video"
-               autoplay loop muted playsinline
-               src="/assets/video/portal-loop.mp4"
-               aria-hidden="true"></video>
-        <span class="portal__ring" aria-hidden="true"></span>
-        <span class="portal__label">אולם</span>
-      </button>
-
+      <!-- Order: in RTL, the first child renders on the right.
+           User mandate: ריזורט (resort) = right, אולם (venue) = left.
+           So resort comes first in source order. -->
       <button class="portal portal--resort"
               type="button"
               data-target="#hall-resort"
@@ -210,6 +225,18 @@
                aria-hidden="true"></video>
         <span class="portal__ring" aria-hidden="true"></span>
         <span class="portal__label">ריזורט</span>
+      </button>
+
+      <button class="portal portal--venue"
+              type="button"
+              data-target="#hall-venue"
+              aria-label="עבור לאולם האירועים">
+        <video class="portal__video"
+               autoplay loop muted playsinline
+               src="/assets/video/portal-loop.mp4"
+               aria-hidden="true"></video>
+        <span class="portal__ring" aria-hidden="true"></span>
+        <span class="portal__label">אולם</span>
       </button>
     </aside>
 

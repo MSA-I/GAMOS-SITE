@@ -39,18 +39,34 @@
 
 ---
 
-## §3 Hybrid Concept (LOCKED 2026-05-28)
+## §3 Hybrid Concept (LOCKED 2026-05-28, refined 2026-05-28 multi-stage)
 
-1. **Hero:** סרטון אחד תפור (`hero-master-1080.mp4`) שמ-`currentTime` שלו מקושר
-   ל-scroll progress דרך GSAP ScrollTrigger. ה-hero הוא `position: sticky` מעל
-   spacer של 5×100vh.
-2. **Portal Bubbles:** ב-progress ≈ 0.92 שתי בועות עגולות מתגלות (אולם / ריזורט),
-   כל אחת עם `clip-path: circle()` וברקעה לולאת `portal-loop.mp4`.
-3. **Click flow:** קליק על בועה → GSAP timeline שמרחיב אותה לכל הויופורט (1.0s)
-   → crossfade לסקציית האולם המתאימה → smooth-scroll לפוקוס.
-4. **Hall sections:** סקציות מלאות לאולם, ריזורט, lounge, חדרי נופש.
-5. **Static sections:** קולינריה (גלריית מנות, **לא** אולם), אודות, המלצות, צור קשר —
-   עם אנימציות מ-skills `frontend-design` + `weblove-motion`.
+ה-Hero מורכב מ-3 שלבים שמופעלים לפי scroll progress (spacer = 7×100vh):
+
+1. **Stage `intro` [0% .. 14%]** — `hero-static.webp` (תמונת מדבר) ברקע + אנימציית
+   CSS (לא scroll-bound): GAMOS letter-by-letter (200ms-1100ms), ✦ EVENTS ✦
+   subtitle (1200ms-1700ms), לוגו זהוב GAMOS RESORT (2200ms), "גלול" pulse (3200ms).
+
+2. **Stage `scrub` [14% .. 86%]** — `hero-master-1080.mp4` (סרטון תפור) שה-`currentTime`
+   שלו מקושר ל-scroll progress דרך **native scroll listener + requestAnimationFrame**
+   (NOT GSAP ScrollTrigger — זה הוסר ב-2026-05-28 לאחר fail בטעינה מ-CDN). hero הוא
+   `position: sticky` מעל spacer 700vh.
+
+3. **Stage `outro` [86% .. 100%]** — scrub video fade-out, `1.5.mp4` autoplay loop
+   fade-in, שתי בועות-פורטל (אולם / ריזורט) reveal.
+
+**Stage transitions** מנוהלים ע"י `[data-stage="intro|scrub|outro"]` על
+`.hero__sticky`. CSS משתמש ב-attribute selectors כדי לשלוט על `opacity` של 4 ה-layers.
+
+4. **Portal Bubbles:** מימין = ריזורט, משמאל = אולם (ב-RTL סדר ה-source הוא resort first).
+   כל בועה: `clip-path: circle()`, `portal-loop.mp4` ברקע.
+5. **Click feedback (NEW 2026-05-28):** `[data-clicked]` attribute → ring 6px
+   brass-glow + drop-shadow 60px זהוב (לפני GSAP expand timeline) — visual confirmation
+   "selection registered".
+6. **Click flow:** GSAP timeline scale ×6 (1.0s, `power3.in`) + sibling fade out →
+   smooth-scroll לסקציית האולם → reset state.
+7. **Hall sections:** סקציות מלאות לאולם, ריזורט, lounge, חדרי נופש.
+8. **Static sections:** קולינריה (גלריית מנות, **לא** אולם), אודות, המלצות, צור קשר.
 
 ---
 
@@ -218,3 +234,7 @@
 | 2026-05-28 | §5 palette LOCKED — derived from gamos.co.il live + luxury upgrade. | Agent 01 |
 | 2026-05-28 | §7.1 added — `remotion/` becomes READ-WRITE only when `remotion-best-practices` skill is invoked by user. | main agent (per user) |
 | 2026-05-28 | Research: video layer separation pipeline validated on `ריזורט 1/1.5.mp4`. See `REPORT_video_layer_separation.md`. | main agent |
+| 2026-05-28 | §3 refined — Hero is now multi-stage (intro / scrub / outro). New assets: `hero-static.webp` desert background, `logo-gold.webp` GAMOS RESORT logo. Letter animation GAMOS+EVENTS in CSS keyframes. Portal click adds `[data-clicked]` attr for brass-glow shadow feedback. | main agent |
+| 2026-05-28 | **Tech change:** GSAP CDN dependency removed from `hero-video-scrub.js` — replaced with native scroll listener + RAF for stability + 0 external deps. GSAP still used in `portals.js` for expand timeline. | main agent |
+| 2026-05-28 | **CSS architecture fix:** `@layer sections` removed from agent-authored stylesheets (hero, portals, site-nav, site-footer, section-header, gallery, events, kosher, about, testimonials, contact) — was unbalanced with hall-* / lounge / rooms / culinary which were unlayered, causing cascade failures. All section CSS now lives in unlayered cascade. | main agent |
+| 2026-05-28 | Portal order in HTML: resort first (right in RTL), venue second (left). Per user mandate. | main agent |

@@ -1,33 +1,41 @@
 /* ===========================================================================
-   hero-video-scrub.js — GSAP ScrollTrigger-driven hero video
+   hero-video-scrub.js — multi-stage hero (intro → scrub → outro)
    ---------------------------------------------------------------------------
-   Spec:        architecture/video-scrub-spec.md
-   Constitution: CLAUDE.md §3 (Hybrid), §8 (Performance), §9 (A11y)
-   Owner:       Agent 06 — Hero Video-Scrub Engineer
-   ---------------------------------------------------------------------------
-   Public API after init():
-   - window.gamosHero.onProgress(cb)  → register a progress listener
-   - window.gamosHero.duration         → number, seconds
-   - window.gamosHero.progress         → number, 0..1
-   - CSS variable --hero-progress on <html>, also 0..1
+   Stages:
+     intro  [0     .. 0.143)   ≈ first 100vh of 700vh spacer  → title animation
+     scrub  [0.143 .. 0.857)   ≈ next 500vh                    → video scrub
+     outro  [0.857 .. 1.0]     ≈ last 100vh                    → portal-loop play
+   API: window.gamosHero.onProgress(cb), .duration, .progress, .stage
    ========================================================================= */
 
-import gsap from "https://cdn.skypack.dev/gsap@3.12.5";
-import ScrollTrigger from "https://cdn.skypack.dev/gsap@3.12.5/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
-
+const INTRO_END = 0.143;
+const SCRUB_END = 0.857;
 const PROGRESS_THROTTLE_S = 0.04;
-const PORTAL_REVEAL_AT = 0.92;
+
 const isIOS =
   /iPad|iPhone|iPod/.test(navigator.userAgent) ||
   (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 let _initDone = false;
-let _scrollTrigger = null;
+let _scrollHandler = null;
+let _rafPending = false;
+let _hero = null;
+let _sticky = null;
+let _video = null;
 const _listeners = new Set();
-const _state = { progress: 0, duration: 0 };
+const _state = { progress: 0, duration: 0, stage: "intro" };
+
+function setStage(next) {
+  if (_state.stage === next) return;
+  _state.stage = next;
+  if (_sticky) _sticky.dataset.stage = next;
+  const outro = _sticky?.querySelector(".hero__outro-loop");
+  if (outro) {
+    if (next === "outro") outro.play().catch(() => {});
+    else outro.pause();
+  }
+}
 
 function setProgress(p) {
   _state.progress = p;
@@ -46,84 +54,120 @@ function exposeApi() {
       return () => _listeners.delete(cb);
     },
     get duration() { return _state.duration; },
-    get progress() { return _state.progress; }
+    get progress() { return _state.progress; },
+    get stage() { return _state.stage; }
   };
 }
 
-function bindScrub(hero, video) {
-  _scrollTrigger = ScrollTrigger.create({
-    trigger: hero,
-    start: "top top",
-    end: "bottom bottom",
-    scrub: true,
-    onUpdate(self) {
-      const p = self.progress;
-      const t = p * _state.duration;
-      if (Math.abs(video.currentTime - t) > PROGRESS_THROTTLE_S) {
-        try { video.currentTime = t; } catch (e) { /* seek racing during decode */ }
+function computeProgress() {
+  const rect = _hero.getBoundingClientRect();
+  const total = rect.height - window.innerHeight;
+  const scrolled = -rect.top;
+  if (total <= 0) return 0;
+  return Math.max(0, Math.min(1, scrolled / total));
+}
+
+function onScroll() {
+  if (_rafPending) return;
+  _rafPending = true;
+  requestAnimationFrame(() => {
+    _rafPending = false;
+    const p = computeProgress();
+
+    let stage;
+    if (p < INTRO_END) stage = "intro";
+    else if (p < SCRUB_END) stage = "scrub";
+    else stage = "outro";
+    setStage(stage);
+
+    if (stage === "scrub" && _state.duration && _video) {
+      const scrubP = (p - INTRO_END) / (SCRUB_END - INTRO_END);
+      const t = scrubP * _state.duration;
+      if (Math.abs(_video.currentTime - t) > PROGRESS_THROTTLE_S) {
+        try { _video.currentTime = t; } catch (e) {}
       }
-      setProgress(p);
     }
+
+    setProgress(p);
   });
 }
 
-function setupReduced(hero, video) {
-  const spacer = hero.querySelector(".hero__spacer");
-  if (spacer) spacer.style.height = "100vh";
-  video.removeAttribute("autoplay");
-  video.pause();
-  setProgress(1);
+function setupReduced() {
+  _hero.querySelector(".hero__spacer").style.height = "100vh";
+  setStage("intro");
+  setProgress(0);
 }
 
-function setupIOS(hero, video) {
-  const spacer = hero.querySelector(".hero__spacer");
-  if (spacer) spacer.style.height = "100vh";
-  video.setAttribute("loop", "");
-  video.setAttribute("autoplay", "");
-  video.muted = true;
-  video.playsInline = true;
-  video.play().catch(() => {});
-  setProgress(1);
+function setupIOS() {
+  _hero.querySelector(".hero__spacer").style.height = "100vh";
+  setStage("intro");
+  if (_video) {
+    _video.setAttribute("loop", "");
+    _video.muted = true;
+  }
+  // Cycle: intro → (4s) scrub → (10s total) outro
+  setTimeout(() => {
+    setStage("scrub");
+    if (_video) _video.play().catch(() => {});
+  }, 4000);
+  setTimeout(() => setStage("outro"), 10000);
 }
 
-export async function init({ heroEl, videoEl } = {}) {
+export async function init({ heroEl } = {}) {
   if (_initDone) return;
-  const hero = heroEl || document.querySelector("#hero");
-  const video = videoEl || hero?.querySelector(".hero__video");
-  if (!hero || !video) {
-    console.warn("hero-video-scrub: #hero or .hero__video not found");
+  _hero = heroEl || document.querySelector("#hero");
+  if (!_hero) {
+    console.warn("hero-video-scrub: #hero not found");
+    return;
+  }
+  _sticky = _hero.querySelector(".hero__sticky");
+  _video = _hero.querySelector(".hero__video");
+  if (!_sticky) {
+    console.warn("hero-video-scrub: .hero__sticky missing");
     return;
   }
 
+  _sticky.dataset.stage = "intro";
   exposeApi();
   _initDone = true;
 
   if (reduceMotion) {
-    setupReduced(hero, video);
+    setupReduced();
     return;
   }
 
-  if (video.readyState < 1) {
+  if (_video && _video.readyState < 1) {
     await new Promise(r => {
-      video.addEventListener("loadedmetadata", r, { once: true });
-      video.addEventListener("error", r, { once: true });
+      const done = () => r();
+      _video.addEventListener("loadedmetadata", done, { once: true });
+      _video.addEventListener("error", done, { once: true });
+      try { _video.load(); } catch (e) {}
+      // safety timeout — proceed with assumed duration so UX isn't blocked
+      setTimeout(done, 4000);
     });
   }
-  _state.duration = video.duration || 0;
+  _state.duration = _video?.duration || 0;
 
   if (isIOS || !_state.duration) {
-    setupIOS(hero, video);
+    setupIOS();
     return;
   }
 
-  video.pause();
-  bindScrub(hero, video);
+  if (_video) _video.pause();
+
+  _scrollHandler = onScroll;
+  window.addEventListener("scroll", _scrollHandler, { passive: true });
+  window.addEventListener("resize", _scrollHandler, { passive: true });
+  // initial computation
+  onScroll();
 }
 
 export function destroy() {
-  if (_scrollTrigger) { _scrollTrigger.kill(); _scrollTrigger = null; }
+  if (_scrollHandler) {
+    window.removeEventListener("scroll", _scrollHandler);
+    window.removeEventListener("resize", _scrollHandler);
+    _scrollHandler = null;
+  }
   _listeners.clear();
   _initDone = false;
 }
-
-export const PORTAL_REVEAL_THRESHOLD = PORTAL_REVEAL_AT;

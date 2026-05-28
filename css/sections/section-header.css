@@ -2,7 +2,7 @@
    section-header.css — global section header pattern (eyebrow + title + lede)
    Used by: lounge, rooms, culinary, about, testimonials, gallery, events, ...
    ========================================================================= */
-@layer sections {
+
 
 .section-header {
   margin-block-end: var(--space-12);
@@ -53,4 +53,4 @@
   .section-header__title { font-size: var(--text-4xl); }
 }
 
-}  /* @layer */
+

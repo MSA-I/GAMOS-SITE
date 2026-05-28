@@ -1,12 +1,13 @@
 /* ===========================================================================
-   hero.css — scroll-driven cinematic hero
+   hero.css — multi-stage cinematic hero
    ---------------------------------------------------------------------------
-   Spec:        architecture/video-scrub-spec.md
-   Constitution: CLAUDE.md §3 (Hybrid), §8 (Performance)
-   Owner:       Agent 06
+   Stages controlled by JS via [data-stage] on .hero__sticky:
+     1. "intro"   — static bg + GAMOS letter animation + logo reveal
+     2. "scrub"   — scroll-driven video (intro hidden, video visible)
+     3. "outro"   — portal-loop video plays, portals appear
    ========================================================================= */
 
-@layer sections {
+
 
 .hero {
   position: relative;
@@ -14,8 +15,12 @@
   color: var(--ivory);
 }
 
+/* spacer dictates total scroll length:
+   100vh for intro (held until letters animated) +
+   500vh for scrub +
+   100vh for outro hold (portals visible) */
 .hero__spacer {
-  height: 500vh;
+  height: 700vh;
   pointer-events: none;
 }
 
@@ -26,100 +31,212 @@
   height: 100vh;
   width: 100%;
   overflow: hidden;
+  isolation: isolate;
+  background: var(--ink-deep);
 }
 
+/* ---- Layer 1: static intro background ---- */
+.hero__intro-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 0.6s var(--ease-out-cinema);
+}
+.hero__intro-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hero__intro-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(26,20,16,0.20) 0%, rgba(26,20,16,0.05) 40%, rgba(26,20,16,0.55) 100%);
+}
+
+/* ---- Layer 2: scroll-driven video ---- */
 .hero__video {
   position: absolute;
   inset: 0;
+  z-index: 2;
   width: 100%;
   height: 100%;
   object-fit: cover;
   pointer-events: none;
   background: var(--ink-deep);
+  opacity: 0;
+  transition: opacity 0.8s var(--ease-out-cinema);
 }
 
-.hero__overlay {
+/* ---- Layer 3: portal-loop outro ---- */
+.hero__outro-loop {
   position: absolute;
   inset: 0;
-  display: grid;
-  align-content: end;
-  padding-block-end: clamp(var(--space-16), 12vh, var(--space-32));
-  padding-inline: var(--gutter);
-  background: linear-gradient(
-    180deg,
-    rgba(14, 14, 12, 0) 0%,
-    rgba(14, 14, 12, 0) 55%,
-    rgba(14, 14, 12, 0.55) 100%
-  );
-  pointer-events: none;
-}
-
-.hero__overlay > * { pointer-events: auto; }
-
-.hero__container {
-  max-width: var(--container-max);
-  margin-inline: auto;
+  z-index: 3;
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.8s var(--ease-out-cinema);
 }
 
-.hero__eyebrow {
-  font-family: var(--font-body);
-  font-size: var(--text-xs);
-  font-weight: var(--fw-semibold);
-  letter-spacing: var(--tracking-eyebrow);
-  text-transform: uppercase;
-  color: var(--brass-glow, var(--brass));
-  margin-block-end: var(--space-4);
+/* ---- Stage transitions ---- */
+.hero__sticky[data-stage="scrub"] .hero__intro-bg { opacity: 0; }
+.hero__sticky[data-stage="scrub"] .hero__video    { opacity: 1; }
+.hero__sticky[data-stage="outro"] .hero__intro-bg { opacity: 0; }
+.hero__sticky[data-stage="outro"] .hero__video    { opacity: 0; }
+.hero__sticky[data-stage="outro"] .hero__outro-loop { opacity: 1; }
+
+/* ---- Layer 4: intro overlay (title + logo) ---- */
+.hero__intro {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  padding-inline: var(--gutter);
+  text-align: center;
+  pointer-events: none;
+  transition: opacity 0.8s var(--ease-out-cinema);
 }
 
-.hero__title {
-  font-family: var(--font-display-he);
+.hero__sticky[data-stage="scrub"] .hero__intro,
+.hero__sticky[data-stage="outro"] .hero__intro {
+  opacity: 0;
+}
+
+/* ---- GAMOS / EVENTS letter animation ---- */
+.hero__title-stack {
+  font-family: var(--font-display-en);
   font-weight: var(--fw-bold);
-  font-size: var(--text-hero);
-  line-height: var(--lh-tight);
-  letter-spacing: var(--tracking-tight);
-  color: var(--ivory);
+  letter-spacing: 0.04em;
   margin: 0;
-  max-width: 18ch;
-}
-
-.hero__sub {
-  font-family: var(--font-body);
-  font-size: var(--text-md);
-  line-height: var(--lh-snug);
   color: var(--ivory);
-  opacity: 0.85;
-  margin-block-start: var(--space-4);
-  max-width: 56ch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  text-shadow: 0 2px 24px rgba(0,0,0,0.35);
 }
 
+.hero__title-word {
+  display: inline-flex;
+  font-size: clamp(3.5rem, 11vw, 9rem);
+  line-height: 1;
+}
+
+.hero__title-word--sub {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--brass-glow);
+  margin-block-start: 0.6rem;
+  font-weight: var(--fw-semibold);
+}
+
+.hero__title-word--sub::before,
+.hero__title-word--sub::after {
+  content: "✦";
+  font-size: 0.7em;
+  color: var(--brass);
+  margin-inline: 0.7em;
+  align-self: center;
+  opacity: 0.85;
+}
+
+.hero__char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(40px) scale(0.92);
+  filter: blur(12px);
+  animation: hero-char-in 0.9s var(--ease-out-cinema) forwards;
+  animation-delay: calc(var(--char-delay, 0) * 80ms + 200ms);
+}
+
+.hero__title-word--sub .hero__char {
+  animation-delay: calc(var(--char-delay, 0) * 60ms + 1200ms);
+}
+
+@keyframes hero-char-in {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* index each char manually via nth-child */
+.hero__title-word .hero__char:nth-child(1) { --char-delay: 0; }
+.hero__title-word .hero__char:nth-child(2) { --char-delay: 1; }
+.hero__title-word .hero__char:nth-child(3) { --char-delay: 2; }
+.hero__title-word .hero__char:nth-child(4) { --char-delay: 3; }
+.hero__title-word .hero__char:nth-child(5) { --char-delay: 4; }
+.hero__title-word .hero__char:nth-child(6) { --char-delay: 5; }
+
+/* ---- logo reveal (after letters) ---- */
+.hero__logo {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: hero-logo-in 1s var(--ease-out-cinema) 2200ms forwards;
+}
+.hero__logo img {
+  width: clamp(180px, 22vw, 320px);
+  height: auto;
+  filter: drop-shadow(0 4px 20px rgba(0,0,0,0.4));
+}
+
+@keyframes hero-logo-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- scroll hint ---- */
 .hero__scroll-hint {
   position: absolute;
-  inset-block-end: var(--space-6);
+  inset-block-end: var(--space-8);
   inset-inline: 0;
   text-align: center;
   font-family: var(--font-body);
   font-size: var(--text-xs);
-  letter-spacing: var(--tracking-wide);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
   color: var(--ivory);
-  opacity: 0.7;
-  pointer-events: none;
-  animation: hero-scroll-pulse 2.4s var(--ease-out-cinema) infinite;
+  opacity: 0;
+  animation: hero-hint-in 1s var(--ease-out-cinema) 3200ms forwards,
+             hero-scroll-pulse 2.4s var(--ease-out-cinema) 3200ms infinite;
+}
+
+@keyframes hero-hint-in {
+  to { opacity: 0.8; }
 }
 
 @keyframes hero-scroll-pulse {
   0%, 100% { transform: translateY(0); opacity: 0.5; }
-  50%      { transform: translateY(6px); opacity: 1; }
+  50%      { transform: translateY(6px); opacity: 0.95; }
 }
 
+/* ---- Mobile ---- */
 @media (max-width: 768px) {
   .hero__spacer { height: 100vh; }
-  .hero__title { font-size: clamp(2.5rem, 12vw, 5rem); }
+  .hero__title-word { font-size: clamp(2.5rem, 14vw, 4.5rem); }
 }
 
+/* ---- Reduced motion ---- */
 @media (prefers-reduced-motion: reduce) {
   .hero__spacer { height: 100vh; }
-  .hero__scroll-hint { animation: none; opacity: 0.5; }
+  .hero__char,
+  .hero__logo,
+  .hero__scroll-hint {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
 }
 
-}  /* @layer sections */
+

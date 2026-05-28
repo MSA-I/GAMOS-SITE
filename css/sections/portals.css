@@ -191,6 +191,20 @@
   transform: scale(0.98);
 }
 
+/* Click pulse — strong shadow ring to signal "selection registered" before expand.
+   Triggered by [data-clicked] attribute set by JS on mousedown. */
+.portal[data-clicked] .portal__ring {
+  border-width: 6px;
+  border-color: var(--brass-glow);
+  box-shadow:
+    0 0 0 8px rgba(207, 174, 131, 0.35),
+    0 0 60px 12px var(--brass-glow);
+}
+
+.portal[data-clicked] {
+  filter: drop-shadow(0 20px 40px rgba(207, 174, 131, 0.6));
+}
+
 
 /* ---------------------------------------------------------------------------
    8. Active reveal — added by JS at hero progress >= 0.92.
