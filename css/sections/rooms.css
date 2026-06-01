@@ -13,6 +13,8 @@
   background-color: var(--bg);
   color: var(--fg);
   padding-block: var(--space-32);
+  /* Inline gutter prevents the heading from overflowing the viewport edge. */
+  padding-inline: var(--gutter);
   isolation: isolate;
   overflow: clip;
 }
