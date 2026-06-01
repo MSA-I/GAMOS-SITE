@@ -34,7 +34,9 @@ remotion/node_modules/
 
 # Compiled / processed media — too heavy for git, generated on-demand
 assets/video/
-assets/images/
+# assets/images/ — kept tracked: brand assets (logo, hero-static, title-texture)
+# are <300KB each and required for site to render.
+assets/frames/
 
 # AgentDB / ruflo local state
 ruvector.db

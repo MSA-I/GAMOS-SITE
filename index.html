@@ -7,21 +7,21 @@
   <meta name="color-scheme" content="dark light">
 
   <!-- TODO(agent-01): Replace placeholder description with verified copy from full-tab-inventory.md -->
-  <title>גמוס — מתחם אירועים יוקרתי, גנים וריזורט</title>
+  <title>גאמוס — מתחם אירועים יוקרתי, גנים וריזורט</title>
   <meta name="description" content="מתחם אירועים יוקרתי בלב הטבע — אולם, גנים, ריזורט וחדרי נופש. חתונות, בר-מצווה ואירועי חברה מהוקצעים.">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:locale" content="he_IL">
-  <meta property="og:site_name" content="גמוס">
-  <meta property="og:title" content="גמוס — מתחם אירועים יוקרתי, גנים וריזורט">
+  <meta property="og:site_name" content="גאמוס">
+  <meta property="og:title" content="גאמוס — מתחם אירועים יוקרתי, גנים וריזורט">
   <meta property="og:description" content="חוויית אירוע קולנועית — אולם מהודר, ריזורט בוטיקי וחדרי נופש בלב הטבע.">
   <meta property="og:image" content="/assets/video/hero-poster.jpg">
   <meta property="og:url" content="https://gamos.co.il/">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="גמוס — מתחם אירועים יוקרתי">
+  <meta name="twitter:title" content="גאמוס — מתחם אירועים יוקרתי">
   <meta name="twitter:description" content="חתונות, בר-מצווה ואירועי חברה במתחם בוטיקי.">
   <meta name="twitter:image" content="/assets/video/hero-poster.jpg">
 
@@ -46,7 +46,7 @@
   {
     "@context": "https://schema.org",
     "@type": "EventVenue",
-    "name": "גמוס",
+    "name": "גאמוס",
     "description": "מתחם אירועים יוקרתי, גנים וריזורט",
     "url": "https://gamos.co.il/",
     "image": "https://gamos.co.il/assets/video/hero-poster.jpg",
@@ -123,8 +123,8 @@
   ======================================================================== -->
   <header class="site-nav" role="banner">
     <nav class="site-nav__inner" aria-label="ניווט ראשי">
-      <a class="site-nav__brand" href="#hero" aria-label="גמוס — לדף הבית">
-        <span class="site-nav__brand-mark">גמוס</span>
+      <a class="site-nav__brand" href="#hero" aria-label="גאמוס — לדף הבית">
+        <span class="site-nav__brand-mark">גאמוס</span>
       </a>
 
       <ul class="site-nav__links" role="list">
@@ -254,16 +254,25 @@
           <p class="hero__subtitle" aria-hidden="true">אירועים</p>
         </div>
 
-        <!-- Layer C: scroll-driven video. preload=metadata; engine calls .load() -->
-        <!-- explicitly when progress crosses 0.06 (see hero-video-scrub.js). -->
-        <video class="hero__video"
-               muted playsinline preload="metadata"
-               poster="/assets/images/brand/hero-static.webp"
-               aria-hidden="true">
-          <source src="/assets/video/hero-master-1080.mp4" type="video/mp4"
-                  media="(min-width: 768px)">
-          <source src="/assets/video/hero-master-720.mp4" type="video/mp4">
-        </video>
+        <!-- Layer C: scroll-driven canvas frame renderer.
+             Replaces <video class="hero__video"> as of 2026-06-01 (Agent 21,
+             video-to-website skill migration). Frames live at
+             /assets/frames/hero/frame_NNNN.webp; the manifest at the URL
+             below tells canvas-frame-renderer.js the count + dimensions.
+             hero-video-scrub.js fetches the manifest at progress >= 0.06
+             (Stage A → B) so Phase-1 frames are decoded before Stage C.
+
+             A static <picture> sits beneath as the no-JS / pre-load poster;
+             once .is-ready lands on the canvas, CSS hides the poster. -->
+        <picture class="hero__scrub-poster" aria-hidden="true">
+          <source srcset="/assets/video/hero-poster.jpg" type="image/jpeg">
+          <img src="/assets/video/hero-poster.jpg" alt=""
+               width="1920" height="1080"
+               loading="lazy" decoding="async">
+        </picture>
+        <canvas class="hero__canvas"
+                data-manifest-url="/assets/frames/hero/manifest.json"
+                aria-hidden="true"></canvas>
 
       </div>
     </section>
@@ -379,7 +388,7 @@
         <div class="scroll-scene__overlay">
           <header class="section-header">
             <p class="section-header__eyebrow">ריזורט</p>
-            <h2 id="hall-resort-title" class="section-header__title">ריזורט גמוס — חוויה הוליסטית</h2>
+            <h2 id="hall-resort-title" class="section-header__title">ריזורט גאמוס — חוויה הוליסטית</h2>
             <p class="section-header__lede">
               חוויה שמתחילה מהרגע שאתם נכנסים בשער ולא נגמרת עד הצ'ק-אאוט. שדרוג של אירוע לשבוע שלם.
             </p>
@@ -466,6 +475,7 @@
     <section id="culinary"
              class="culinary scroll-scene"
              data-scrub="culinary"
+             data-scrub-mode="canvas-frames"
              data-scrub-spacer-vh="250"
              aria-labelledby="culinary-title">
 
@@ -473,27 +483,24 @@
            style="--scene-spacer: 250vh;"></div>
 
       <div class="scroll-scene__sticky">
-        <!-- Poster fallback (visible behind video; primary visual when
-             reduced-motion is on or video hasn't loaded). aria-hidden because
-             the heading inside the overlay carries the accessible name. -->
+        <!-- Poster fallback (visible behind canvas until .is-ready lands).
+             Also the no-JS / reduced-motion default visual. aria-hidden
+             because the heading inside the overlay carries the accessible name. -->
         <picture class="scroll-scene__poster" aria-hidden="true">
           <img src="/assets/video/culinary-poster.jpg"
                alt="" width="1600" height="900"
                loading="lazy" decoding="async">
         </picture>
 
-        <!-- Scrub video — currentTime driven by scroll-orchestrator.
-             preload="metadata" so we don't fetch the full file until the
-             scene is near the viewport (orchestrator may downgrade to
-             preload="none" when far away — §7 of the spec). -->
-        <video class="scroll-scene__video"
-               muted playsinline preload="metadata"
-               poster="/assets/video/culinary-poster.jpg"
-               aria-hidden="true">
-          <source src="/assets/video/culinary-1080.mp4" type="video/mp4"
-                  media="(min-width: 768px)">
-          <source src="/assets/video/culinary-720.mp4" type="video/mp4">
-        </video>
+        <!-- Scrub canvas — driven by scroll-scene.js + canvas-frame-renderer.
+             Replaces <video class="scroll-scene__video"> as of 2026-06-01
+             (Agent 21, video-to-website skill migration). Pre-extracted 30fps
+             WebP frames at /assets/frames/culinary/. Manifest URL below is
+             fetched on init; once Phase 1 (first 10 frames) preloads, .is-ready
+             is added and CSS hides the poster. -->
+        <canvas class="scroll-scene__canvas"
+                data-manifest-url="/assets/frames/culinary/manifest.json"
+                aria-hidden="true"></canvas>
 
         <div class="scroll-scene__overlay">
           <header class="section-header">
@@ -563,7 +570,7 @@
              data-reveal="slide-right"
              style="--reveal-delay: 160ms;">
             <!-- TODO(agent-01): real about copy from gamos.co.il -->
-            גמוס נוסד מתוך אהבה לאירועים שמרגישים כמו סיפור — לא רק חלל מהודר, אלא חוויה כוללת
+            גאמוס נוסד מתוך אהבה לאירועים שמרגישים כמו סיפור — לא רק חלל מהודר, אלא חוויה כוללת
             בה כל פרט מתוכנן: האור, הצליל, הריח והטעם.
           </p>
 
@@ -910,7 +917,7 @@
     <div class="site-footer__inner">
 
       <div class="site-footer__brand">
-        <span class="site-footer__brand-mark">גמוס</span>
+        <span class="site-footer__brand-mark">גאמוס</span>
         <p class="site-footer__tagline">
           <!-- TODO(agent-01): final tagline -->
           מתחם אירועים בוטיקי בלב הטבע
@@ -961,7 +968,7 @@
       </ul>
 
       <p class="site-footer__copy">
-        <bdi>© 2026</bdi> גמוס. כל הזכויות שמורות.
+        <bdi>© 2026</bdi> גאמוס. כל הזכויות שמורות.
       </p>
 
     </div>

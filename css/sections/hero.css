@@ -94,6 +94,22 @@
   transition: opacity 0.6s var(--ease-out-cinema);
 }
 
+/* Soft radial scrim behind the wordmark so the textured letters (light sandstone)
+   read against the desert backdrop without dimming the whole hero. */
+.hero__title-stack::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 70% 55% at 50% 50%,
+    rgba(26, 20, 16, 0.65) 0%,
+    rgba(26, 20, 16, 0.35) 40%,
+    rgba(26, 20, 16, 0) 75%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
 /* Visually hidden heading (real text for SR / SEO). The SVG below carries
    the visual brand. We mark this with .sr-only-equivalent inline so it does
    not depend on a global .sr-only utility class. */
@@ -163,21 +179,48 @@
 
 
 /* ---------------------------------------------------------------------------
-   Layer C — scrub video
+   Layer C — scrub canvas (replaces <video.hero__video>, 2026-06-01)
+   ---------------------------------------------------------------------------
+   The canvas is painted by canvas-frame-renderer.js drawing pre-extracted
+   30fps WebP frames in response to scroll progress. Below the canvas sits
+   a static poster <picture> that's visible:
+     • before the renderer's Phase 1 preload completes,
+     • when JS is disabled, or
+     • under prefers-reduced-motion (canvas never animates).
    --------------------------------------------------------------------------- */
 
-.hero__video {
+.hero__scrub-poster {
   position: absolute;
   inset: 0;
   z-index: 2;
   width: 100%;
   height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.8s var(--ease-out-cinema);
+}
+.hero__scrub-poster img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  display: block;
+}
+
+.hero__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  display: block;
   pointer-events: none;
   background: var(--ink-deep);
   opacity: 0;
   transition: opacity 0.8s var(--ease-out-cinema);
 }
+/* Once Phase-1 preload completes, the canvas paints frame 0 and we mark
+   it ready so the poster (if it had been visible) can fade out behind it. */
+.hero__canvas.is-ready { /* opacity managed by [data-stage] rules below */ }
 
 
 /* ---------------------------------------------------------------------------
@@ -211,10 +254,17 @@
   transform: translateY(0);
 }
 
-/* C: scrub — bg fades out, title fades out, video fades in. */
+/* C: scrub — bg fades out, title fades out, canvas (or poster fallback) fades in. */
 .hero__sticky[data-stage="scrub"] .hero__static-bg { opacity: 0; }
 .hero__sticky[data-stage="scrub"] .hero__title-stack { opacity: 0; }
-.hero__sticky[data-stage="scrub"] .hero__video { opacity: 1; }
+.hero__sticky[data-stage="scrub"] .hero__canvas { opacity: 1; }
+/* Poster shows during scrub ONLY if canvas hasn't reached is-ready yet
+   (rare on fast networks — Phase 1 preload usually finishes well before C). */
+.hero__sticky[data-stage="scrub"] .hero__scrub-poster { opacity: 1; }
+.hero__sticky[data-stage="scrub"] .hero__canvas.is-ready ~ .hero__scrub-poster,
+.hero__sticky[data-stage="scrub"] .hero__scrub-poster:has(+ .hero__canvas.is-ready) {
+  opacity: 0;
+}
 /* Once revealed in B, keep letters at final state during C+D so a fast
    scroller (B → C in <650ms) doesn't see them mid-animation when fading out. */
 .hero__sticky[data-stage="scrub"] .hero__title-letter,
@@ -223,10 +273,11 @@
   animation-delay: 0s;
 }
 
-/* D: portals — video stays (frozen on last frame by JS), title hidden. */
+/* D: portals — canvas stays (frozen on last frame by JS), title hidden. */
 .hero__sticky[data-stage="portals"] .hero__static-bg { opacity: 0; }
 .hero__sticky[data-stage="portals"] .hero__title-stack { opacity: 0; }
-.hero__sticky[data-stage="portals"] .hero__video { opacity: 1; }
+.hero__sticky[data-stage="portals"] .hero__canvas { opacity: 1; }
+.hero__sticky[data-stage="portals"] .hero__scrub-poster { opacity: 0; }
 
 
 /* ---------------------------------------------------------------------------
@@ -262,7 +313,11 @@
   }
   .hero__title-stack,
   .hero__static-bg,
-  .hero__video {
+  .hero__canvas,
+  .hero__scrub-poster {
     transition: none;
   }
+  /* Reduced motion: hide canvas (we never animate it), show poster as still. */
+  .hero__canvas { display: none; }
+  .hero__scrub-poster { opacity: 1; }
 }
