@@ -225,8 +225,78 @@
 }
 
 .contact__map {
-  aspect-ratio: 16 / 10;
+  display: block;
+  inline-size: 100%;
+  block-size: clamp(240px, 30vw, 360px);
   border-radius: var(--radius-lg);
   background: var(--mist);
   overflow: hidden;
+  margin-block-start: var(--space-6);
+}
+
+/* ---------------------------------------------------------------------------
+   Route-maps grid — 3 hand-illustrated maps from gamos.co.il
+   --------------------------------------------------------------------------- */
+.contact__routes {
+  margin-block-start: var(--space-12);
+  padding-block-start: var(--space-8);
+  border-block-start: 1px solid color-mix(in srgb, var(--cocoa) 18%, transparent);
+}
+
+.contact__routes-title {
+  font-family: var(--font-display-he);
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  font-weight: var(--fw-bold);
+  color: var(--ink-deep);
+  margin: 0 0 var(--space-2);
+}
+
+.contact__routes-lede {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: color-mix(in srgb, var(--ink-deep) 70%, var(--ivory));
+  margin: 0 0 var(--space-6);
+}
+
+.contact__routes-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-6);
+}
+
+.contact__routes-grid figure {
+  margin: 0;
+  background: var(--ivory);
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  transition: transform var(--dur-base) var(--ease-out-cinema),
+              box-shadow var(--dur-base) var(--ease-out-cinema);
+}
+
+.contact__routes-grid figure:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(83, 65, 51, 0.18);
+}
+
+.contact__routes-grid img {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  border-radius: calc(var(--radius-lg) - var(--space-2));
+  aspect-ratio: 829 / 1024;
+  object-fit: cover;
+}
+
+.contact__routes-grid figcaption {
+  font-family: var(--font-display-he);
+  font-size: var(--text-lg);
+  font-weight: var(--fw-bold);
+  color: var(--cocoa);
+  text-align: center;
+  margin-block-start: var(--space-3);
+  margin-block-end: var(--space-2);
 }
