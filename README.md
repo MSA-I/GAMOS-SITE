@@ -8,8 +8,10 @@ event-venue, gardens and resort complex in Maale Adumim, Israel.
 ## Tech stack
 
 Vanilla HTML5 + CSS3 + ES2022 modules. **No framework, no bundler, no 3D engine.**
-Lenis (smooth scroll, desktop only). Native `requestAnimationFrame` + scroll listener
-for the hero video-scrub (no GSAP — see §2 of [`CLAUDE.md`](./CLAUDE.md)).
+Lenis (smooth scroll, desktop only — currently stub). Native `requestAnimationFrame` +
+scroll listener for the hero video-scrub. GSAP + ScrollToPlugin are self-hosted at
+`assets/vendor/` (76KB, no CDN) for cinematic scrollytelling — see §2 of
+[`CLAUDE.md`](./CLAUDE.md).
 
 Build-time tools (Node 18+): `sharp` for WebP/JPEG encoding, `ffmpeg` for video
 intermediates. All shipped assets are pre-encoded in `assets/`.
@@ -51,31 +53,37 @@ Output goes to `assets/frames/` and `assets/images/`.
 GAMOS-SITE/
 ├── index.html              # single-page entry, semantic structure
 ├── CLAUDE.md               # Project Constitution (read this first)
+├── STATUS.md               # current state vs. master plan + DoD checklist
 ├── css/
 │   ├── tokens.css          # single source of design truth (§10.2)
 │   ├── base.css            # normalize + focus rings + reduced-motion
 │   ├── layout.css          # grid + section rails
 │   ├── utilities.css
 │   ├── sections/           # one stylesheet per architectural section
-│   └── components/         # loading-overlay, side-dot-nav, marquee
+│   └── components/         # loading-overlay, side-dot-nav, marquee, scrollytelling-loader
 ├── js/
 │   ├── main.js             # ESM entry — boots all section modules
 │   ├── scroll-orchestrator.js
 │   ├── scroll-scene.js     # auto-discovers [data-scrub] sections
+│   ├── scrollytelling.js   # cinematic canvas + GSAP ScrollToPlugin
 │   ├── hero-video-scrub.js # native RAF + scroll listener
 │   ├── canvas-frame-renderer.js
-│   ├── portals.js          # Web Animations API (no GSAP)
+│   ├── portals.js          # Web Animations API
 │   └── (reveals, accordions, slider, contact-form, site-nav, ...)
 ├── assets/
 │   ├── fonts/              # self-hosted WOFF2 (Frank Ruhl, Heebo, Playfair, Bodoni)
-│   ├── images/brand/       # hero-static, title-texture, logos
-│   ├── img/                # poster images (venue, resort)
+│   ├── images/brand/       # hero-static, title-texture, logos, portal overlays
+│   ├── images/{halls,culinary}/  # full+half WebP/JPG variants
 │   ├── frames/             # 30fps WebP frame sequences (hero, culinary)
-│   └── video/              # poster + portal-loop
+│   ├── vendor/             # self-hosted gsap + ScrollToPlugin (76KB)
+│   └── video/              # masters (gitignored — local only)
+├── legal/                  # privacy, terms, accessibility (3 standalone Hebrew pages)
 ├── architecture/           # design SOPs (per-domain)
-├── agent-plans/            # historical agent plans
-├── PLANS/                  # research + completed plans
-├── docs/                   # operational notes (e.g. adding-hall-video.md)
+├── agent-plans/            # README + future agent plan template
+├── PLANS/
+│   ├── research/           # 5 reference docs (master plan + content map + ...)
+│   └── next-steps/         # active future plans
+├── docs/                   # operational notes (asset-encoding, adding-hall-video)
 └── scripts/                # build-time encoders (encode-frames, encode-images)
 ```
 

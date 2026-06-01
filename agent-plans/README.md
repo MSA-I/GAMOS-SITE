@@ -1,40 +1,49 @@
 # 👥 agent-plans/ — תוכניות לפי בעלות
 
-> **חוק.** כל סוכן ב-10-Agent Team חייב לכתוב את התוכנית שלו כאן **לפני** שהוא
+> **חוק.** כל סוכן ב-N-Agent Team חייב לכתוב את התוכנית שלו כאן **לפני** שהוא
 > רץ קוד. הקובץ הזה משלים את `PLANS/` (שמאורגן לפי נושא): כאן הארגון הוא לפי
 > **בעלות** — מי עושה מה.
 
----
+**מצב נוכחי (2026-06-01):**
+התיקייה ריקה כעת. כל 14 התוכניות של הגלים 1-5 (agent-01..12, 20, 23) **בוצעו ונמחקו**
+לאחר השלמתן. כל ההיסטוריה זמינה ב-`git log` + `STATUS.md`.
 
-## 1. עשרת הסוכנים
-
-| # | Agent | Subagent type | Skills | תיאור קצר |
-|---|---|---|---|---|
-| 01 | Research & Content Lead       | researcher           | deep-research, web-scraper          | חילוץ תוכן + sitemap + competitor audit |
-| 02 | Brand & Typography            | frontend-design      | frontend-design                     | פונטים, צבעים, tokens |
-| 03 | Asset Pipeline                | coder                | (ffmpeg + sharp build-time)         | תפירת hero, אופטימיזציית תמונות |
-| 04 | HTML / Structure              | backend-dev          | (semantic HTML)                     | index.html + RTL + ARIA + JSON-LD |
-| 05 | CSS Tokens & Layout           | frontend-design      | frontend-design                     | base/layout/utilities |
-| 06 | Hero Video-Scrub Engineer     | coder                | video-to-website                    | GSAP + ScrollTrigger + iOS fallback |
-| 07 | Portal-Bubbles Engineer       | coder                | weblove-motion                      | שתי בועות + click-routing |
-| 08 | Hall Sections Engineer        | frontend-design      | frontend-design                     | אולם / ריזורט / lounge / rooms / culinary |
-| 09 | Motion Engineer (static)      | coder                | weblove-motion + frontend-design    | reveals + accordions + sliders |
-| 10 | QA & Performance              | tester               | (Lighthouse + axe-core)             | בדיקה מקצה לקצה |
+תוכניות עתידיות לא-מוקצות עדיין נמצאות תחת [`PLANS/next-steps/`](../PLANS/next-steps/).
 
 ---
 
-## 2. קונבנציית שמות קבצים
+## 1. הסוכנים שכבר רצו ונסגרו (היסטורי)
+
+| # | Agent | Wave | תוצרים |
+|---|-------|------|--------|
+| 01 | Research & Content Lead | 1 | `PLANS/research/{site-content-map, full-tab-inventory, competitor-audit, font-identification}.md` |
+| 02 | Brand & Typography | 1 | `architecture/tokens.md`, `css/tokens.css`, 8 WOFF2 fonts |
+| 03 | Asset Pipeline | 1 | hero-master MP4 + halls images (הוחלף ב-Wave 5 ב-canvas frames) |
+| 04 | HTML / Structure | 1 | `index.html` + `js/main.js` shell |
+| 05 | CSS Tokens & Layout | 1 | `css/{base, layout, utilities}.css` |
+| 06 | Hero Video-Scrub | 1 | `js/hero-video-scrub.js` + `css/sections/hero.css` |
+| 07 | Portal-Bubbles | 1 | `js/portals.js` + `css/sections/portals.css` |
+| 08 | Hall Sections | 1 | 5 stylesheets — venue/resort/lounge/rooms/culinary |
+| 09 | Motion (static) | 1 | `js/{reveals, accordions, slider}.js` + 3 motion stylesheets |
+| 10 | QA & Performance | 1 | Lighthouse baseline + 13 defect tickets (כולם נסגרו) |
+| 11 | Typography Research | 3 | Bodoni Moda 900 + texture-fill spec |
+| 12 | Hero Spec V2 | 3 | 5-stage scroll timeline (0→8→22→88→100%) |
+| 20 | Static-Sections Choreographer | 4 | 11 reveal patterns + marquee transition |
+| 23 | Phase D Interactivity Coder | D | `js/{contact-form, site-nav, slider}.js` overlay nav + WhatsApp form |
+
+---
+
+## 2. קונבנציית שמות קבצים (לסוכנים עתידיים)
 
 ```
 agent-NN_<role-kebab>__YYYY-MM-DD_<task-kebab>.md
 ```
 
 דוגמאות:
-- `agent-01_research-content__2026-05-28_initial-scrape.md`
-- `agent-06_hero-scrub__2026-05-28_initial-binding.md`
-- `agent-07_portals__2026-05-28_bubble-reveal-and-click.md`
+- `agent-25_video-encoder__2026-06-15_resort-venue-pipeline.md`
+- `agent-26_browser-qa-runner__2026-06-20_lighthouse-final.md`
 
-NN = 01..10. role-kebab = הרול שלו במילה אחת/שתיים.
+NN = 24+ (1-23 כבר שומשו). role-kebab = הרול שלו במילה אחת/שתיים.
 המופרד `__` (שני קווים תחתונים) מסמן את המעבר בין הזהות (קבועה) למשימה (משתנה).
 
 ---
@@ -58,7 +67,7 @@ NN = 01..10. role-kebab = הרול שלו במילה אחת/שתיים.
 - <קובץ/פלט קונקרטי שיווצר>
 
 **Interfaces (חוזה עם סוכנים אחרים):**
-- <מה הסוכן הזה חושף לסוכנים אחרים — שמות פונקציות, CSS variables, קבצים>
+- <מה הסוכן הזה חושף — שמות פונקציות, CSS variables, קבצים>
 
 ---
 
@@ -88,4 +97,5 @@ NN = 01..10. role-kebab = הרול שלו במילה אחת/שתיים.
 - **חוזה ברור.** כל סוכן מגדיר את ה-Interface שלו (מה הוא חושף לאחרים).
 - **תלויות מתועדות.** כל סוכן מציין מה הוא צריך כדי להתחיל.
 - **Log תוך כדי עבודה.** עדכון ה-Log table בכל פעולה משמעותית.
-- **מסיים → מסמן `done`** ומעדכן `progress.md` בשורש.
+- **מסיים → מסמן `done`** + מעדכן את `STATUS.md` בשורש (סקציה רלוונטית).
+- **לאחר השלמה מלאה** → ניתן למחוק את הקובץ (ההיסטוריה נשמרת ב-git).

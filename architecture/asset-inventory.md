@@ -155,7 +155,7 @@ await Promise.all([
 | logo-events | `https://gamos.co.il/wp-content/uploads/2023/10/cropped-Untitled-design-2023-09-12T105300.017-e1697362701352.png` | `assets/images/brand/logo-events.png` | PNG + WebP |
 | logo-resort | `https://gamos.co.il/wp-content/uploads/2023/10/Untitled-design-2023-09-10T144152.854-e1697362755185.png` | `assets/images/brand/logo-resort.png` | PNG + WebP |
 
-> ⚠️ Bash/curl/WebFetch were denied during the Agent 1 research session — binary downloads are deferred to Agent 3 in Phase 2b. URLs above are recorded as authoritative source. See `findings.md` 2026-05-28 entry.
+> ⚠️ Bash/curl/WebFetch were denied during the Agent 1 research session — binary downloads were deferred to Agent 3 in Phase 2b. URLs above are recorded as authoritative source. (Phase 2b completed; `findings.md` was removed in 2026-06-01 cleanup, see CLAUDE.md §12.)
 
 ### Existing live-site media NOT already in local folders (Agent 3 fetch list)
 
@@ -203,8 +203,9 @@ await Promise.all([
 ## Half 2 — Agent 03 Manifest (filled 2026-05-28)
 
 > **Status:** Source files identified and counted. Output directories planned.
-> Build is **gated on shell access** to run ffmpeg + sharp; see `findings.md`
-> for the blocker note and `.tmp/run-asset-pipeline.{ps1,sh}` for the ready-to-run pipeline.
+> Build was gated on shell access to run ffmpeg + sharp at the time this was authored.
+> (Build executed and completed; pipeline now lives in `scripts/encode-{frames,images}.mjs`
+> + npm scripts. `findings.md` referenced earlier was removed in 2026-06-01 cleanup.)
 
 ### Naming convention
 

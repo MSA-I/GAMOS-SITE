@@ -137,9 +137,9 @@
 
 1. **כל סוכן כותב תוכנית ב-`agent-plans/agent-NN_*.md` לפני שהוא רץ קוד.**
 2. **שינויים נושאיים מובנים** הולכים ל-`PLANS/<category>/` לפי כללי `PLANS/README.md`.
-3. **`findings.md`** מתעדכן בכל גילוי משמעותי (סוכן או main).
-4. **`progress.md`** מסומן בכל phase gate שעובר.
-5. **תוכניות שהושלמו** → `PLANS/archive/` (לא נמחקות).
+3. **גילויים משמעותיים** מתועדים ב-Maintenance Log (§12) עם תאריך + מקור.
+4. **מצב הפרויקט** משתקף ב-`STATUS.md` בשורש (לא ב-progress.md/findings.md הישנים — נמחקו 2026-06-01).
+5. **תוכניות שהושלמו** → ניתן למחוק (ההיסטוריה ב-git). תוכניות שננטשו → `PLANS/archive/`.
 
 ---
 
@@ -153,17 +153,18 @@
 
 ### §7.0 דו"חות מחקר (Research Reports)
 
-מחקרים תחומיים נשמרים כקבצי `REPORT_*.md` בשורש `GAMOS-SITE/`. אלה דו"חות
+מחקרים תחומיים נשמרים תחת `PLANS/research/` (לא בשורש). אלה דו"חות
 חד-פעמיים שמתעדים בדיקת ישימות של טכניקה — לא Specs ולא ארכיטקטורה.
 
-**רשימה:**
-- `REPORT_video_layer_separation.md` (2026-05-28) — אימת שניתן לפרק MP4
-  קיים לשכבות (background / foreground+alpha / mask) באופן אוטומטי דרך
-  rembg + OpenCV inpainting + ffmpeg. ראה דו"ח לפרטים, מגבלות איכות,
-  והמלצות לאינטגרציה אפשרית בסקציית ה-hero.
+**רשימה נוכחית:**
+- `PLANS/research/2026-05-28_master-rebuild-plan.md` — תוכנית 10-Agent הראשית.
+- `PLANS/research/2026-05-28_site-content-map.md` — תוכן verbatim מ-gamos.co.il.
+- `PLANS/research/2026-05-28_full-tab-inventory.md` — טבלת לשוניות מאומתת.
+- `PLANS/research/2026-05-28_competitor-audit.md` — Aman / Bvlgari / Six Senses / וכו'.
+- `PLANS/research/2026-05-28_font-identification.md` — NOMAD font analysis.
 
 **הוראה לסוכנים:** דו"ח מחקר ≠ החלטת ארכיטקטורה. אם אתה רוצה לאמץ טכניקה
-מדו"ח, פתח Plan ב-`PLANS/` ועדכן את ה-Constitution לפני האימוץ.
+מדו"ח, פתח Plan ב-`PLANS/next-steps/` ועדכן את ה-Constitution לפני האימוץ.
 
 ### §7.1 חריגת Remotion (LOCKED 2026-05-28 by user)
 
@@ -211,6 +212,7 @@
 3. **JS is module-scoped.** ESM modules עם `init(el)` + `destroy()`. אין globals.
 4. **RTL First.** הכל עובר תחילה ב-`dir="rtl"`. בדיקת LTR אחרי.
 5. **Plans live in `PLANS/`** + **agent plans live in `agent-plans/`**.
+6. **Status lives in `STATUS.md`** — current state vs. master plan, with checklist against §11 DoD. Master plan at `PLANS/research/2026-05-28_master-rebuild-plan.md` is canonical reference. Active future work at `PLANS/next-steps/`.
 
 ---
 
@@ -222,7 +224,7 @@
 - 60fps scrub בדסקטופ class-M1 (DevTools Performance recorder).
 - Mobile fallback verified ב-iPhone 12 + Galaxy S22.
 - כל הלשוניות מ-gamos.co.il מיוצגות (Agent 1 inventory מאומת ע"י משתמש).
-- 10 קבצי `agent-plans/agent-NN_*.md` קיימים, כל אחד עם DoD מוגדר.
+- ~~10 קבצי `agent-plans/agent-NN_*.md` קיימים~~ — כל 14 התוכניות בוצעו ונמחקו אחרי השלמתן (2026-06-01). ההיסטוריה ב-`git log` + `STATUS.md`. תוכניות עתידיות ב-`PLANS/next-steps/`.
 
 ---
 
@@ -233,7 +235,7 @@
 | 2026-05-28 | Constitution created (Phase 0 bootstrap). Stack locked.       | main agent  |
 | 2026-05-28 | §5 palette LOCKED — derived from gamos.co.il live + luxury upgrade. | Agent 01 |
 | 2026-05-28 | §7.1 added — `remotion/` becomes READ-WRITE only when `remotion-best-practices` skill is invoked by user. | main agent (per user) |
-| 2026-05-28 | Research: video layer separation pipeline validated on `ריזורט 1/1.5.mp4`. See `REPORT_video_layer_separation.md`. | main agent |
+| 2026-05-28 | Research: video layer separation pipeline validated on `ריזורט 1/1.5.mp4`. (Report file removed 2026-06-01 in cleanup; was a one-off feasibility note never adopted into architecture.) | main agent |
 | 2026-05-28 | §3 refined — Hero is now multi-stage (intro / scrub / outro). New assets: `hero-static.webp` desert background, `logo-gold.webp` GAMOS RESORT logo. Letter animation GAMOS+EVENTS in CSS keyframes. Portal click adds `[data-clicked]` attr for brass-glow shadow feedback. | main agent |
 | 2026-05-28 | **Tech change:** GSAP CDN dependency removed from `hero-video-scrub.js` — replaced with native scroll listener + RAF for stability + 0 external deps. GSAP still used in `portals.js` for expand timeline. | main agent |
 | 2026-05-28 | **CSS architecture fix:** `@layer sections` removed from agent-authored stylesheets (hero, portals, site-nav, site-footer, section-header, gallery, events, kosher, about, testimonials, contact) — was unbalanced with hall-* / lounge / rooms / culinary which were unlayered, causing cascade failures. All section CSS now lives in unlayered cascade. | main agent |
@@ -243,3 +245,4 @@
 | 2026-06-01 | **Hero + Culinary canvas-frame migration** (per `video-to-website.md` skill). `<video.currentTime>` scrub replaced with pre-extracted **30fps WebP** frame sequences painted into `<canvas>` by new `js/canvas-frame-renderer.js`. Hero: 528 frames @ 1600px q=75 (~45MB total — over per-scene budget; user notified). Culinary: 180 frames @ 1600px q=75 (~6.5MB). Two-phase preloader: Phase 1 (10 frames) blocks `preload()`; Phase 2 streams remainder async with `fetchpriority=low`. Backward-compat: `window.gamosHero.duration` is now `frameCount/fps` so portals/side-dot-nav unaffected. iOS Safari now scrubs smoothly (the migration's purpose). Resort/Venue stay on poster-Ken-Burns until their videos arrive — same canvas-frames path is now documented in `docs/adding-hall-video.md`. | Agent 21 |
 | 2026-06-01 | **Phase D interactivity** (D1+D2+D4). Added `js/contact-form.js` — validation + WhatsApp + mailto submit, content-agnostic via `data-wa-number` / `data-email` form attrs. Added `js/site-nav.js` — fixes broken `aria-controls="site-nav-mobile"` (target didn't exist) by injecting an overlay clone of the link list with focus trap + Escape close + body scroll-lock. Testimonials slider markup adapted to `slider.js` contract (`data-slider-track/-item/-prev/-next/-dots`); track converted from column to row flex with `overflow-x: clip` on the section. Added a `date` field to the contact form (optional) and a "שלחו במייל במקום" mailto fallback link rendered after a successful WhatsApp submit. | Agent 23 |
 | 2026-06-01 | **§2 amendment:** GSAP + ScrollToPlugin re-allowed (self-hosted at `/assets/vendor/`, ~78KB total). Phase A removal was specifically about CDN dependency failure; self-hosting fixes that without re-introducing offline regression. Powers cinematic scrollytelling (canvas frame scrub at ZOOM_FACTOR 1.35 + mouse parallax + smooth section-anchor scroll via ScrollToPlugin). New `js/scrollytelling.js` orchestrates `data-scrollytelling` canvases with shared loader-percentage overlay. New `js/canvas-frame-renderer.js` API: `bindScroll`, `bindMouseParallax`, `bindResize`. Culinary opted in (500vh spacer); Hero keeps its own 4-stage renderer. | main |
+| 2026-06-01 | **Documentation cleanup.** Removed stale progress reports (HANDOFF.md, PROGRESS_REPORT.md, PROGRESS_SUMMARY.md, progress.md, findings.md, task_plan.md, REPORT_video_layer_separation.md). Removed completed plans (`PLANS/fixes/`*13, `PLANS/performance/`, `PLANS/refactors/`, all 14 `agent-plans/agent-NN_*.md`). Replaced with single `STATUS.md` (current state vs. master plan + DoD checklist) and `PLANS/next-steps/2026-06-01_hall-videos-and-content-finalization.md` (open items). Master plan at `PLANS/research/2026-05-28_master-rebuild-plan.md` remains the canonical reference. | main |
