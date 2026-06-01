@@ -44,13 +44,15 @@
 
 .rooms__title {
   font-family: var(--font-display-he);
-  font-size: clamp(var(--text-2xl), 5vw, var(--text-4xl));
+  font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl));
   font-weight: var(--fw-regular);
   line-height: var(--lh-tight);
   letter-spacing: var(--tracking-tight);
   color: var(--ink-deep);
   margin: 0;
   text-wrap: balance;
+  max-inline-size: 100%;
+  overflow-wrap: break-word;
 }
 
 .rooms__body {
