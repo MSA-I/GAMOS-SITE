@@ -25,7 +25,9 @@
    --------------------------------------------------------------------------- */
 
 .portals {
-  position: fixed;
+  /* Lives INSIDE .hero__sticky as Layer D — must NOT be fixed (was a regression
+     that made the bubbles follow the user across every scroll section). */
+  position: absolute;
   inset-block-end: var(--space-12);
   inset-inline: 0;
   display: flex;
@@ -33,10 +35,26 @@
   align-items: flex-end;
   gap: var(--space-12);
   padding-inline: var(--gutter);
-  z-index: var(--z-overlay);
+  z-index: 20;
+
+  /* Hidden until Stage D — `js/portals.js` toggles `.is-active` once
+     window.gamosHero.progress >= 0.92 (with hysteresis at 0.88). */
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.6s var(--ease-out-cinema),
+    visibility 0s linear 0.6s;
 
   /* Pass-through container — children opt back in. */
   pointer-events: none;
+}
+
+.portals.is-active {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.6s var(--ease-out-cinema),
+    visibility 0s linear 0s;
 }
 
 
@@ -50,7 +68,9 @@
   --portal-size: 280px;
   --portal-ring-thickness: 3px;
   --portal-glow-rest: 0 0 0 0 transparent;
-  --portal-glow-hover: 0 0 24px 4px var(--brass-glow);
+  /* Strong selection indicator — visible on hover/focus so the user clearly
+     knows which area they're about to choose (per user 2026-06-01). */
+  --portal-glow-hover: 0 0 60px 12px var(--brass-glow), 0 0 0 4px var(--brass);
 
   position: relative;
   inline-size: var(--portal-size);
@@ -167,11 +187,15 @@
 
 .portal:hover {
   transform: scale(1.06);
+  filter: drop-shadow(0 0 32px var(--brass-glow))
+          drop-shadow(0 0 80px color-mix(in srgb, var(--brass) 60%, transparent));
 }
 
 .portal:hover .portal__ring,
 .portal:focus-visible .portal__ring {
   box-shadow: var(--portal-glow-hover);
+  border-color: var(--brass-glow);
+  border-width: 5px;
 }
 
 /* :focus-visible thickens the brass ring for clear keyboard affordance.

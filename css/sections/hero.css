@@ -276,9 +276,11 @@
 }
 
 /* D: portals — canvas stays (frozen on last frame by JS), title hidden. */
-.hero__sticky[data-stage="portals"] .hero__static-bg { opacity: 0; }
+.hero__sticky[data-stage="portals"] .hero__static-bg { opacity: 1; }
 .hero__sticky[data-stage="portals"] .hero__title-stack { opacity: 0; }
-.hero__sticky[data-stage="portals"] .hero__canvas { opacity: 1; }
+/* Canvas (frozen on the last frame, which already shows the bubbles) fades
+   under the real portals so we don't render two pairs of bubbles. */
+.hero__sticky[data-stage="portals"] .hero__canvas { opacity: 0; }
 .hero__sticky[data-stage="portals"] .hero__scrub-poster { opacity: 0; }
 
 

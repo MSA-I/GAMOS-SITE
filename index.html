@@ -191,9 +191,9 @@
          Spacer = 700vh (kept from current Constitution §3 — see Agent 12 §1.1).
     ==================================================================== -->
     <section id="hero" class="hero" aria-labelledby="hero-sr-title">
-      <!-- spacer dictates scroll length: 700vh maps to four stages above -->
-      <div class="hero__spacer" aria-hidden="true"></div>
-
+      <!-- Sticky stage is FIRST inside the section so it can stick to the top
+           while the spacer below it provides the scroll runway. (Reversing
+           order made the section non-scrollable — fixed 2026-06-01.) -->
       <div class="hero__sticky" data-stage="static-bg">
 
         <!-- Layer A: static background (frame-1.png — desert vista) — LCP candidate -->
@@ -294,42 +294,41 @@
                 data-manifest-url="/assets/frames/hero/manifest.json"
                 aria-hidden="true"></canvas>
 
+        <!-- Layer D: portals (revealed at hero progress >= 0.92).
+             Lives INSIDE .hero__sticky so it scrolls with the hero stage and
+             never bleeds into other sections. -->
+        <aside id="portals" class="portals" aria-label="קיצורים לאולם וריזורט">
+          <button class="portal portal--resort"
+                  type="button"
+                  data-target="#hall-resort"
+                  aria-label="עבור לריזורט וחדרי האירוח">
+            <video class="portal__video"
+                   autoplay loop muted playsinline
+                   src="/assets/video/portal-loop.mp4"
+                   aria-hidden="true"></video>
+            <span class="portal__ring" aria-hidden="true"></span>
+            <span class="portal__label">ריזורט</span>
+          </button>
+
+          <button class="portal portal--venue"
+                  type="button"
+                  data-target="#hall-venue"
+                  aria-label="עבור לאולם האירועים">
+            <video class="portal__video"
+                   autoplay loop muted playsinline
+                   src="/assets/video/portal-loop.mp4"
+                   aria-hidden="true"></video>
+            <span class="portal__ring" aria-hidden="true"></span>
+            <span class="portal__label">אולם</span>
+          </button>
+        </aside>
+
       </div>
+
+      <!-- Spacer dictates total scroll length (700vh). It sits AFTER the
+           sticky element so the sticky has runway to stick against. -->
+      <div class="hero__spacer" aria-hidden="true"></div>
     </section>
-
-    <!-- ====================================================================
-         #portals — two portal bubbles (אולם / ריזורט)
-         DOM exactly per architecture/portal-bubbles-spec.md
-         Reveal at hero progress >= 0.92. Click expands → routes to hall.
-    ==================================================================== -->
-    <aside id="portals" class="portals" aria-label="קיצורים לאולם וריזורט">
-      <!-- Order: in RTL, the first child renders on the right.
-           User mandate: ריזורט (resort) = right, אולם (venue) = left.
-           So resort comes first in source order. -->
-      <button class="portal portal--resort"
-              type="button"
-              data-target="#hall-resort"
-              aria-label="עבור לריזורט וחדרי האירוח">
-        <video class="portal__video"
-               autoplay loop muted playsinline
-               src="/assets/video/portal-loop.mp4"
-               aria-hidden="true"></video>
-        <span class="portal__ring" aria-hidden="true"></span>
-        <span class="portal__label">ריזורט</span>
-      </button>
-
-      <button class="portal portal--venue"
-              type="button"
-              data-target="#hall-venue"
-              aria-label="עבור לאולם האירועים">
-        <video class="portal__video"
-               autoplay loop muted playsinline
-               src="/assets/video/portal-loop.mp4"
-               aria-hidden="true"></video>
-        <span class="portal__ring" aria-hidden="true"></span>
-        <span class="portal__label">אולם</span>
-      </button>
-    </aside>
 
     <!-- ====================================================================
          #hall-venue — אולם האירועים (GAMOS EVENTS)
