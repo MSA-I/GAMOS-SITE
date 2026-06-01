@@ -12,31 +12,40 @@
  */
 
 // Section modules — placeholder shells. Each exposes `init()`.
-import * as heroVideoScrub from "./hero-video-scrub.js";
-import * as portals        from "./portals.js";
-import * as reveals        from "./reveals.js";
-import * as accordions     from "./accordions.js";
-import * as slider         from "./slider.js";
-import * as lenis          from "./lenis.js";
-import * as loadingOverlay from "./loading-overlay.js";
-import * as sideDotNav     from "./side-dot-nav.js";
+import * as scrollOrchestrator from "./scroll-orchestrator.js";
+import * as scrollScene         from "./scroll-scene.js";
+import * as heroVideoScrub      from "./hero-video-scrub.js";
+import * as portals             from "./portals.js";
+import * as reveals             from "./reveals.js";
+import * as accordions          from "./accordions.js";
+import * as slider              from "./slider.js";
+import * as lenis               from "./lenis.js";
+import * as loadingOverlay      from "./loading-overlay.js";
+import * as sideDotNav          from "./side-dot-nav.js";
 
 // Order matters:
-// - hero-video-scrub installs window.gamosHero.onProgress (used by portals + side-dot-nav).
+// - scroll-orchestrator MUST init before any scene (hero or non-hero) that
+//   registers via window.gamosScroll.register(...).
+// - hero-video-scrub registers itself with the orchestrator and installs
+//   window.gamosHero.onProgress (consumed by portals + side-dot-nav).
+// - scroll-scene auto-discovers other [data-scrub] sections AFTER hero so
+//   priority handling and DOM-order tie-breaking are deterministic.
 // - portals init waits internally for the hero hook, so its placement here is benign.
 // - loading-overlay must init BEFORE portals' first click so window.gamosLoading exists
 //   (portals only DISPATCHES events; it doesn't call gamosLoading directly, but having it
 //    early also prevents a missed event window).
 // - side-dot-nav inits AFTER hero so its hero progress hook attaches cleanly.
 const MODULES = [
-  ["lenis",            lenis],
-  ["hero-video-scrub", heroVideoScrub],
-  ["portals",          portals],
-  ["loading-overlay",  loadingOverlay],
-  ["side-dot-nav",     sideDotNav],
-  ["reveals",          reveals],
-  ["accordions",       accordions],
-  ["slider",           slider],
+  ["lenis",               lenis],
+  ["scroll-orchestrator", scrollOrchestrator],
+  ["hero-video-scrub",    heroVideoScrub],
+  ["scroll-scene",        scrollScene],
+  ["portals",             portals],
+  ["loading-overlay",     loadingOverlay],
+  ["side-dot-nav",        sideDotNav],
+  ["reveals",             reveals],
+  ["accordions",          accordions],
+  ["slider",              slider],
 ];
 
 function safeInit(name, mod) {

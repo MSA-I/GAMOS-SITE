@@ -8,19 +8,42 @@
    Rules  : Logical properties only. Tokens for every value.
    ========================================================================== */
 
+/* Wrapper: when used as a .scroll-scene (Agent 17), no padding/background
+   on the outer <section> — the sticky stage paints its own background and
+   the post-content paints its own. When used as a plain (legacy) gallery
+   without .scroll-scene, the original padding+ink-deep wash kicks in via
+   the :not() guard. */
 .culinary {
   position: relative;
+  isolation: isolate;
+  overflow: clip;
+}
+
+.culinary:not(.scroll-scene) {
   background-color: var(--ink-deep);
   color: var(--fg-on-dark);
   padding-block: var(--space-32);
-  isolation: isolate;
-  overflow: clip;
+}
+
+/* Post-content (gallery after the scrub) gets the ink-deep background so it
+   contrasts properly with the rest of the page — single-source via tokens. */
+.culinary__post {
+  background-color: var(--ink-deep);
+  color: var(--fg-on-dark);
+  padding-block: var(--space-32);
+  padding-inline: var(--gutter);
 }
 
 .culinary__container {
   max-inline-size: var(--container-wide);
   margin-inline: auto;
   padding-inline: var(--gutter);
+}
+
+/* Inside the post-content the gallery should still be width-constrained. */
+.culinary__post .culinary__grid {
+  max-inline-size: var(--container-wide);
+  margin-inline: auto;
 }
 
 /* HEADER --------------------------------------------------------------- */

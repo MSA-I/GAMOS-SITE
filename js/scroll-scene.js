@@ -203,11 +203,10 @@ export function init() {
         onActivate() { el.setAttribute("data-active", ""); },
         onDeactivate() {
           el.removeAttribute("data-active");
-          // Snap video back to 0 so re-entry feels fresh (desktop only — iOS loops anyway).
-          if (videoEl && !isIOS) {
-            try { if (videoEl.currentTime > 0.05) videoEl.currentTime = 0; }
-            catch { /* ignore */ }
-          }
+          // The orchestrator already pauses the video on deactivate. We don't
+          // snap currentTime back to 0 here — that would cause a visible flash
+          // when the user scrolls past quickly enough that the scene briefly
+          // deactivates and reactivates within a few frames.
         },
       });
     } catch (e) {
