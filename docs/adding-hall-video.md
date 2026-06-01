@@ -6,7 +6,16 @@ and later receives a real video.
 
 The current scaffolds in `index.html` use a poster image driven by a
 CSS-only Ken-Burns. Replacing it with a video is a **two-line edit per
-section**: swap the `<picture>` for a `<video>`, then remove one attribute.
+section**: swap the `<picture>` for a `<video>` or a `<canvas>`, then
+adjust one attribute.
+
+> **NEW (2026-06-01):** Hero + Culinary now use **canvas-frames** mode
+> (pre-extracted 30fps WebP frames, painted by
+> `js/canvas-frame-renderer.js`) instead of `<video.currentTime>`. This is
+> the recommended mode for any new scrub scene — see
+> `docs/asset-encoding.md` "Frame extraction" section. The legacy `<video>`
+> mode below still works, but only canvas-frames gives you smooth iOS
+> Safari scrub.
 
 ---
 
@@ -99,12 +108,17 @@ the `<picture class="scroll-scene__poster">` block. Replace it with a
 </section>
 ```
 
-That's it. The `scroll-scene` module auto-detects `<video>` vs `<picture>`
-on init and switches mode accordingly:
+That's it. The `scroll-scene` module auto-detects `<video>` vs `<canvas>`
+vs `<picture>` on init and switches mode accordingly:
 
+- `data-scrub-mode="canvas-frames"` (RECOMMENDED) **or** `<canvas.scroll-scene__canvas>`
+  present → frame sequence painted by `canvas-frame-renderer.js`. Requires
+  `data-manifest-url="..."` on the canvas + a manifest at that URL +
+  pre-extracted WebP frames at `/assets/frames/<id>/`.
 - `data-scrub-mode="poster-ken-burns"` → CSS-driven `--scene-progress`.
 - _no_ `data-scrub-mode` _and_ `<video.scroll-scene__video>` present →
-  `video.currentTime = p * duration` (RAF-throttled).
+  `video.currentTime = p * duration` (RAF-throttled). **AVOID for new
+  scenes** — iOS scrub is unreliable.
 
 You do **not** need to touch `js/scroll-scene.js`,
 `js/scroll-orchestrator.js`, or `css/sections/scroll-scene.css`.
@@ -136,3 +150,47 @@ You do **not** need to touch `js/scroll-scene.js`,
   `data-scrub-handler="<windowFnName>"` on the `<section>` and define
   `window.<windowFnName> = (p, sectionEl) => { ... }`. The
   `scroll-scene` module routes `onProgress(p)` to that function instead.
+
+---
+
+## Step 4 — Preferred: canvas-frames upgrade (Agent 21, 2026-06-01)
+
+For the smoothest scrub on every browser including iOS Safari, ship the
+section in **canvas-frames** mode. Workflow:
+
+1. **Extract frames** at 30fps. See `docs/asset-encoding.md` "Frame
+   extraction" for the exact ffmpeg/Pillow recipe. Output:
+
+   ```
+   assets/frames/<scene>/frame_0001.webp
+   assets/frames/<scene>/...
+   assets/frames/<scene>/manifest.json
+   ```
+
+2. **Edit `index.html`** — replace the scaffold `<picture>` with a
+   `<canvas>` and add `data-scrub-mode="canvas-frames"`:
+
+   ```html
+   <section id="hall-resort" class="scroll-scene hall-resort"
+            data-scrub="resort"
+            data-scrub-mode="canvas-frames"        <!-- NEW: explicit mode -->
+            data-scrub-spacer-vh="300"
+            aria-labelledby="hall-resort-title">
+     <div class="scroll-scene__spacer" aria-hidden="true"></div>
+     <div class="scroll-scene__sticky">
+       <picture class="scroll-scene__poster" aria-hidden="true">    <!-- KEEP as fallback -->
+         <source srcset="/assets/img/resort-poster.webp" type="image/webp">
+         <img src="/assets/img/resort-poster.jpg" alt="" width="1920" height="1080"
+              loading="lazy" decoding="async">
+       </picture>
+       <canvas class="scroll-scene__canvas"
+               data-manifest-url="/assets/frames/resort/manifest.json"
+               aria-hidden="true"></canvas>
+       …
+     </div>
+   </section>
+   ```
+
+3. **Done.** No JS / CSS edits. The poster shows during preload + on
+   reduced-motion + when JS is disabled. The canvas takes over once
+   `is-ready` lands (Phase-1 preload complete, ~10 frames decoded).

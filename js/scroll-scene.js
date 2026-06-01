@@ -14,7 +14,14 @@
           child. JS only writes the variable. Used for sections without source
           video (e.g. Agent 18 will use this for אולם / venue).
 
-   3) "custom" (data-scrub-handler="<windowFnName>")
+   3) "canvas-frames" (data-scrub-mode="canvas-frames")  [Agent 21, 2026-06-01]
+        → driven by a <canvas class="scroll-scene__canvas"
+            data-manifest-url="..."> element. We fetch the manifest, build a
+          renderer via canvas-frame-renderer.js, kick off two-phase preload,
+          and on each onProgress(p) call drawFrame(floor(p*(N-1))). Migrated
+          from <video> for iOS scrub smoothness.
+
+   4) "custom" (data-scrub-handler="<windowFnName>")
         → progress is forwarded to window[windowFnName]. The function is
           (p) => void; it may also receive (p, sectionEl) for convenience.
           Use this for sections that want bespoke behavior (image-stack
@@ -38,6 +45,8 @@
    §10 module-scoped state, init()/destroy() exported, no globals.
    ========================================================================= */
 
+import { createRenderer } from "./canvas-frame-renderer.js";
+
 const SCENE_SELECTOR = "section[data-scrub]";
 const PROGRESS_THROTTLE_S = 0.04;
 const DEFAULT_SPACER_VH = 300;
@@ -56,7 +65,11 @@ let _initDone = false;
  * @property {string} id
  * @property {HTMLElement} el
  * @property {HTMLVideoElement|null} videoEl
- * @property {string} mode               "video" | "poster-ken-burns" | "custom"
+ * @property {HTMLCanvasElement|null} canvasEl   when mode === "canvas-frames"
+ * @property {object|null} renderer              canvas-frame-renderer instance
+ * @property {number} canvasFrameCount           cached after manifest fetch
+ * @property {number} lastDrawnFrame             dedupe drawFrame calls
+ * @property {string} mode  "video" | "poster-ken-burns" | "canvas-frames" | "custom"
  * @property {Function|null} customFn    when mode === "custom"
  * @property {number} duration           cached video duration when applicable
  * @property {Function|undefined} unregister   orchestrator handle.unregister
@@ -110,12 +123,28 @@ function makeCustomProgress(scene, fn) {
   };
 }
 
+/** Canvas-frames onProgress: drawFrame(floor(p*(N-1))) — only on index change. */
+function makeCanvasFramesProgress(scene) {
+  return function canvasFramesProgress(p) {
+    if (!scene.renderer || !scene.canvasFrameCount) return;
+    const idx = Math.max(
+      0,
+      Math.min(scene.canvasFrameCount - 1, Math.floor(p * (scene.canvasFrameCount - 1)))
+    );
+    if (idx === scene.lastDrawnFrame) return;
+    scene.lastDrawnFrame = idx;
+    scene.renderer.drawFrame(idx);
+  };
+}
+
 /* --------------------------- mode detection --------------------------- */
 
-function pickMode(el, videoEl, customName) {
+function pickMode(el, videoEl, canvasEl, customName) {
   if (customName) return "custom";
   const declared = el.dataset.scrubMode || "";
+  if (declared === "canvas-frames") return "canvas-frames";
   if (declared === "poster-ken-burns") return "poster-ken-burns";
+  if (canvasEl) return "canvas-frames";
   if (videoEl) return "video";
   if (el.querySelector(".scroll-scene__poster img")) return "poster-ken-burns";
   return "video";  // default; will warn if no video present
@@ -141,11 +170,15 @@ export function init() {
     if (_scenes.has(id)) continue;        // dedupe
 
     const videoEl = el.querySelector("video.scroll-scene__video") || null;
+    const canvasEl = el.querySelector("canvas.scroll-scene__canvas") || null;
     const customName = el.dataset.scrubHandler || "";
-    const mode = pickMode(el, videoEl, customName);
+    const mode = pickMode(el, videoEl, canvasEl, customName);
 
     const scene = /** @type {SceneRecord} */ ({
-      id, el, videoEl, mode,
+      id, el, videoEl, canvasEl, mode,
+      renderer: null,
+      canvasFrameCount: 0,
+      lastDrawnFrame: -1,
       customFn: null,
       duration: 0,
       unregister: undefined,
@@ -160,6 +193,36 @@ export function init() {
       onProgress = makeCustomProgress(scene, fn);
     } else if (mode === "poster-ken-burns") {
       onProgress = makePosterKenBurnsProgress(scene);
+    } else if (mode === "canvas-frames") {
+      if (!canvasEl) {
+        console.warn(`[scroll-scene] section[data-scrub="${id}"] mode=canvas-frames but no <canvas.scroll-scene__canvas> found — skipping.`);
+        continue;
+      }
+      const manifestUrl = canvasEl.dataset.manifestUrl;
+      if (!manifestUrl) {
+        console.warn(`[scroll-scene] canvas-frames scene "${id}" missing data-manifest-url — skipping.`);
+        continue;
+      }
+      onProgress = makeCanvasFramesProgress(scene);
+      // Async: fetch manifest -> build renderer -> preload -> mark ready.
+      // The orchestrator calls onProgress(0) on register (reduce-motion) or
+      // on first scroll. Until renderer.drawFrame works, calls are no-ops
+      // (handled inside makeCanvasFramesProgress via canvasFrameCount === 0).
+      (async () => {
+        try {
+          const res = await fetch(manifestUrl, { credentials: "same-origin" });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const manifest = await res.json();
+          scene.canvasFrameCount = manifest.frameCount | 0;
+          scene.renderer = createRenderer({ canvas: canvasEl, manifest });
+          await scene.renderer.preload();
+          canvasEl.classList.add("is-ready");
+          // Force first paint of frame 0 once Phase 1 is ready.
+          scene.renderer.drawFrame(0);
+        } catch (e) {
+          console.error(`[scroll-scene] canvas-frames "${id}" manifest/preload failed:`, e);
+        }
+      })();
     } else {
       // video
       if (!videoEl) {
@@ -179,15 +242,29 @@ export function init() {
     }
 
     // Spacer height: per-section override (vh), default 300, collapsed to 100 on
-    // reduced-motion / iOS (the orchestrator handles the dispatch suppression).
+    // reduced-motion. Also collapsed on iOS for video-mode scenes (their
+    // orchestrator suppresses progress) but NOT canvas-frames scenes — those
+    // scrub smoothly on iOS, so they keep the full spacer.
     const declaredVh = parseFloat(el.dataset.scrubSpacerVh);
     const spacerVh = Number.isFinite(declaredVh) ? declaredVh : DEFAULT_SPACER_VH;
-    const effectiveVh = (reduceMotion || isIOS) ? 100 : spacerVh;
+    const collapseOnIOS = (mode === "video");  // canvas-frames + ken-burns work on iOS
+    const effectiveVh = reduceMotion ? 100
+                      : (isIOS && collapseOnIOS) ? 100
+                      : spacerVh;
     applySpacerHeight(scene, effectiveVh);
 
     // Initial CSS variable so styles have a value before the first frame.
     if (mode === "poster-ken-burns") {
       el.style.setProperty("--scene-progress", "0");
+    }
+
+    // canvas-frames: hook resize so DPR scaling adjusts on viewport change.
+    if (mode === "canvas-frames" && canvasEl) {
+      const onResize = () => { if (scene.renderer) scene.renderer.resize(); };
+      window.addEventListener("resize", onResize, { passive: true });
+      // Stash the listener on the scene record for destroy().
+      scene._cleanups = scene._cleanups || [];
+      scene._cleanups.push(() => window.removeEventListener("resize", onResize));
     }
 
     // Register with orchestrator.
@@ -226,6 +303,14 @@ export function destroy() {
   for (const scene of _scenes.values()) {
     if (typeof scene.unregister === "function") {
       try { scene.unregister(); } catch { /* ignore */ }
+    }
+    if (scene.renderer && typeof scene.renderer.destroy === "function") {
+      try { scene.renderer.destroy(); } catch { /* ignore */ }
+    }
+    if (Array.isArray(scene._cleanups)) {
+      for (const fn of scene._cleanups) {
+        try { fn(); } catch { /* ignore */ }
+      }
     }
   }
   _scenes.clear();

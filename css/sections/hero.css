@@ -8,13 +8,15 @@
    Stages controlled by JS via [data-stage] on .hero__sticky:
      A. "static-bg"     0%  .. 8%   — only hero-static.webp visible
      B. "title-reveal"  8%  .. 22%  — GAMOS letters reveal + "אירועים" subtitle
-     C. "scrub"         22% .. 88%  — hero-master video scrubbed by scroll
-     D. "portals"       88% .. 100% — video freezes on last frame, portals fade in
+     C. "scrub"         22% .. 88%  — pre-extracted 30fps WebP frames painted
+                                     into .hero__canvas (Agent 21, 2026-06-01)
+     D. "portals"       88% .. 100% — canvas freezes on last frame, portals fade in
 
    Layer stack (z-order, bottom→top):
-     .hero__static-bg   — z 1, always present, fades 22%–32%
-     .hero__video       — z 2, fades in 22%–30%, stays visible
-     .hero__title-stack — z 10, fades in 8%–12%, fades out 22%–30%
+     .hero__static-bg    — z 1, always present, fades 22%–32%
+     .hero__scrub-poster — z 2, fallback under .hero__canvas (no-JS / preload)
+     .hero__canvas       — z 3, fades in 22%–30%, stays visible
+     .hero__title-stack  — z 10, fades in 8%–12%, fades out 22%–30%
    ========================================================================= */
 
 
@@ -232,7 +234,7 @@
      C → D  : 600ms (deceleration into portals reveal — handled by portals.js)
 
    We set .hero__static-bg to opacity 0 starting at stage C (Agent 12 §1.2:
-   active layer for stage C is .hero__video; bg goes idle).
+   active layer for stage C is .hero__canvas; bg goes idle).
    --------------------------------------------------------------------------- */
 
 /* A: static-bg — only the desert image (default state above). */

@@ -32,11 +32,11 @@ remotion/node_modules/
 # Source asset library — READ-ONLY, multi-GB, lives outside repo history
 תמונות לאנימציית האתר/
 
-# Compiled / processed media — too heavy for git, generated on-demand
+# Compiled / processed media — videos are too heavy for git
 assets/video/
-# assets/images/ — kept tracked: brand assets (logo, hero-static, title-texture)
-# are <300KB each and required for site to render.
-assets/frames/
+# assets/images/ — tracked: brand assets, halls, culinary
+# assets/frames/ — tracked: 30fps WebP frame sequences for canvas scrub
+#   (Hero ~27MB / Culinary ~5MB; required for site to render)
 
 # AgentDB / ruflo local state
 ruvector.db

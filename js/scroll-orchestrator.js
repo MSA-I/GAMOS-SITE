@@ -203,8 +203,12 @@ function tickActive() {
   // Reduced-motion: never dispatch scrub. (Initial onProgress(0) already fired.)
   if (reduceMotion) return;
 
-  // iOS suppresses progress events for non-hero scenes (autoplay-loop mode).
-  if (isIOS && scene.id !== "hero") return;
+  // iOS suppression: <video.currentTime> scrubbing jitters on iOS Safari, so
+  // scenes that drive a real videoEl get no progress (they switch to
+  // autoplay-loop in setActiveScene). Scenes WITHOUT a videoEl — including
+  // canvas-frames scenes (Agent 21, 2026-06-01) and hero — receive progress
+  // normally because canvas + image draw is smooth on iOS.
+  if (isIOS && scene.id !== "hero" && scene.cfg.videoEl) return;
 
   let p;
   try { p = computeProgressForScene(scene); }

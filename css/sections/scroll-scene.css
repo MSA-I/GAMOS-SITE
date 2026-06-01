@@ -4,15 +4,20 @@
    Used by    : #hall-resort, #hall-venue, #culinary (and any future
                 section[data-scrub] not named #hero).
    Spec       : architecture/scroll-orchestrator.md §3 (DOM contract);
-                architecture/scroll-video-system.md §4.1.
-   Owner      : Agent 18 (poster/Ken-Burns) + Agent 17 (video pipeline).
+                architecture/scroll-video-system.md §4.1;
+                video-to-website.md §6c (canvas frames).
+   Owner      : Agent 18 (poster/Ken-Burns) + Agent 17 (video pipeline)
+                + Agent 21 (canvas-frames migration, 2026-06-01).
    Constitution: §10.2 (tokens-only — no hard-coded values), §10.4 (RTL
                 logical properties).
    ---------------------------------------------------------------------------
-   Two render modes are supported via attribute selectors:
-     - default        : <video class="scroll-scene__video"> as the visual driver
-     - "poster-ken-burns"  : <picture class="scroll-scene__poster"> driven by
-                              CSS variable --scene-progress (set by JS per RAF).
+   Three render modes are supported via attribute selectors:
+     - default               : <video class="scroll-scene__video"> as the driver
+     - "poster-ken-burns"    : <picture class="scroll-scene__poster"> driven by
+                                CSS variable --scene-progress (JS writes per RAF).
+     - "canvas-frames"       : <canvas class="scroll-scene__canvas"> painted
+                                by canvas-frame-renderer.js drawing pre-extracted
+                                30fps WebP frames (Agent 21, 2026-06-01).
    ========================================================================= */
 
 .scroll-scene {
@@ -72,6 +77,34 @@
   object-position: center;
   transform-origin: 50% 50%;
   will-change: transform;
+}
+
+/* ----- Canvas-frames mode -------------------------------------------------- *
+ * <canvas class="scroll-scene__canvas"> sits above the poster <picture>.
+ * Until canvas-frame-renderer.js finishes its Phase 1 preload (first 10
+ * frames decoded), the canvas is invisible and the poster shows through.
+ * Once .is-ready lands the canvas fades in and we hide the poster behind it.
+ * The canvas itself is fully painted by JS — including the background fill
+ * for the padded-cover edges — so we don't apply object-fit. Width/height
+ * are managed by canvas-frame-renderer.js (DPR-aware). */
+.scroll-scene__canvas {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  display: block;
+  background-color: var(--ink-deep);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out-cinema, ease-out);
+}
+.scroll-scene__canvas.is-ready {
+  opacity: 1;
+}
+/* Hide poster once the canvas is ready (canvas covers it edge-to-edge). */
+.scroll-scene[data-scrub-mode="canvas-frames"] .scroll-scene__canvas.is-ready ~ .scroll-scene__poster,
+.scroll-scene[data-scrub-mode="canvas-frames"] .scroll-scene__poster:has(~ .scroll-scene__canvas.is-ready) {
+  opacity: 0;
 }
 
 /* ----- Ken-Burns mode --------------------------------------------------- *
@@ -193,6 +226,13 @@
   }
   .scroll-scene__video {
     visibility: hidden;
+  }
+  /* Reduced motion: canvas never animates; rely on poster instead. */
+  .scroll-scene__canvas {
+    display: none;
+  }
+  .scroll-scene[data-scrub-mode="canvas-frames"] .scroll-scene__poster {
+    opacity: 1;
   }
   .scroll-scene[data-scrub-mode="poster-ken-burns"] .scroll-scene__poster img,
   .scroll-scene__poster img {

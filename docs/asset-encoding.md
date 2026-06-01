@@ -176,3 +176,108 @@ rm "$SRC"
 | `assets/video/culinary-1080.mp4`    | 1.26 MB   | ≤ 6 MB OK       |
 | `assets/video/culinary-720.mp4`     | 0.48 MB   | ≤ 3 MB OK       |
 | `assets/video/culinary-poster.jpg`  | 67 KB     | ≤ 80 KB OK      |
+
+---
+
+## Frame extraction (Agent 21 — 2026-06-01, video-to-website skill)
+
+**What:** the Hero scrub and Culinary scrub do not use `<video.currentTime>`
+any more. Instead a `<canvas class="…__canvas">` is painted by
+`js/canvas-frame-renderer.js` with pre-extracted **30fps WebP** frame
+sequences. Migration motivation: iOS Safari `currentTime` scrub is unreliable
+(jitter, decoder restarts). Canvas + image draw is deterministic 60fps on
+every browser and platform.
+
+**Extraction pipeline:** the bundled Apowersoft `ffmpeg.exe` (2018 vintage)
+ships with **no `libwebp` encoder**, so we extract PNG via ffmpeg and
+re-encode through Pillow's WebP encoder. Script: `.tmp/extract-frames.py`
+(throwaway under `.tmp/`, kept for re-runnability — re-create as needed).
+
+**Per-scene parameters (LOCKED for Hero + Culinary as of 2026-06-01):**
+
+| scene    | source                              | fps | scale  | quality | frames | total size |
+|----------|-------------------------------------|-----|--------|---------|--------|------------|
+| hero     | `assets/video/hero-master-1080.mp4` | 30  | 1600px | 75      | 528    | ≈ 45 MB    |
+| culinary | `assets/video/culinary-1080.mp4`    | 30  | 1600px | 75      | 180    | ≈ 6.5 MB   |
+
+> **Hero size note.** The hero source is 17.58s — **far longer** than the
+> 7s the spec assumed. At 30fps the resulting 528-frame sequence is ≈ 45 MB
+> even at q=75 + 1600px. This is over the per-scene 6 MB budget but is
+> acceptable for now: each WebP is fetched lazily by the renderer's
+> two-phase preloader (10 frames eagerly; the rest stream in async at
+> `fetchpriority=low`). The user has been informed; a future task may
+> trim the hero video to its actual narrative beat (~7s) which would drop
+> the frame count to ~210 and fit budget.
+
+**Pure ffmpeg recipe** (when libwebp is on the local ffmpeg — e.g., the user
+re-installs a modern ffmpeg). Use this when re-extracting on a clean box:
+
+```bash
+ffmpeg -i assets/video/hero-master-1080.mp4 \
+  -vf "fps=30,scale=1600:-2" \
+  -c:v libwebp -quality 75 -compression_level 6 \
+  assets/frames/hero/frame_%04d.webp
+
+ffmpeg -i assets/video/culinary-1080.mp4 \
+  -vf "fps=30,scale=1600:-2" \
+  -c:v libwebp -quality 75 -compression_level 6 \
+  assets/frames/culinary/frame_%04d.webp
+```
+
+**Two-pass fallback** (current dev box — Apowersoft ffmpeg, no libwebp):
+
+```bash
+FFMPEG="/c/Program Files (x86)/Apowersoft/ApowerREC/ffmpeg.exe"
+
+# Pass 1: PNG extraction
+"$FFMPEG" -y -i assets/video/<scene>-1080.mp4 \
+  -vf "fps=30,scale=1600:-2" \
+  -pix_fmt rgb24 \
+  .tmp/frames-<scene>/%04d.png
+
+# Pass 2: PNG -> WebP via Pillow
+python -c "
+from PIL import Image
+import os, json, glob
+for p in sorted(glob.glob('.tmp/frames-<scene>/*.png')):
+    img = Image.open(p).convert('RGB')
+    out = 'assets/frames/<scene>/frame_' + os.path.basename(p).replace('.png','.webp')
+    img.save(out, 'WEBP', quality=75, method=6)
+"
+
+# Cleanup
+rm -rf .tmp/frames-<scene>/
+```
+
+**Manifest format** (one per scene, written next to the frames):
+
+```json
+{
+  "scene": "<id>",
+  "frameCount": <N>,
+  "frameUrl": "/assets/frames/<id>/frame_{NNNN}.webp",
+  "width": 1600,
+  "height": 900,
+  "sourceVideo": "<id>-1080.mp4",
+  "sourceMtime": "<source-mtime ISO>",
+  "encoded":     "<extraction-time ISO>",
+  "fpsExtracted": 30,
+  "scaleWidthPx": 1600,
+  "webpQuality": 75
+}
+```
+
+The `frameUrl` `{NNNN}` token is replaced by `canvas-frame-renderer.js` with
+the 1-based 4-digit frame index (`frame_0001.webp` … `frame_0528.webp`).
+`fpsExtracted` is read by `hero-video-scrub.js` to compute
+`window.gamosHero.duration` (in seconds), which keeps the legacy API
+contract semantically equivalent to the old `<video>.duration`.
+
+**Resort + Venue scaffolds.** The Resort and Venue scenes still use the
+poster-Ken-Burns mode (no source video has arrived). When their videos do
+arrive: extract at 30fps with this same recipe, write a manifest into
+`assets/frames/<id>/`, swap `data-scrub-mode="poster-ken-burns"` for
+`data-scrub-mode="canvas-frames"` on the section, and replace the
+`<picture>` poster fallback's video twin with a `<canvas
+class="scroll-scene__canvas" data-manifest-url="...">`. See
+`docs/adding-hall-video.md` for the exact field swap.
