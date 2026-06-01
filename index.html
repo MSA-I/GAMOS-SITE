@@ -623,7 +623,8 @@
          wipe); each testimonial card uses fade-up with staggered delay.
     ==================================================================== -->
     <section id="testimonials" class="testimonials" aria-labelledby="testimonials-title"
-             data-reveal="clip-reveal">
+             data-reveal="clip-reveal"
+             data-slider="testimonials">
       <header class="section-header">
         <p class="section-header__eyebrow">המלצות</p>
         <h2 id="testimonials-title" class="section-header__title">מה מספרים על האירוע אצלנו</h2>
@@ -631,12 +632,18 @@
 
       <!-- Testimonials: live site has no testimonials section (per site-content-map.md §11).
            Agent 08 will replace these placeholder quotes when 6-10 real client quotes
-           are collected from the owner. Current text is generic and does not name real clients. -->
-      <div class="testimonials__track" role="region" aria-label="המלצות לקוחות"
-           data-slider="testimonials" data-stagger>
+           are collected from the owner. Current text is generic and does not name real clients.
+
+           Slider contract (Agent 23, Phase D4): data-slider on the <section>, data-slider-track
+           on the inner <div>, data-slider-item on each <article>. js/slider.js binds. -->
+      <div class="testimonials__track"
+           data-slider-track
+           role="region" aria-label="המלצות לקוחות"
+           data-stagger>
         <!-- Placeholder quotes — names/years intentionally generic until owner provides
              real quotes (see site-content-map.md §11; live site has no testimonials yet). -->
         <article class="testimonial" role="group" aria-roledescription="המלצה"
+                 data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 120ms;">
           <blockquote class="testimonial__quote">
             <p>החתונה הרגישה כמו סרט. כל פרט קטן קיבל תשומת לב — אורחים עוד מדברים.</p>
@@ -648,6 +655,7 @@
         </article>
 
         <article class="testimonial" role="group" aria-roledescription="המלצה"
+                 data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 240ms;">
           <blockquote class="testimonial__quote">
             <p>צוות שמבין באירוע, אוכל ברמה גבוהה ומתחם שמדבר בעד עצמו.</p>
@@ -659,6 +667,7 @@
         </article>
 
         <article class="testimonial" role="group" aria-roledescription="המלצה"
+                 data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 360ms;">
           <blockquote class="testimonial__quote">
             <p>אירוע חברה גדול שעבר חלק לחלוטין — מהקבלה ועד סוף הערב. נחזור.</p>
@@ -672,10 +681,13 @@
 
       <div class="testimonials__controls" role="group" aria-label="ניווט המלצות">
         <button type="button" class="testimonials__btn testimonials__btn--prev"
+                data-slider-prev
                 aria-label="המלצה קודמת">
           <span aria-hidden="true">‹</span>
         </button>
+        <div class="testimonials__dots" data-slider-dots aria-label="ניווט שקופיות"></div>
         <button type="button" class="testimonials__btn testimonials__btn--next"
+                data-slider-next
                 aria-label="המלצה הבאה">
           <span aria-hidden="true">›</span>
         </button>
@@ -827,9 +839,11 @@
         <div class="contact__grid">
 
           <form class="contact__form" novalidate
+                data-wa-number="972779972343"
+                data-email="office@gamos.co.il"
                 aria-describedby="contact-form-help" data-stagger>
             <p id="contact-form-help" class="sr-only">
-              כל השדות חובה. נחזור אליכם בתוך יום עסקים.
+              שדות חובה: שם, טלפון, דוא"ל וסוג אירוע. נחזור אליכם בתוך יום עסקים.
             </p>
 
             <div class="contact__field"
@@ -870,15 +884,22 @@
               </select>
             </div>
 
+            <div class="contact__field"
+                 data-reveal="slide-right" style="--reveal-delay: 380ms;">
+              <label for="contact-date">תאריך מועדף <span class="contact__field-optional">(אופציונלי)</span></label>
+              <input type="date" id="contact-date" name="date"
+                     autocomplete="off" dir="ltr">
+            </div>
+
             <div class="contact__field contact__field--full"
-                 data-reveal="slide-right" style="--reveal-delay: 400ms;">
+                 data-reveal="slide-right" style="--reveal-delay: 420ms;">
               <label for="contact-message">הודעה</label>
               <textarea id="contact-message" name="message" rows="4"></textarea>
             </div>
 
             <div class="contact__submit-wrap"
                  data-reveal="slide-right" style="--reveal-delay: 480ms;">
-              <button type="submit" class="contact__submit">שלחו פנייה</button>
+              <button type="submit" class="contact__submit">שלחו דרך WhatsApp</button>
               <p class="contact__feedback" role="status" aria-live="polite"></p>
             </div>
           </form>

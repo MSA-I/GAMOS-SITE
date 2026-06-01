@@ -53,6 +53,14 @@
   color: var(--fg-muted);
 }
 
+.contact__field-optional {
+  font-size: var(--text-xs);
+  font-weight: var(--fw-regular);
+  color: var(--fg-muted);
+  margin-inline-start: var(--space-1);
+  opacity: 0.7;
+}
+
 .contact__field input,
 .contact__field select,
 .contact__field textarea {
@@ -101,6 +109,46 @@
   font-size: var(--text-sm);
   color: var(--fg-muted);
   margin: 0;
+}
+
+.contact__feedback[data-kind="ok"]  { color: var(--cocoa); }
+.contact__feedback[data-kind="err"] { color: var(--accent-cta); }
+
+/* ----- Inline field errors (agent-23 Phase D1) ----- */
+
+.contact__field-error {
+  display: block;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-medium);
+  color: var(--accent-cta);
+  margin-block-start: var(--space-1);
+}
+
+.contact__field input.is-invalid,
+.contact__field select.is-invalid,
+.contact__field textarea.is-invalid {
+  border-color: var(--accent-cta);
+}
+
+/* "שלחו במייל במקום" fallback link rendered after a successful submit. */
+.contact__mailto-fallback {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color var(--dur-base) var(--ease-out-cinema);
+}
+
+.contact__mailto-fallback:hover { color: var(--accent); }
+
+/* Inline WhatsApp fallback link (rendered if window.open is blocked). */
+.contact__wa-fallback {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  margin-inline-start: var(--space-2);
 }
 
 @media (max-width: 600px) {

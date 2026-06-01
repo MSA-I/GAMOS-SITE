@@ -91,11 +91,130 @@
   border: 0;
   padding: var(--space-2);
   cursor: pointer;
+  position: relative;
+  z-index: calc(var(--z-overlay) + 1); /* above mobile overlay backdrop */
+  width: 44px;  /* WCAG 2.5.5 target size — ≥ 44×44px */
+  height: 44px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.site-nav__toggle:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-sm);
+}
+
+.site-nav__toggle-bar {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--fg);
+  border-radius: 2px;
+  transform-origin: 50% 50%;
+  transition: transform var(--dur-base) var(--ease-out-cinema),
+              opacity   var(--dur-base) var(--ease-out-cinema);
+}
+
+/* Hamburger → X morph (CSS-only, agent-23 Phase D2) ---------------------- */
+.site-nav__toggle.is-open .site-nav__toggle-bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.site-nav__toggle.is-open .site-nav__toggle-bar:nth-child(2) {
+  opacity: 0;
+}
+.site-nav__toggle.is-open .site-nav__toggle-bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ===========================================================================
+   Mobile overlay menu (.site-nav__mobile)
+   Injected by js/site-nav.js into <body>. Hidden via [hidden] attribute by
+   default; .is-open class toggles the visible state with a fade.
+   ========================================================================= */
+
+.site-nav__mobile {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  background: rgba(245, 239, 230, 0.97); /* ivory @ 97% — token-mapped */
+  backdrop-filter: saturate(140%) blur(16px);
+  -webkit-backdrop-filter: saturate(140%) blur(16px);
+  /* Start hidden via [hidden]; .is-open transitions opacity for smoothness. */
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out-cinema);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: var(--space-24) var(--space-16);
+  padding-inline: var(--gutter);
+  overflow-y: auto;
+}
+
+.site-nav__mobile[hidden] {
+  display: none;
+}
+
+.site-nav__mobile.is-open {
+  opacity: 1;
+}
+
+.site-nav__mobile__inner {
+  width: 100%;
+  max-width: var(--container-narrow);
+  margin-inline: auto;
+}
+
+.site-nav__mobile__links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  text-align: center;
+}
+
+.site-nav__mobile__links a {
+  display: block;
+  font-family: var(--font-display-he);
+  font-size: var(--text-xl);
+  font-weight: var(--fw-medium);
+  color: var(--fg);
+  text-decoration: none;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  transition: color var(--dur-base) var(--ease-out-cinema),
+              background var(--dur-base) var(--ease-out-cinema);
+}
+
+.site-nav__mobile__links a:hover,
+.site-nav__mobile__links a:focus-visible {
+  color: var(--accent);
+  background: var(--bg-alt);
+  outline: none;
+}
+
+.site-nav__mobile__links a:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+/* Body scroll lock while mobile nav is open. */
+html.nav-open,
+html.nav-open body {
+  overflow: hidden;
 }
 
 @media (max-width: 900px) {
   .site-nav__links { display: none; }
   .site-nav__toggle { display: inline-flex; }
+}
+
+/* On desktop, never show the overlay even if state somehow lingers. */
+@media (min-width: 901px) {
+  .site-nav__mobile { display: none !important; }
 }
 
 

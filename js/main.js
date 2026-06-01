@@ -24,6 +24,8 @@ import * as loadingOverlay      from "./loading-overlay.js";
 import * as sideDotNav          from "./side-dot-nav.js";
 import * as marquee             from "./marquee.js";
 import * as counters            from "./counters.js";
+import * as contactForm         from "./contact-form.js";   // Agent 23 — Phase D1
+import * as siteNav             from "./site-nav.js";       // Agent 23 — Phase D2
 
 // Order matters:
 // - scroll-orchestrator MUST init before any scene (hero or non-hero) that
@@ -48,8 +50,10 @@ const MODULES = [
   ["reveals",             reveals],
   ["accordions",          accordions],
   ["slider",              slider],
-  ["marquee",             marquee],   // Agent 20 — weblove-motion marquee bands
-  ["counters",            counters],  // Agent 20 — animated stat numbers
+  ["marquee",             marquee],       // Agent 20 — weblove-motion marquee bands
+  ["counters",            counters],      // Agent 20 — animated stat numbers
+  ["contact-form",        contactForm],   // Agent 23 — Phase D1: WhatsApp + mailto
+  ["site-nav",            siteNav],       // Agent 23 — Phase D2: hamburger overlay
 ];
 
 function safeInit(name, mod) {

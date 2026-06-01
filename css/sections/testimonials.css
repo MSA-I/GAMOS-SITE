@@ -11,6 +11,8 @@
   padding-block: var(--space-32);
   padding-inline: var(--gutter);
   background: var(--bg-tint);
+  /* Clip slider overflow so off-screen slides don't expand the layout. */
+  overflow-x: clip;
 }
 
 /* The section-header inside #testimonials lives in the gutter-padded zone */
@@ -20,19 +22,29 @@
 }
 
 .testimonials__track {
+  /* Slider track: horizontal flex; each child = one slide at 100% width.
+     RTL is auto-handled by flex; slider.js applies translate3d(±N%, 0, 0).
+     Section-level `overflow-x: clip` keeps off-screen slides from expanding
+     layout. */
   max-width: var(--container-narrow);
   margin-inline: auto;
   margin-block-start: var(--space-12);
   display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0;
+  /* Initial transition is set by JS — the visual default keeps slides snapped. */
+  will-change: transform;
 }
 
 .testimonial {
+  flex: 0 0 100%;
+  width: 100%;
   background: var(--bg);
   padding: var(--space-12);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
+  /* Only the active slide is interactive; others are visually hidden by track translate. */
 }
 
 .testimonial__quote {
@@ -95,6 +107,37 @@
 .testimonials__btn:hover {
   background: var(--accent);
   border-color: var(--accent);
+}
+
+/* Slider dots (rendered programmatically by js/slider.js) ---------------- */
+.testimonials__dots {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  /* Sit between prev / next buttons in the controls row. */
+}
+
+.testimonials__dots [data-slider-dot] {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-circle);
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: background var(--dur-base) var(--ease-out-cinema),
+              border-color var(--dur-base) var(--ease-out-cinema),
+              transform var(--dur-base) var(--ease-out-cinema);
+}
+
+.testimonials__dots [data-slider-dot]:hover {
+  border-color: var(--accent);
+}
+
+.testimonials__dots [data-slider-dot].is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.2);
 }
 
 @media (max-width: 600px) {
