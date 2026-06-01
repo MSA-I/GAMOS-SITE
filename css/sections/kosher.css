@@ -1,29 +1,58 @@
 /* ===========================================================================
    kosher.css — kashrut / certification badge section
+   Agent 20 (2026-06-01): now uses [data-reveal="rotate-in"] for a calm
+   "stamp" effect. The whole block is centered (different rhythm from the
+   rail-aligned about/contact/events sections — provides visual variety).
    ========================================================================= */
 
 
 .kosher {
-  padding-block: var(--space-16);
+  padding-block: var(--space-32);
   padding-inline: var(--gutter);
   background: var(--bg-cocoa);
   color: var(--fg-on-dark);
+  text-align: center;
 }
 
 .kosher__container {
   max-width: var(--container-narrow);
   margin-inline: auto;
-  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-6);
 }
 
+.kosher .section-header {
+  max-width: 100%;
+  margin-block-end: 0;
+  text-align: center;
+}
+
+.kosher .section-header__title {
+  color: var(--fg-on-dark);
+}
+
+.kosher__seal {
+  inline-size: 120px;
+  block-size: 120px;
+  border-radius: var(--radius-circle);
+  background: radial-gradient(circle, var(--brass), var(--cocoa));
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display-he);
+  font-size: var(--text-md);
+  font-weight: var(--fw-bold);
+  color: var(--ivory);
+  box-shadow: 0 8px 24px rgba(83, 65, 51, 0.3);
+  border: 2px solid var(--brass-glow);
+}
+
 .kosher__badge {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
+  /* Legacy — fallback if seal isn't used; same shape, no fill */
+  inline-size: 120px;
+  block-size: 120px;
+  border-radius: var(--radius-circle);
   border: 2px solid var(--accent);
   display: grid;
   place-items: center;
@@ -33,19 +62,14 @@
   color: var(--accent);
 }
 
-.kosher__title {
-  font-family: var(--font-display-he);
-  font-size: var(--text-2xl);
-  font-weight: var(--fw-bold);
-  margin: 0;
-}
-
 .kosher__body {
   font-family: var(--font-body);
+  font-size: clamp(1.125rem, 1.5vw, 1.4rem);
   line-height: var(--lh-loose);
   color: rgba(245, 239, 230, 0.85);
   max-width: 56ch;
   margin: 0;
+  margin-inline: auto;
 }
 
 

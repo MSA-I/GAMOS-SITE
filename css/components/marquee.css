@@ -1,0 +1,91 @@
+/* =====================================================================
+ * marquee.css — horizontal infinite-scroll text band
+ * Owner: Agent 20 — Static Sections Choreographer (2026-06-01)
+ *
+ * Pure CSS animation. Pairs with js/marquee.js which ONLY:
+ *   1. duplicates the track contents to make the loop seamless,
+ *   2. sets `--marquee-duration` from `data-speed` (seconds).
+ *
+ * Reduced motion: animation halted (kept static); content stays readable.
+ *
+ * Tokens consumed from css/tokens.css.
+ * ===================================================================== */
+
+.marquee {
+  --marquee-duration: 30s;
+  inline-size: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  border-block: 1px solid var(--border);
+  padding-block: var(--space-8);
+  user-select: none;
+  /* Marquee text is decorative — semantic content lives in surrounding
+     sections. We expose it for sighted users only. JS sets aria-hidden
+     on duplicate spans; the original is screen-reader-readable. */
+}
+
+.marquee--cocoa {
+  background: var(--cocoa);
+  border-color: rgba(207, 174, 131, 0.2);
+}
+
+.marquee--ivory-warm {
+  background: var(--bg-alt);
+}
+
+.marquee__track {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  inline-size: max-content;
+  animation: marquee-scroll var(--marquee-duration) linear infinite;
+  will-change: transform;
+}
+
+/* Hebrew is RTL, so default scroll direction (negative translateX) reads
+   content moving from start (right) to end (left) — which feels natural
+   for Hebrew copy. data-speed attribute can flip the sign by setting
+   --marquee-duration to a negative value via JS — keep the CSS pure. */
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee__text {
+  font-family: var(--font-display-he);
+  font-size: clamp(6rem, 12vw, 14rem);
+  font-weight: var(--fw-bold);
+  line-height: 1;
+  color: var(--brass);
+  letter-spacing: var(--tracking-tight);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.marquee--cocoa .marquee__text { color: var(--brass); }
+
+/* Latin/numeric variant: switch to luxury Bodoni for English flourishes */
+.marquee__text--luxury {
+  font-family: var(--font-display-luxury);
+  font-weight: 900;
+}
+
+@media (max-width: 767px) {
+  .marquee {
+    padding-block: var(--space-4);
+  }
+  .marquee__text {
+    font-size: 9vw;
+  }
+  .marquee__track {
+    gap: var(--space-8);
+  }
+}
+
+/* Reduced motion → stop the scroll, keep the band visible. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track {
+    animation: none !important;
+  }
+}

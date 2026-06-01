@@ -22,6 +22,8 @@ import * as slider              from "./slider.js";
 import * as lenis               from "./lenis.js";
 import * as loadingOverlay      from "./loading-overlay.js";
 import * as sideDotNav          from "./side-dot-nav.js";
+import * as marquee             from "./marquee.js";
+import * as counters            from "./counters.js";
 
 // Order matters:
 // - scroll-orchestrator MUST init before any scene (hero or non-hero) that
@@ -46,6 +48,8 @@ const MODULES = [
   ["reveals",             reveals],
   ["accordions",          accordions],
   ["slider",              slider],
+  ["marquee",             marquee],   // Agent 20 — weblove-motion marquee bands
+  ["counters",            counters],  // Agent 20 — animated stat numbers
 ];
 
 function safeInit(name, mod) {

@@ -26,7 +26,7 @@
 
 .section-header__title {
   font-family: var(--font-display-he);
-  font-size: var(--text-3xl);
+  font-size: clamp(2.5rem, 5vw, 4.5rem); /* Agent 20 — weblove-motion massive type */
   line-height: var(--lh-tight);
   letter-spacing: var(--tracking-tight);
   font-weight: var(--fw-bold);
@@ -39,7 +39,7 @@
 
 .section-header__lede {
   font-family: var(--font-body);
-  font-size: var(--text-md);
+  font-size: clamp(1.125rem, 1.5vw, 1.4rem); /* Agent 20 — luxury body lede */
   line-height: var(--lh-snug);
   color: var(--fg-muted);
   margin: 0;
@@ -48,9 +48,5 @@
 
 .section-header--on-dark .section-header__title { color: var(--fg-on-dark); }
 .section-header--on-dark .section-header__lede  { color: rgba(245, 239, 230, 0.78); }
-
-@media (min-width: 768px) {
-  .section-header__title { font-size: var(--text-4xl); }
-}
 
 

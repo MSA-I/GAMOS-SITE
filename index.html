@@ -101,9 +101,10 @@
   <link rel="stylesheet" href="/css/sections/motion-accordions.css">
   <link rel="stylesheet" href="/css/sections/motion-slider.css">
 
-  <!-- Stylesheets: chrome components (overlay, side-dot-nav) -->
+  <!-- Stylesheets: chrome components (overlay, side-dot-nav, marquee) -->
   <link rel="stylesheet" href="/css/components/loading-overlay.css">
   <link rel="stylesheet" href="/css/components/side-dot-nav.css">
+  <link rel="stylesheet" href="/css/components/marquee.css">
 
   <!-- Entry script: ESM, deferred -->
   <script type="module" defer src="/js/main.js"></script>
@@ -523,42 +524,76 @@
     </section>
 
     <!-- ====================================================================
+         Marquee transition band (Agent 20 — weblove-motion).
+         Sits between #culinary (last scroll-scene) and #about (first
+         static-rhythm section). Pure CSS infinite scroll; js/marquee.js
+         duplicates children for seamless loop and applies data-speed.
+    ==================================================================== -->
+    <div class="marquee" data-marquee data-speed="40" aria-hidden="true">
+      <div class="marquee__track">
+        <span class="marquee__text">אירועים יוקרתיים&nbsp;·&nbsp;</span>
+        <span class="marquee__text">חתונות חלום&nbsp;·&nbsp;</span>
+        <span class="marquee__text">ימי הולדת בלתי נשכחים&nbsp;·&nbsp;</span>
+        <span class="marquee__text">ריזורט&nbsp;·&nbsp;</span>
+        <span class="marquee__text">אולם&nbsp;·&nbsp;</span>
+        <span class="marquee__text">גן&nbsp;·&nbsp;</span>
+        <span class="marquee__text">ספא&nbsp;·&nbsp;</span>
+      </div>
+    </div>
+
+    <!-- ====================================================================
          #about — אודות / מי אנחנו
+         Agent 20 choreography: slide-right entrance (RTL: enters from
+         natural reading start), .section-rail--end (text in outer 40% on
+         the inline-end side), counter animation on stats.
     ==================================================================== -->
     <section id="about" class="about" aria-labelledby="about-title">
-      <header class="section-header">
-        <p class="section-header__eyebrow">אודות</p>
-        <h2 id="about-title" class="section-header__title">מי אנחנו</h2>
-      </header>
+      <div class="section-rail--end" data-stagger>
+        <header class="section-header">
+          <p class="section-header__eyebrow"
+             data-reveal="slide-right"
+             style="--reveal-delay: 0ms;">אודות</p>
+          <h2 id="about-title" class="section-header__title"
+              data-reveal="slide-right"
+              style="--reveal-delay: 80ms;">מי אנחנו</h2>
+        </header>
 
-      <div class="about__body">
-        <p class="about__lede">
-          <!-- TODO(agent-01): real about copy from gamos.co.il -->
-          גמוס נוסד מתוך אהבה לאירועים שמרגישים כמו סיפור — לא רק חלל מהודר, אלא חוויה כוללת
-          בה כל פרט מתוכנן: האור, הצליל, הריח והטעם.
-        </p>
+        <div class="about__body">
+          <p class="about__lede"
+             data-reveal="slide-right"
+             style="--reveal-delay: 160ms;">
+            <!-- TODO(agent-01): real about copy from gamos.co.il -->
+            גמוס נוסד מתוך אהבה לאירועים שמרגישים כמו סיפור — לא רק חלל מהודר, אלא חוויה כוללת
+            בה כל פרט מתוכנן: האור, הצליל, הריח והטעם.
+          </p>
 
-        <dl class="about__stats">
-          <div class="about__stat">
-            <dt>שנות פעילות</dt>
-            <dd><bdi>20+</bdi></dd>
-          </div>
-          <div class="about__stat">
-            <dt>אירועים מאורגנים</dt>
-            <dd><bdi>3,000+</bdi></dd>
-          </div>
-          <div class="about__stat">
-            <dt>שביעות רצון</dt>
-            <dd><bdi>98%</bdi></dd>
-          </div>
-        </dl>
+          <dl class="about__stats"
+              data-reveal="slide-right"
+              style="--reveal-delay: 240ms;">
+            <div class="about__stat">
+              <dt>שנות פעילות</dt>
+              <dd><bdi><span class="stat-number" data-value="20" data-suffix="+">0</span></bdi></dd>
+            </div>
+            <div class="about__stat">
+              <dt>אירועים מאורגנים</dt>
+              <dd><bdi><span class="stat-number" data-value="3000" data-suffix="+">0</span></bdi></dd>
+            </div>
+            <div class="about__stat">
+              <dt>שביעות רצון</dt>
+              <dd><bdi><span class="stat-number" data-value="98" data-suffix="%">0</span></bdi></dd>
+            </div>
+          </dl>
+        </div>
       </div>
     </section>
 
     <!-- ====================================================================
          #testimonials — slider
+         Agent 20 choreography: section frame uses clip-reveal (top→bottom
+         wipe); each testimonial card uses fade-up with staggered delay.
     ==================================================================== -->
-    <section id="testimonials" class="testimonials" aria-labelledby="testimonials-title">
+    <section id="testimonials" class="testimonials" aria-labelledby="testimonials-title"
+             data-reveal="clip-reveal">
       <header class="section-header">
         <p class="section-header__eyebrow">המלצות</p>
         <h2 id="testimonials-title" class="section-header__title">מה מספרים על האירוע אצלנו</h2>
@@ -566,8 +601,9 @@
 
       <!-- TODO(agent-08): real testimonials carousel from inventory -->
       <div class="testimonials__track" role="region" aria-label="המלצות לקוחות"
-           data-slider="testimonials">
-        <article class="testimonial" role="group" aria-roledescription="המלצה">
+           data-slider="testimonials" data-stagger>
+        <article class="testimonial" role="group" aria-roledescription="המלצה"
+                 data-reveal="fade-up" style="--reveal-delay: 120ms;">
           <blockquote class="testimonial__quote">
             <p>החתונה שלנו הרגישה כמו סרט. כל פרט קטן הוקדש לתשומת לב.</p>
           </blockquote>
@@ -577,7 +613,8 @@
           </footer>
         </article>
 
-        <article class="testimonial" role="group" aria-roledescription="המלצה">
+        <article class="testimonial" role="group" aria-roledescription="המלצה"
+                 data-reveal="fade-up" style="--reveal-delay: 240ms;">
           <blockquote class="testimonial__quote">
             <p>צוות שמבין באירוע ואוכל מצוין — האורחים עוד מדברים.</p>
           </blockquote>
@@ -587,7 +624,8 @@
           </footer>
         </article>
 
-        <article class="testimonial" role="group" aria-roledescription="המלצה">
+        <article class="testimonial" role="group" aria-roledescription="המלצה"
+                 data-reveal="fade-up" style="--reveal-delay: 360ms;">
           <blockquote class="testimonial__quote">
             <p>אירוע חברה ל-<bdi>250</bdi> איש שעבר חלק לחלוטין. נחזור.</p>
           </blockquote>
@@ -612,206 +650,254 @@
 
     <!-- ====================================================================
          #gallery — mixed media
+         Agent 20 choreography: items use scale-up with cascading delays
+         (100ms apart) for a pop-in grid effect.
          TODO(agent-01): confirm if a dedicated gallery exists on gamos.co.il
     ==================================================================== -->
     <section id="gallery" class="gallery" aria-labelledby="gallery-title">
       <header class="section-header">
-        <p class="section-header__eyebrow">גלריה</p>
-        <h2 id="gallery-title" class="section-header__title">רגעים מהמתחם</h2>
+        <p class="section-header__eyebrow"
+           data-reveal="slide-right" style="--reveal-delay: 0ms;">גלריה</p>
+        <h2 id="gallery-title" class="section-header__title"
+            data-reveal="slide-right" style="--reveal-delay: 80ms;">רגעים מהמתחם</h2>
       </header>
 
-      <ul class="gallery__grid" role="list">
-        <li class="gallery__item" data-placeholder="gallery-1"></li>
-        <li class="gallery__item" data-placeholder="gallery-2"></li>
-        <li class="gallery__item" data-placeholder="gallery-3"></li>
-        <li class="gallery__item" data-placeholder="gallery-4"></li>
-        <li class="gallery__item" data-placeholder="gallery-5"></li>
-        <li class="gallery__item" data-placeholder="gallery-6"></li>
-        <li class="gallery__item" data-placeholder="gallery-7"></li>
-        <li class="gallery__item" data-placeholder="gallery-8"></li>
+      <ul class="gallery__grid" role="list" data-stagger>
+        <li class="gallery__item" data-placeholder="gallery-1"
+            data-reveal="scale-up" style="--reveal-delay: 0ms;"></li>
+        <li class="gallery__item" data-placeholder="gallery-2"
+            data-reveal="scale-up" style="--reveal-delay: 100ms;"></li>
+        <li class="gallery__item" data-placeholder="gallery-3"
+            data-reveal="scale-up" style="--reveal-delay: 200ms;"></li>
+        <li class="gallery__item" data-placeholder="gallery-4"
+            data-reveal="scale-up" style="--reveal-delay: 300ms;"></li>
+        <li class="gallery__item" data-placeholder="gallery-5"
+            data-reveal="scale-up" style="--reveal-delay: 400ms;"></li>
+        <li class="gallery__item" data-placeholder="gallery-6"
+            data-reveal="scale-up" style="--reveal-delay: 500ms;"></li>
+        <li class="gallery__item" data-placeholder="gallery-7"
+            data-reveal="scale-up" style="--reveal-delay: 600ms;"></li>
+        <li class="gallery__item" data-placeholder="gallery-8"
+            data-reveal="scale-up" style="--reveal-delay: 700ms;"></li>
       </ul>
     </section>
 
     <!-- ====================================================================
          #events — accordion of event categories
+         Agent 20 choreography: slide-left entrance (mirror to about's
+         slide-right), .section-rail--start (text in outer 40% on the
+         inline-start side), accordion items stagger 100ms apart.
     ==================================================================== -->
     <section id="events" class="events" aria-labelledby="events-title">
-      <header class="section-header">
-        <p class="section-header__eyebrow">אירועים</p>
-        <h2 id="events-title" class="section-header__title">סוגי אירועים</h2>
-      </header>
+      <div class="section-rail--start" data-stagger>
+        <header class="section-header">
+          <p class="section-header__eyebrow"
+             data-reveal="slide-left" style="--reveal-delay: 0ms;">אירועים</p>
+          <h2 id="events-title" class="section-header__title"
+              data-reveal="slide-left" style="--reveal-delay: 80ms;">סוגי אירועים</h2>
+        </header>
 
-      <div class="events__accordion" data-accordion>
-        <details class="events__item" name="events-accordion" open>
-          <summary class="events__summary">
-            <span>חתונות</span>
-            <span class="events__chevron" aria-hidden="true">›</span>
-          </summary>
-          <div class="events__content">
-            <p>חופה בגן, סעודה באולם וריקודים עד הבוקר. תפריטי שף וצוות אישי מלווה.</p>
-          </div>
-        </details>
+        <div class="events__accordion" data-accordion data-stagger>
+          <details class="events__item" name="events-accordion" open
+                   data-reveal="slide-left" style="--reveal-delay: 160ms;">
+            <summary class="events__summary">
+              <span>חתונות</span>
+              <span class="events__chevron" aria-hidden="true">›</span>
+            </summary>
+            <div class="events__content">
+              <p>חופה בגן, סעודה באולם וריקודים עד הבוקר. תפריטי שף וצוות אישי מלווה.</p>
+            </div>
+          </details>
 
-        <details class="events__item" name="events-accordion">
-          <summary class="events__summary">
-            <span>בר ובת מצווה</span>
-            <span class="events__chevron" aria-hidden="true">›</span>
-          </summary>
-          <div class="events__content">
-            <p>חוויה משפחתית עם הפרדה אלגנטית בין מבוגרים לילדים — אזור פעילות, DJ ואטרקציות.</p>
-          </div>
-        </details>
+          <details class="events__item" name="events-accordion"
+                   data-reveal="slide-left" style="--reveal-delay: 260ms;">
+            <summary class="events__summary">
+              <span>בר ובת מצווה</span>
+              <span class="events__chevron" aria-hidden="true">›</span>
+            </summary>
+            <div class="events__content">
+              <p>חוויה משפחתית עם הפרדה אלגנטית בין מבוגרים לילדים — אזור פעילות, DJ ואטרקציות.</p>
+            </div>
+          </details>
 
-        <details class="events__item" name="events-accordion">
-          <summary class="events__summary">
-            <span>אירועי חברה</span>
-            <span class="events__chevron" aria-hidden="true">›</span>
-          </summary>
-          <div class="events__content">
-            <p>כנסים, השקות וערבי גיבוש. תשתית טכנית מלאה, אודיו-וידאו וצוות הפקה.</p>
-          </div>
-        </details>
+          <details class="events__item" name="events-accordion"
+                   data-reveal="slide-left" style="--reveal-delay: 360ms;">
+            <summary class="events__summary">
+              <span>אירועי חברה</span>
+              <span class="events__chevron" aria-hidden="true">›</span>
+            </summary>
+            <div class="events__content">
+              <p>כנסים, השקות וערבי גיבוש. תשתית טכנית מלאה, אודיו-וידאו וצוות הפקה.</p>
+            </div>
+          </details>
 
-        <details class="events__item" name="events-accordion">
-          <summary class="events__summary">
-            <span>אירועים פרטיים</span>
-            <span class="events__chevron" aria-hidden="true">›</span>
-          </summary>
-          <div class="events__content">
-            <p>ימי הולדת, אירוסין וערבי הוקרה — באולם, בלאונג' או בגן.</p>
-          </div>
-        </details>
+          <details class="events__item" name="events-accordion"
+                   data-reveal="slide-left" style="--reveal-delay: 460ms;">
+            <summary class="events__summary">
+              <span>אירועים פרטיים</span>
+              <span class="events__chevron" aria-hidden="true">›</span>
+            </summary>
+            <div class="events__content">
+              <p>ימי הולדת, אירוסין וערבי הוקרה — באולם, בלאונג' או בגן.</p>
+            </div>
+          </details>
+        </div>
       </div>
     </section>
 
     <!-- ====================================================================
          #kosher — כשרות / רבנות
+         Agent 20 choreography: rotate-in entrance for the seal + heading +
+         body — calm "stamp" effect to mark certification authority.
+         Centered alignment (different rhythm from rail-aligned sections).
     ==================================================================== -->
     <section id="kosher" class="kosher" aria-labelledby="kosher-title">
-      <header class="section-header">
-        <p class="section-header__eyebrow">כשרות</p>
-        <h2 id="kosher-title" class="section-header__title">כשרות ורבנות</h2>
-      </header>
+      <div class="kosher__container" data-stagger>
+        <div class="kosher__seal" aria-hidden="true"
+             data-reveal="rotate-in" style="--reveal-delay: 0ms;">כשר</div>
 
-      <p class="kosher__body">
-        <!-- TODO(agent-01): verify exact wording from gamos.co.il (rabbinate name + level) -->
-        המתחם פועל בכשרות מהודרת בהשגחת רבנות מקומית, עם הפרדה מלאה בין בשרי לחלבי.
-        תעודות הכשרות זמינות לעיון במשרדי המתחם.
-      </p>
+        <header class="section-header section-header--center">
+          <p class="section-header__eyebrow"
+             data-reveal="rotate-in" style="--reveal-delay: 120ms;">כשרות</p>
+          <h2 id="kosher-title" class="section-header__title"
+              data-reveal="rotate-in" style="--reveal-delay: 240ms;">כשרות ורבנות</h2>
+        </header>
+
+        <p class="kosher__body"
+           data-reveal="rotate-in" style="--reveal-delay: 360ms;">
+          <!-- TODO(agent-01): verify exact wording from gamos.co.il (rabbinate name + level) -->
+          המתחם פועל בכשרות מהודרת בהשגחת רבנות מקומית, עם הפרדה מלאה בין בשרי לחלבי.
+          תעודות הכשרות זמינות לעיון במשרדי המתחם.
+        </p>
+      </div>
     </section>
 
     <!-- ====================================================================
          #contact — form + Waze + map + phones
+         Agent 20 choreography: slide-right entrance (mirror to about's
+         rhythm — same direction, frames the page bookend), .section-rail
+         keeps text in outer 40%, form fields stagger 80ms apart.
     ==================================================================== -->
     <section id="contact" class="contact" aria-labelledby="contact-title">
-      <header class="section-header">
-        <p class="section-header__eyebrow">צור קשר</p>
-        <h2 id="contact-title" class="section-header__title">בואו נתחיל לתכנן</h2>
-      </header>
+      <div class="section-rail--end" data-stagger>
+        <header class="section-header">
+          <p class="section-header__eyebrow"
+             data-reveal="slide-right" style="--reveal-delay: 0ms;">צור קשר</p>
+          <h2 id="contact-title" class="section-header__title"
+              data-reveal="slide-right" style="--reveal-delay: 80ms;">בואו נתחיל לתכנן</h2>
+        </header>
 
-      <div class="contact__grid">
+        <div class="contact__grid">
 
-        <form class="contact__form" novalidate
-              aria-describedby="contact-form-help">
-          <p id="contact-form-help" class="sr-only">
-            כל השדות חובה. נחזור אליכם בתוך יום עסקים.
-          </p>
+          <form class="contact__form" novalidate
+                aria-describedby="contact-form-help" data-stagger>
+            <p id="contact-form-help" class="sr-only">
+              כל השדות חובה. נחזור אליכם בתוך יום עסקים.
+            </p>
 
-          <div class="contact__field">
-            <label for="contact-name">שם מלא</label>
-            <input type="text" id="contact-name" name="name"
-                   autocomplete="name" required aria-required="true">
-          </div>
+            <div class="contact__field"
+                 data-reveal="slide-right" style="--reveal-delay: 160ms;">
+              <label for="contact-name">שם מלא</label>
+              <input type="text" id="contact-name" name="name"
+                     autocomplete="name" required aria-required="true">
+            </div>
 
-          <div class="contact__field">
-            <label for="contact-phone">טלפון</label>
-            <input type="tel" id="contact-phone" name="phone"
-                   autocomplete="tel" inputmode="tel"
-                   required aria-required="true"
-                   dir="ltr">
-          </div>
+            <div class="contact__field"
+                 data-reveal="slide-right" style="--reveal-delay: 220ms;">
+              <label for="contact-phone">טלפון</label>
+              <input type="tel" id="contact-phone" name="phone"
+                     autocomplete="tel" inputmode="tel"
+                     required aria-required="true"
+                     dir="ltr">
+            </div>
 
-          <div class="contact__field">
-            <label for="contact-email">דוא"ל</label>
-            <input type="email" id="contact-email" name="email"
-                   autocomplete="email" inputmode="email"
-                   required aria-required="true"
-                   dir="ltr">
-          </div>
+            <div class="contact__field"
+                 data-reveal="slide-right" style="--reveal-delay: 280ms;">
+              <label for="contact-email">דוא"ל</label>
+              <input type="email" id="contact-email" name="email"
+                     autocomplete="email" inputmode="email"
+                     required aria-required="true"
+                     dir="ltr">
+            </div>
 
-          <div class="contact__field">
-            <label for="contact-event-type">סוג אירוע</label>
-            <select id="contact-event-type" name="eventType" required aria-required="true">
-              <option value="">בחרו סוג אירוע</option>
-              <option value="wedding">חתונה</option>
-              <option value="bar-mitzvah">בר/בת מצווה</option>
-              <option value="company">אירוע חברה</option>
-              <option value="private">אירוע פרטי</option>
-              <option value="other">אחר</option>
-            </select>
-          </div>
+            <div class="contact__field"
+                 data-reveal="slide-right" style="--reveal-delay: 340ms;">
+              <label for="contact-event-type">סוג אירוע</label>
+              <select id="contact-event-type" name="eventType" required aria-required="true">
+                <option value="">בחרו סוג אירוע</option>
+                <option value="wedding">חתונה</option>
+                <option value="bar-mitzvah">בר/בת מצווה</option>
+                <option value="company">אירוע חברה</option>
+                <option value="private">אירוע פרטי</option>
+                <option value="other">אחר</option>
+              </select>
+            </div>
 
-          <div class="contact__field contact__field--full">
-            <label for="contact-message">הודעה</label>
-            <textarea id="contact-message" name="message" rows="4"></textarea>
-          </div>
+            <div class="contact__field contact__field--full"
+                 data-reveal="slide-right" style="--reveal-delay: 400ms;">
+              <label for="contact-message">הודעה</label>
+              <textarea id="contact-message" name="message" rows="4"></textarea>
+            </div>
 
-          <div class="contact__submit-wrap">
-            <button type="submit" class="contact__submit">שלחו פנייה</button>
-            <p class="contact__feedback" role="status" aria-live="polite"></p>
-          </div>
-        </form>
+            <div class="contact__submit-wrap"
+                 data-reveal="slide-right" style="--reveal-delay: 480ms;">
+              <button type="submit" class="contact__submit">שלחו פנייה</button>
+              <p class="contact__feedback" role="status" aria-live="polite"></p>
+            </div>
+          </form>
 
-        <aside class="contact__details" aria-label="פרטי קשר וגישה">
-          <h3 class="contact__details-title">דברו איתנו</h3>
+          <aside class="contact__details" aria-label="פרטי קשר וגישה"
+                 data-reveal="slide-right" style="--reveal-delay: 240ms;">
+            <h3 class="contact__details-title">דברו איתנו</h3>
 
-          <ul class="contact__channels" role="list">
-            <li>
-              <span class="contact__channel-label">טלפון</span>
-              <!-- TODO(agent-01): real phone -->
-              <a href="tel:+972000000000" class="contact__channel-value">
-                <bdi>053-000-0000</bdi>
+            <ul class="contact__channels" role="list">
+              <li>
+                <span class="contact__channel-label">טלפון</span>
+                <!-- TODO(agent-01): real phone -->
+                <a href="tel:+972000000000" class="contact__channel-value">
+                  <bdi>053-000-0000</bdi>
+                </a>
+              </li>
+              <li>
+                <span class="contact__channel-label">דוא"ל</span>
+                <a href="mailto:info@gamos.co.il" class="contact__channel-value" dir="ltr">
+                  info@gamos.co.il
+                </a>
+              </li>
+              <li>
+                <span class="contact__channel-label">ווטסאפ</span>
+                <a href="https://wa.me/972000000000" class="contact__channel-value"
+                   target="_blank" rel="noopener noreferrer">
+                  <bdi>053-000-0000</bdi>
+                </a>
+              </li>
+              <li>
+                <span class="contact__channel-label">כתובת</span>
+                <span class="contact__channel-value">
+                  <!-- TODO(agent-01): real address -->
+                  כתובת המתחם, ישראל
+                </span>
+              </li>
+            </ul>
+
+            <div class="contact__cta-row">
+              <a class="contact__cta contact__cta--waze" href="#"
+                 aria-label="פתח ניווט ב-Waze">
+                <span>נווטו ב-Waze</span>
               </a>
-            </li>
-            <li>
-              <span class="contact__channel-label">דוא"ל</span>
-              <a href="mailto:info@gamos.co.il" class="contact__channel-value" dir="ltr">
-                info@gamos.co.il
+              <a class="contact__cta contact__cta--maps" href="#"
+                 aria-label="פתח ב-Google Maps">
+                <span>פתחו ב-Google Maps</span>
               </a>
-            </li>
-            <li>
-              <span class="contact__channel-label">ווטסאפ</span>
-              <a href="https://wa.me/972000000000" class="contact__channel-value"
-                 target="_blank" rel="noopener noreferrer">
-                <bdi>053-000-0000</bdi>
-              </a>
-            </li>
-            <li>
-              <span class="contact__channel-label">כתובת</span>
-              <span class="contact__channel-value">
-                <!-- TODO(agent-01): real address -->
-                כתובת המתחם, ישראל
-              </span>
-            </li>
-          </ul>
+            </div>
 
-          <div class="contact__cta-row">
-            <a class="contact__cta contact__cta--waze" href="#"
-               aria-label="פתח ניווט ב-Waze">
-              <span>נווטו ב-Waze</span>
-            </a>
-            <a class="contact__cta contact__cta--maps" href="#"
-               aria-label="פתח ב-Google Maps">
-              <span>פתחו ב-Google Maps</span>
-            </a>
-          </div>
+            <!-- TODO(agent-08): embed actual map iframe (lazy-loaded) -->
+            <div class="contact__map" role="img"
+                 aria-label="מפת המתחם — טוען..."
+                 data-placeholder="map"></div>
+          </aside>
 
-          <!-- TODO(agent-08): embed actual map iframe (lazy-loaded) -->
-          <div class="contact__map" role="img"
-               aria-label="מפת המתחם — טוען..."
-               data-placeholder="map"></div>
-        </aside>
-
+        </div>
       </div>
     </section>
 

@@ -241,4 +241,38 @@
     object-fit: cover;
   }
 
+  /* ----- Section rails (Agent 20 — weblove-motion side-aligned text) -----
+     Pushes text content into the outer 40% of the viewport while leaving
+     the opposing 55% empty. Creates the off-center rhythm that defines the
+     weblove-motion aesthetic. Mobile collapses to a centered single-column.
+     RTL-aware via logical properties (`-start` = right in RTL). */
+
+  .section-rail--start {
+    padding-inline-start: 5vw;
+    padding-inline-end: 55vw;
+  }
+
+  .section-rail--end {
+    padding-inline-start: 55vw;
+    padding-inline-end: 5vw;
+  }
+
+  .section-rail--start > *,
+  .section-rail--end > * {
+    max-inline-size: 40vw;
+  }
+
+  @media (max-width: 767px) {
+    .section-rail--start,
+    .section-rail--end {
+      padding-inline-start: 5vw;
+      padding-inline-end: 5vw;
+    }
+
+    .section-rail--start > *,
+    .section-rail--end > * {
+      max-inline-size: 100%;
+    }
+  }
+
 }

@@ -2,6 +2,11 @@
  * reveals.js — Scroll-triggered reveal animations
  *
  * Agent 09 — Motion Engineer (static sections).
+ * Agent 20 — Choreographer extension (2026-06-01): added new variants for
+ * weblove-motion language: slide-left, slide-right, scale-up, clip-reveal,
+ * rotate-in. The existing fade / fade-up / mask / scale variants are
+ * untouched (CSS in motion-reveals.css owns the from→to states).
+ *
  * IntersectionObserver-based reveal pattern. CSS does the actual transition;
  * this module simply toggles `is-visible` when targets enter the viewport.
  *
@@ -11,9 +16,13 @@
  * Usage in HTML:
  *   <h2 data-reveal="fade-up">כותרת</h2>
  *   <ul data-stagger>
- *     <li data-reveal="fade-up">item</li>
- *     <li data-reveal="fade-up">item</li>
+ *     <li data-reveal="scale-up">item</li>
+ *     <li data-reveal="scale-up">item</li>
  *   </ul>
+ *
+ * Per-item delay can be set via inline `style="--reveal-delay: 240ms"`,
+ * or fall back to the auto stagger (80ms steps) computed by this module
+ * when the parent has [data-stagger].
  *
  * Reduced motion: skips the observer and adds `is-visible` to all targets
  * synchronously, so the final state is always visible without transition.
@@ -36,8 +45,15 @@ let mqlListener = null;
 
 /**
  * Compute the stagger delay for a child element (capped at STAGGER_MAX).
+ * If the element already has --reveal-delay set inline, we leave it alone
+ * (the choreographer pipeline often hard-codes per-item delays).
  */
 function computeStaggerDelay(child) {
+  // Honor an explicit per-item delay if one is set.
+  const inlineDelay = child.style.getPropertyValue("--reveal-delay");
+  if (inlineDelay && inlineDelay.trim() !== "" && inlineDelay.trim() !== "0ms") {
+    return 0; // CSS will respect the inline custom property.
+  }
   const parent = child.parentElement;
   if (!parent || !parent.hasAttribute(STAGGER_ATTR)) return 0;
   const siblings = Array.from(parent.children).filter((el) =>
@@ -51,6 +67,8 @@ function computeStaggerDelay(child) {
 
 /**
  * Reveal a single element with optional stagger delay.
+ * For elements with inline --reveal-delay, CSS handles the timing via
+ * `transition-delay: var(--reveal-delay)` so we just add the class.
  */
 function reveal(el) {
   if (el.classList.contains(VISIBLE_CLASS)) return;

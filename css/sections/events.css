@@ -1,23 +1,29 @@
 /* ===========================================================================
    events.css — events sub-categories accordion (חתונות / בר-מצווה / ...)
+   Agent 20 (2026-06-01): aligned to actual #events markup (.events__accordion
+   wrapping <details class="events__item"><summary class="events__summary">…
+   <div class="events__content">). Section uses .section-rail--start.
    ========================================================================= */
 
 
 .events {
   padding-block: var(--space-32);
-  padding-inline: var(--gutter);
   background: var(--bg);
 }
 
-.events__container {
+/* When .events uses a section-rail (weblove-motion), the rail handles gutter.
+   When it doesn't, fall back to centered container. */
+.events > :not(.section-rail--start):not(.section-rail--end) {
+  padding-inline: var(--gutter);
   max-width: var(--container-narrow);
   margin-inline: auto;
 }
 
-.events__list {
+.events__accordion {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  margin-block-start: var(--space-12);
 }
 
 .events__item {
@@ -51,11 +57,19 @@
 
 .events__item[open] .events__summary::after { transform: rotate(45deg); }
 
-.events__body {
+.events__chevron {
+  /* Decorative — replaced by the ::after "+/×" pattern. Hide it. */
+  display: none;
+}
+
+.events__content {
   padding: 0 var(--space-6) var(--space-6);
   font-family: var(--font-body);
   line-height: var(--lh-loose);
   color: var(--fg-muted);
 }
 
-
+.events__content p {
+  margin: 0;
+  font-size: clamp(1rem, 1.2vw, 1.125rem);
+}

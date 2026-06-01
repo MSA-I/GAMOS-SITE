@@ -1,5 +1,9 @@
 /* ===========================================================================
    testimonials.css — slider of testimonials (powered by js/slider.js)
+   Agent 20 (2026-06-01): aligned to actual #testimonials markup
+   (.testimonials__track > .testimonial > .testimonial__quote +
+   .testimonial__author > cite + .testimonial__meta).
+   Section frame uses [data-reveal="clip-reveal"] (top→bottom wipe).
    ========================================================================= */
 
 
@@ -9,62 +13,90 @@
   background: var(--bg-tint);
 }
 
-.testimonials__container {
+/* The section-header inside #testimonials lives in the gutter-padded zone */
+.testimonials > .section-header {
   max-width: var(--container-narrow);
   margin-inline: auto;
 }
 
-.testimonials__slider { position: relative; overflow: hidden; }
 .testimonials__track {
+  max-width: var(--container-narrow);
+  margin-inline: auto;
+  margin-block-start: var(--space-12);
   display: flex;
-  transition: transform var(--dur-cinema) var(--ease-out-cinema);
+  flex-direction: column;
+  gap: var(--space-8);
 }
 
-.testimonials__item {
-  flex: 0 0 100%;
-  padding-inline: var(--space-6);
-  text-align: center;
+.testimonial {
+  background: var(--bg);
+  padding: var(--space-12);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
 }
 
-.testimonials__quote {
+.testimonial__quote {
   font-family: var(--font-display-he);
-  font-size: var(--text-xl);
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
   line-height: var(--lh-snug);
   color: var(--fg);
   margin: 0 0 var(--space-6) 0;
   font-style: italic;
 }
 
-.testimonials__quote::before { content: "\201C"; color: var(--accent); margin-inline-end: 0.2em; }
-.testimonials__quote::after  { content: "\201D"; color: var(--accent); margin-inline-start: 0.2em; }
+.testimonial__quote p { margin: 0; }
 
-.testimonials__author {
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: var(--fw-semibold);
-  color: var(--fg-muted);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
+.testimonial__quote::before { content: "\201C"; color: var(--accent); margin-inline-end: 0.2em; }
+.testimonial__quote::after  { content: "\201D"; color: var(--accent); margin-inline-start: 0.2em; }
+
+.testimonial__author {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  flex-wrap: wrap;
 }
 
-.testimonials__dots {
+.testimonial__author cite {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--fw-semibold);
+  color: var(--cocoa);
+  font-style: normal;
+}
+
+.testimonial__meta {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+
+.testimonials__controls {
   display: flex;
   justify-content: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
   margin-block-start: var(--space-8);
 }
 
-.testimonials__dots button {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 0;
-  background: var(--border-strong);
+.testimonials__btn {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-circle);
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--fg);
   cursor: pointer;
-  transition: background var(--dur-base) var(--ease-out-cinema);
-  padding: 0;
+  font-size: var(--text-lg);
+  display: grid;
+  place-items: center;
+  transition: background var(--dur-base) var(--ease-out-cinema),
+              border-color var(--dur-base) var(--ease-out-cinema);
 }
 
-.testimonials__dots button[aria-selected="true"] { background: var(--accent); }
+.testimonials__btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
 
-
+@media (max-width: 600px) {
+  .testimonial { padding: var(--space-8); }
+}

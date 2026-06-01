@@ -1,5 +1,7 @@
 /* ===========================================================================
    gallery.css — mixed media gallery
+   Agent 20 (2026-06-01): items use [data-reveal="scale-up"] with staggered
+   --reveal-delay; the grid keeps its centered container layout.
    ========================================================================= */
 
 
@@ -7,6 +9,11 @@
   padding-block: var(--space-32);
   padding-inline: var(--gutter);
   background: var(--bg-alt);
+}
+
+.gallery > .section-header {
+  max-width: var(--container-max);
+  margin-inline: auto;
 }
 
 .gallery__container {
@@ -18,6 +25,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  margin-block-start: var(--space-12);
   display: grid;
   gap: var(--space-3);
   grid-template-columns: repeat(2, 1fr);
@@ -31,7 +39,7 @@
   overflow: hidden;
   border-radius: var(--radius-md);
   aspect-ratio: 4 / 5;
-  background: var(--mist);
+  background: linear-gradient(135deg, var(--mist), var(--brass));
 }
 
 .gallery__item picture, .gallery__item img {
@@ -44,5 +52,3 @@
 }
 
 .gallery__item:hover img { transform: scale(1.06); }
-
-

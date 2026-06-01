@@ -1,13 +1,20 @@
 /* =====================================================================
  * motion-reveals.css
  * Agent 09 — reveal-on-scroll patterns (paired with js/reveals.js).
- * Variants: fade, fade-up, mask, scale.
+ * Original variants: fade, fade-up, mask, scale.
+ *
+ * Agent 20 — Choreographer extension (2026-06-01): added weblove-motion
+ * variants for the static sections — slide-left, slide-right, scale-up,
+ * clip-reveal, rotate-in. Per-item delay supported via inline
+ * `style="--reveal-delay: 240ms"` (CSS reads it as transition-delay).
+ *
  * Tokens consumed from css/tokens.css (Agent 02).
  * ===================================================================== */
 
 /* ---------------------------------------------------------------------
  * Initial states — every [data-reveal] starts hidden + offset.
  * The default variant is "fade-up". JS adds .is-visible on intersect.
+ * --reveal-delay (inline) → transition-delay (Agent 20 weblove pipeline).
  * ------------------------------------------------------------------- */
 [data-reveal] {
   opacity: 0;
@@ -15,6 +22,7 @@
   transition-property: opacity, transform, clip-path;
   transition-duration: var(--dur-deluxe, 600ms);
   transition-timing-function: var(--ease-out-cinema, cubic-bezier(0.2, 0.8, 0.2, 1));
+  transition-delay: var(--reveal-delay, 0ms);
 }
 
 /* Default + explicit fade-up: opacity + slide up */
@@ -36,10 +44,46 @@
   transition-duration: var(--dur-cinema, 1000ms);
 }
 
-/* Scale reveal — gentle inset zoom */
+/* Scale reveal — gentle inset zoom (legacy from Agent 09) */
 [data-reveal="scale"] {
   transform: scale(0.94);
   transition-duration: var(--dur-deluxe, 600ms);
+}
+
+/* ---------------------------------------------------------------------
+ * Agent 20 — weblove-motion variants
+ * ------------------------------------------------------------------- */
+
+/* slide-left — element enters with translateX(-40px) */
+[data-reveal="slide-left"] {
+  transform: translate3d(-40px, 0, 0);
+  transition-duration: 800ms;
+}
+
+/* slide-right — element enters with translateX(+40px) */
+[data-reveal="slide-right"] {
+  transform: translate3d(40px, 0, 0);
+  transition-duration: 800ms;
+}
+
+/* scale-up — pop in with a slight zoom */
+[data-reveal="scale-up"] {
+  transform: scale(0.92);
+  transition-duration: 800ms;
+}
+
+/* clip-reveal — top→bottom wipe via clip-path */
+[data-reveal="clip-reveal"] {
+  clip-path: inset(0 0 100% 0);
+  transform: none;
+  opacity: 0.8;
+  transition-duration: var(--dur-cinema, 1000ms);
+}
+
+/* rotate-in — subtle 3deg tilt + scale + fade (calm "stamp") */
+[data-reveal="rotate-in"] {
+  transform: rotate(3deg) scale(0.97);
+  transition-duration: var(--dur-cinema, 1000ms);
 }
 
 /* ---------------------------------------------------------------------
@@ -47,13 +91,13 @@
  * ------------------------------------------------------------------- */
 [data-reveal].is-visible {
   opacity: 1;
-  transform: none;
+  transform: translate3d(0, 0, 0) scale(1) rotate(0);
   clip-path: inset(0 0 0 0);
 }
 
 /* ---------------------------------------------------------------------
- * Stagger container — child reveal delays are JS-driven (80ms step).
- * No CSS work needed here besides documenting the contract.
+ * Stagger container — child reveal delays are JS-driven (80ms step) OR
+ * inline-property-driven (CSS reads --reveal-delay).
  * ------------------------------------------------------------------- */
 [data-stagger] {
   /* Layout untouched — purely a hook for js/reveals.js. */
