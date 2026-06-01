@@ -218,7 +218,7 @@ If the texture image is too heavy, fails, or the user is on Save-Data, this give
 
 - **Texture image size:** budget = 28 KB. Strict ceiling = 30 KB (CLAUDE.md §8). Anything heavier and Agent 16 must fall back to variant B.
 - **`will-change: background-position`** is **NOT** added — we don't animate the texture. Adding it costs GPU memory for no win.
-- **Color contrast for screen readers:** the wordmark is decorative. Add `aria-label="גמוס - אירועים"` on the `<h1>` so screen readers announce real text, regardless of the visual fill.
+- **Color contrast for screen readers:** the wordmark is decorative. Add `aria-label="גאמוס - אירועים"` on the `<h1>` so screen readers announce real text, regardless of the visual fill.
 - **High-DPI:** the 1024-px source provides crisp rendering up to ~2.5x. We do not need a 2048 version.
 - **Anti-aliasing:** combine `text-rendering: geometricPrecision` + `-webkit-font-smoothing: antialiased`. Tested mental-model: Didone hairlines on Windows Chrome look chunky without this.
 
@@ -353,7 +353,7 @@ When Agent 16 implements this spec, the deliverable is "done" only if **all** of
 
 ### Accessibility
 
-- [ ] `<h1>` carries `aria-label` with full text; screen readers announce "גמוס אירועים" or equivalent.
+- [ ] `<h1>` carries `aria-label` with full text; screen readers announce "גאמוס אירועים" or equivalent.
 - [ ] Focus skip-link still reaches main content past the hero (CLAUDE.md §9).
 - [ ] `prefers-reduced-motion: reduce` disables the letter-reveal animation (instant final state).
 - [ ] Color contrast: the brass-on-ivory background meets WCAG AA for the *fallback* solid-color render (the texture-fill is decorative and aria-hidden via the parent label).

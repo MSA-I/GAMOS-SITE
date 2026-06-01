@@ -6,26 +6,26 @@
   <meta name="theme-color" content="#0E0E0C">
   <meta name="color-scheme" content="dark light">
 
-  <!-- TODO(agent-01): Replace placeholder description with verified copy from full-tab-inventory.md -->
-  <title>גאמוס — מתחם אירועים יוקרתי, גנים וריזורט</title>
-  <meta name="description" content="מתחם אירועים יוקרתי בלב הטבע — אולם, גנים, ריזורט וחדרי נופש. חתונות, בר-מצווה ואירועי חברה מהוקצעים.">
+  <!-- SEO meta — copy verified from site-content-map.md (gamos.co.il scrape 2026-05-05) -->
+  <title>גאמוס אירועים — אולם, ריזורט וגן אירועים במעלה אדומים</title>
+  <meta name="description" content="גאמוס — קומפלקס אירועים יוקרתי בפארק ישראל, מעלה אדומים. שני מתחמים: אולם זכוכית עד 1000 מוזמנים וריזורט עם בריכה, חדרי אירוח וקולינריה. חתונות, בר-מצווה ואירועי חברה.">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:locale" content="he_IL">
-  <meta property="og:site_name" content="גאמוס">
-  <meta property="og:title" content="גאמוס — מתחם אירועים יוקרתי, גנים וריזורט">
-  <meta property="og:description" content="חוויית אירוע קולנועית — אולם מהודר, ריזורט בוטיקי וחדרי נופש בלב הטבע.">
-  <meta property="og:image" content="/assets/video/hero-poster.jpg">
+  <meta property="og:site_name" content="גאמוס אירועים">
+  <meta property="og:title" content="גאמוס אירועים — אולם, ריזורט וגן אירועים במעלה אדומים">
+  <meta property="og:description" content="קומפלקס אירועים יוקרתי בפארק ישראל. אולם זכוכית, ריזורט עם בריכה, חדרי נופש וקולינריה — חוויה אחת, שני מתחמים.">
+  <meta property="og:image" content="https://gamos.co.il/assets/video/hero-poster.jpg">
   <meta property="og:url" content="https://gamos.co.il/">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="גאמוס — מתחם אירועים יוקרתי">
-  <meta name="twitter:description" content="חתונות, בר-מצווה ואירועי חברה במתחם בוטיקי.">
-  <meta name="twitter:image" content="/assets/video/hero-poster.jpg">
+  <meta name="twitter:title" content="גאמוס אירועים — אולם וריזורט במעלה אדומים">
+  <meta name="twitter:description" content="קומפלקס אירועים יוקרתי בפארק ישראל. אולם זכוכית, ריזורט וחדרי אירוח.">
+  <meta name="twitter:image" content="https://gamos.co.il/assets/video/hero-poster.jpg">
 
-  <!-- Favicon (TODO(agent-03): final favicon set) -->
+  <!-- Favicon — SVG primary; Agent 03 ships the rasterized 16/32/180 set later. -->
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 
   <!-- Performance: preload LCP image (hero static — the first painted full-bleed surface) -->
@@ -41,34 +41,55 @@
   <!-- DNS / preconnect (only if external resources confirmed) -->
   <!-- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> -->
 
-  <!-- Structured data: EventVenue (TODO(agent-01): verify address/phone/geo from gamos.co.il scrape) -->
+  <!-- Structured data: EventVenue. Source-of-truth = site-content-map.md (verified 2026-05-28). -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "EventVenue",
-    "name": "גאמוס",
-    "description": "מתחם אירועים יוקרתי, גנים וריזורט",
+    "name": "גאמוס אירועים",
+    "alternateName": "GAMOS",
+    "description": "קומפלקס אירועים יוקרתי בפארק ישראל, מעלה אדומים. שני מתחמים — אולם זכוכית עד 1000 מוזמנים וריזורט עם בריכה, חדרי אירוח וקולינריה.",
     "url": "https://gamos.co.il/",
     "image": "https://gamos.co.il/assets/video/hero-poster.jpg",
-    "telephone": "TODO-PHONE",
+    "telephone": "+972-77-9972343",
+    "email": "office@gamos.co.il",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "TODO-STREET",
-      "addressLocality": "TODO-CITY",
-      "addressRegion": "TODO-REGION",
-      "postalCode": "TODO-POSTAL",
+      "streetAddress": "די זהב 7, פארק ישראל",
+      "addressLocality": "מעלה אדומים",
+      "addressRegion": "מחוז יהודה ושומרון",
       "addressCountry": "IL"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": "TODO-LAT",
-      "longitude": "TODO-LNG"
+      "latitude": "31.7700",
+      "longitude": "35.2900"
     },
+    "contactPoint": [
+      {
+        "@type": "ContactPoint",
+        "telephone": "+972-77-9972343",
+        "contactType": "reservations",
+        "availableLanguage": ["Hebrew", "English"]
+      },
+      {
+        "@type": "ContactPoint",
+        "telephone": "+972-77-8036482",
+        "contactType": "customer service",
+        "availableLanguage": ["Hebrew"]
+      }
+    ],
+    "sameAs": [
+      "https://www.facebook.com/Pavilionevetns",
+      "https://www.instagram.com/gamos__event/"
+    ],
     "amenityFeature": [
-      { "@type": "LocationFeatureSpecification", "name": "אולם אירועים" },
-      { "@type": "LocationFeatureSpecification", "name": "ריזורט וחדרי נופש" },
-      { "@type": "LocationFeatureSpecification", "name": "גנים" },
-      { "@type": "LocationFeatureSpecification", "name": "מטבח קולינרי" }
+      { "@type": "LocationFeatureSpecification", "name": "אולם אירועים עד 1000 מוזמנים" },
+      { "@type": "LocationFeatureSpecification", "name": "ריזורט וחדרי אירוח" },
+      { "@type": "LocationFeatureSpecification", "name": "בריכת חוף" },
+      { "@type": "LocationFeatureSpecification", "name": "גן אירועים" },
+      { "@type": "LocationFeatureSpecification", "name": "מטבח קולינרי" },
+      { "@type": "LocationFeatureSpecification", "name": "חניה פרטית" }
     ]
   }
   </script>
@@ -117,9 +138,8 @@
   <!-- ========================================================================
        SITE HEADER / TOP NAV
        Constitution §10.1: HTML is the truth. Anchor IDs match section-order.md.
-       TODO(agent-01): Replace nav labels with verified labels from
-       full-tab-inventory.md (user-approved). Also confirm if a language
-       toggle is required.
+       Labels verified against site-content-map.md §7 (live nav 2026-05-05) +
+       rebuild section additions (lounge, rooms, testimonials, gallery, kosher).
   ======================================================================== -->
   <header class="site-nav" role="banner">
     <nav class="site-nav__inner" aria-label="ניווט ראשי">
@@ -312,11 +332,12 @@
     </aside>
 
     <!-- ====================================================================
-         #hall-venue — אולם האירועים
+         #hall-venue — אולם האירועים (GAMOS EVENTS)
          Scroll-scene scaffold (Agent 18, 2026-06-01) — POSTER-KEN-BURNS mode.
          No video source yet → poster image with CSS-driven Ken-Burns drift.
          When real video lands: see docs/adding-hall-video.md (one-file edit).
-         TODO(agent-01): replace placeholder lede with verified copy.
+         Copy: hybrid of site-content-map.md §3 (live "אהבה ממבט ראשון" + glass walls
+         + 1000 guests) + rebuild section context (cinematic frame for the event).
     ==================================================================== -->
     <section id="hall-venue" class="scroll-scene hall-venue"
              data-scrub="venue"
@@ -338,10 +359,10 @@
 
         <div class="scroll-scene__overlay">
           <header class="section-header">
-            <p class="section-header__eyebrow">אולם</p>
-            <h2 id="hall-venue-title" class="section-header__title">האולם — מסגרת קולנועית לאירוע שלכם</h2>
+            <p class="section-header__eyebrow">GAMOS EVENTS</p>
+            <h2 id="hall-venue-title" class="section-header__title">האולם — אהבה ממבט ראשון</h2>
             <p class="section-header__lede">
-              חלל מהוקצע עם תקרה גבוהה, אקוסטיקה מותאמת והפרדה אלגנטית בין הסעודה לרחבת הריקודים.
+              גן אירועים עם נוף מדברי וחופה מרחפת. אולם ענק עטוף כולו בקירות זכוכית עם תקרה בגובה אין־סופי, מערכת הגברה ותאורה מתקדמת ומסכי לד.
             </p>
           </header>
         </div>
@@ -350,16 +371,16 @@
       <div class="scroll-scene__post">
         <ul class="hall-venue__features-scaffold" role="list">
           <li class="feature">
-            <h3>קיבולת עד <bdi>800</bdi> אורחים</h3>
-            <p>פלטפורמה מודולרית — חתונה אינטימית או חינגה גדולה, אותה רמת הפקה.</p>
+            <h3>קיבולת עד <bdi>1000</bdi> מוזמנים</h3>
+            <p>חלל מודולרי שמתאים לחתונה אינטימית כמו לאירוע גדול — אותה רמת הפקה בכל קנה מידה.</p>
           </li>
           <li class="feature">
-            <h3>במה ומערכת סאונד</h3>
-            <p>תשתית טכנית מלאה — ערוץ אודיו, וידאו והקרנה לכל סוג אירוע.</p>
+            <h3>הגברה, תאורה ומסכי לד</h3>
+            <p>תשתית טכנית מלאה — אודיו, וידאו והקרנה — מותאמת לכל סוג אירוע ולכל סגנון מוזיקלי.</p>
           </li>
           <li class="feature">
-            <h3>חניה צמודה</h3>
-            <p>חניון פרטי גדול לכל המוזמנים — ללא מתח, ללא הליכה ארוכה.</p>
+            <h3>חניה פרטית צמודה</h3>
+            <p>חניון פרטי גדול בכניסה למתחם — אורחים מגיעים בנינוחות, ללא הליכה ארוכה.</p>
           </li>
         </ul>
       </div>
@@ -387,10 +408,10 @@
 
         <div class="scroll-scene__overlay">
           <header class="section-header">
-            <p class="section-header__eyebrow">ריזורט</p>
-            <h2 id="hall-resort-title" class="section-header__title">ריזורט גאמוס — חוויה הוליסטית</h2>
+            <p class="section-header__eyebrow">GAMOS RESORT</p>
+            <h2 id="hall-resort-title" class="section-header__title">ריזורט גאמוס — חוויה שטרם הכרתם</h2>
             <p class="section-header__lede">
-              חוויה שמתחילה מהרגע שאתם נכנסים בשער ולא נגמרת עד הצ'ק-אאוט. שדרוג של אירוע לשבוע שלם.
+              גן אירועים, חדרי אירוח, מערכת הגברה ותאורה, תפריט מנצח, בריכת חוף ענקית ונוף מדברי עוצר נשימה — חוויה ייחודית שטרם הכרתם בישראל.
             </p>
           </header>
         </div>
@@ -399,16 +420,16 @@
       <div class="scroll-scene__post">
         <ul class="hall-resort__features" role="list">
           <li class="feature">
-            <h3>בריכה אינסוף</h3>
-            <p>בריכה מחוממת עם נוף פתוח לעמק. שחיית בוקר לפני הקפה הראשון.</p>
+            <h3>בריכת חוף ענקית</h3>
+            <p>בריכה רחבת היקף עם נוף פתוח אל המדבר — נקודת מפגש מרכזית לאירוח ביום ולחגיגה בערב.</p>
           </li>
           <li class="feature">
-            <h3>גן בריאוט</h3>
-            <p>שביל הליכה בין עצי זית עתיקים, פינות ישיבה צלולות לכל שעות היום.</p>
+            <h3>חדרי אירוח במתחם</h3>
+            <p>חדרים מעוצבים בלב המתחם — אורחים מתארחים אצלכם בלי לעזוב את הטבע ובלי הסעות מסביב.</p>
           </li>
           <li class="feature">
-            <h3>ספא יוקרתי</h3>
-            <p>טיפולים אישיים, סאונה וחדרי טיפולים זוגיים — לרוגע אמיתי בין האירוע לחזרה הביתה.</p>
+            <h3>גן ונוף מדברי</h3>
+            <p>נוף פתוח לעמק היורד אל ים המלח — תפאורה טבעית שלא דורשת תוספות.</p>
           </li>
         </ul>
       </div>
@@ -423,9 +444,10 @@
         <h2 id="lounge-title" class="section-header__title">לאונג' — קבלת פנים אינטימית</h2>
       </header>
 
+      <!-- Lounge section is a rebuild addition (not on live site). Copy is generic-luxury,
+           no specific quantitative claims (per Agent 22 brief — avoid unverifiable numbers). -->
       <p class="lounge__lede">
-        <!-- TODO(agent-01): final copy -->
-        חלל קוקטיילים חמים — בר עץ, ספסלי קטיפה ותאורה דרמטית — לקבלת פנים מהוקצעת לפני שערי האולם.
+        חלל קבלת פנים אינטימי — בר משקאות, פינות ישיבה רכות ותאורה דרמטית — קבלת פנים מהוקצעת לפני שערי האולם.
       </p>
 
       <div class="lounge__media" aria-hidden="true">
@@ -442,7 +464,8 @@
         <h2 id="rooms-title" class="section-header__title">חדרים — שינה רגועה בסוף ערב מושלם</h2>
       </header>
 
-      <!-- TODO(agent-08): rooms slider with real images -->
+      <!-- Rooms cards: scaffold with data-placeholder media slots.
+           Agent 08 swaps each .rooms__card-media with real <picture>/<video> when ready. -->
       <div class="rooms__gallery" role="list" aria-label="גלריית חדרי נופש">
         <article class="rooms__card" role="listitem">
           <div class="rooms__card-media" aria-hidden="true"
@@ -504,20 +527,19 @@
 
         <div class="scroll-scene__overlay">
           <header class="section-header">
-            <p class="section-header__eyebrow">הקולינריה שלנו</p>
+            <p class="section-header__eyebrow">המטבח שלנו</p>
             <h2 id="culinary-title" class="section-header__title">
-              טעמים שמספרים סיפור
+              חוויה קולינרית בלתי נשכחת
             </h2>
             <p class="section-header__lede">
-              תפריטים אישיים בליווי שף, חומרי גלם מקומיים ובחירה בין מטבח בשרי
-              לחלבי עם הפרדה מלאה — הסעודה כחלק מהאירוע, לא נספח.
+              מסע גסטרונומי של מנות מנצחות — מיטב המרכיבים הטריים בשילוב צוות מקצועי שיעשה לכם שמח בצלחת. אירועים שנועדו לעורר את החושים ולהשאיר טעם של עוד.
             </p>
           </header>
         </div>
       </div>
 
-      <!-- After the sticky stage releases — the existing static dish gallery.
-           TODO(agent-08,09): real images + captions; placeholders for now. -->
+      <!-- After the sticky stage releases — the static dish gallery.
+           Agents 08/09 replace each li[data-placeholder] with real <picture> + caption. -->
       <div class="scroll-scene__post culinary__post">
         <ul class="culinary__grid" role="list" aria-label="גלריית מנות">
           <li class="culinary__item" data-placeholder="dish-1"></li>
@@ -569,25 +591,26 @@
           <p class="about__lede"
              data-reveal="slide-right"
              style="--reveal-delay: 160ms;">
-            <!-- TODO(agent-01): real about copy from gamos.co.il -->
-            גאמוס נוסד מתוך אהבה לאירועים שמרגישים כמו סיפור — לא רק חלל מהודר, אלא חוויה כוללת
-            בה כל פרט מתוכנן: האור, הצליל, הריח והטעם.
+            גאמוס הוא קומפלקס אירועים ייחודי, עצום בגודלו, מעוצב בקפידה — שני מתחמים שונים ונפרדים בפארק ישראל, מעלה אדומים. כל פרט תוכנן כדי שתקבלו את כל האפשרויות לאירוע יוצא דופן.
           </p>
 
+          <!-- Stats grid: feature labels only (no numeric claims — site-content-map.md does not
+               verify counts; per Agent 22 brief: avoid unverified numbers). Numeric values
+               removed; cards highlight what we offer in qualitative form. -->
           <dl class="about__stats"
               data-reveal="slide-right"
               style="--reveal-delay: 240ms;">
             <div class="about__stat">
-              <dt>שנות פעילות</dt>
-              <dd><bdi><span class="stat-number" data-value="20" data-suffix="+">0</span></bdi></dd>
+              <dt>שני מתחמים</dt>
+              <dd>אולם וריזורט במתחם אחד</dd>
             </div>
             <div class="about__stat">
-              <dt>אירועים מאורגנים</dt>
-              <dd><bdi><span class="stat-number" data-value="3000" data-suffix="+">0</span></bdi></dd>
+              <dt>קיבולת</dt>
+              <dd>עד <bdi>1000</bdi> מוזמנים</dd>
             </div>
             <div class="about__stat">
-              <dt>שביעות רצון</dt>
-              <dd><bdi><span class="stat-number" data-value="98" data-suffix="%">0</span></bdi></dd>
+              <dt>מיקום</dt>
+              <dd>פארק ישראל, מעלה אדומים</dd>
             </div>
           </dl>
         </div>
@@ -606,39 +629,43 @@
         <h2 id="testimonials-title" class="section-header__title">מה מספרים על האירוע אצלנו</h2>
       </header>
 
-      <!-- TODO(agent-08): real testimonials carousel from inventory -->
+      <!-- Testimonials: live site has no testimonials section (per site-content-map.md §11).
+           Agent 08 will replace these placeholder quotes when 6-10 real client quotes
+           are collected from the owner. Current text is generic and does not name real clients. -->
       <div class="testimonials__track" role="region" aria-label="המלצות לקוחות"
            data-slider="testimonials" data-stagger>
+        <!-- Placeholder quotes — names/years intentionally generic until owner provides
+             real quotes (see site-content-map.md §11; live site has no testimonials yet). -->
         <article class="testimonial" role="group" aria-roledescription="המלצה"
                  data-reveal="fade-up" style="--reveal-delay: 120ms;">
           <blockquote class="testimonial__quote">
-            <p>החתונה שלנו הרגישה כמו סרט. כל פרט קטן הוקדש לתשומת לב.</p>
+            <p>החתונה הרגישה כמו סרט. כל פרט קטן קיבל תשומת לב — אורחים עוד מדברים.</p>
           </blockquote>
           <footer class="testimonial__author">
-            <cite>שירה ויואב</cite>
-            <span class="testimonial__meta">חתונה, <bdi>2025</bdi></span>
+            <cite>זוג מתחתן</cite>
+            <span class="testimonial__meta">חתונה</span>
           </footer>
         </article>
 
         <article class="testimonial" role="group" aria-roledescription="המלצה"
                  data-reveal="fade-up" style="--reveal-delay: 240ms;">
           <blockquote class="testimonial__quote">
-            <p>צוות שמבין באירוע ואוכל מצוין — האורחים עוד מדברים.</p>
+            <p>צוות שמבין באירוע, אוכל ברמה גבוהה ומתחם שמדבר בעד עצמו.</p>
           </blockquote>
           <footer class="testimonial__author">
-            <cite>משפחת לוי</cite>
-            <span class="testimonial__meta">בר-מצווה, <bdi>2025</bdi></span>
+            <cite>משפחה חוגגת</cite>
+            <span class="testimonial__meta">בר-מצווה</span>
           </footer>
         </article>
 
         <article class="testimonial" role="group" aria-roledescription="המלצה"
                  data-reveal="fade-up" style="--reveal-delay: 360ms;">
           <blockquote class="testimonial__quote">
-            <p>אירוע חברה ל-<bdi>250</bdi> איש שעבר חלק לחלוטין. נחזור.</p>
+            <p>אירוע חברה גדול שעבר חלק לחלוטין — מהקבלה ועד סוף הערב. נחזור.</p>
           </blockquote>
           <footer class="testimonial__author">
-            <cite>חברת היי-טק</cite>
-            <span class="testimonial__meta">אירוע חברה, <bdi>2024</bdi></span>
+            <cite>חברה אורגנית</cite>
+            <span class="testimonial__meta">אירוע חברה</span>
           </footer>
         </article>
       </div>
@@ -659,7 +686,9 @@
          #gallery — mixed media
          Agent 20 choreography: items use scale-up with cascading delays
          (100ms apart) for a pop-in grid effect.
-         TODO(agent-01): confirm if a dedicated gallery exists on gamos.co.il
+         Live site has a dedicated /גלריה/ page (site-content-map.md §7+§8).
+         Rebuild surfaces a curated 8-tile mosaic on the homepage; deeper
+         gallery page is a future deliverable.
     ==================================================================== -->
     <section id="gallery" class="gallery" aria-labelledby="gallery-title">
       <header class="section-header">
@@ -772,8 +801,9 @@
 
         <p class="kosher__body"
            data-reveal="rotate-in" style="--reveal-delay: 360ms;">
-          <!-- TODO(agent-01): verify exact wording from gamos.co.il (rabbinate name + level) -->
-          המתחם פועל בכשרות מהודרת בהשגחת רבנות מקומית, עם הפרדה מלאה בין בשרי לחלבי.
+          <!-- Live site does not state a specific rabbinate. Copy is generic-but-accurate;
+               owner supplies the rabbinate name + certification level for the final pass. -->
+          המתחם פועל בכשרות בהשגחת רבנות מוסמכת, עם הפרדה מלאה בין בשרי לחלבי.
           תעודות הכשרות זמינות לעיון במשרדי המתחם.
         </p>
       </div>
@@ -860,47 +890,56 @@
             <ul class="contact__channels" role="list">
               <li>
                 <span class="contact__channel-label">טלפון</span>
-                <!-- TODO(agent-01): real phone -->
-                <a href="tel:+972000000000" class="contact__channel-value">
-                  <bdi>053-000-0000</bdi>
+                <a href="tel:+972779972343" class="contact__channel-value" dir="ltr">
+                  <bdi>077-9972343</bdi>
+                </a>
+              </li>
+              <li>
+                <span class="contact__channel-label">טלפון נוסף</span>
+                <a href="tel:+972778036482" class="contact__channel-value" dir="ltr">
+                  <bdi>077-8036482</bdi>
                 </a>
               </li>
               <li>
                 <span class="contact__channel-label">דוא"ל</span>
-                <a href="mailto:info@gamos.co.il" class="contact__channel-value" dir="ltr">
-                  info@gamos.co.il
+                <a href="mailto:office@gamos.co.il?subject=%D7%A4%D7%A0%D7%99%D7%99%D7%94%20%D7%9C%D7%90%D7%99%D7%A8%D7%95%D7%A2%20%D7%91%D7%92%D7%90%D7%9E%D7%95%D7%A1&body=%D7%A9%D7%9C%D7%95%D7%9D%2C%0A%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%2F%D7%AA%20%D7%9C%D7%A7%D7%91%D7%9C%20%D7%A4%D7%A8%D7%98%D7%99%D7%9D%20%D7%A2%D7%9C%20%D7%90%D7%99%D7%A8%D7%95%D7%A2%20%D7%91%D7%92%D7%90%D7%9E%D7%95%D7%A1.%0A%0A%D7%A1%D7%95%D7%92%20%D7%94%D7%90%D7%99%D7%A8%D7%95%D7%A2%3A%0A%D7%AA%D7%90%D7%A8%D7%99%D7%9A%20%D7%9E%D7%A9%D7%95%D7%A2%D7%A8%3A%0A%D7%9E%D7%A1%D7%A4%D7%A8%20%D7%9E%D7%95%D7%96%D7%9E%D7%A0%D7%99%D7%9D%3A%0A%0A%D7%AA%D7%95%D7%93%D7%94%21" class="contact__channel-value" dir="ltr">
+                  office@gamos.co.il
                 </a>
               </li>
               <li>
                 <span class="contact__channel-label">ווטסאפ</span>
-                <a href="https://wa.me/972000000000" class="contact__channel-value"
+                <a href="https://wa.me/972779972343?text=%D7%A9%D7%9C%D7%95%D7%9D%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%2F%D7%AA%20%D7%9C%D7%A7%D7%91%D7%9C%20%D7%A4%D7%A8%D7%98%D7%99%D7%9D%20%D7%A2%D7%9C%20%D7%90%D7%99%D7%A8%D7%95%D7%A2%20%D7%91%D7%92%D7%90%D7%9E%D7%95%D7%A1." class="contact__channel-value" dir="ltr"
                    target="_blank" rel="noopener noreferrer">
-                  <bdi>053-000-0000</bdi>
+                  <bdi>077-9972343</bdi>
                 </a>
               </li>
               <li>
                 <span class="contact__channel-label">כתובת</span>
                 <span class="contact__channel-value">
-                  <!-- TODO(agent-01): real address -->
-                  כתובת המתחם, ישראל
+                  די זהב 7, פארק ישראל, מעלה אדומים
                 </span>
               </li>
             </ul>
 
             <div class="contact__cta-row">
-              <a class="contact__cta contact__cta--waze" href="#"
-                 aria-label="פתח ניווט ב-Waze">
+              <a class="contact__cta contact__cta--waze"
+                 href="https://waze.com/ul?ll=31.7700,35.2900&navigate=yes"
+                 target="_blank" rel="noopener noreferrer"
+                 aria-label="פתח ניווט ב-Waze לגאמוס, די זהב 7 מעלה אדומים">
                 <span>נווטו ב-Waze</span>
               </a>
-              <a class="contact__cta contact__cta--maps" href="#"
-                 aria-label="פתח ב-Google Maps">
+              <a class="contact__cta contact__cta--maps"
+                 href="https://www.google.com/maps/search/?api=1&query=31.7700,35.2900"
+                 target="_blank" rel="noopener noreferrer"
+                 aria-label="פתח ב-Google Maps לגאמוס, די זהב 7 מעלה אדומים">
                 <span>פתחו ב-Google Maps</span>
               </a>
             </div>
 
-            <!-- TODO(agent-08): embed actual map iframe (lazy-loaded) -->
+            <!-- Map placeholder: Agent 08 swaps with a lazy-loaded iframe (privacy-friendly
+                 embed) when the embed strategy is finalized. Coords: 31.7700, 35.2900. -->
             <div class="contact__map" role="img"
-                 aria-label="מפת המתחם — טוען..."
+                 aria-label="מפת המתחם — די זהב 7, פארק ישראל, מעלה אדומים"
                  data-placeholder="map"></div>
           </aside>
 
@@ -919,8 +958,7 @@
       <div class="site-footer__brand">
         <span class="site-footer__brand-mark">גאמוס</span>
         <p class="site-footer__tagline">
-          <!-- TODO(agent-01): final tagline -->
-          מתחם אירועים בוטיקי בלב הטבע
+          חווית אירועים חדשה בישראל
         </p>
       </div>
 
@@ -938,25 +976,19 @@
       </nav>
 
       <ul class="site-footer__social" role="list" aria-label="רשתות חברתיות">
-        <!-- TODO(agent-01): verify which socials gamos.co.il actually uses -->
+        <!-- Verified socials per site-content-map.md §6 — live site only links FB + IG. -->
         <li>
-          <a href="#" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+          <a href="https://www.instagram.com/gamos__event/"
+             aria-label="גאמוס באינסטגרם"
+             target="_blank" rel="noopener noreferrer">
             <span aria-hidden="true">IG</span>
           </a>
         </li>
         <li>
-          <a href="#" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+          <a href="https://www.facebook.com/Pavilionevetns"
+             aria-label="גאמוס בפייסבוק"
+             target="_blank" rel="noopener noreferrer">
             <span aria-hidden="true">FB</span>
-          </a>
-        </li>
-        <li>
-          <a href="#" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
-            <span aria-hidden="true">YT</span>
-          </a>
-        </li>
-        <li>
-          <a href="#" aria-label="TikTok" target="_blank" rel="noopener noreferrer">
-            <span aria-hidden="true">TT</span>
           </a>
         </li>
       </ul>

@@ -383,7 +383,7 @@ hard dependency**, this is progressive enhancement.
   remain *real text* under both alternatives in §3 — never replaced by
   `<img>` or pure SVG paths).
 - **Alt text.** Hero static bg `<img alt="">` (decorative, the desert is
-  brand atmosphere not content). Logo `<img alt="גמוס — לוגו">` (existing).
+  brand atmosphere not content). Logo `<img alt="גאמוס — לוגו">` (existing).
 
 ---
 
