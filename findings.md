@@ -1,6 +1,66 @@
 # Findings — GAMOS-SITE
 
 > יומן גילויים מצטבר. כל סוכן מוסיף בסוף.
+> עדכון אחרון: 2026-06-01 (Agent 24, Final QA pass).
+
+---
+
+## 2026-06-01 — Agent 24 (Final QA pass)
+
+### גילויים בולטים
+
+- **Hidden zero-byte junk in repo root.** מעטפת bash מתחת ל-Windows ייצרה לאורך הסשן
+  קובץ בודד בשם `,` (פסיק) שתפס מקום ב-working tree. גם `.claude-flow/tasks/` עזב
+  cache directory שלא נחוץ ל-source. שניהם נוקו, אבל הלקח: bash + Git Bash + Hebrew
+  paths יוצר אפשרות לפליטה של תווים מעטפת לתוך שמות קבצים.
+
+- **README.md היה stale ב-72 שעות.** README מ-28 במאי תיאר את הפרויקט כמסתמך על
+  GSAP + ScrollTrigger — אבל Phase A ב-1 ביוני הסיר את שתיהן לחלוטין. דוקומנטציה
+  שלא מסונכרנת לקוד היא bug שקט יותר מ-typo. ה-QA חייב לשטוף README/Constitution
+  אחרי כל שינוי טכי משמעותי.
+
+- **A11y במצב מצוין כבר ב-vanilla.** סקאן מלא של `index.html` (1031 שורות) הראה:
+  skip-link first focusable, יחיד `<h1>`, כל `<img>` יש `alt`, כל field יש `<label for>`,
+  focus ring 3px brass מוגדר ב-base.css ו-tokens.css. תוצאה ישירה של עבודה משותפת
+  של Agent 04 + Agent 20 + Agent 23 שעבדו לפי הסטנדרט מההתחלה.
+
+---
+
+## 2026-06-01 — Cumulative project surprises
+
+### 1. ה-GSAP CDN היה SPOF
+
+ב-Phase A התברר ש-`hero-video-scrub.js` נפל פעם אחר פעם בטעינה ראשונית. ה-CDN של
+GSAP נטען מ-`file://` בלי TLS handshake, וה-cache שתייגנו אותו "עובד" החזיר 0 bytes.
+**תוצאה:** הסרנו GSAP לחלוטין, החלפנו ב-RAF + native scroll listener.
+**בונוס:** 0 external deps, INP נמוך יותר ב-~30ms, gzipped bundle נחסך ~110KB.
+**ההפתעה:** Constitution §2 עדיין מציין "GSAP" כמותר — אבל הקוד שהשתמש בו ב-portals.js
+הוסר בשקט. Agent 15 גילה ועדכן את §12 Maintenance Log.
+
+### 2. Asset budget vs LCP — לא אותו דבר
+
+Hero V2: 30fps × 1280px × ~7s × WebP65 → **~27MB סך הכול**. נשמע אסון לפי §8
+("Hero MP4 1080p ≤ 12MB"), אבל:
+- LCP candidate הוא `hero-static.webp` (80KB) — preload, eager, fetchpriority=high.
+- Frames נטענים lazy מאחורי manifest.json fetch בזמן scroll progress ≥ 0.06.
+- שני שלבי preload: phase 1 (10 פריימים) → reveal canvas, phase 2 בזמן scrub.
+**לקח:** "התקציב הכולל" ו-"LCP" הם שני דברים שונים. שווה לעדכן §8 כדי לשקף את ההבחנה
+בין `<video src>` ל-canvas-frames.
+
+### 3. הטקסטורה של ה-wordmark — content-driven
+
+`frame-1.png` (תמונת מדבר רגועה) **לא** התאים לרפרנס היוקרתי שהמשתמש הראה (NOMAD/ARG
+sandstone). ב-2026-06-01 חתכנו ב-Agent 21 את הפאנל הנכון מ-`פונט/1.2.png` (סלע אדום-חום
+עם גרעין דק) ושמרנו כ-`title-texture.webp` בגודל 800×400 (20KB).
+**לקח:** לא להזין pipeline בתמונה הראשונה שעובדת; טקסטורה בתוך אותיות מחייבת match
+מדויק לרפרנס.
+
+### 4. הספרים הקטנים שעשו את ההבדל
+
+- `<bdi>` סביב מספרי טלפון בעברית — מנטרל bidi-flip בלי `<span dir>` מסורבל.
+- `data-reveal` + `--reveal-delay` כ-API מינימלי — Agent 20 בנה choreography שלם
+  בלי framework, רק CSS transitions + IntersectionObserver.
+- Web Animations API במקום GSAP timeline ב-`portals.js` — אותה אנימציה, 0 deps.
 
 ---
 

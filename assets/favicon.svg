@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  GAMOS favicon — brass Hebrew gimel "ג" on warm-ink background.
+  Constitution §5 palette:
+    --ink-deep #1A1410 (background)
+    --brass    #CFAE83 (mark)
+  32×32 viewBox; SVG primary, scales infinitely.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"
+     role="img" aria-label="גאמוס">
+  <title>גאמוס</title>
+  <rect width="32" height="32" rx="6" fill="#1A1410"/>
+  <text x="16" y="24"
+        text-anchor="middle"
+        font-family="'Frank Ruhl Libre', 'David Libre', 'Times New Roman', serif"
+        font-weight="700"
+        font-size="22"
+        fill="#CFAE83">ג</text>
+</svg>
