@@ -13,6 +13,7 @@
   background-color: var(--bg-alt);
   color: var(--fg);
   padding-block: var(--space-32);
+  padding-inline: var(--gutter);
   isolation: isolate;
   overflow: clip;
 }
