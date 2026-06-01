@@ -82,6 +82,7 @@
   <!-- Stylesheets: per-section (one per architectural section, per Constitution §10.1) -->
   <link rel="stylesheet" href="/css/sections/hero.css">
   <link rel="stylesheet" href="/css/sections/portals.css">
+  <link rel="stylesheet" href="/css/sections/scroll-scene.css">
   <link rel="stylesheet" href="/css/sections/hall-venue.css">
   <link rel="stylesheet" href="/css/sections/hall-resort.css">
   <link rel="stylesheet" href="/css/sections/lounge.css">
@@ -160,56 +161,109 @@
   <main id="main-content">
 
     <!-- ====================================================================
-         #hero — scroll-driven cinematic video
-         DOM exactly per architecture/video-scrub-spec.md
-         Spacer = 5×100vh dictates scroll length.
+         #hero — V2 multi-stage scroll cinema
+         Stages (driven by [data-stage] on .hero__sticky, set by hero-video-scrub.js):
+           A: static-bg     [0%   .. 8%  )  — desert vista only
+           B: title-reveal  [8%   .. 22% )  — GAMOS letters reveal + "אירועים" subtitle
+           C: scrub         [22%  .. 88% )  — hero-master video scrubbed by scroll
+           D: portals       [88%  .. 100%]  — video freezes on last frame, portals appear
+         Spacer = 700vh (kept from current Constitution §3 — see Agent 12 §1.1).
     ==================================================================== -->
-    <section id="hero" class="hero" aria-labelledby="hero-title">
-      <!-- spacer dictates scroll length: intro + scrub + portal hold -->
+    <section id="hero" class="hero" aria-labelledby="hero-sr-title">
+      <!-- spacer dictates scroll length: 700vh maps to four stages above -->
       <div class="hero__spacer" aria-hidden="true"></div>
 
-      <div class="hero__sticky">
+      <div class="hero__sticky" data-stage="static-bg">
 
-        <!-- Layer 1: static intro background (frame-1.png — desert vista) -->
-        <picture class="hero__intro-bg" aria-hidden="true">
-          <source media="(max-width: 768px)" type="image/webp" srcset="/assets/images/brand/hero-static-mobile.webp">
+        <!-- Layer A: static background (frame-1.png — desert vista) — LCP candidate -->
+        <picture class="hero__static-bg" aria-hidden="true">
+          <source media="(max-width: 768px)" type="image/webp"
+                  srcset="/assets/images/brand/hero-static-mobile.webp">
           <source type="image/webp" srcset="/assets/images/brand/hero-static.webp">
-          <img src="/assets/images/brand/hero-static.jpg" alt="" width="1920" height="1080" decoding="async">
+          <img src="/assets/images/brand/hero-static.jpg" alt=""
+               width="1920" height="1080"
+               loading="eager" decoding="sync" fetchpriority="high">
         </picture>
 
-        <!-- Layer 2: scroll-driven video — fades in after intro animation -->
+        <!-- Layer B: title reveal — SVG mask + texture (Variant A per Agent 11 §3.1).
+             The <svg> below IS the wordmark visually. The <h1.hero__sr-title> is the
+             real screen-reader heading. SVG explicitly direction="ltr" so RTL on <html>
+             does not flip the Latin glyph order. -->
+        <div class="hero__title-stack" aria-hidden="true">
+          <svg class="hero__title-svg"
+               viewBox="0 0 1200 360"
+               preserveAspectRatio="xMidYMid meet"
+               direction="ltr"
+               role="img"
+               focusable="false">
+            <defs>
+              <!-- Sand-grain texture cropped from frame-1.png (see encode-hero-v2-assets.js).
+                   Tiles inside the letterforms only. -->
+              <pattern id="hero-title-texture"
+                       patternUnits="userSpaceOnUse"
+                       width="800" height="400"
+                       x="200" y="0">
+                <image href="/assets/images/brand/title-texture.webp"
+                       x="0" y="0" width="800" height="400"
+                       preserveAspectRatio="xMidYMid slice" />
+              </pattern>
+
+              <!-- Per-letter masks: each letter has its own mask so we can stagger
+                   the reveal animation. Mask geometry stays in sync with the
+                   visible <text> via shared font-family and identical attrs. -->
+              <mask id="hero-title-mask-G" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="360">
+                <text class="hero__title-letter hero__title-letter--1" x="280" y="240"
+                      font-family="Bodoni Moda" font-weight="900" font-size="280"
+                      fill="white" letter-spacing="0.04em">G</text>
+              </mask>
+              <mask id="hero-title-mask-A" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="360">
+                <text class="hero__title-letter hero__title-letter--2" x="450" y="240"
+                      font-family="Bodoni Moda" font-weight="900" font-size="280"
+                      fill="white" letter-spacing="0.04em">A</text>
+              </mask>
+              <mask id="hero-title-mask-M" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="360">
+                <text class="hero__title-letter hero__title-letter--3" x="615" y="240"
+                      font-family="Bodoni Moda" font-weight="900" font-size="280"
+                      fill="white" letter-spacing="0.04em">M</text>
+              </mask>
+              <mask id="hero-title-mask-O" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="360">
+                <text class="hero__title-letter hero__title-letter--4" x="800" y="240"
+                      font-family="Bodoni Moda" font-weight="900" font-size="280"
+                      fill="white" letter-spacing="0.04em">O</text>
+              </mask>
+              <mask id="hero-title-mask-S" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="360">
+                <text class="hero__title-letter hero__title-letter--5" x="970" y="240"
+                      font-family="Bodoni Moda" font-weight="900" font-size="280"
+                      fill="white" letter-spacing="0.04em">S</text>
+              </mask>
+            </defs>
+
+            <!-- Each letter: a rect filled with the texture, clipped to the letter shape via mask. -->
+            <rect width="1200" height="360" fill="url(#hero-title-texture)" mask="url(#hero-title-mask-G)"/>
+            <rect width="1200" height="360" fill="url(#hero-title-texture)" mask="url(#hero-title-mask-A)"/>
+            <rect width="1200" height="360" fill="url(#hero-title-texture)" mask="url(#hero-title-mask-M)"/>
+            <rect width="1200" height="360" fill="url(#hero-title-texture)" mask="url(#hero-title-mask-O)"/>
+            <rect width="1200" height="360" fill="url(#hero-title-texture)" mask="url(#hero-title-mask-S)"/>
+          </svg>
+
+          <!-- Real heading for SR + SEO (visually hidden — the SVG is the visual). -->
+          <h1 id="hero-sr-title" class="hero__sr-title">GAMOS — אירועים יוקרתיים</h1>
+
+          <!-- Hebrew subtitle (Frank Ruhl Libre 700, fade-up). Visible. -->
+          <p class="hero__subtitle" aria-hidden="true">אירועים</p>
+        </div>
+
+        <!-- Layer C: scroll-driven video. preload=metadata; engine calls .load() -->
+        <!-- explicitly when progress crosses 0.06 (see hero-video-scrub.js). -->
         <video class="hero__video"
-               muted playsinline preload="auto"
-               poster="/assets/video/hero-poster.jpg"
+               muted playsinline preload="metadata"
+               poster="/assets/images/brand/hero-static.webp"
                aria-hidden="true">
           <source src="/assets/video/hero-master-1080.mp4" type="video/mp4"
                   media="(min-width: 768px)">
           <source src="/assets/video/hero-master-720.mp4" type="video/mp4">
         </video>
 
-        <!-- Layer 3: portal-loop video — fades in at end of scrub, holds while portals visible -->
-        <video class="hero__outro-loop"
-               muted playsinline loop preload="metadata"
-               aria-hidden="true">
-          <source src="/assets/video/portal-loop.mp4" type="video/mp4">
-        </video>
-
-        <!-- Layer 4: title + logo intro animation overlay -->
-        <div class="hero__intro" aria-hidden="false">
-          <h1 id="hero-title" class="hero__title-stack">
-            <span class="hero__title-word" data-word="GAMOS" aria-label="GAMOS">
-              <span class="hero__char">G</span><span class="hero__char">A</span><span class="hero__char">M</span><span class="hero__char">O</span><span class="hero__char">S</span>
-            </span>
-            <span class="hero__title-word hero__title-word--sub" data-word="EVENTS" aria-label="EVENTS">
-              <span class="hero__char">E</span><span class="hero__char">V</span><span class="hero__char">E</span><span class="hero__char">N</span><span class="hero__char">T</span><span class="hero__char">S</span>
-            </span>
-          </h1>
-          <picture class="hero__logo">
-            <source type="image/webp" srcset="/assets/images/brand/logo-gold.webp">
-            <img src="/assets/images/brand/logo-gold.png" alt="גמוס — לוגו" width="340" height="100" decoding="async">
-          </picture>
-          <span class="hero__scroll-hint" aria-hidden="true">גלול</span>
-        </div>
       </div>
     </section>
 

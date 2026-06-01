@@ -1,12 +1,21 @@
 /* ===========================================================================
-   hero.css — multi-stage cinematic hero
+   hero.css — V2 multi-stage cinematic hero
+   ---------------------------------------------------------------------------
+   Spec       : agent-plans/agent-12_hero-spec-v2.md (4 stages)
+   Typography : agent-plans/agent-11_typography-research.md (Bodoni Moda 900 + texture)
+   Implements : Agent 16
    ---------------------------------------------------------------------------
    Stages controlled by JS via [data-stage] on .hero__sticky:
-     1. "intro"   — static bg + GAMOS letter animation + logo reveal
-     2. "scrub"   — scroll-driven video (intro hidden, video visible)
-     3. "outro"   — portal-loop video plays, portals appear
-   ========================================================================= */
+     A. "static-bg"     0%  .. 8%   — only hero-static.webp visible
+     B. "title-reveal"  8%  .. 22%  — GAMOS letters reveal + "אירועים" subtitle
+     C. "scrub"         22% .. 88%  — hero-master video scrubbed by scroll
+     D. "portals"       88% .. 100% — video freezes on last frame, portals fade in
 
+   Layer stack (z-order, bottom→top):
+     .hero__static-bg   — z 1, always present, fades 22%–32%
+     .hero__video       — z 2, fades in 22%–30%, stays visible
+     .hero__title-stack — z 10, fades in 8%–12%, fades out 22%–30%
+   ========================================================================= */
 
 
 .hero {
@@ -15,10 +24,8 @@
   color: var(--ivory);
 }
 
-/* spacer dictates total scroll length:
-   100vh for intro (held until letters animated) +
-   500vh for scrub +
-   100vh for outro hold (portals visible) */
+/* Spacer dictates total scroll length. 700vh keeps Stage C ≈ 462vh
+   ≈ 6.6s read-time at 700px/s (1:1 with hero-master video duration). */
 .hero__spacer {
   height: 700vh;
   pointer-events: none;
@@ -35,28 +42,130 @@
   background: var(--ink-deep);
 }
 
-/* ---- Layer 1: static intro background ---- */
-.hero__intro-bg {
+
+/* ---------------------------------------------------------------------------
+   Layer A — static background (LCP candidate)
+   --------------------------------------------------------------------------- */
+
+.hero__static-bg {
   position: absolute;
   inset: 0;
   z-index: 1;
   opacity: 1;
-  transition: opacity 0.6s var(--ease-out-cinema);
+  transition: opacity 0.8s var(--ease-out-cinema);
 }
-.hero__intro-bg img {
+.hero__static-bg img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
-.hero__intro-bg::after {
+/* Soft top + bottom vignette for legibility of the title and subtitle. */
+.hero__static-bg::after {
   content: "";
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(26,20,16,0.20) 0%, rgba(26,20,16,0.05) 40%, rgba(26,20,16,0.55) 100%);
+    linear-gradient(180deg,
+      rgba(26, 20, 16, 0.20) 0%,
+      rgba(26, 20, 16, 0.08) 35%,
+      rgba(26, 20, 16, 0.50) 100%);
+  pointer-events: none;
 }
 
-/* ---- Layer 2: scroll-driven video ---- */
+
+/* ---------------------------------------------------------------------------
+   Layer B — title-reveal: SVG mask wordmark + Hebrew subtitle
+   --------------------------------------------------------------------------- */
+
+.hero__title-stack {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  padding-inline: var(--gutter);
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out-cinema);
+}
+
+/* Visually hidden heading (real text for SR / SEO). The SVG below carries
+   the visual brand. We mark this with .sr-only-equivalent inline so it does
+   not depend on a global .sr-only utility class. */
+.hero__sr-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.hero__title-svg {
+  display: block;
+  width: clamp(280px, 62vw, 1100px);
+  height: auto;
+  max-width: 100%;
+  /* Soft drop-shadow so the textured letters lift off the desert vignette. */
+  filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.45));
+}
+
+/* Per-letter reveal animation — paused by default; plays when stage B starts.
+   Each letter has a clip-path inset(0 0 100% 0) (fully clipped) initial state,
+   transitioning to inset(0 0 0% 0) (fully visible) over 600ms. Staggered by
+   80ms via animation-delay. The animation runs only when stage B is active
+   (selector below); CSS-only — no JS step-stagger needed. */
+.hero__title-letter {
+  /* opacity, transform, clip-path animate together. */
+  opacity: 0;
+  transform: translateY(24px);
+  /* clip-path inside <text> elements is supported in modern browsers; we
+     also fall back to opacity/translateY for any SVG renderer that ignores it. */
+  clip-path: inset(0 0 100% 0);
+  -webkit-clip-path: inset(0 0 100% 0);
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+@keyframes hero-letter-reveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    clip-path: inset(0 0 0% 0);
+    -webkit-clip-path: inset(0 0 0% 0);
+  }
+}
+
+/* Hebrew subtitle "אירועים" — Frank Ruhl Libre 700, fade-up. */
+.hero__subtitle {
+  margin: 0;
+  font-family: var(--font-display-he);
+  font-weight: var(--fw-bold);
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--brass);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.7s var(--ease-out-cinema),
+    transform 0.7s var(--ease-out-cinema);
+  transition-delay: 0.7s; /* Lands ~140ms after the 'S' of GAMOS — Agent 12 §3.3 */
+}
+
+
+/* ---------------------------------------------------------------------------
+   Layer C — scrub video
+   --------------------------------------------------------------------------- */
+
 .hero__video {
   position: absolute;
   inset: 0;
@@ -70,173 +179,90 @@
   transition: opacity 0.8s var(--ease-out-cinema);
 }
 
-/* ---- Layer 3: portal-loop outro ---- */
-.hero__outro-loop {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.8s var(--ease-out-cinema);
+
+/* ---------------------------------------------------------------------------
+   Stage transitions — keyed off [data-stage] on .hero__sticky
+   ---------------------------------------------------------------------------
+   Cross-fade durations (per Agent 12 §1.2):
+     A → B  : 400ms (gentle title appearance)
+     B → C  : 600ms (longer to mask the bg→video swap; video transition: 0.8s)
+     C → D  : 600ms (deceleration into portals reveal — handled by portals.js)
+
+   We set .hero__static-bg to opacity 0 starting at stage C (Agent 12 §1.2:
+   active layer for stage C is .hero__video; bg goes idle).
+   --------------------------------------------------------------------------- */
+
+/* A: static-bg — only the desert image (default state above). */
+
+/* B: title-reveal — bg still visible, title fades in, letters animate. */
+.hero__sticky[data-stage="title-reveal"] .hero__title-stack {
+  opacity: 1;
+}
+.hero__sticky[data-stage="title-reveal"] .hero__title-letter {
+  animation: hero-letter-reveal 0.65s var(--ease-out-cinema) forwards;
+}
+.hero__sticky[data-stage="title-reveal"] .hero__title-letter--1 { animation-delay: 0.00s; }
+.hero__sticky[data-stage="title-reveal"] .hero__title-letter--2 { animation-delay: 0.14s; }
+.hero__sticky[data-stage="title-reveal"] .hero__title-letter--3 { animation-delay: 0.28s; }
+.hero__sticky[data-stage="title-reveal"] .hero__title-letter--4 { animation-delay: 0.42s; }
+.hero__sticky[data-stage="title-reveal"] .hero__title-letter--5 { animation-delay: 0.56s; }
+.hero__sticky[data-stage="title-reveal"] .hero__subtitle {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-/* ---- Stage transitions ---- */
-.hero__sticky[data-stage="scrub"] .hero__intro-bg { opacity: 0; }
-.hero__sticky[data-stage="scrub"] .hero__video    { opacity: 1; }
-.hero__sticky[data-stage="outro"] .hero__intro-bg { opacity: 0; }
-.hero__sticky[data-stage="outro"] .hero__video    { opacity: 0; }
-.hero__sticky[data-stage="outro"] .hero__outro-loop { opacity: 1; }
-
-/* ---- Layer 4: intro overlay (title + logo) ---- */
-.hero__intro {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-8);
-  padding-inline: var(--gutter);
-  text-align: center;
-  pointer-events: none;
-  transition: opacity 0.8s var(--ease-out-cinema);
+/* C: scrub — bg fades out, title fades out, video fades in. */
+.hero__sticky[data-stage="scrub"] .hero__static-bg { opacity: 0; }
+.hero__sticky[data-stage="scrub"] .hero__title-stack { opacity: 0; }
+.hero__sticky[data-stage="scrub"] .hero__video { opacity: 1; }
+/* Once revealed in B, keep letters at final state during C+D so a fast
+   scroller (B → C in <650ms) doesn't see them mid-animation when fading out. */
+.hero__sticky[data-stage="scrub"] .hero__title-letter,
+.hero__sticky[data-stage="portals"] .hero__title-letter {
+  animation: hero-letter-reveal 0.01s linear forwards;
+  animation-delay: 0s;
 }
 
-.hero__sticky[data-stage="scrub"] .hero__intro,
-.hero__sticky[data-stage="outro"] .hero__intro {
-  opacity: 0;
-}
+/* D: portals — video stays (frozen on last frame by JS), title hidden. */
+.hero__sticky[data-stage="portals"] .hero__static-bg { opacity: 0; }
+.hero__sticky[data-stage="portals"] .hero__title-stack { opacity: 0; }
+.hero__sticky[data-stage="portals"] .hero__video { opacity: 1; }
 
-/* ---- GAMOS / EVENTS letter animation ---- */
-.hero__title-stack {
-  font-family: var(--font-display-en);
-  font-weight: var(--fw-bold);
-  letter-spacing: 0.04em;
-  margin: 0;
-  color: var(--ivory);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
-  text-shadow: 0 2px 24px rgba(0,0,0,0.35);
-}
 
-.hero__title-word {
-  display: inline-flex;
-  font-size: clamp(3.5rem, 11vw, 9rem);
-  line-height: 1;
-}
+/* ---------------------------------------------------------------------------
+   Mobile — collapse spacer, scrub disabled (handled by JS isIOS path).
+   --------------------------------------------------------------------------- */
 
-.hero__title-word--sub {
-  font-size: clamp(1.6rem, 4vw, 2.4rem);
-  letter-spacing: var(--tracking-eyebrow);
-  color: var(--brass-glow);
-  margin-block-start: 0.6rem;
-  font-weight: var(--fw-semibold);
-}
-
-.hero__title-word--sub::before,
-.hero__title-word--sub::after {
-  content: "✦";
-  font-size: 0.7em;
-  color: var(--brass);
-  margin-inline: 0.7em;
-  align-self: center;
-  opacity: 0.85;
-}
-
-.hero__char {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(40px) scale(0.92);
-  filter: blur(12px);
-  animation: hero-char-in 0.9s var(--ease-out-cinema) forwards;
-  animation-delay: calc(var(--char-delay, 0) * 80ms + 200ms);
-}
-
-.hero__title-word--sub .hero__char {
-  animation-delay: calc(var(--char-delay, 0) * 60ms + 1200ms);
-}
-
-@keyframes hero-char-in {
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
-}
-
-/* index each char manually via nth-child */
-.hero__title-word .hero__char:nth-child(1) { --char-delay: 0; }
-.hero__title-word .hero__char:nth-child(2) { --char-delay: 1; }
-.hero__title-word .hero__char:nth-child(3) { --char-delay: 2; }
-.hero__title-word .hero__char:nth-child(4) { --char-delay: 3; }
-.hero__title-word .hero__char:nth-child(5) { --char-delay: 4; }
-.hero__title-word .hero__char:nth-child(6) { --char-delay: 5; }
-
-/* ---- logo reveal (after letters) ---- */
-.hero__logo {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(20px);
-  animation: hero-logo-in 1s var(--ease-out-cinema) 2200ms forwards;
-}
-.hero__logo img {
-  width: clamp(180px, 22vw, 320px);
-  height: auto;
-  filter: drop-shadow(0 4px 20px rgba(0,0,0,0.4));
-}
-
-@keyframes hero-logo-in {
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ---- scroll hint ---- */
-.hero__scroll-hint {
-  position: absolute;
-  inset-block-end: var(--space-8);
-  inset-inline: 0;
-  text-align: center;
-  font-family: var(--font-body);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-eyebrow);
-  text-transform: uppercase;
-  color: var(--ivory);
-  opacity: 0;
-  animation: hero-hint-in 1s var(--ease-out-cinema) 3200ms forwards,
-             hero-scroll-pulse 2.4s var(--ease-out-cinema) 3200ms infinite;
-}
-
-@keyframes hero-hint-in {
-  to { opacity: 0.8; }
-}
-
-@keyframes hero-scroll-pulse {
-  0%, 100% { transform: translateY(0); opacity: 0.5; }
-  50%      { transform: translateY(6px); opacity: 0.95; }
-}
-
-/* ---- Mobile ---- */
 @media (max-width: 768px) {
   .hero__spacer { height: 100vh; }
-  .hero__title-word { font-size: clamp(2.5rem, 14vw, 4.5rem); }
+  .hero__title-svg { width: clamp(220px, 78vw, 600px); }
 }
 
-/* ---- Reduced motion ---- */
+
+/* ---------------------------------------------------------------------------
+   Reduced motion — collapse spacer; show static-bg + portals state.
+   JS also jumps data-stage to "portals" on first paint in this mode.
+   --------------------------------------------------------------------------- */
+
 @media (prefers-reduced-motion: reduce) {
   .hero__spacer { height: 100vh; }
-  .hero__char,
-  .hero__logo,
-  .hero__scroll-hint {
+
+  /* Letters appear at final state with no animation. */
+  .hero__title-letter {
     animation: none !important;
     opacity: 1;
     transform: none;
-    filter: none;
+    clip-path: inset(0 0 0% 0);
+    -webkit-clip-path: inset(0 0 0% 0);
+  }
+  .hero__subtitle {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .hero__title-stack,
+  .hero__static-bg,
+  .hero__video {
+    transition: none;
   }
 }
-
-
