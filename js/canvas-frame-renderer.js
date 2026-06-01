@@ -1,277 +1,358 @@
 /* ===========================================================================
-   canvas-frame-renderer.js — generic WebP frame-sequence canvas renderer
+   canvas-frame-renderer.js — Cinematic Scrollytelling renderer
    ---------------------------------------------------------------------------
-   Spec : video-to-website.md §6c (padded cover mode + DPR scaling).
-   Used by: js/hero-video-scrub.js (Stage C scrub) and js/scroll-scene.js
-            (mode "canvas-frames") — Hero + Culinary 2026-06-01.
+   Implementation of the user spec ("Cinematic Scrollytelling with Canvas &
+   GSAP"), adapted from React+Tailwind to vanilla ESM per Constitution §2.
 
-   Why canvas frames instead of <video>?
-   -------------------------------------
-   <video.currentTime = ...> scrubbing is unreliable on iOS Safari (jitter,
-   black frames, decoder restarts) and unevenly smooth on desktop browsers
-   under heavy load. Pre-extracting 30fps WebP frames and drawing each frame
-   into a <canvas> on demand gives 60fps deterministic scrub on every
-   platform, at the cost of a larger initial download (frames stream in via
-   two-phase preloader).
+   Per-scene contract (mirrors the spec point-by-point)
+   ----------------------------------------------------
+   1. Frame Preloading + Loading State
+      - Eager-load all frames (manifest.frameCount) into an in-memory array
+        before render starts. preload() resolves once 100% are decoded OR the
+        first frame is ready (whichever the caller awaits).
+      - onProgress(loadedCount/total) callback drives the loader UI overlay.
+
+   2. Canvas Rendering — manual object-fit: cover with ZOOM_FACTOR
+      - ctx.fillRect with bgColor (default black) covers the canvas.
+      - drawFrame(index) computes scale = max(cw/iw, ch/ih) * ZOOM_FACTOR
+        (default 1.35 — slight zoom hides any baked-in letterboxing).
+      - Centered draw via dx/dy offsets so the frame fills regardless of
+        viewport aspect ratio.
+
+   3. Scroll-to-Frame Mapping
+      - Caller passes a host element with a 500vh (or scene-configurable)
+        spacer. computeProgress() returns clamp((scrollY - hostTop) /
+        (hostHeight - vh), 0, 1).
+      - drawFrame(Math.floor(progress * (frameCount-1))) on every rAF tick;
+        single-flight via _rafPending so duplicate scroll events coalesce.
+
+   4. Mouse Parallax (interactive depth)
+      - bindMouseParallax(canvas) attaches a pointermove listener (host).
+      - On move: GSAP gsap.to(canvas, { x: dx, y: dy, ease: 'power2.out' }).
+      - dx/dy normalized so the canvas never reveals its edges:
+        max offset = (zoomedSize - viewportSize) / 2 → canvas always covers.
+
+   5. UX
+      - resize() re-runs DPR scaling + last drawFrame so picture stays crisp.
+      - Background black (--ink-deep) by default — caller can override.
+      - GSAP ScrollToPlugin available for callers via window.gsap.
 
    Public API
    ----------
-   const r = createRenderer({ canvas, manifest });
-   await r.preload();             // resolves once Phase 1 (first 10 frames) ready
-   r.drawFrame(idx);              // 0-based clamped to [0, frameCount-1]
-   r.resize();                    // re-applies DPR scaling on container size change
-   r.destroy();                   // aborts in-flight loads, releases image refs
-   r.state.loaded                 // 0..1 — fraction of frames currently loaded
-   r.state.phase1Ready            // boolean — first-10 frames decoded
+   const r = createRenderer({ canvas, manifest, host, options });
+     options = { zoom?: 1.35, parallax?: true, parallaxStrength?: 24,
+                 bgColor?: '#000', onProgress?: (loaded, total) => void }
 
-   Manifest schema (matches assets/frames/<scene>/manifest.json):
-     { scene, frameCount, frameUrl ("/.../frame_{NNNN}.webp"), width, height, ... }
+   await r.preload();              // resolves when all frames decoded
+   r.drawFrame(idx);               // 0-based, clamped
+   r.computeProgress();            // 0..1 scroll fraction within host
+   r.bindScroll();                 // attaches scroll → drawFrame on rAF
+   r.bindMouseParallax();          // attaches mousemove → GSAP shift
+   r.resize();                     // re-applies DPR, redraws current frame
+   r.destroy();                    // removes listeners, releases img refs
 
-   Implementation notes
-   --------------------
-   - DPR scaling: canvas.width = clientWidth*dpr; ctx.scale(dpr, dpr).
-     drawFrame uses CSS-pixel coords (canvas.clientWidth/clientHeight) so the
-     padded-cover math is the same on retina + non-retina.
-   - Padded cover: scale = max(cw/iw, ch/ih) * IMAGE_SCALE (0.85). Background
-     fill colour sampled from the 4 corner pixels of the first available frame
-     (cached). Lets the page background blend into the frame edge.
-   - Two-phase preloader:
-       Phase 1: frames [0..PHASE1_COUNT) loaded in parallel; preload() resolves.
-       Phase 2: frames [PHASE1_COUNT..frameCount) loaded async, no blocking.
-   - Error tolerance: any frame's load() failure logs a warn and is skipped;
-     drawFrame falls back to last successfully-decoded frame.
-   - destroy(): abort flight, null out img.src to encourage GC.
+   r.state.loaded                  // count of decoded frames
+   r.state.total                   // manifest.frameCount
+   r.state.currentFrame            // last-rendered index
+
+   Manifest schema (assets/frames/<scene>/manifest.json):
+     { scene, frameCount, frameUrl ("/.../frame_{NNNN}.webp"),
+       width, height, fpsExtracted }
 
    Constitution alignment
    ----------------------
-   §2  vanilla ESM, no deps.
-   §10 module-scoped state lives only in the closures returned by
-        createRenderer(). No globals beyond the function export.
+   §2   GSAP self-hosted at /assets/vendor/gsap.min.js — Phase A regression
+        deliberate: original removal was due to CDN failure; self-host fixes.
+   §10  Module-scoped state inside createRenderer closure. No globals.
+   §8   Loader overlay (per spec "real-time percentage") owned by caller.
    ========================================================================= */
 
-const IMAGE_SCALE = 0.85;        // padded cover sweet spot per skill Step 6c
-const PHASE1_COUNT = 10;         // frames awaited by preload() Phase 1
-const PHASE2_CONCURRENCY = 4;    // parallel image decodes for Phase 2
+const DEFAULTS = {
+  zoom: 1.35,
+  parallax: true,
+  parallaxStrength: 24,
+  bgColor: "#0E0E0C", // --ink-deep
+};
 
+const PHASE1_COUNT = 10; // first frames eager-decoded for fast first paint
 
-/**
- * Sample 4 corner pixels of an HTMLImageElement and return their average
- * as a CSS color string ('rgb(R,G,B)'). Falls back to 'transparent' on
- * any error (CORS, taint, no canvas2d, etc.) so we never throw mid-render.
- */
-function sampleBgColor(img) {
-  try {
-    const w = img.naturalWidth, h = img.naturalHeight;
-    if (!w || !h) return "transparent";
-    const c = document.createElement("canvas");
-    c.width = w; c.height = h;
-    const ctx = c.getContext("2d", { willReadFrequently: false });
-    ctx.drawImage(img, 0, 0);
-    const corners = [
-      ctx.getImageData(0, 0, 1, 1).data,
-      ctx.getImageData(w - 1, 0, 1, 1).data,
-      ctx.getImageData(0, h - 1, 1, 1).data,
-      ctx.getImageData(w - 1, h - 1, 1, 1).data,
-    ];
-    let r = 0, g = 0, b = 0;
-    for (const px of corners) { r += px[0]; g += px[1]; b += px[2]; }
-    return `rgb(${(r >> 2)}, ${(g >> 2)}, ${(b >> 2)})`;
-  } catch { return "transparent"; }
+function pad4(n) {
+  return String(n + 1).padStart(4, "0");
 }
 
-
-/**
- * Build a frame URL: replaces "{NNNN}" with the 1-based 4-digit frame index.
- */
-function buildFrameUrl(template, oneBasedIdx) {
-  return template.replace("{NNNN}", String(oneBasedIdx).padStart(4, "0"));
+function clamp01(x) {
+  return x < 0 ? 0 : x > 1 ? 1 : x;
 }
 
-
-/**
- * Load a single image. Returns a Promise<HTMLImageElement> that resolves
- * with the (possibly errored) Image so the caller can still keep going.
- * The 'errored' state is signalled via the .complete && !.naturalWidth pair.
- */
-function loadImage(src) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.decoding = "async";
-    img.fetchPriority = "low"; // Phase 2 runs at low priority
-    const done = () => resolve(img);
-    img.addEventListener("load", done, { once: true });
-    img.addEventListener("error", done, { once: true });
-    img.src = src;
-  });
+/** Build per-frame URL by replacing the {NNNN} token. Falls back to padding. */
+function buildFrameUrl(template, idx) {
+  if (template.includes("{NNNN}")) {
+    return template.replace("{NNNN}", pad4(idx));
+  }
+  return template + pad4(idx) + ".webp";
 }
 
-
 /**
- * Create a frame renderer bound to a <canvas> + manifest descriptor.
+ * Create a scrollytelling canvas renderer for a single scene.
  *
- * @param {{ canvas: HTMLCanvasElement, manifest: { frameCount, frameUrl, width, height } }} opts
- * @returns {{ preload(): Promise<void>, drawFrame(i:number): void,
- *             resize(): void, destroy(): void,
- *             state: { loaded:number, phase1Ready:boolean } }}
+ * @param {Object}      cfg
+ * @param {HTMLCanvasElement} cfg.canvas    target canvas (DPR auto-applied)
+ * @param {Object}      cfg.manifest        parsed manifest.json
+ * @param {HTMLElement} cfg.host            element whose scroll drives the
+ *                                          frame index (defaults to canvas
+ *                                          parent's nearest scroll-scene).
+ * @param {Object}      [cfg.options]       see DEFAULTS above
+ *
+ * @returns {Object} renderer interface (see public API above)
  */
-export function createRenderer({ canvas, manifest }) {
-  if (!(canvas instanceof HTMLCanvasElement)) {
-    throw new TypeError("[canvas-frame-renderer] canvas: HTMLCanvasElement required");
+export function createRenderer({ canvas, manifest, host, options }) {
+  if (!canvas || !manifest) {
+    throw new Error("[canvas-frame-renderer] canvas + manifest required");
   }
-  if (!manifest || !Number.isFinite(manifest.frameCount) || !manifest.frameUrl) {
-    throw new TypeError("[canvas-frame-renderer] manifest with frameCount + frameUrl required");
+  if (!host) {
+    // host = the closest .scroll-scene or section parent
+    host = canvas.closest("[data-scrub], .scroll-scene, section") || canvas.parentElement;
   }
 
-  const ctx = canvas.getContext("2d", { alpha: false, desynchronized: true });
-  if (!ctx) throw new Error("[canvas-frame-renderer] 2D context unavailable");
+  const opts = Object.assign({}, DEFAULTS, options || {});
 
-  const N = manifest.frameCount | 0;
-  /** @type {(HTMLImageElement|null)[]} */
-  const frames = new Array(N).fill(null);
-  let loadedCount = 0;
-  let phase1Ready = false;
-  let bgColor = "rgb(20, 18, 16)";   // fallback until first frame samples
-  let bgSampled = false;
-  let lastDrawnIdx = -1;
-  let destroyed = false;
-  let dpr = 1;
-  let cssW = 0, cssH = 0;
+  const ctx = canvas.getContext("2d", { alpha: false });
+  if (!ctx) {
+    throw new Error("[canvas-frame-renderer] 2d context unavailable");
+  }
 
-  // ---------------------------------------------------------------------
-  // Sizing — DPR-aware. Uses the canvas client box (set by CSS).
-  // ---------------------------------------------------------------------
-  function resize() {
-    if (destroyed) return;
-    dpr = Math.min(window.devicePixelRatio || 1, 2);  // cap at 2x — diminishing returns above
-    cssW = canvas.clientWidth || canvas.width || 1;
-    cssH = canvas.clientHeight || canvas.height || 1;
-    const physW = Math.max(1, Math.round(cssW * dpr));
-    const physH = Math.max(1, Math.round(cssH * dpr));
-    if (canvas.width !== physW)  canvas.width = physW;
-    if (canvas.height !== physH) canvas.height = physH;
-    // Reset transform after width/height set (which clears the matrix).
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    // Force a redraw of the last frame (or fill with bg if none drawn yet).
-    if (lastDrawnIdx >= 0) {
-      drawFrame(lastDrawnIdx);
-    } else {
-      ctx.fillStyle = bgColor;
-      ctx.fillRect(0, 0, cssW, cssH);
+  const total = manifest.frameCount;
+  const frames = new Array(total); // sparse — populated as images decode
+  const state = {
+    loaded: 0,
+    total,
+    currentFrame: 0,
+    destroyed: false,
+    bound: { scroll: null, resize: null, mousemove: null },
+    rafPending: false,
+  };
+
+  // -------------------------------------------------------------------------
+  // 1. Preload — load all frames into memory; fire onProgress as each decodes
+  // -------------------------------------------------------------------------
+
+  function loadFrame(idx) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.onload = () => {
+        frames[idx] = img;
+        state.loaded++;
+        if (typeof opts.onProgress === "function") {
+          try {
+            opts.onProgress(state.loaded, total);
+          } catch (_) {}
+        }
+        resolve(img);
+      };
+      img.onerror = () => {
+        // Swallow — drawFrame will fall back to last good frame.
+        state.loaded++;
+        if (typeof opts.onProgress === "function") {
+          try {
+            opts.onProgress(state.loaded, total);
+          } catch (_) {}
+        }
+        resolve(null);
+      };
+      img.src = buildFrameUrl(manifest.frameUrl, idx);
+    });
+  }
+
+  /** Preload all frames. Resolves when all are decoded (or errored).
+      The two-phase split is implicit: first 10 launched first, kicks paint;
+      remaining are fired in parallel right after, and the awaited promise
+      yields when ALL settle. */
+  async function preload() {
+    if (state.destroyed) return;
+    const phase1 = [];
+    for (let i = 0; i < Math.min(PHASE1_COUNT, total); i++) {
+      phase1.push(loadFrame(i));
     }
+    await Promise.all(phase1); // first paint can happen now
+    if (state.destroyed) return;
+
+    // Phase 2: remaining frames in parallel
+    const phase2 = [];
+    for (let i = PHASE1_COUNT; i < total; i++) {
+      phase2.push(loadFrame(i));
+    }
+    await Promise.all(phase2);
   }
 
-  // ---------------------------------------------------------------------
-  // Draw — padded cover, with background fill so the inset edge blends.
-  // ---------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // 2. drawFrame — manual object-fit: cover + ZOOM_FACTOR
+  // -------------------------------------------------------------------------
+
   function drawFrame(idx) {
-    if (destroyed) return;
-    const i = Math.max(0, Math.min(N - 1, idx | 0));
+    if (state.destroyed) return;
+    const i = Math.max(0, Math.min(total - 1, idx | 0));
+    state.currentFrame = i;
+
     let img = frames[i];
-    // Fallback: last successfully drawn frame
-    if (!img || !img.complete || !img.naturalWidth) {
-      // Walk backwards to find a loaded frame.
-      for (let j = i - 1; j >= 0; j--) {
-        if (frames[j] && frames[j].complete && frames[j].naturalWidth) {
-          img = frames[j]; break;
+    // Fallback: walk backward to last decoded frame.
+    if (!img) {
+      for (let j = i; j >= 0; j--) {
+        if (frames[j]) {
+          img = frames[j];
+          break;
         }
       }
-      if (!img) {
-        // Nothing yet: just fill background.
-        ctx.fillStyle = bgColor;
-        ctx.fillRect(0, 0, cssW, cssH);
-        return;
-      }
     }
 
-    const cw = cssW, ch = cssH;
-    const iw = img.naturalWidth, ih = img.naturalHeight;
-    const scale = Math.max(cw / iw, ch / ih) * IMAGE_SCALE;
-    const dw = iw * scale, dh = ih * scale;
-    const dx = (cw - dw) / 2, dy = (ch - dh) / 2;
+    const cw = canvas.clientWidth;
+    const ch = canvas.clientHeight;
+    if (cw === 0 || ch === 0) return;
 
-    ctx.fillStyle = bgColor;
+    // Clear with solid bg (cinematic black).
+    ctx.fillStyle = opts.bgColor;
     ctx.fillRect(0, 0, cw, ch);
+
+    if (!img) return; // nothing decoded yet
+
+    // Manual object-fit: cover (max ratio) + ZOOM_FACTOR overshoot.
+    const iw = img.naturalWidth;
+    const ih = img.naturalHeight;
+    const scale = Math.max(cw / iw, ch / ih) * opts.zoom;
+    const dw = iw * scale;
+    const dh = ih * scale;
+    const dx = (cw - dw) / 2;
+    const dy = (ch - dh) / 2;
+
     ctx.drawImage(img, dx, dy, dw, dh);
-    lastDrawnIdx = i;
   }
 
-  // ---------------------------------------------------------------------
-  // Loading — phase 1 awaited, phase 2 streamed in background.
-  // ---------------------------------------------------------------------
-  async function loadOne(idx) {
-    if (destroyed || frames[idx]) return;
-    const url = buildFrameUrl(manifest.frameUrl, idx + 1);
-    const img = await loadImage(url);
-    if (destroyed) { return; }
-    if (!img.complete || !img.naturalWidth) {
-      // Errored — leave slot null, but count it as 'attempted' so loaded fraction progresses.
-      console.warn(`[canvas-frame-renderer] frame ${idx + 1} failed to load: ${url}`);
-      loadedCount++;
+  // -------------------------------------------------------------------------
+  // resize — DPR-aware. Canvas pixel buffer = CSS size × dpr; ctx scaled.
+  // -------------------------------------------------------------------------
+
+  function resize() {
+    if (state.destroyed) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const cw = canvas.clientWidth;
+    const ch = canvas.clientHeight;
+    if (cw === 0 || ch === 0) return;
+    canvas.width = cw * dpr;
+    canvas.height = ch * dpr;
+    ctx.setTransform(1, 0, 0, 1, 0, 0); // reset prior scale
+    ctx.scale(dpr, dpr);
+    drawFrame(state.currentFrame);
+  }
+
+  // -------------------------------------------------------------------------
+  // 3. Scroll → frame mapping. computeProgress returns 0..1 within host.
+  // -------------------------------------------------------------------------
+
+  function computeProgress() {
+    const rect = host.getBoundingClientRect();
+    const total = rect.height - window.innerHeight;
+    if (total <= 0) return 0;
+    const scrolled = -rect.top;
+    return clamp01(scrolled / total);
+  }
+
+  function onScroll() {
+    if (state.rafPending) return;
+    state.rafPending = true;
+    requestAnimationFrame(() => {
+      state.rafPending = false;
+      const p = computeProgress();
+      const idx = Math.floor(p * (total - 1));
+      drawFrame(idx);
+    });
+  }
+
+  function bindScroll() {
+    if (state.bound.scroll) return;
+    state.bound.scroll = onScroll;
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll(); // initial paint
+  }
+
+  // -------------------------------------------------------------------------
+  // 4. Mouse parallax — GSAP gsap.to() shifts canvas; clamped so edges hidden
+  // -------------------------------------------------------------------------
+
+  function bindMouseParallax() {
+    if (!opts.parallax) return;
+    if (!window.gsap) {
+      console.warn("[canvas-frame-renderer] gsap not loaded; parallax disabled");
       return;
     }
-    frames[idx] = img;
-    loadedCount++;
-    // Sample bg color from the first successful frame.
-    if (!bgSampled) {
-      bgColor = sampleBgColor(img);
-      bgSampled = true;
-    }
+    if (state.bound.mousemove) return;
+
+    const handler = (e) => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      // Normalize cursor to -1..1 from viewport center.
+      const nx = (e.clientX / w) * 2 - 1;
+      const ny = (e.clientY / h) * 2 - 1;
+      // Reverse direction (parallax = canvas drifts AWAY from cursor) +
+      // strength capped so we never reveal canvas edges (zoom factor 1.35
+      // gives us 17.5% safe margin per side; we use ~10% for headroom).
+      const safeMargin = (opts.zoom - 1) / 2; // e.g. 0.175 at zoom=1.35
+      const maxOffset = Math.min(opts.parallaxStrength, w * safeMargin);
+      gsap.to(canvas, {
+        x: -nx * maxOffset,
+        y: -ny * maxOffset,
+        duration: 0.8,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    };
+
+    state.bound.mousemove = handler;
+    host.addEventListener("mousemove", handler, { passive: true });
   }
 
-  async function preloadPhase2() {
-    // Concurrency-limited streaming: a worker pool of N parallel loaders.
-    let nextIdx = PHASE1_COUNT;
-    async function worker() {
-      while (!destroyed && nextIdx < N) {
-        const i = nextIdx++;
-        await loadOne(i);
-      }
-    }
-    const workers = [];
-    for (let k = 0; k < PHASE2_CONCURRENCY; k++) {
-      workers.push(worker());
-    }
-    await Promise.all(workers);
-  }
+  // -------------------------------------------------------------------------
+  // resize listener (auto-bound; spec point UX)
+  // -------------------------------------------------------------------------
 
-  /** Phase 1 + spawn Phase 2 (returns when Phase 1 is ready). */
-  async function preload() {
-    // Phase 1: parallel-await frames 0 .. min(PHASE1_COUNT, N) - 1
-    const p1Count = Math.min(PHASE1_COUNT, N);
-    const p1 = [];
-    for (let i = 0; i < p1Count; i++) p1.push(loadOne(i));
-    await Promise.all(p1);
-    if (destroyed) return;
-    phase1Ready = true;
-    // Initial size + first paint
+  function onResize() {
     resize();
-    drawFrame(0);
-    // Phase 2 streams asynchronously.
-    if (N > PHASE1_COUNT) {
-      // Don't await — let it run in background.
-      preloadPhase2().catch(() => {});
-    }
   }
+
+  function bindResize() {
+    if (state.bound.resize) return;
+    state.bound.resize = onResize;
+    window.addEventListener("resize", onResize, { passive: true });
+  }
+
+  // -------------------------------------------------------------------------
+  // destroy
+  // -------------------------------------------------------------------------
 
   function destroy() {
-    destroyed = true;
-    for (let i = 0; i < N; i++) {
-      const img = frames[i];
-      if (img) {
-        try { img.src = ""; } catch { /* ignore */ }
-        frames[i] = null;
-      }
+    state.destroyed = true;
+    if (state.bound.scroll) window.removeEventListener("scroll", state.bound.scroll);
+    if (state.bound.resize) window.removeEventListener("resize", state.bound.resize);
+    if (state.bound.mousemove) host.removeEventListener("mousemove", state.bound.mousemove);
+    state.bound = { scroll: null, resize: null, mousemove: null };
+    // Release img refs to encourage GC.
+    for (let i = 0; i < frames.length; i++) {
+      if (frames[i]) frames[i].src = "";
+      frames[i] = null;
     }
   }
+
+  // Initial DPR setup (caller can call resize() again after manifest loads).
+  resize();
 
   return {
     preload,
     drawFrame,
     resize,
+    computeProgress,
+    bindScroll,
+    bindMouseParallax,
+    bindResize,
     destroy,
-    state: {
-      get loaded() { return N === 0 ? 1 : loadedCount / N; },
-      get phase1Ready() { return phase1Ready; },
-    },
+    state,
   };
 }

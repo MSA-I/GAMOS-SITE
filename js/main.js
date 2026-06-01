@@ -26,6 +26,7 @@ import * as marquee             from "./marquee.js";
 import * as counters            from "./counters.js";
 import * as contactForm         from "./contact-form.js";   // Agent 23 — Phase D1
 import * as siteNav             from "./site-nav.js";       // Agent 23 — Phase D2
+import * as scrollytelling      from "./scrollytelling.js"; // 2026-06-01 — GSAP + parallax + loader pct
 
 // Order matters:
 // - scroll-orchestrator MUST init before any scene (hero or non-hero) that
@@ -54,6 +55,7 @@ const MODULES = [
   ["counters",            counters],      // Agent 20 — animated stat numbers
   ["contact-form",        contactForm],   // Agent 23 — Phase D1: WhatsApp + mailto
   ["site-nav",            siteNav],       // Agent 23 — Phase D2: hamburger overlay
+  ["scrollytelling",      scrollytelling],// Cinematic loader % + GSAP scroll-to + parallax
 ];
 
 function safeInit(name, mod) {

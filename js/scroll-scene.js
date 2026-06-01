@@ -198,6 +198,11 @@ export function init() {
         console.warn(`[scroll-scene] section[data-scrub="${id}"] mode=canvas-frames but no <canvas.scroll-scene__canvas> found — skipping.`);
         continue;
       }
+      // Cinematic scrollytelling owner — js/scrollytelling.js takes over.
+      // Skip here so we don't double-bind the canvas.
+      if (canvasEl.hasAttribute("data-scrollytelling")) {
+        continue;
+      }
       const manifestUrl = canvasEl.dataset.manifestUrl;
       if (!manifestUrl) {
         console.warn(`[scroll-scene] canvas-frames scene "${id}" missing data-manifest-url — skipping.`);
