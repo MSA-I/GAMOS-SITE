@@ -9,20 +9,21 @@
  * 1. Reveal: subscribe to window.gamosHero.onProgress(p) and toggle
  *    `.portals.is-active` once p > 0.92 (and back below 0.88 with a small
  *    hysteresis margin to avoid flicker around the boundary).
- * 2. Click: GSAP timeline that scales the clicked bubble to ~6×, fades the
- *    sibling out, then smooth-scrolls to the bubble's data-target.
+ * 2. Click: Web Animations API (Element.animate) timeline that scales the
+ *    clicked bubble to ~6×, fades the sibling out, then smooth-scrolls to
+ *    the bubble's data-target.
  * 3. Keyboard: native <button> already handles Enter/Space. We add nothing
  *    that would prevent default — focus-visible styling lives in CSS.
  * 4. Mobile / iOS / no-hero fallback: if window.gamosHero never appears
  *    (or hero fell back to autoplay loop in iOS Safari), we fall back to
  *    an IntersectionObserver on a sentinel placed near the end of #hero.
- * 5. Reduced motion: instant reveal, no GSAP timeline; clicks become a
+ * 5. Reduced motion: instant reveal, no expand animation; clicks become a
  *    direct scrollIntoView() call. Honors live `matchMedia` changes.
  *
- * Public API: init({ motion }), destroy()
- *   - `motion` is the read-only handle from main.js carrying { gsap, ScrollTrigger }.
- *     We use motion.gsap if present; otherwise fall back to plain CSS transitions
- *     and a final scrollIntoView. The module never throws if GSAP is missing.
+ * Public API: init(), destroy()
+ *
+ * History: previously depended on GSAP (skypack CDN). Replaced 2026-06-01 by
+ * Agent 15 with Element.animate() — zero external deps, ~0 size cost.
  */
 
 // ----------------------------------------------------------------------------
@@ -33,9 +34,16 @@ const REVEAL_THRESHOLD   = 0.92;   // Add .is-active above this hero progress.
 const HIDE_THRESHOLD     = 0.88;   // Remove .is-active below this (hysteresis).
 const HERO_HOOK_TIMEOUT  = 5000;   // ms — how long we wait for window.gamosHero.
 const HERO_HOOK_INTERVAL = 100;    // ms — polling interval while we wait.
-const EXPAND_DURATION    = 1.0;    // s — primary expand duration (per spec).
-const FADE_OUT_DURATION  = 0.3;    // s — sibling fade out.
+const EXPAND_DURATION_MS = 1000;   // ms — primary expand duration (per spec).
+const FADE_OUT_DURATION_MS = 300;  // ms — sibling fade out.
+const FADE_OUT_DELAY_MS  = 300;    // ms — delay before sibling starts fading
+                                   //      (matches GSAP "-=0.7" stagger: 1.0 - 0.7 = 0.3s).
 const SCROLL_RESET_DELAY = 300;    // ms — delay before resetting transform.
+
+// Closest WAAPI cubic-bezier match for GSAP's "power3.in":
+// power3.in is approx. cubic-bezier(0.55, 0.085, 0.68, 0.53) (acceleration in).
+const EASE_POWER3_IN  = "cubic-bezier(0.55, 0.085, 0.68, 0.53)";
+const EASE_POWER2_OUT = "cubic-bezier(0.165, 0.84, 0.44, 1)";
 
 // ----------------------------------------------------------------------------
 // Module-scoped state — captured by destroy().
@@ -51,7 +59,9 @@ const state = {
   reducedMotion: false,
   mediaQueryListener: null,
   hookWaitTimer: null,
+  resetTimer:    null,
   isExpanding:   false,
+  activeAnims:   [],   // WAAPI Animation handles in flight — for clean destroy().
   bound: {
     onClick:        null,
     onMediaChange:  null,
@@ -166,10 +176,21 @@ function scrollToTarget(target) {
 }
 
 // ----------------------------------------------------------------------------
-// Click — expand timeline (GSAP) or instant scroll (reduced motion / no GSAP).
+// Click — expand timeline (WAAPI) or instant scroll (reduced motion).
 // ----------------------------------------------------------------------------
 
-function expandPortal({ button, gsap }) {
+/** Fire-and-forget WAAPI animation; tracked so destroy() can cancel cleanly. */
+function track(animation) {
+  state.activeAnims.push(animation);
+  const drop = () => {
+    const i = state.activeAnims.indexOf(animation);
+    if (i >= 0) state.activeAnims.splice(i, 1);
+  };
+  animation.finished.then(drop, drop);
+  return animation;
+}
+
+function expandPortal({ button }) {
   if (state.isExpanding) return;          // ignore concurrent clicks
   state.isExpanding = true;
 
@@ -180,8 +201,8 @@ function expandPortal({ button, gsap }) {
   // Visual click confirmation — brass glow shadow ring (CSS-driven via attribute)
   button.setAttribute("data-clicked", "");
 
-  // Reduced-motion or no-GSAP fast path: skip the cinematic expand.
-  if (state.reducedMotion || !gsap) {
+  // Reduced-motion fast path: skip the cinematic expand.
+  if (state.reducedMotion) {
     setTimeout(() => button.removeAttribute("data-clicked"), 250);
     scrollToTarget(target);
     state.isExpanding = false;
@@ -192,18 +213,60 @@ function expandPortal({ button, gsap }) {
   button.classList.add("is-expanding");
   state.root?.classList.add("is-leaving");
 
-  const tl = gsap.timeline({
-    defaults: { overwrite: "auto" },
-    onComplete() {
+  // Set transform-origin once so the keyframes don't have to repeat it.
+  button.style.transformOrigin = "50% 50%";
+
+  // 1. Scale the clicked bubble 1 → 6 over EXPAND_DURATION_MS, ease-in.
+  const expandAnim = track(button.animate(
+    [
+      { transform: "scale(1)" },
+      { transform: "scale(6)" },
+    ],
+    {
+      duration: EXPAND_DURATION_MS,
+      easing:   EASE_POWER3_IN,
+      fill:     "forwards",   // keep transform applied until we reset it.
+    }
+  ));
+
+  // 2. Sibling fades out — start delayed to match the original GSAP "-=0.7"
+  //    stagger (sibling fade begins 300ms in, completes around 600ms).
+  if (sibling) {
+    track(sibling.animate(
+      [
+        { opacity: 1 },
+        { opacity: 0 },
+      ],
+      {
+        duration: FADE_OUT_DURATION_MS,
+        delay:    FADE_OUT_DELAY_MS,
+        easing:   EASE_POWER2_OUT,
+        fill:     "forwards",
+      }
+    ));
+  }
+
+  // 3. Once the expand finishes, scroll and reset state.
+  expandAnim.finished
+    .then(() => {
       scrollToTarget(target);
 
       // Reset state shortly after the scroll begins. We DON'T leave the bubble
       // expanded full-screen because users can scroll back to the hero.
-      window.setTimeout(() => {
+      state.resetTimer = window.setTimeout(() => {
+        state.resetTimer = null;
         try {
-          gsap.set(button, { clearProps: "transform,opacity,scale" });
+          // Clear inline transform/opacity so the elements snap back.
+          // (WAAPI fill:forwards leaves them applied via animation; cancel
+          // releases them, then we wipe inline styles for safety.)
+          for (const anim of state.activeAnims.slice()) {
+            try { anim.cancel(); } catch { /* ignore */ }
+          }
+          button.style.transform       = "";
+          button.style.opacity         = "";
+          button.style.transformOrigin = "";
           if (sibling) {
-            gsap.set(sibling, { clearProps: "opacity" });
+            sibling.style.opacity = "";
           }
           state.root?.classList.remove("is-leaving");
           button.classList.remove("is-expanding");
@@ -213,23 +276,11 @@ function expandPortal({ button, gsap }) {
         }
         state.isExpanding = false;
       }, SCROLL_RESET_DELAY);
-    },
-  });
-
-  tl.to(button, {
-    scale:    6,
-    duration: EXPAND_DURATION,
-    ease:     "power3.in",
-    transformOrigin: "50% 50%",
-  });
-
-  if (sibling) {
-    tl.to(
-      sibling,
-      { opacity: 0, duration: FADE_OUT_DURATION, ease: "power2.out" },
-      "-=0.7"
-    );
-  }
+    })
+    .catch(() => {
+      // animation.cancel() rejects .finished — clean up silently.
+      state.isExpanding = false;
+    });
 }
 
 // ----------------------------------------------------------------------------
@@ -262,7 +313,7 @@ function watchReducedMotion() {
 // init()
 // ----------------------------------------------------------------------------
 
-export function init({ motion } = {}) {
+export function init() {
   if (state.initialised) return;
 
   // 1. Locate DOM. Bail (silently) if markup is missing.
@@ -276,12 +327,10 @@ export function init({ motion } = {}) {
   watchReducedMotion();
 
   // 2. Wire click handlers (Enter/Space work natively because <button>).
-  const gsap = motion && motion.gsap ? motion.gsap : (window.gsap || null);
-
   state.bound.onClick = (event) => {
     const button = event.currentTarget;
     if (!(button instanceof HTMLElement)) return;
-    expandPortal({ button, gsap });
+    expandPortal({ button });
   };
 
   state.buttons.forEach((b) => {

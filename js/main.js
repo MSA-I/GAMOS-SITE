@@ -5,22 +5,11 @@
  * No globals. Each section module exports an `init()` function that's safe to call
  * even if the DOM nodes are missing (so this entry never throws).
  *
- * GSAP + ScrollTrigger come from CDN at this stage. Agent 6 / Agent 9 may
- * later swap to a self-hosted bundle once Phase 2b decides.
+ * Phase A complete (2026-06-01, Agent 15): GSAP fully removed.
+ *   - hero-video-scrub uses native scroll listener + RAF.
+ *   - portals uses Web Animations API (Element.animate) for the expand timeline.
+ *   - This entry boots without any external CDN imports — pure local ESM + DOM.
  */
-
-import { gsap }          from "https://cdn.skypack.dev/gsap@3.12.5";
-import ScrollTrigger     from "https://cdn.skypack.dev/gsap@3.12.5/ScrollTrigger";
-
-// Register GSAP plugins once, defensively (CDN module may already register).
-try {
-  gsap.registerPlugin(ScrollTrigger);
-} catch (err) {
-  console.warn("[main] GSAP plugin registration skipped:", err);
-}
-
-// Expose minimally to other modules (read-only handle; not a global API).
-const motion = Object.freeze({ gsap, ScrollTrigger });
 
 // Section modules — placeholder shells. Each exposes `init()`.
 import * as heroVideoScrub from "./hero-video-scrub.js";
@@ -42,7 +31,7 @@ const MODULES = [
 function safeInit(name, mod) {
   try {
     if (mod && typeof mod.init === "function") {
-      mod.init({ motion });
+      mod.init();
     } else {
       console.info(`[main] module "${name}" has no init() — skipping.`);
     }

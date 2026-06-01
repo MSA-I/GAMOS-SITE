@@ -6,13 +6,7 @@
      scrub  [0.143 .. 0.857)   ≈ next 500vh                    → video scrub
      outro  [0.857 .. 1.0]     ≈ last 100vh                    → portal-loop play
    API: window.gamosHero.onProgress(cb), .duration, .progress, .stage
-   CSS: --hero-progress (overall), --hero-scrub-progress (0..1 within scrub stage)
    ========================================================================= */
-
-import gsap from "https://cdn.skypack.dev/gsap@3.12.5";
-import ScrollTrigger from "https://cdn.skypack.dev/gsap@3.12.5/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const INTRO_END = 0.143;
 const SCRUB_END = 0.857;
@@ -24,15 +18,19 @@ const isIOS =
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 let _initDone = false;
-let _scrollTrigger = null;
+let _scrollHandler = null;
+let _rafPending = false;
+let _hero = null;
+let _sticky = null;
+let _video = null;
 const _listeners = new Set();
 const _state = { progress: 0, duration: 0, stage: "intro" };
 
-function setStage(sticky, next) {
+function setStage(next) {
   if (_state.stage === next) return;
   _state.stage = next;
-  sticky.dataset.stage = next;
-  const outro = sticky.querySelector(".hero__outro-loop");
+  if (_sticky) _sticky.dataset.stage = next;
+  const outro = _sticky?.querySelector(".hero__outro-loop");
   if (outro) {
     if (next === "outro") outro.play().catch(() => {});
     else outro.pause();
@@ -61,109 +59,115 @@ function exposeApi() {
   };
 }
 
-function bindScrub(hero, sticky, video) {
-  _scrollTrigger = ScrollTrigger.create({
-    trigger: hero,
-    start: "top top",
-    end: "bottom bottom",
-    scrub: true,
-    onUpdate(self) {
-      const p = self.progress;
+function computeProgress() {
+  const rect = _hero.getBoundingClientRect();
+  const total = rect.height - window.innerHeight;
+  const scrolled = -rect.top;
+  if (total <= 0) return 0;
+  return Math.max(0, Math.min(1, scrolled / total));
+}
 
-      // Decide stage
-      let stage;
-      if (p < INTRO_END) stage = "intro";
-      else if (p < SCRUB_END) stage = "scrub";
-      else stage = "outro";
-      setStage(sticky, stage);
+function onScroll() {
+  if (_rafPending) return;
+  _rafPending = true;
+  requestAnimationFrame(() => {
+    _rafPending = false;
+    const p = computeProgress();
 
-      // Drive video time within scrub stage
-      if (stage === "scrub" && _state.duration) {
-        const scrubP = (p - INTRO_END) / (SCRUB_END - INTRO_END);
-        document.documentElement.style.setProperty("--hero-scrub-progress", scrubP.toFixed(4));
-        const t = scrubP * _state.duration;
-        if (Math.abs(video.currentTime - t) > PROGRESS_THROTTLE_S) {
-          try { video.currentTime = t; } catch (e) {}
-        }
-      } else if (stage === "intro") {
-        document.documentElement.style.setProperty("--hero-scrub-progress", "0");
-      } else {
-        document.documentElement.style.setProperty("--hero-scrub-progress", "1");
+    let stage;
+    if (p < INTRO_END) stage = "intro";
+    else if (p < SCRUB_END) stage = "scrub";
+    else stage = "outro";
+    setStage(stage);
+
+    if (stage === "scrub" && _state.duration && _video) {
+      const scrubP = (p - INTRO_END) / (SCRUB_END - INTRO_END);
+      const t = scrubP * _state.duration;
+      if (Math.abs(_video.currentTime - t) > PROGRESS_THROTTLE_S) {
+        try { _video.currentTime = t; } catch (e) {}
       }
-
-      setProgress(p);
     }
+
+    setProgress(p);
   });
 }
 
-function setupReduced(hero, sticky) {
-  hero.querySelector(".hero__spacer").style.height = "100vh";
-  setStage(sticky, "intro");
-  setProgress(1);
+function setupReduced() {
+  _hero.querySelector(".hero__spacer").style.height = "100vh";
+  setStage("intro");
+  setProgress(0);
 }
 
-function setupIOS(hero, sticky, video) {
-  hero.querySelector(".hero__spacer").style.height = "100vh";
-  // simple fallback: show intro for 4s, then video autoplay loop for 6s, then outro
-  setStage(sticky, "intro");
-  video.setAttribute("loop", "");
-  video.muted = true;
+function setupIOS() {
+  _hero.querySelector(".hero__spacer").style.height = "100vh";
+  setStage("intro");
+  if (_video) {
+    _video.setAttribute("loop", "");
+    _video.muted = true;
+  }
+  // Cycle: intro → (4s) scrub → (10s total) outro
   setTimeout(() => {
-    setStage(sticky, "scrub");
-    video.play().catch(() => {});
+    setStage("scrub");
+    if (_video) _video.play().catch(() => {});
   }, 4000);
-  setTimeout(() => {
-    setStage(sticky, "outro");
-    setProgress(1);
-  }, 10000);
+  setTimeout(() => setStage("outro"), 10000);
 }
 
 export async function init({ heroEl } = {}) {
   if (_initDone) return;
-  const hero = heroEl || document.querySelector("#hero");
-  if (!hero) {
+  _hero = heroEl || document.querySelector("#hero");
+  if (!_hero) {
     console.warn("hero-video-scrub: #hero not found");
     return;
   }
-  const sticky = hero.querySelector(".hero__sticky");
-  const video = hero.querySelector(".hero__video");
-  if (!sticky || !video) {
-    console.warn("hero-video-scrub: required elements missing");
+  _sticky = _hero.querySelector(".hero__sticky");
+  _video = _hero.querySelector(".hero__video");
+  if (!_sticky) {
+    console.warn("hero-video-scrub: .hero__sticky missing");
     return;
   }
 
-  // Initialize stage attribute
-  sticky.dataset.stage = "intro";
-
+  _sticky.dataset.stage = "intro";
   exposeApi();
   _initDone = true;
 
   if (reduceMotion) {
-    setupReduced(hero, sticky);
+    setupReduced();
     return;
   }
 
-  if (video.readyState < 1) {
+  if (_video && _video.readyState < 1) {
     await new Promise(r => {
-      video.addEventListener("loadedmetadata", r, { once: true });
-      video.addEventListener("error", r, { once: true });
-      // Force load — for some browsers preload="auto" isn't enough
-      try { video.load(); } catch (e) {}
+      const done = () => r();
+      _video.addEventListener("loadedmetadata", done, { once: true });
+      _video.addEventListener("error", done, { once: true });
+      try { _video.load(); } catch (e) {}
+      // safety timeout — proceed with assumed duration so UX isn't blocked
+      setTimeout(done, 4000);
     });
   }
-  _state.duration = video.duration || 0;
+  _state.duration = _video?.duration || 0;
 
   if (isIOS || !_state.duration) {
-    setupIOS(hero, sticky, video);
+    setupIOS();
     return;
   }
 
-  video.pause();
-  bindScrub(hero, sticky, video);
+  if (_video) _video.pause();
+
+  _scrollHandler = onScroll;
+  window.addEventListener("scroll", _scrollHandler, { passive: true });
+  window.addEventListener("resize", _scrollHandler, { passive: true });
+  // initial computation
+  onScroll();
 }
 
 export function destroy() {
-  if (_scrollTrigger) { _scrollTrigger.kill(); _scrollTrigger = null; }
+  if (_scrollHandler) {
+    window.removeEventListener("scroll", _scrollHandler);
+    window.removeEventListener("resize", _scrollHandler);
+    _scrollHandler = null;
+  }
   _listeners.clear();
   _initDone = false;
 }
