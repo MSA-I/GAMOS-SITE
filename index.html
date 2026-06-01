@@ -303,58 +303,105 @@
 
     <!-- ====================================================================
          #hall-venue — אולם האירועים
-         TODO(agent-01,08): final copy + image manifest
+         Scroll-scene scaffold (Agent 18, 2026-06-01) — POSTER-KEN-BURNS mode.
+         No video source yet → poster image with CSS-driven Ken-Burns drift.
+         When real video lands: see docs/adding-hall-video.md (one-file edit).
+         TODO(agent-01): replace placeholder lede with verified copy.
     ==================================================================== -->
-    <section id="hall-venue" class="hall hall--venue" aria-labelledby="hall-venue-title">
-      <header class="hall__header">
-        <p class="hall__eyebrow">אולם</p>
-        <h2 id="hall-venue-title" class="hall__title">האולם — מסגרת קולנועית לחתונות ולאירועים</h2>
-        <p class="hall__lede">
-          <!-- TODO(agent-01): replace with verified Hebrew copy -->
-          חלל מהוקצע עם תקרת זכוכית, אקוסטיקה מותאמת והפרדה אלגנטית בין רחבת הריקודים לאזור הסעודה.
-        </p>
-      </header>
+    <section id="hall-venue" class="scroll-scene hall-venue"
+             data-scrub="venue"
+             data-scrub-mode="poster-ken-burns"
+             data-scrub-spacer-vh="300"
+             style="--scene-spacer: 300vh;"
+             aria-labelledby="hall-venue-title">
+      <div class="scroll-scene__spacer" aria-hidden="true"></div>
 
-      <div class="hall__media" aria-hidden="true">
-        <!-- TODO(agent-03,08): hall hero image / video reel -->
-        <div class="hall__media-placeholder" data-placeholder="hall-venue-hero"></div>
+      <div class="scroll-scene__sticky">
+        <!-- Future: replace this <picture> with <video class="scroll-scene__video">
+             and remove data-scrub-mode="poster-ken-burns" on the <section>.
+             See docs/adding-hall-video.md for the exact swap. -->
+        <picture class="scroll-scene__poster" aria-hidden="true">
+          <source srcset="/assets/img/venue-poster.webp" type="image/webp">
+          <img src="/assets/img/venue-poster.jpg" alt=""
+               width="1920" height="1080" loading="lazy" decoding="async">
+        </picture>
+
+        <div class="scroll-scene__overlay">
+          <header class="section-header">
+            <p class="section-header__eyebrow">אולם</p>
+            <h2 id="hall-venue-title" class="section-header__title">האולם — מסגרת קולנועית לאירוע שלכם</h2>
+            <p class="section-header__lede">
+              חלל מהוקצע עם תקרה גבוהה, אקוסטיקה מותאמת והפרדה אלגנטית בין הסעודה לרחבת הריקודים.
+            </p>
+          </header>
+        </div>
       </div>
 
-      <ul class="hall__features" role="list">
-        <li>קיבולת עד <bdi>800</bdi> אורחים</li>
-        <li>תקרה גבוהה ותאורה מותאמת</li>
-        <li>במה ומערכת סאונד מקצועית</li>
-        <li>חניה צמודה לאולם</li>
-      </ul>
-
-      <a class="hall__cta" href="#contact">קבעו סיור באולם</a>
+      <div class="scroll-scene__post">
+        <ul class="hall-venue__features-scaffold" role="list">
+          <li class="feature">
+            <h3>קיבולת עד <bdi>800</bdi> אורחים</h3>
+            <p>פלטפורמה מודולרית — חתונה אינטימית או חינגה גדולה, אותה רמת הפקה.</p>
+          </li>
+          <li class="feature">
+            <h3>במה ומערכת סאונד</h3>
+            <p>תשתית טכנית מלאה — ערוץ אודיו, וידאו והקרנה לכל סוג אירוע.</p>
+          </li>
+          <li class="feature">
+            <h3>חניה צמודה</h3>
+            <p>חניון פרטי גדול לכל המוזמנים — ללא מתח, ללא הליכה ארוכה.</p>
+          </li>
+        </ul>
+      </div>
     </section>
 
     <!-- ====================================================================
          #hall-resort — ריזורט
+         Scroll-scene scaffold (Agent 18, 2026-06-01) — POSTER-KEN-BURNS mode.
     ==================================================================== -->
-    <section id="hall-resort" class="hall hall--resort" aria-labelledby="hall-resort-title">
-      <header class="hall__header">
-        <p class="hall__eyebrow">ריזורט</p>
-        <h2 id="hall-resort-title" class="hall__title">ריזורט בוטיקי — חוויה מתמשכת מעבר לאירוע</h2>
-        <p class="hall__lede">
-          <!-- TODO(agent-01): replace with verified Hebrew copy -->
-          חדרי נופש מעוצבים, בריכה מחוממת וגינה אנגלית — לאירוע שנמשך אל תוך הסוף שבוע.
-        </p>
-      </header>
+    <section id="hall-resort" class="scroll-scene hall-resort"
+             data-scrub="resort"
+             data-scrub-mode="poster-ken-burns"
+             data-scrub-spacer-vh="300"
+             style="--scene-spacer: 300vh;"
+             aria-labelledby="hall-resort-title">
+      <div class="scroll-scene__spacer" aria-hidden="true"></div>
 
-      <div class="hall__media" aria-hidden="true">
-        <div class="hall__media-placeholder" data-placeholder="hall-resort-hero"></div>
+      <div class="scroll-scene__sticky">
+        <!-- Future: replace with <video class="scroll-scene__video"> per docs/adding-hall-video.md. -->
+        <picture class="scroll-scene__poster" aria-hidden="true">
+          <source srcset="/assets/img/resort-poster.webp" type="image/webp">
+          <img src="/assets/img/resort-poster.jpg" alt=""
+               width="1920" height="1080" loading="lazy" decoding="async">
+        </picture>
+
+        <div class="scroll-scene__overlay">
+          <header class="section-header">
+            <p class="section-header__eyebrow">ריזורט</p>
+            <h2 id="hall-resort-title" class="section-header__title">ריזורט גמוס — חוויה הוליסטית</h2>
+            <p class="section-header__lede">
+              חוויה שמתחילה מהרגע שאתם נכנסים בשער ולא נגמרת עד הצ'ק-אאוט. שדרוג של אירוע לשבוע שלם.
+            </p>
+          </header>
+        </div>
       </div>
 
-      <ul class="hall__features" role="list">
-        <li>חדרי נופש בעיצוב בוטיקי</li>
-        <li>בריכה מחוממת וג'קוזי</li>
-        <li>ספא וטיפולים</li>
-        <li>ארוחת בוקר שף</li>
-      </ul>
-
-      <a class="hall__cta" href="#contact">בדקו זמינות לאירוח</a>
+      <div class="scroll-scene__post">
+        <ul class="hall-resort__features" role="list">
+          <li class="feature">
+            <h3>בריכה אינסוף</h3>
+            <p>בריכה מחוממת עם נוף פתוח לעמק. שחיית בוקר לפני הקפה הראשון.</p>
+          </li>
+          <li class="feature">
+            <h3>גן בריאוט</h3>
+            <p>שביל הליכה בין עצי זית עתיקים, פינות ישיבה צלולות לכל שעות היום.</p>
+          </li>
+          <li class="feature">
+            <h3>ספא יוקרתי</h3>
+            <p>טיפולים אישיים, סאונה וחדרי טיפולים זוגיים — לרוגע אמיתי בין האירוע לחזרה הביתה.</p>
+          </li>
+        </ul>
+      </div>
     </section>
 
     <!-- ====================================================================
@@ -409,27 +456,70 @@
     </section>
 
     <!-- ====================================================================
-         #culinary — קולינריה (gallery, NOT a hall)
+         #culinary — קולינריה (scroll-scene + dish gallery)
+         Owner: Agent 17 — first live scroll-scene (orchestrator-driven).
+         Spec : architecture/scroll-orchestrator.md §3 (DOM contract).
+         Spacer: 250vh (per scroll-video-system.md §4.2 — short scrub feel
+                 because the source video is ~6s).
     ==================================================================== -->
-    <section id="culinary" class="culinary" aria-labelledby="culinary-title">
-      <header class="section-header">
-        <p class="section-header__eyebrow">קולינריה</p>
-        <h2 id="culinary-title" class="section-header__title">קולינריה — שפה של מנות מדויקות</h2>
-        <p class="section-header__lede">
-          <!-- TODO(agent-01): final culinary copy -->
-          תפריטים אישיים בליווי שף, חומרי גלם מקומיים ובחירה בין מטבח בשרי לחלבי עם הפרדה מלאה.
-        </p>
-      </header>
+    <section id="culinary"
+             class="culinary scroll-scene"
+             data-scrub="culinary"
+             data-scrub-spacer-vh="250"
+             aria-labelledby="culinary-title">
 
-      <!-- TODO(agent-08,09): culinary dish gallery — masonry / grid -->
-      <ul class="culinary__grid" role="list" aria-label="גלריית מנות">
-        <li class="culinary__item" data-placeholder="dish-1"></li>
-        <li class="culinary__item" data-placeholder="dish-2"></li>
-        <li class="culinary__item" data-placeholder="dish-3"></li>
-        <li class="culinary__item" data-placeholder="dish-4"></li>
-        <li class="culinary__item" data-placeholder="dish-5"></li>
-        <li class="culinary__item" data-placeholder="dish-6"></li>
-      </ul>
+      <div class="scroll-scene__spacer" aria-hidden="true"
+           style="--scene-spacer: 250vh;"></div>
+
+      <div class="scroll-scene__sticky">
+        <!-- Poster fallback (visible behind video; primary visual when
+             reduced-motion is on or video hasn't loaded). aria-hidden because
+             the heading inside the overlay carries the accessible name. -->
+        <picture class="scroll-scene__poster" aria-hidden="true">
+          <img src="/assets/video/culinary-poster.jpg"
+               alt="" width="1600" height="900"
+               loading="lazy" decoding="async">
+        </picture>
+
+        <!-- Scrub video — currentTime driven by scroll-orchestrator.
+             preload="metadata" so we don't fetch the full file until the
+             scene is near the viewport (orchestrator may downgrade to
+             preload="none" when far away — §7 of the spec). -->
+        <video class="scroll-scene__video"
+               muted playsinline preload="metadata"
+               poster="/assets/video/culinary-poster.jpg"
+               aria-hidden="true">
+          <source src="/assets/video/culinary-1080.mp4" type="video/mp4"
+                  media="(min-width: 768px)">
+          <source src="/assets/video/culinary-720.mp4" type="video/mp4">
+        </video>
+
+        <div class="scroll-scene__overlay">
+          <header class="section-header">
+            <p class="section-header__eyebrow">הקולינריה שלנו</p>
+            <h2 id="culinary-title" class="section-header__title">
+              טעמים שמספרים סיפור
+            </h2>
+            <p class="section-header__lede">
+              תפריטים אישיים בליווי שף, חומרי גלם מקומיים ובחירה בין מטבח בשרי
+              לחלבי עם הפרדה מלאה — הסעודה כחלק מהאירוע, לא נספח.
+            </p>
+          </header>
+        </div>
+      </div>
+
+      <!-- After the sticky stage releases — the existing static dish gallery.
+           TODO(agent-08,09): real images + captions; placeholders for now. -->
+      <div class="scroll-scene__post culinary__post">
+        <ul class="culinary__grid" role="list" aria-label="גלריית מנות">
+          <li class="culinary__item" data-placeholder="dish-1"></li>
+          <li class="culinary__item" data-placeholder="dish-2"></li>
+          <li class="culinary__item" data-placeholder="dish-3"></li>
+          <li class="culinary__item" data-placeholder="dish-4"></li>
+          <li class="culinary__item" data-placeholder="dish-5"></li>
+          <li class="culinary__item" data-placeholder="dish-6"></li>
+        </ul>
+      </div>
     </section>
 
     <!-- ====================================================================

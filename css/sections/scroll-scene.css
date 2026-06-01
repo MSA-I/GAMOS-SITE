@@ -1,0 +1,202 @@
+/* ===========================================================================
+   scroll-scene.css — generic baseline for non-hero scroll-driven scenes
+   ---------------------------------------------------------------------------
+   Used by    : #hall-resort, #hall-venue, #culinary (and any future
+                section[data-scrub] not named #hero).
+   Spec       : architecture/scroll-orchestrator.md §3 (DOM contract);
+                architecture/scroll-video-system.md §4.1.
+   Owner      : Agent 18 (poster/Ken-Burns) + Agent 17 (video pipeline).
+   Constitution: §10.2 (tokens-only — no hard-coded values), §10.4 (RTL
+                logical properties).
+   ---------------------------------------------------------------------------
+   Two render modes are supported via attribute selectors:
+     - default        : <video class="scroll-scene__video"> as the visual driver
+     - "poster-ken-burns"  : <picture class="scroll-scene__poster"> driven by
+                              CSS variable --scene-progress (set by JS per RAF).
+   ========================================================================= */
+
+.scroll-scene {
+  position: relative;
+  display: block;
+  isolation: isolate;
+  background-color: var(--bg);
+  color: var(--fg);
+  /* Default progress baseline — JS overrides per scroll. Avoids a flash on
+     first paint where transform calc() would resolve to NaN. */
+  --scene-progress: 0;
+}
+
+/* spacer dictates total scroll length. Default 300vh; override per-section
+   with style="--scene-spacer: 450vh;" or data-scrub-spacer-vh. */
+.scroll-scene__spacer {
+  block-size: var(--scene-spacer, 300vh);
+  inline-size: 100%;
+  pointer-events: none;
+}
+
+/* sticky stage — always 100vh, always pinned to the block-start of viewport. */
+.scroll-scene__sticky {
+  position: sticky;
+  inset-block-start: 0;
+  inline-size: 100%;
+  block-size: 100vh;
+  overflow: hidden;
+  background-color: var(--ink-deep);
+}
+
+/* video / poster fill the sticky stage edge-to-edge. */
+.scroll-scene__video {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: center;
+  /* Avoids a flash of intrinsic-size before metadata loads. */
+  background-color: var(--ink-deep);
+}
+
+.scroll-scene__poster {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  background-color: var(--ink-deep);
+}
+
+.scroll-scene__poster img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+/* ----- Ken-Burns mode --------------------------------------------------- *
+ * Pure CSS-driven from --scene-progress. JS only writes the variable.
+ * Scale 1 → 1.15, drift 0% → -8% on the block axis. Tuned to match the feel
+ * of the hero scrub without competing with it. */
+.scroll-scene[data-scrub-mode="poster-ken-burns"] .scroll-scene__poster img {
+  transform:
+    scale(calc(1 + var(--scene-progress, 0) * 0.15))
+    translateY(calc(var(--scene-progress, 0) * -8%));
+  transition: none;
+}
+
+/* ----- Overlay (text on top of media) ----------------------------------- */
+.scroll-scene__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding-block-end: clamp(var(--space-12), 8vh, var(--space-20));
+  padding-inline: var(--gutter);
+  z-index: 1;
+  pointer-events: none;
+  /* Subtle dark wash so light type stays legible over light frames. */
+  background:
+    linear-gradient(
+      to top,
+      rgba(14, 14, 12, 0.72) 0%,
+      rgba(14, 14, 12, 0.45) 30%,
+      rgba(14, 14, 12, 0.10) 65%,
+      rgba(14, 14, 12, 0)    100%
+    );
+}
+
+.scroll-scene__overlay > * {
+  pointer-events: auto;
+  max-inline-size: var(--container-narrow, 720px);
+}
+
+/* The section-header inside the overlay flips to "on dark" coloring. */
+.scroll-scene__overlay .section-header__title,
+.scroll-scene__overlay .section-header__lede {
+  color: var(--ivory);
+}
+
+.scroll-scene__overlay .section-header__lede {
+  opacity: 0.92;
+}
+
+.scroll-scene__overlay .section-header__eyebrow {
+  color: var(--brass);
+}
+
+/* ----- Post-content (renders after the sticky stage releases) ----------- */
+.scroll-scene__post {
+  position: relative;
+  inline-size: 100%;
+  background-color: var(--bg);
+  color: var(--fg);
+  padding-block: var(--space-20);
+  padding-inline: var(--gutter);
+}
+
+/* ----- Scaffold features grid (used by Ken-Burns scenes that don't yet
+ *       have a fully-built post section). Three-up at md+, single column on
+ *       mobile, brass hairline above each card. */
+.hall-resort__features,
+.hall-venue__features-scaffold {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  max-inline-size: var(--container-wide, 1200px);
+  margin-inline: auto;
+}
+
+@media (min-width: 720px) {
+  .hall-resort__features,
+  .hall-venue__features-scaffold {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.hall-resort__features > .feature,
+.hall-venue__features-scaffold > .feature {
+  position: relative;
+  padding-block-start: var(--space-6);
+  border-block-start: 1px solid var(--brass);
+}
+
+.hall-resort__features > .feature h3,
+.hall-venue__features-scaffold > .feature h3 {
+  font-family: var(--font-display-he);
+  font-size: var(--text-xl);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-tight);
+  color: var(--ink-deep);
+  margin: 0 0 var(--space-3) 0;
+}
+
+.hall-resort__features > .feature p,
+.hall-venue__features-scaffold > .feature p {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--lh-loose);
+  color: var(--fg-muted);
+  margin: 0;
+}
+
+/* ----- Reduced motion --------------------------------------------------- *
+ * Constitution §8 + §9: respect user preference. JS collapses the spacer,
+ * but we also hard-cap it via CSS so SSR / no-JS cases stay well-behaved.
+ * Video is hidden so the poster is what users see; transforms are off.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-scene__spacer {
+    block-size: auto;
+    min-block-size: 100vh;
+  }
+  .scroll-scene__video {
+    visibility: hidden;
+  }
+  .scroll-scene[data-scrub-mode="poster-ken-burns"] .scroll-scene__poster img,
+  .scroll-scene__poster img {
+    transform: none;
+    will-change: auto;
+  }
+}
