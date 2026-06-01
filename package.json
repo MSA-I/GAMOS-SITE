@@ -1,0 +1,29 @@
+{
+  "name": "gamos-site",
+  "version": "1.0.0",
+  "description": "אתר עברית-RTL יוקרתי — מתחם אירועים גאמוס. HTML/CSS/JS וונילה (Constitution §2: no framework, no bundler).",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes serve . -p 8000 -L",
+    "dev:python": "python -m http.server 8000",
+    "encode:hero": "node scripts/encode-frames.mjs hero",
+    "encode:culinary": "node scripts/encode-frames.mjs culinary",
+    "encode:all": "node scripts/encode-frames.mjs hero culinary",
+    "encode:images": "node scripts/encode-images.mjs",
+    "lighthouse": "npx --yes lighthouse http://localhost:8000 --view --preset=desktop"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MSA-I/GAMOS-SITE.git"
+  },
+  "homepage": "https://github.com/MSA-I/GAMOS-SITE#readme",
+  "bugs": {
+    "url": "https://github.com/MSA-I/GAMOS-SITE/issues"
+  },
+  "license": "UNLICENSED",
+  "author": "GAMOS",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
