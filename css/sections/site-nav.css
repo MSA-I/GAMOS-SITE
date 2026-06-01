@@ -14,25 +14,40 @@
   border-block-end: 1px solid var(--border);
 }
 
-.site-nav__container {
-  max-width: var(--container-max);
+.site-nav__inner {
+  max-inline-size: 1440px;
   margin-inline: auto;
   padding-block: var(--space-3);
-  padding-inline: var(--gutter);
+  padding-inline: clamp(16px, 3vw, 32px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-6);
+  gap: var(--space-5);
+  min-block-size: 64px;
 }
 
 .site-nav__brand {
-  font-family: var(--font-display-he);
-  font-weight: var(--fw-bold);
-  font-size: var(--text-lg);
-  letter-spacing: var(--tracking-tight);
-  color: var(--fg);
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
   text-decoration: none;
-  white-space: nowrap;
+  color: var(--fg);
+  line-height: 0;
+}
+
+.site-nav__brand-logo {
+  display: block;
+  height: 36px;
+  width: auto;
+  max-inline-size: 180px;
+  object-fit: contain;
+  transition: opacity var(--dur-base) var(--ease-out-cinema);
+}
+.site-nav__brand:hover .site-nav__brand-logo { opacity: 0.85; }
+.site-nav__brand:focus-visible {
+  outline: 3px solid var(--brass);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
 }
 
 .site-nav__links {
@@ -40,17 +55,29 @@
   margin: 0;
   padding: 0;
   display: flex;
-  gap: var(--space-6);
+  gap: clamp(12px, 1.5vw, 24px);
   align-items: center;
+  flex: 1;
+  justify-content: center;
+}
+
+/* Hide secondary links on smaller desktops to keep nav single-line.
+   Mobile menu (hamburger) still surfaces all of them. */
+@media (max-width: 1199px) {
+  .site-nav__links li:nth-child(n+8) { display: none; }
+}
+@media (max-width: 1023px) {
+  .site-nav__links { display: none; }
 }
 
 .site-nav__links a {
   font-family: var(--font-body);
-  font-size: var(--text-sm);
+  font-size: clamp(0.8rem, 0.95vw, 0.95rem);
   font-weight: var(--fw-medium);
   color: var(--fg);
   text-decoration: none;
   padding-block: var(--space-2);
+  white-space: nowrap;
   position: relative;
   transition: color var(--dur-base) var(--ease-out-cinema);
 }

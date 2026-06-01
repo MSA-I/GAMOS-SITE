@@ -150,7 +150,12 @@
   <header class="site-nav" role="banner">
     <nav class="site-nav__inner" aria-label="ניווט ראשי">
       <a class="site-nav__brand" href="#hero" aria-label="גאמוס — לדף הבית">
-        <span class="site-nav__brand-mark">גאמוס</span>
+        <picture>
+          <source type="image/webp" srcset="/assets/images/brand/logo-gold.webp">
+          <img src="/assets/images/brand/logo-gold.png" alt="גאמוס"
+               class="site-nav__brand-logo"
+               width="180" height="auto" decoding="sync" loading="eager">
+        </picture>
       </a>
 
       <ul class="site-nav__links" role="list">
@@ -300,19 +305,22 @@
                 data-manifest-url="/assets/frames/hero/manifest.json"
                 aria-hidden="true"></canvas>
 
-        <!-- Layer D: portals (revealed at hero progress >= 0.92).
-             Lives INSIDE .hero__sticky so it scrolls with the hero stage and
-             never bleeds into other sections. -->
+        <!-- Layer D: portal HOTSPOTS — invisible buttons positioned exactly
+             over the bubbles in the hero canvas (which is the master video
+             frame). The bubbles in the canvas are part of the cinematic
+             plate; we layer transparent <img> overlays (from PSB exports)
+             on top so we can apply hover glow + click feedback per bubble.
+
+             Reveal at hero progress >= 0.92 via .portals.is-active. -->
         <aside id="portals" class="portals" aria-label="קיצורים לאולם וריזורט">
           <button class="portal portal--resort"
                   type="button"
                   data-target="#hall-resort"
                   aria-label="עבור לריזורט וחדרי האירוח">
-            <video class="portal__video"
-                   autoplay loop muted playsinline
-                   src="/assets/video/portal-loop.mp4"
-                   aria-hidden="true"></video>
-            <span class="portal__ring" aria-hidden="true"></span>
+            <img class="portal__overlay"
+                 src="/assets/images/brand/portal-resort.webp"
+                 alt="" aria-hidden="true"
+                 loading="eager" decoding="async">
             <span class="portal__label">ריזורט</span>
           </button>
 
@@ -320,11 +328,10 @@
                   type="button"
                   data-target="#hall-venue"
                   aria-label="עבור לאולם האירועים">
-            <video class="portal__video"
-                   autoplay loop muted playsinline
-                   src="/assets/video/portal-loop.mp4"
-                   aria-hidden="true"></video>
-            <span class="portal__ring" aria-hidden="true"></span>
+            <img class="portal__overlay"
+                 src="/assets/images/brand/portal-venue.webp"
+                 alt="" aria-hidden="true"
+                 loading="eager" decoding="async">
             <span class="portal__label">אולם</span>
           </button>
         </aside>

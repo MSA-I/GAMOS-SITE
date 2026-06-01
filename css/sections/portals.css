@@ -1,52 +1,35 @@
-/* =============================================================================
-   Section: #portals
-   Owner  : Agent 07 (Phase 4a — Portal-Bubbles Engineer)
-   Spec   : architecture/portal-bubbles-spec.md
-   --------------------------------------------------------------------------
-   Layout : Two circular video bubbles fixed to the bottom-center of the
-            viewport. Reveal at hero progress >= 0.92 via .portals.is-active.
-            Click expands the chosen bubble to ~6× via GSAP timeline (handled
-            in js/portals.js) before scrolling to the matching hall section.
+/* ===========================================================================
+   portals.css — invisible hotspots over the bubble plate in the hero canvas
+   ---------------------------------------------------------------------------
+   Concept (2026-06-01 — replaces the round <video> portals):
 
-   Rules  : Logical properties only. All values via var(--*). No hard-coded
-            colors / sizes / durations / easings. Reduced-motion path is a
-            full reveal + zero-duration transitions (token-layer remap also
-            kicks in via tokens.css §3).
+   The hero canvas (driven by hero-video-scrub.js) plays the master video,
+   whose final frame already shows the two bubbles painted into the plate.
+   We overlay two transparent <button> hotspots aligned to those bubble
+   positions, with PNG bubble images (extracted from PSB) as the .portal__overlay.
+   The PNG itself is mostly transparent except for the bubble's outline +
+   refractions — when the user hovers, we apply a brass drop-shadow + soft
+   tint to the overlay PNG so only that bubble glows. The user thus sees
+   the SAME bubbles they saw in the video but now lit up as a selectable
+   hover state.
 
-   A11y   : .portal is already a <button> (Agent 04 markup). Focus-visible
-            ring intensifies; outer rings glow; mouse hover scales 1.06.
-            Initial hidden state uses opacity + scale + visibility:hidden
-            so off-screen buttons cannot intercept clicks meant for the hero.
-   ========================================================================== */
-
-
-/* ---------------------------------------------------------------------------
-   1. Wrapper — fixed bottom-center over the viewport.
-   --------------------------------------------------------------------------- */
+   Reveal: .portals.is-active toggled by js/portals.js once
+   window.gamosHero.progress >= 0.92 (with hysteresis at 0.88).
+   ========================================================================= */
 
 .portals {
-  /* Lives INSIDE .hero__sticky as Layer D — must NOT be fixed (was a regression
-     that made the bubbles follow the user across every scroll section). */
+  /* Lives inside .hero__sticky as Layer D (NOT fixed — moved 2026-06-01). */
   position: absolute;
-  inset-block-end: var(--space-12);
-  inset-inline: 0;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: var(--space-12);
-  padding-inline: var(--gutter);
+  inset: 0;
+  display: block;             /* children are absolutely positioned */
   z-index: 20;
+  pointer-events: none;       /* container = pass-through */
 
-  /* Hidden until Stage D — `js/portals.js` toggles `.is-active` once
-     window.gamosHero.progress >= 0.92 (with hysteresis at 0.88). */
   opacity: 0;
   visibility: hidden;
   transition:
     opacity 0.6s var(--ease-out-cinema),
     visibility 0s linear 0.6s;
-
-  /* Pass-through container — children opt back in. */
-  pointer-events: none;
 }
 
 .portals.is-active {
@@ -59,287 +42,222 @@
 
 
 /* ---------------------------------------------------------------------------
-   2. Portal — circular button.
-       --size and --ring-thickness are component-local custom props so the
-       mobile breakpoint just retunes the same variables.
+   Portal — hotspot button positioned over its bubble in the canvas.
+   ---------------------------------------------------------------------------
+   The bubbles in the master video plate occupy roughly the inner 35% of the
+   viewport on each side, vertically centered around 55% of viewport height.
+   These coordinates were measured from frame_0500.webp and scale with vw/vh.
    --------------------------------------------------------------------------- */
 
 .portal {
-  --portal-size: 280px;
-  --portal-ring-thickness: 3px;
-  --portal-glow-rest: 0 0 0 0 transparent;
-  /* Strong selection indicator — visible on hover/focus so the user clearly
-     knows which area they're about to choose (per user 2026-06-01). */
-  --portal-glow-hover: 0 0 60px 12px var(--brass-glow), 0 0 0 4px var(--brass);
-
-  position: relative;
-  inline-size: var(--portal-size);
-  block-size: var(--portal-size);
+  position: absolute;
+  inline-size: 30vw;
+  block-size: 60vh;
   padding: 0;
   margin: 0;
   border: 0;
   background: transparent;
-  border-radius: var(--radius-circle);
-  overflow: hidden;
   cursor: pointer;
-  isolation: isolate;            /* keeps stacking sane during expand */
-
-  /* Hidden initial state — invisible AND non-interactive. */
-  opacity: 0;
-  visibility: hidden;
-  transform: scale(0.6);
-  pointer-events: none;
-  will-change: transform, opacity;
-
-  transition:
-    transform var(--dur-deluxe) var(--ease-out-cinema),
-    opacity   var(--dur-deluxe) var(--ease-out-cinema),
-    visibility 0s linear var(--dur-deluxe);
-
-  /* Focus handled at .portal__ring level — kill default outline here. */
+  pointer-events: auto;       /* opt-in */
+  isolation: isolate;
   outline: none;
   -webkit-tap-highlight-color: transparent;
+
+  inset-block-start: 18%;     /* aligned with bubble vertical band */
+
+  /* Subtle scale + opacity reveal (overall fade controlled by .portals). */
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    transform 0.7s var(--ease-out-cinema),
+    opacity   0.7s var(--ease-out-cinema),
+    filter    0.45s var(--ease-out-cinema);
+}
+
+.portals.is-active .portal {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Right bubble = ריזורט (resort). In RTL DOM order, source-first ⇒ visual right. */
+.portal--resort {
+  inset-inline-start: 0;      /* RTL → physical right edge */
+  /* In LTR fallback (just in case), align to right physically: */
+  right: 7vw;                  /* ignored under RTL */
+}
+[dir="rtl"] .portal--resort {
+  right: auto;
+  inset-inline-start: 7vw;
+}
+
+.portal--venue {
+  inset-inline-end: 0;
+  left: 7vw;                   /* LTR fallback */
+}
+[dir="rtl"] .portal--venue {
+  left: auto;
+  inset-inline-end: 7vw;
 }
 
 
 /* ---------------------------------------------------------------------------
-   3. Inner video — clipped to the circle.
-       clip-path is defense-in-depth on top of overflow:hidden — Safari
-       sometimes leaks subpixels at the rounded edges during transforms.
+   Bubble overlay image — sits over the hero canvas plate. Default state is
+   nearly invisible (the bubble in the canvas plate IS what the user sees);
+   on hover/focus we light it up so only THAT bubble glows.
    --------------------------------------------------------------------------- */
 
-.portal__video {
+.portal__overlay {
   position: absolute;
   inset: 0;
   inline-size: 100%;
   block-size: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
-  clip-path: circle(50%);
-  background-color: var(--ink-medium);
-  /* Performance hint for the still video layer. */
-  transform: translateZ(0);
-}
-
-
-/* ---------------------------------------------------------------------------
-   4. Brass ring — soft border + outer glow on hover/focus.
-   --------------------------------------------------------------------------- */
-
-.portal__ring {
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-circle);
-  border: var(--portal-ring-thickness) solid var(--brass);
-  box-shadow: var(--portal-glow-rest);
   pointer-events: none;
+  user-select: none;
+  /* Rest state — hint of the bubble outline so users sense the affordance,
+     but mostly defer to the canvas plate's painted bubble. */
+  opacity: 0.35;
+  filter:
+    drop-shadow(0 0 0 transparent)
+    drop-shadow(0 0 0 transparent);
   transition:
-    box-shadow   var(--dur-base) var(--ease-out-cinema),
-    border-color var(--dur-base) var(--ease-out-cinema),
-    border-width var(--dur-base) var(--ease-out-cinema);
+    opacity 0.4s var(--ease-out-cinema),
+    filter  0.45s var(--ease-out-cinema),
+    transform 0.6s var(--ease-out-cinema);
 }
 
 
 /* ---------------------------------------------------------------------------
-   5. Inner gradient — protects label legibility on bright video frames.
-   --------------------------------------------------------------------------- */
-
-.portal::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-circle);
-  background: radial-gradient(
-    circle at 50% 70%,
-    rgba(14, 14, 12, 0.55) 0%,
-    rgba(14, 14, 12, 0.2)  55%,
-    rgba(14, 14, 12, 0)    78%
-  );
-  pointer-events: none;
-}
-
-
-/* ---------------------------------------------------------------------------
-   6. Label — Hebrew display type, anchored low inside the bubble.
+   Label — Hebrew display, anchored to the bottom of the bubble area.
    --------------------------------------------------------------------------- */
 
 .portal__label {
   position: absolute;
-  inset-block-end: calc(var(--portal-size) * 0.18);
+  inset-block-end: 4%;
   inset-inline: 0;
   text-align: center;
   font-family: var(--font-display-he);
   font-weight: var(--fw-regular);
-  font-size: var(--text-xl);
+  font-size: clamp(1.5rem, 2.4vw, 2.4rem);
   line-height: var(--lh-tight);
   letter-spacing: var(--tracking-tight);
   color: var(--ivory);
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+  text-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.7),
+    0 0 28px rgba(0, 0, 0, 0.55);
   pointer-events: none;
   user-select: none;
   z-index: 1;
+  opacity: 0.92;
+  transition:
+    opacity 0.4s var(--ease-out-cinema),
+    transform 0.5s var(--ease-out-cinema),
+    text-shadow 0.4s var(--ease-out-cinema);
 }
 
 
 /* ---------------------------------------------------------------------------
-   7. Hover / focus / active — cinematic, NOT playful.
+   Hover / focus — strong brass GLOW on the bubble overlay (this is the
+   selection indicator the user explicitly asked for: "אמור להיות סימן של
+   צל או משהו מואר שמראה את הבחירה"). Only the hovered bubble lights up.
    --------------------------------------------------------------------------- */
 
-.portal:hover {
-  transform: scale(1.06);
-  filter: drop-shadow(0 0 32px var(--brass-glow))
-          drop-shadow(0 0 80px color-mix(in srgb, var(--brass) 60%, transparent));
+.portal:hover .portal__overlay,
+.portal:focus-visible .portal__overlay {
+  opacity: 1;
+  transform: scale(1.02);
+  filter:
+    drop-shadow(0 0 18px var(--brass-glow))
+    drop-shadow(0 0 60px color-mix(in srgb, var(--brass) 70%, transparent))
+    brightness(1.18) saturate(1.2);
 }
 
-.portal:hover .portal__ring,
-.portal:focus-visible .portal__ring {
-  box-shadow: var(--portal-glow-hover);
-  border-color: var(--brass-glow);
-  border-width: 5px;
+.portal:hover .portal__label,
+.portal:focus-visible .portal__label {
+  opacity: 1;
+  transform: translateY(-4px);
+  text-shadow:
+    0 2px 16px rgba(0, 0, 0, 0.85),
+    0 0 24px var(--brass-glow);
 }
 
-/* :focus-visible thickens the brass ring for clear keyboard affordance.
-   We ALSO outline-with-offset for the highest-contrast focus marker (per
-   WCAG 2.4.7 + Constitution §9). */
 .portal:focus-visible {
-  outline: 3px solid var(--brass-glow);
-  outline-offset: 6px;
-  border-radius: var(--radius-circle);
-}
-
-.portal:focus-visible .portal__ring {
-  border-width: 5px;
+  outline: 3px solid var(--brass);
+  outline-offset: 0;
 }
 
 .portal:active {
-  transform: scale(0.98);
-}
-
-/* Click pulse — strong shadow ring to signal "selection registered" before expand.
-   Triggered by [data-clicked] attribute set by JS on mousedown. */
-.portal[data-clicked] .portal__ring {
-  border-width: 6px;
-  border-color: var(--brass-glow);
-  box-shadow:
-    0 0 0 8px rgba(207, 174, 131, 0.35),
-    0 0 60px 12px var(--brass-glow);
-}
-
-.portal[data-clicked] {
-  filter: drop-shadow(0 20px 40px rgba(207, 174, 131, 0.6));
+  transform: scale(0.99);
 }
 
 
 /* ---------------------------------------------------------------------------
-   8. Active reveal — added by JS at hero progress >= 0.92.
-       Resort bubble lags slightly behind the venue bubble for a paired-arrival
-       feel rather than a synchronous "pop".
+   Click feedback — JS adds [data-clicked] on press for ~250ms before the
+   expand timeline kicks in. Strong glow + ring confirms selection.
    --------------------------------------------------------------------------- */
 
-.portals.is-active .portal {
+.portal[data-clicked] .portal__overlay {
   opacity: 1;
-  visibility: visible;
-  transform: scale(1);
-  pointer-events: auto;
-  /* On reveal the visibility transition collapses to 0s start so the button
-     becomes interactive immediately when scaling up. */
-  transition:
-    transform  var(--dur-deluxe) var(--ease-out-cinema),
-    opacity    var(--dur-deluxe) var(--ease-out-cinema),
-    visibility 0s linear 0s;
-}
-
-.portals.is-active .portal--resort {
-  transition-delay: 120ms;
+  filter:
+    drop-shadow(0 0 36px var(--brass-glow))
+    drop-shadow(0 0 100px var(--brass))
+    brightness(1.4) saturate(1.4);
 }
 
 
 /* ---------------------------------------------------------------------------
-   9. Expanding state — JS adds .is-expanding to the clicked button so we
-       can boost compositor priority and lift it above its sibling.
+   Expand timeline — js/portals.js (WAAPI) scales to 6× over ~1s.
+   While expanding, sibling fades out, body scroll-lock prevents the user
+   from scrolling away mid-animation. .is-leaving on .portals dims the rest.
    --------------------------------------------------------------------------- */
 
 .portal.is-expanding {
-  z-index: 2;
-  will-change: transform, opacity;
+  z-index: 30;
+  pointer-events: none;
 }
 
 .portals.is-leaving .portal:not(.is-expanding) {
-  opacity: 0;
-  transition: opacity var(--dur-slow) var(--ease-out-cinema);
+  opacity: 0.18;
+  pointer-events: none;
+  transition: opacity 0.35s var(--ease-out-cinema);
 }
 
 
 /* ---------------------------------------------------------------------------
-   10. Mobile — smaller bubbles, vertical-stacked centered.
+   Reduced motion — instant reveal, no glow scaling, no expand transform.
    --------------------------------------------------------------------------- */
-
-@media (max-width: 768px) {
-  .portals {
-    inset-block-end: var(--space-8);
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-6);
+@media (prefers-reduced-motion: reduce) {
+  .portals,
+  .portal,
+  .portal__overlay,
+  .portal__label {
+    transition: none !important;
   }
+  .portal:hover .portal__overlay,
+  .portal:focus-visible .portal__overlay {
+    transform: none;
+  }
+  .portal:hover .portal__label,
+  .portal:focus-visible .portal__label {
+    transform: none;
+  }
+}
 
+
+/* ---------------------------------------------------------------------------
+   Mobile — bubbles smaller, stack closer.
+   --------------------------------------------------------------------------- */
+@media (max-width: 767px) {
   .portal {
-    --portal-size: 180px;
-    --portal-ring-thickness: 2px;
+    inline-size: 42vw;
+    block-size: 42vh;
+    inset-block-start: 22%;
   }
+  [dir="rtl"] .portal--resort { inset-inline-start: 4vw; }
+  [dir="rtl"] .portal--venue  { inset-inline-end: 4vw; }
 
   .portal__label {
-    font-size: var(--text-md);
-    inset-block-end: calc(var(--portal-size) * 0.16);
-  }
-}
-
-/* Very small phones — clamp further so two bubbles never collide vertically. */
-@media (max-width: 380px) {
-  .portal {
-    --portal-size: 150px;
-  }
-}
-
-
-/* ---------------------------------------------------------------------------
-   11. Reduced motion — instant reveal, zero transforms on hover/active.
-       (tokens.css §3 already remaps every --dur-* to 0.01ms; this block is
-       belt-and-braces for transform side effects.)
-   --------------------------------------------------------------------------- */
-
-@media (prefers-reduced-motion: reduce) {
-  .portal {
-    transition: none;
-  }
-
-  .portal:hover,
-  .portal:active {
-    transform: scale(1);
-  }
-
-  .portal:hover .portal__ring,
-  .portal:focus-visible .portal__ring {
-    box-shadow: none;
-  }
-
-  /* When .is-active flips on, jump directly to the final state. */
-  .portals.is-active .portal,
-  .portals.is-active .portal--resort {
-    transition: none;
-    transition-delay: 0s;
-  }
-}
-
-
-/* ---------------------------------------------------------------------------
-   12. High-contrast / forced-colors — keep the ring visible.
-   --------------------------------------------------------------------------- */
-
-@media (forced-colors: active) {
-  .portal__ring {
-    border-color: CanvasText;
-  }
-  .portal:focus-visible {
-    outline-color: Highlight;
+    font-size: clamp(1.2rem, 5vw, 1.6rem);
   }
 }
