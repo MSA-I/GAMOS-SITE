@@ -1,0 +1,159 @@
+/* ===========================================================================
+   legal.css — minimal stylesheet shared by /legal/*.html (privacy, terms,
+   accessibility statement). Layouts long-form Hebrew text in a centered
+   reading column with luxury typography from tokens.
+   ========================================================================= */
+
+.site-nav--legal {
+  /* Simplified nav for legal pages — only brand + back-to-site CTA. */
+  background: var(--ink-deep);
+  border-block-end: 1px solid color-mix(in srgb, var(--brass) 20%, transparent);
+}
+.site-nav--legal .site-nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--gutter);
+}
+
+.legal {
+  background: var(--ivory);
+  color: var(--ink-deep);
+  padding-block: clamp(var(--space-8), 8vw, var(--space-12));
+  padding-inline: var(--gutter);
+  min-block-size: 70vh;
+}
+
+.legal__article {
+  max-inline-size: 72ch;
+  margin-inline: auto;
+}
+
+.legal__header {
+  margin-block-end: var(--space-8);
+  padding-block-end: var(--space-6);
+  border-block-end: 1px solid color-mix(in srgb, var(--cocoa) 20%, transparent);
+}
+
+.legal__eyebrow {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display, "Frank Ruhl Libre", serif);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--brass-deep);
+}
+
+.legal__title {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display-he, "Frank Ruhl Libre", serif);
+  font-weight: 700;
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  line-height: 1.1;
+  color: var(--ink-deep);
+}
+
+.legal__updated {
+  margin: 0;
+  font-size: 0.875rem;
+  color: color-mix(in srgb, var(--ink-deep) 60%, var(--ivory));
+}
+
+.legal__article section {
+  margin-block-end: var(--space-7);
+}
+
+.legal__article h2 {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display-he, "Frank Ruhl Libre", serif);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 2.4vw, 1.85rem);
+  line-height: 1.25;
+  color: var(--ink-deep);
+}
+
+.legal__article p,
+.legal__article li {
+  font-family: var(--font-body, "Heebo", sans-serif);
+  font-size: clamp(1rem, 1.1vw, 1.125rem);
+  line-height: 1.75;
+  color: color-mix(in srgb, var(--ink-deep) 88%, var(--ivory));
+}
+
+.legal__article p {
+  margin: 0 0 var(--space-3);
+}
+
+.legal__article ul {
+  margin: 0 0 var(--space-3);
+  padding-inline-start: var(--space-5);
+}
+
+.legal__article li {
+  margin-block-end: var(--space-2);
+}
+
+.legal__article a {
+  color: var(--brass-deep);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  transition: color 0.18s ease;
+}
+.legal__article a:hover,
+.legal__article a:focus-visible {
+  color: var(--accent-rose);
+}
+
+.legal__article strong {
+  color: var(--ink-deep);
+  font-weight: 600;
+}
+
+.legal__article code {
+  background: color-mix(in srgb, var(--mist) 80%, transparent);
+  padding-inline: 0.35em;
+  padding-block: 0.05em;
+  border-radius: 4px;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.92em;
+}
+
+.legal__contact-list {
+  list-style: none;
+  padding: 0;
+}
+.legal__contact-list li {
+  margin-block-end: var(--space-2);
+}
+
+/* Simplified single-row footer for legal pages. */
+.site-footer--legal {
+  background: var(--ink-deep);
+  color: var(--ivory);
+  padding-block: var(--space-5);
+  padding-inline: var(--gutter);
+  border-block-start: 1px solid color-mix(in srgb, var(--brass) 25%, transparent);
+}
+.site-footer--legal .site-footer__inner {
+  max-inline-size: 72ch;
+  margin-inline: auto;
+  text-align: center;
+}
+.site-footer--legal .site-footer__copy {
+  margin: 0;
+  font-size: 0.875rem;
+  color: color-mix(in srgb, var(--ivory) 75%, transparent);
+}
+.site-footer--legal a {
+  color: var(--brass);
+  text-decoration: none;
+}
+.site-footer--legal a:hover,
+.site-footer--legal a:focus-visible {
+  text-decoration: underline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .legal__article a { transition: none; }
+}
