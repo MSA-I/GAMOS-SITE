@@ -22,10 +22,13 @@
    -------------------------------------------------------------------------- */
 
 .side-dot-nav {
-  /* Position: fixed on right edge, vertically centered */
+  /* Position: fixed on the visual RIGHT edge regardless of document
+     direction. In RTL, `inset-inline-end` resolves to the visual LEFT
+     edge — but the user wants right-edge anchoring for natural eye
+     flow. We use the physical `right` property to lock it to right. */
   position: fixed;
   inset-block-start: 50%;
-  inset-inline-end: var(--space-6);     /* 24px from right edge in RTL */
+  right: var(--space-6);                 /* 24px from physical right edge */
   transform: translateY(-50%);
   z-index: var(--z-sticky);              /* 100 — below loading-overlay (1000) */
 

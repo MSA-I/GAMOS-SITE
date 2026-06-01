@@ -26,13 +26,17 @@
 
 .section-header__title {
   font-family: var(--font-display-he);
-  font-size: clamp(2.5rem, 5vw, 4.5rem); /* Agent 20 — weblove-motion massive type */
+  /* Capped at 4vw so it never breaks out of a 40vw section-rail container.
+     Min 2rem keeps mobile readable. (was 5vw → overflowed rooms heading). */
+  font-size: clamp(2rem, 4vw, 3.75rem);
   line-height: var(--lh-tight);
   letter-spacing: var(--tracking-tight);
   font-weight: var(--fw-bold);
   color: var(--fg);
   margin: 0 0 var(--space-4) 0;
-  max-width: 22ch;
+  max-inline-size: 100%;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .section-header--center .section-header__title { max-width: none; }
