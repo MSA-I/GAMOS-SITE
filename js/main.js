@@ -18,11 +18,22 @@ import * as reveals        from "./reveals.js";
 import * as accordions     from "./accordions.js";
 import * as slider         from "./slider.js";
 import * as lenis          from "./lenis.js";
+import * as loadingOverlay from "./loading-overlay.js";
+import * as sideDotNav     from "./side-dot-nav.js";
 
+// Order matters:
+// - hero-video-scrub installs window.gamosHero.onProgress (used by portals + side-dot-nav).
+// - portals init waits internally for the hero hook, so its placement here is benign.
+// - loading-overlay must init BEFORE portals' first click so window.gamosLoading exists
+//   (portals only DISPATCHES events; it doesn't call gamosLoading directly, but having it
+//    early also prevents a missed event window).
+// - side-dot-nav inits AFTER hero so its hero progress hook attaches cleanly.
 const MODULES = [
   ["lenis",            lenis],
   ["hero-video-scrub", heroVideoScrub],
   ["portals",          portals],
+  ["loading-overlay",  loadingOverlay],
+  ["side-dot-nav",     sideDotNav],
   ["reveals",          reveals],
   ["accordions",       accordions],
   ["slider",           slider],

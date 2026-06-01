@@ -28,12 +28,15 @@
   <!-- Favicon (TODO(agent-03): final favicon set) -->
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 
-  <!-- Performance: preload LCP image (hero poster) -->
-  <link rel="preload" as="image" href="/assets/video/hero-poster.jpg" fetchpriority="high">
+  <!-- Performance: preload LCP image (hero static — the first painted full-bleed surface) -->
+  <link rel="preload" as="image" type="image/webp"
+        href="/assets/images/brand/hero-static.webp" fetchpriority="high">
 
-  <!-- Performance: preload critical font (Hebrew display) -->
+  <!-- Performance: preload critical fonts (Hebrew display + Latin wordmark) -->
   <link rel="preload" as="font" type="font/woff2" crossorigin
-        href="/assets/fonts/frank-ruhl-libre-400.woff2">
+        href="/assets/fonts/frank-ruhl-libre-700.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="/assets/fonts/bodoni-moda-900-latin.woff2">
 
   <!-- DNS / preconnect (only if external resources confirmed) -->
   <!-- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> -->
@@ -96,6 +99,10 @@
   <link rel="stylesheet" href="/css/sections/motion-reveals.css">
   <link rel="stylesheet" href="/css/sections/motion-accordions.css">
   <link rel="stylesheet" href="/css/sections/motion-slider.css">
+
+  <!-- Stylesheets: chrome components (overlay, side-dot-nav) -->
+  <link rel="stylesheet" href="/css/components/loading-overlay.css">
+  <link rel="stylesheet" href="/css/components/side-dot-nav.css">
 
   <!-- Entry script: ESM, deferred -->
   <script type="module" defer src="/js/main.js"></script>

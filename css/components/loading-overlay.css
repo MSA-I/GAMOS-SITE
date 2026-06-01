@@ -1,0 +1,162 @@
+/* ===========================================================================
+   loading-overlay.css
+   ---------------------------------------------------------------------------
+   Owner       : Agent 19 — Loading Overlay + Side-Dot Nav Implementer
+   Spec        : architecture/transitions-and-nav.md §1–§7
+   Constitution: §4 (logical properties), §5 (palette), §8 (perf), §9 (a11y),
+                 §10.2 (tokens are single source).
+   ---------------------------------------------------------------------------
+   Behavior
+   - Fixed overlay covering full viewport (z-index = --z-overlay = 1000).
+   - Hidden by default (opacity 0, visibility hidden, pointer-events: none).
+   - Shown by adding `.is-visible` (JS sets aria-hidden="false" in parallel).
+   - Inner: gold logo + brass spinner + "טוען חוויה" caption, stacked center.
+   - Honors prefers-reduced-motion: instant show/hide; spinner still rotates;
+     400ms hold preserved by JS so users register the transition.
+   ========================================================================= */
+
+
+/* --------------------------------------------------------------------------
+   1. Container
+   -------------------------------------------------------------------------- */
+
+.loading-overlay {
+  /* Position: fixed, full-viewport */
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+
+  /* Layout: center content */
+  display: grid;
+  place-items: center;
+
+  /* Surface */
+  background: rgba(26, 20, 16, 0.96);  /* --ink-deep at 0.96 */
+  backdrop-filter: blur(8px) saturate(0.9);
+  -webkit-backdrop-filter: blur(8px) saturate(0.9);
+
+  /* Default: hidden */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  /* Fade in/out */
+  transition:
+    opacity 200ms var(--ease-out-cinema),
+    visibility 0s linear 200ms;
+}
+
+.loading-overlay.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 200ms var(--ease-out-cinema),
+    visibility 0s linear 0s;
+}
+
+
+/* --------------------------------------------------------------------------
+   2. Inner stack (logo + spinner + text)
+   -------------------------------------------------------------------------- */
+
+.loading-overlay__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);  /* 24px */
+  padding-inline: var(--space-6);
+  text-align: center;
+}
+
+
+/* --------------------------------------------------------------------------
+   3. Logo
+   -------------------------------------------------------------------------- */
+
+.loading-overlay__logo-wrap {
+  display: block;
+  /* Logo entrance: scale 0.85 → 1, opacity 0 → 1 (200ms) */
+  opacity: 0;
+  transform: scale(0.85);
+  transition:
+    opacity 200ms var(--ease-out-cinema),
+    transform 200ms var(--ease-out-cinema);
+}
+
+.loading-overlay.is-visible .loading-overlay__logo-wrap {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.loading-overlay__logo {
+  display: block;
+  inline-size: 240px;
+  block-size: auto;
+  max-inline-size: min(240px, 60vw);
+  /* No filter — the logo asset is already gold-on-transparent */
+}
+
+
+/* --------------------------------------------------------------------------
+   4. Spinner
+   -------------------------------------------------------------------------- */
+
+.loading-overlay__spinner {
+  inline-size: 48px;
+  block-size: 48px;
+  border: 3px solid var(--brass);
+  border-top-color: transparent;
+  border-radius: var(--radius-circle);
+  animation: la-spin 1s linear infinite;
+  /* Spinner is informational — keep it rotating even with reduced-motion */
+}
+
+@keyframes la-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+
+/* --------------------------------------------------------------------------
+   5. Caption — "טוען חוויה"
+   -------------------------------------------------------------------------- */
+
+.loading-overlay__text {
+  margin: 0;
+  font-family: var(--font-display-he);
+  font-size: var(--text-md);                /* 20px */
+  font-weight: var(--fw-regular);
+  color: var(--ivory);
+  opacity: 0.85;
+  letter-spacing: var(--tracking-wide);     /* 0.05em */
+  line-height: var(--lh-snug);
+}
+
+
+/* --------------------------------------------------------------------------
+   6. Reduced-motion overrides
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-overlay {
+    /* Instant show/hide — duration tokens are already 0.01ms via tokens.css,
+       but we override the visibility transition delay explicitly to remove
+       any chance of a 200ms gap. */
+    transition:
+      opacity 0.01ms,
+      visibility 0s linear 0.01ms;
+  }
+  .loading-overlay.is-visible {
+    transition:
+      opacity 0.01ms,
+      visibility 0s linear 0s;
+  }
+  .loading-overlay__logo-wrap {
+    /* Skip scale animation; just appear */
+    transform: none;
+    transition: opacity 0.01ms;
+  }
+  /* Spinner keeps rotating — it's a loading indicator, informational. */
+}

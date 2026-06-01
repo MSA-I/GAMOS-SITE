@@ -246,9 +246,32 @@ function expandPortal({ button }) {
     ));
   }
 
-  // 3. Once the expand finishes, scroll and reset state.
+  // 3. Once the expand finishes, hand off to loading-overlay then scroll.
+  //    Phase D (Agent 19, 2026-06-01) — dispatch a custom event so the
+  //    loading-overlay module can fade in. After ~200ms (overlay fully
+  //    visible) we begin smooth-scroll under the overlay. ~400ms after
+  //    that, dispatch a hide event so the overlay fades out — by then
+  //    IntersectionObserver entries on the destination have settled and
+  //    the user sees the section already painted.
   expandAnim.finished
-    .then(() => {
+    .then(async () => {
+      // Dispatch loading-show — loading-overlay listens for this on window.
+      // If the loading-overlay module isn't installed (e.g., user disabled
+      // it), the dispatch is a no-op and we proceed with direct scroll.
+      try {
+        window.dispatchEvent(new CustomEvent("gamos:loading-show", {
+          detail: { targetSelector: targetSel }
+        }));
+      } catch { /* ignore */ }
+
+      // Wait ~200ms so the overlay reaches full opacity before we scroll
+      // underneath. We honor reduced-motion here too — overlay is instant
+      // in that mode, so a smaller wait is fine but harmless if kept.
+      const overlayInDelay = state.reducedMotion ? 0 : 200;
+      if (overlayInDelay > 0) {
+        await new Promise((resolve) => setTimeout(resolve, overlayInDelay));
+      }
+
       scrollToTarget(target);
 
       // Reset state shortly after the scroll begins. We DON'T leave the bubble
@@ -276,9 +299,22 @@ function expandPortal({ button }) {
         }
         state.isExpanding = false;
       }, SCROLL_RESET_DELAY);
+
+      // Dispatch loading-hide ~400ms after expand-end (i.e., ~200ms after
+      // we scrolled). The overlay's own fade-out is 200ms, totaling ~800ms
+      // from expand-finish to "everything visible at destination".
+      window.setTimeout(() => {
+        try {
+          window.dispatchEvent(new CustomEvent("gamos:loading-hide"));
+        } catch { /* ignore */ }
+      }, 400);
     })
     .catch(() => {
       // animation.cancel() rejects .finished — clean up silently.
+      // Best-effort hide in case the overlay was shown before cancellation.
+      try {
+        window.dispatchEvent(new CustomEvent("gamos:loading-hide"));
+      } catch { /* ignore */ }
       state.isExpanding = false;
     });
 }

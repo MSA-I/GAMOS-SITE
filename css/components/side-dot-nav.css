@@ -1,0 +1,148 @@
+/* ===========================================================================
+   side-dot-nav.css
+   ---------------------------------------------------------------------------
+   Owner       : Agent 19 — Loading Overlay + Side-Dot Nav Implementer
+   Spec        : architecture/transitions-and-nav.md §8–§16
+   Constitution: §4 (logical properties — RTL-safe), §5 (palette via tokens),
+                 §9 (visible focus rings), §10.2 (tokens are single source).
+   ---------------------------------------------------------------------------
+   Behavior
+   - Vertical column of dots fixed on the RIGHT edge (RTL-leading via
+     `inset-inline-end`). Hidden below 768px (mobile uses top-nav).
+   - Each dot is a small circle outlined in brass; active state fills brass
+     with a soft glow. Tooltip-on-hover shows the section name on the
+     LEADING side (left in RTL, right in LTR).
+   - When `[data-suppressed]` attribute is set on the nav (loading-overlay
+     active), dots dim to ~0.4 opacity and pointer-events disabled.
+   ========================================================================= */
+
+
+/* --------------------------------------------------------------------------
+   1. Container
+   -------------------------------------------------------------------------- */
+
+.side-dot-nav {
+  /* Position: fixed on right edge, vertically centered */
+  position: fixed;
+  inset-block-start: 50%;
+  inset-inline-end: var(--space-6);     /* 24px from right edge in RTL */
+  transform: translateY(-50%);
+  z-index: var(--z-sticky);              /* 100 — below loading-overlay (1000) */
+
+  /* Layout: vertical column with gaps */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);                   /* 16px between dots */
+
+  /* Default visible state */
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 240ms var(--ease-out-cinema);
+}
+
+/* Hide on mobile (< 768px) — top nav takes over there. */
+@media (max-width: 767px) {
+  .side-dot-nav {
+    display: none;
+  }
+}
+
+/* Suppressed: while loading-overlay is up, dim and disable. */
+.side-dot-nav[data-suppressed] {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   2. Dot (each is an <a>)
+   -------------------------------------------------------------------------- */
+
+.side-dot-nav__dot {
+  /* Box */
+  inline-size: 12px;
+  block-size: 12px;
+  border-radius: var(--radius-circle);
+  border: 1px solid var(--brass);
+  background: transparent;
+
+  /* Anchor positioning context */
+  position: relative;
+  display: block;
+
+  /* Strip default <a> underline / text */
+  text-decoration: none;
+  color: inherit;
+
+  /* Interaction */
+  cursor: pointer;
+  transition:
+    transform var(--dur-base) var(--ease-out-cinema),
+    background-color var(--dur-base) var(--ease-out-cinema),
+    box-shadow var(--dur-base) var(--ease-out-cinema);
+}
+
+.side-dot-nav__dot:hover {
+  transform: scale(1.3);
+  background-color: rgba(207, 174, 131, 0.3);  /* --brass at 30% */
+}
+
+.side-dot-nav__dot[aria-current="true"] {
+  background-color: var(--brass);
+  box-shadow: 0 0 12px var(--brass-glow);
+}
+
+/* Focus ring per Constitution §9 — 3px brass, sits OUTSIDE the dot. */
+.side-dot-nav__dot:focus-visible {
+  outline: 3px solid var(--brass);
+  outline-offset: 4px;
+}
+
+
+/* --------------------------------------------------------------------------
+   3. Tooltip (hover/focus label) — appears on LEADING side
+   -------------------------------------------------------------------------- */
+
+.side-dot-nav__label {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: calc(100% + var(--space-3));   /* 12px past dot LEADING side */
+  transform: translateY(-50%);
+
+  /* Type */
+  font-family: var(--font-display-he);
+  font-size: var(--text-xs);                       /* 12px */
+  letter-spacing: var(--tracking-wide);            /* 0.05em */
+  white-space: nowrap;
+  color: var(--ivory);
+
+  /* Surface */
+  background: rgba(26, 20, 16, 0.85);              /* --ink-deep + alpha */
+  padding-inline: var(--space-3);                  /* 12px */
+  padding-block: var(--space-2);                   /* 8px */
+  border-radius: var(--radius-sm);
+
+  /* Hidden by default */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms var(--ease-out-cinema);
+}
+
+.side-dot-nav__dot:hover .side-dot-nav__label,
+.side-dot-nav__dot:focus-visible .side-dot-nav__label {
+  opacity: 1;
+}
+
+
+/* --------------------------------------------------------------------------
+   4. Reduced-motion overrides
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .side-dot-nav__dot {
+    transition: none;
+  }
+  .side-dot-nav__label {
+    transition: none;
+  }
+}
