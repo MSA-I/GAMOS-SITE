@@ -27,6 +27,9 @@ import * as counters            from "./counters.js";
 import * as contactForm         from "./contact-form.js";   // Agent 23 — Phase D1
 import * as siteNav             from "./site-nav.js";       // Agent 23 — Phase D2
 import * as scrollytelling      from "./scrollytelling.js"; // 2026-06-01 — GSAP + parallax + loader pct
+import * as roomsGallery        from "./rooms-gallery.js";  // #rooms — חדרי נופש gallery
+import * as loungeSelector      from "./lounge-selector.js";// #lounge — lounge selector
+import * as scrollSpy           from "./scroll-spy.js";     // .site-nav — aria-current scroll-spy
 
 // Order matters:
 // - scroll-orchestrator MUST init before any scene (hero or non-hero) that
@@ -56,6 +59,9 @@ const MODULES = [
   ["contact-form",        contactForm],   // Agent 23 — Phase D1: WhatsApp + mailto
   ["site-nav",            siteNav],       // Agent 23 — Phase D2: hamburger overlay
   ["scrollytelling",      scrollytelling],// Cinematic loader % + GSAP scroll-to + parallax
+  ["rooms-gallery",       roomsGallery],  // #rooms — חדרי נופש gallery
+  ["lounge-selector",     loungeSelector],// #lounge — lounge selector
+  ["scroll-spy",          scrollSpy],     // .site-nav — aria-current highlighting
 ];
 
 function safeInit(name, mod) {

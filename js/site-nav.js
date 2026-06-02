@@ -92,13 +92,27 @@ function buildOverlay(originalLinks) {
   ul.setAttribute("role", "list");
 
   // Clone each original <li> structure (anchor + text), preserving hrefs +
-  // any aria-* / lang attributes the original carried.
+  // any aria-* / lang attributes the original carried. NOTE: this clones ALL
+  // links — including [data-secondary] ones the CSS hides on the desktop bar —
+  // so the overlay is the single place every section is reachable on mobile.
   originalLinks.querySelectorAll("li").forEach((li) => {
     const liClone = li.cloneNode(true);
     ul.appendChild(liClone);
   });
 
   inner.appendChild(ul);
+
+  // The CTA ("קבעו פגישה") is a sibling of the desktop <ul> and is hidden on
+  // mobile by CSS, so clone it into the overlay too — otherwise mobile users
+  // lose the primary conversion action. Looked up relative to the same nav.
+  const navRoot = originalLinks.closest(".site-nav__inner") || document;
+  const cta = navRoot.querySelector(".site-nav__cta");
+  if (cta) {
+    const ctaClone = cta.cloneNode(true);
+    ctaClone.removeAttribute("id"); // avoid duplicate ids if any
+    inner.appendChild(ctaClone);
+  }
+
   wrap.appendChild(inner);
 
   return wrap;

@@ -35,13 +35,32 @@ const SRC_ROOT = join(ROOT, "תמונות לאנימציית האתר");
 
 const FORCE = process.argv.includes("--force");
 
-// Source → output mapping
+// Source → output mapping.
+// `srcDir` is resolved against SRC_ROOT (the READ-ONLY animation-assets folder)
+// unless `srcBase: "root"` is set, in which case it resolves against the project
+// ROOT — used for in-project staging dirs under `assets/_src/`.
 const MAPPINGS = [
   { srcDir: "אולם 3",        outDir: "assets/images/halls/venue",   exts: [".png", ".jpg", ".jpeg"] },
   { srcDir: "ריזורט 1",      outDir: "assets/images/halls/resort",  exts: [".png", ".jpg", ".jpeg"], skipSubdirs: true },
   { srcDir: "קולינריה 4",    outDir: "assets/images/culinary",      exts: [".jpg", ".jpeg"] },
   { srcDir: "LAUNGE",        outDir: "assets/images/halls/lounge",  exts: [".jpg", ".jpeg", ".png"] },
   { srcDir: "חדרי נופש 2",   outDir: "assets/images/halls/rooms",   exts: [".jpg", ".jpeg", ".png"] },
+  // New staged sources (copied into the repo under assets/_src/).
+  { srcDir: "assets/_src/lounge",  outDir: "assets/images/halls/lounge", exts: [".jpg", ".jpeg", ".png"], srcBase: "root" },
+  { srcDir: "assets/_src/gallery", outDir: "assets/images/gallery",      exts: [".jpg", ".jpeg", ".png"], srcBase: "root" },
+];
+
+// Single-output (non-numbered, non-variant) encodes: produces ONE .webp at the
+// exact target path. Used for brand texture swatches.
+const SINGLE_WEBP = [
+  {
+    src: "תמונות לאנימציית האתר/פונט/טקסטורה לטיפוגרפיה בהירה.png",
+    out: "assets/images/brand/texture-light.webp",
+  },
+  {
+    src: "תמונות לאנימציית האתר/פונט/טקסטורה לטיפוגרפיה כהה.png",
+    out: "assets/images/brand/texture-dark.webp",
+  },
 ];
 
 async function loadSharp() {
@@ -55,8 +74,9 @@ async function loadSharp() {
   }
 }
 
-function listSources(srcDir, exts, skipSubdirs) {
-  const fullSrc = join(SRC_ROOT, srcDir);
+function listSources(srcDir, exts, skipSubdirs, srcBase) {
+  const baseRoot = srcBase === "root" ? ROOT : SRC_ROOT;
+  const fullSrc = join(baseRoot, srcDir);
   if (!existsSync(fullSrc)) return [];
   const files = readdirSync(fullSrc, { withFileTypes: true });
   const result = [];
@@ -103,7 +123,7 @@ async function main() {
   let totalSkipped = 0;
 
   for (const m of MAPPINGS) {
-    const sources = listSources(m.srcDir, m.exts, m.skipSubdirs);
+    const sources = listSources(m.srcDir, m.exts, m.skipSubdirs, m.srcBase);
     if (sources.length === 0) {
       console.log(`[${m.srcDir}] no sources found, skipping`);
       continue;
@@ -115,6 +135,28 @@ async function main() {
       const result = await encodePair(src, join(ROOT, m.outDir), baseName, sharp);
       if (result.skipped) totalSkipped++; else totalEncoded++;
     }
+  }
+
+  // Single-output webp encodes (brand textures).
+  for (const s of SINGLE_WEBP) {
+    const srcPath = join(ROOT, s.src);
+    const outPath = join(ROOT, s.out);
+    if (!existsSync(srcPath)) {
+      console.log(`[single] source missing, skipping: ${s.src}`);
+      continue;
+    }
+    if (!FORCE && existsSync(outPath)) {
+      console.log(`[single] exists, skipping: ${s.out}`);
+      totalSkipped++;
+      continue;
+    }
+    mkdirSync(dirname(outPath), { recursive: true });
+    await sharp(srcPath, { failOn: "warning" })
+      .resize({ width: 1600, withoutEnlargement: true })
+      .webp({ quality: 80, effort: 6 })
+      .toFile(outPath);
+    console.log(`[single] ${s.src} → ${s.out}`);
+    totalEncoded++;
   }
 
   console.log(`\nDone. Encoded: ${totalEncoded}, Skipped (already exist): ${totalSkipped}.`);

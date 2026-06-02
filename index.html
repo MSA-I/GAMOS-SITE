@@ -7,21 +7,21 @@
   <meta name="color-scheme" content="dark light">
 
   <!-- SEO meta — copy verified from site-content-map.md (gamos.co.il scrape 2026-05-05) -->
-  <title>גאמוס אירועים — אולם, ריזורט וגן אירועים במעלה אדומים</title>
-  <meta name="description" content="גאמוס — קומפלקס אירועים יוקרתי בפארק ישראל, מעלה אדומים. שני מתחמים: אולם זכוכית עד 1000 מוזמנים וריזורט עם בריכה, חדרי אירוח וקולינריה. חתונות, בר-מצווה ואירועי חברה.">
+  <title>גאמוס אירועים | אולם, ריזורט וגן אירועים במעלה אדומים</title>
+  <meta name="description" content="גאמוס, קומפלקס אירועים יוקרתי בפארק ישראל, מעלה אדומים. שני מתחמים: אולם זכוכית עד 1000 מוזמנים וריזורט עם בריכה, חדרי אירוח וקולינריה. חתונות, בר-מצווה ואירועי חברה.">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:locale" content="he_IL">
   <meta property="og:site_name" content="גאמוס אירועים">
-  <meta property="og:title" content="גאמוס אירועים — אולם, ריזורט וגן אירועים במעלה אדומים">
-  <meta property="og:description" content="קומפלקס אירועים יוקרתי בפארק ישראל. אולם זכוכית, ריזורט עם בריכה, חדרי נופש וקולינריה — חוויה אחת, שני מתחמים.">
+  <meta property="og:title" content="גאמוס אירועים | אולם, ריזורט וגן אירועים במעלה אדומים">
+  <meta property="og:description" content="קומפלקס אירועים יוקרתי בפארק ישראל. אולם זכוכית, ריזורט עם בריכה, חדרי נופש וקולינריה. חוויה אחת, שני מתחמים.">
   <meta property="og:image" content="https://gamos.co.il/assets/video/hero-poster.jpg">
   <meta property="og:url" content="https://gamos.co.il/">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="גאמוס אירועים — אולם וריזורט במעלה אדומים">
+  <meta name="twitter:title" content="גאמוס אירועים | אולם וריזורט במעלה אדומים">
   <meta name="twitter:description" content="קומפלקס אירועים יוקרתי בפארק ישראל. אולם זכוכית, ריזורט וחדרי אירוח.">
   <meta name="twitter:image" content="https://gamos.co.il/assets/video/hero-poster.jpg">
 
@@ -48,7 +48,7 @@
     "@type": "EventVenue",
     "name": "גאמוס אירועים",
     "alternateName": "GAMOS",
-    "description": "קומפלקס אירועים יוקרתי בפארק ישראל, מעלה אדומים. שני מתחמים — אולם זכוכית עד 1000 מוזמנים וריזורט עם בריכה, חדרי אירוח וקולינריה.",
+    "description": "קומפלקס אירועים יוקרתי בפארק ישראל, מעלה אדומים. שני מתחמים: אולם זכוכית עד 1000 מוזמנים וריזורט עם בריכה, חדרי אירוח וקולינריה.",
     "url": "https://gamos.co.il/",
     "image": "https://gamos.co.il/assets/video/hero-poster.jpg",
     "telephone": "+972-77-9972343",
@@ -127,6 +127,7 @@
   <link rel="stylesheet" href="/css/components/side-dot-nav.css">
   <link rel="stylesheet" href="/css/components/marquee.css">
   <link rel="stylesheet" href="/css/components/scrollytelling-loader.css">
+  <link rel="stylesheet" href="/css/components/texture-text.css">
 
   <!-- GSAP + ScrollToPlugin (self-hosted; powers cinematic scroll +
        parallax in js/scrollytelling.js per video-to-website spec). -->
@@ -149,7 +150,7 @@
   ======================================================================== -->
   <header class="site-nav" role="banner">
     <nav class="site-nav__inner" aria-label="ניווט ראשי">
-      <a class="site-nav__brand" href="#hero" aria-label="גאמוס — לדף הבית">
+      <a class="site-nav__brand" href="#hero" aria-label="גאמוס, לדף הבית">
         <picture>
           <source type="image/webp" srcset="/assets/images/brand/logo-gold.webp">
           <img src="/assets/images/brand/logo-gold.png" alt="גאמוס"
@@ -161,14 +162,14 @@
       <ul class="site-nav__links" role="list">
         <li><a href="#hall-venue">אולם</a></li>
         <li><a href="#hall-resort">ריזורט</a></li>
-        <li><a href="#lounge">לאונג'</a></li>
+        <li><a href="#lounge" data-secondary>לאונג'</a></li>
         <li><a href="#rooms">חדרי נופש</a></li>
         <li><a href="#culinary">קולינריה</a></li>
-        <li><a href="#about">אודות</a></li>
-        <li><a href="#testimonials">המלצות</a></li>
+        <li><a href="#about" data-secondary>אודות</a></li>
+        <li><a href="#testimonials" data-secondary>המלצות</a></li>
         <li><a href="#gallery">גלריה</a></li>
-        <li><a href="#events">אירועים</a></li>
-        <li><a href="#kosher">כשרות</a></li>
+        <li><a href="#events" data-secondary>אירועים</a></li>
+        <li><a href="#kosher" data-secondary>כשרות</a></li>
         <li><a href="#contact">צור קשר</a></li>
       </ul>
 
@@ -279,7 +280,7 @@
           </svg>
 
           <!-- Real heading for SR + SEO (visually hidden — the SVG is the visual). -->
-          <h1 id="hero-sr-title" class="hero__sr-title">GAMOS — אירועים יוקרתיים</h1>
+          <h1 id="hero-sr-title" class="hero__sr-title">GAMOS אירועים יוקרתיים</h1>
 
           <!-- Hebrew subtitle (Frank Ruhl Libre 700, fade-up). Visible. -->
           <p class="hero__subtitle" aria-hidden="true">אירועים</p>
@@ -384,7 +385,7 @@
         <ul class="hall-venue__features-scaffold" role="list">
           <li class="feature">
             <h3>אולם ענק עד <bdi>1,000</bdi> אורחים</h3>
-            <p>חלל מודולרי שמתאים לחתונה אינטימית כמו לאירוע גדול — אותה רמת הפקה בכל קנה מידה.</p>
+            <p>חלל מודולרי שמתאים לחתונה אינטימית כמו לאירוע גדול, אותה רמת הפקה בכל קנה מידה.</p>
           </li>
           <li class="feature">
             <h3>קירות זכוכית ותקרה אין-סופית</h3>
@@ -392,7 +393,7 @@
           </li>
           <li class="feature">
             <h3>מערכות LED + תאורה + צליל</h3>
-            <p>תשתית טכנית מלאה — אודיו, וידאו ומסכי לד — מותאמת לכל סוג אירוע ולכל סגנון מוזיקלי.</p>
+            <p>תשתית טכנית מלאה הכוללת אודיו, וידאו ומסכי לד, מותאמת לכל סוג אירוע ולכל סגנון מוזיקלי.</p>
           </li>
           <li class="feature">
             <h3>תפריט קולינרי עשיר</h3>
@@ -425,7 +426,7 @@
             <p class="section-header__eyebrow">GAMOS RESORT</p>
             <h2 id="hall-resort-title" class="section-header__title">חוויה שטרם הכרתם בישראל</h2>
             <p class="section-header__lede">
-              משלב גן אירועים, חדרי אירוח, מערכת הגברה ותאורה, תפריט מנצח, בריכת חוף ענקית ונוף מדברי עוצר נשימה — חוויה ייחודית שטרם הכרתם.
+              משלב גן אירועים, חדרי אירוח, מערכת הגברה ותאורה, תפריט מנצח, בריכת חוף ענקית ונוף מדברי עוצר נשימה. חוויה ייחודית שטרם הכרתם.
             </p>
           </header>
         </div>
@@ -437,19 +438,19 @@
         <ul class="hall-resort__features" role="list">
           <li class="feature">
             <h3>בריכת אינסוף ענקית</h3>
-            <p>בריכה רחבת היקף עם נוף פתוח אל המדבר — נקודת מפגש מרכזית לאירוח ביום ולחגיגה בערב.</p>
+            <p>בריכה רחבת היקף עם נוף פתוח אל המדבר, נקודת מפגש מרכזית לאירוח ביום ולחגיגה בערב.</p>
           </li>
           <li class="feature">
             <h3>אירוח דה-לוקס במתחם</h3>
-            <p>חדרים מעוצבים בלב המתחם — אורחים מתארחים אצלכם בלי לעזוב את הטבע ובלי הסעות מסביב.</p>
+            <p>חדרים מעוצבים בלב המתחם, אורחים מתארחים אצלכם בלי לעזוב את הטבע ובלי הסעות מסביב.</p>
           </li>
           <li class="feature">
             <h3>מרפסות שקיעה דרמטיות</h3>
-            <p>נוף פתוח לעמק היורד אל ים המלח — תפאורה טבעית שלא דורשת תוספות.</p>
+            <p>נוף פתוח לעמק היורד אל ים המלח, תפאורה טבעית שלא דורשת תוספות.</p>
           </li>
           <li class="feature">
             <h3>חוויה ישראלית ייחודית</h3>
-            <p>שילוב של גן, ריזורט וקולינריה ברמה גבוהה — חבילה שאין לה אח ורע באיזור.</p>
+            <p>שילוב של גן, ריזורט וקולינריה ברמה גבוהה, חבילה שאין לה אח ורע באיזור.</p>
           </li>
         </ul>
       </div>
@@ -458,53 +459,249 @@
     <!-- ====================================================================
          #lounge — teaser
     ==================================================================== -->
-    <section id="lounge" class="lounge" aria-labelledby="lounge-title">
-      <header class="section-header">
-        <p class="section-header__eyebrow">לאונג'</p>
-        <h2 id="lounge-title" class="section-header__title">לאונג' — קבלת פנים אינטימית</h2>
-      </header>
+    <section id="lounge" class="lounge" aria-labelledby="lounge-title" data-lounge-selector>
+      <div class="lounge__container">
+        <header class="section-header">
+          <p class="section-header__eyebrow" data-reveal="slide-right">לאונג'</p>
+          <h2 id="lounge-title" class="section-header__title texture-text texture-text--dark" data-reveal="slide-right">קבלת פנים שלא רוצים שתסתיים</h2>
+          <p class="section-header__lede" data-reveal="slide-right">
+            רגעי הפתיחה של הערב: בר, פינות ישיבה רכות ותאורה דרמטית תחת כיפת השמיים. בחרו תמונה כדי להתעכב עליה.
+          </p>
+        </header>
 
-      <!-- Lounge section is a rebuild addition (not on live site). Copy is generic-luxury,
-           no specific quantitative claims (per Agent 22 brief — avoid unverifiable numbers). -->
-      <p class="lounge__lede">
-        חלל קבלת פנים אינטימי — בר משקאות, פינות ישיבה רכות ותאורה דרמטית — קבלת פנים מהוקצעת לפני שערי האולם.
-      </p>
+        <div class="lounge__rail" role="tablist" aria-label="גלריית הלאונג'">
+          <button type="button" class="lounge__panel is-active" data-lounge-panel data-lounge-index="0" role="tab" aria-selected="true">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/halls/lounge/01.full.webp">
+              <img class="lounge__img" src="/assets/images/halls/lounge/01.full.jpg" width="1600" height="1000" loading="eager" fetchpriority="high" decoding="async" alt="אורחים נהנים בלאונג' בשעת ערב, תאורה חמה ופינות ישיבה">
+            </picture>
+            <div class="lounge__label">
+              <h3 class="lounge__title">פתיחת הערב</h3>
+              <p class="lounge__desc">שעת קבלת הפנים: כוסית ראשונה, מנגינה רכה והאורחים מתכנסים.</p>
+            </div>
+          </button>
 
-      <div class="lounge__media" aria-hidden="true">
-        <div class="hall__media-placeholder" data-placeholder="lounge-hero"></div>
+          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="1" role="tab" aria-selected="false">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/halls/lounge/02.half.webp">
+              <img class="lounge__img" src="/assets/images/halls/lounge/02.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="לאונג' בשעת לילה מאוחרת עם תאורת אווירה עמומה">
+            </picture>
+            <div class="lounge__label">
+              <h3 class="lounge__title">לילה מתמשך</h3>
+              <p class="lounge__desc">כשהשעה מתקדמת והשיחות מעמיקות, אווירה אינטימית עד הסוף.</p>
+            </div>
+          </button>
+
+          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="2" role="tab" aria-selected="false">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/halls/lounge/03.half.webp">
+              <img class="lounge__img" src="/assets/images/halls/lounge/03.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="הלאונג' בין הערביים לפני קבלת האורחים">
+            </picture>
+            <div class="lounge__label">
+              <h3 class="lounge__title">בין הערביים</h3>
+              <p class="lounge__desc">הרגע השקט שלפני, האור מתרכך והבמה נערכת לאירוע.</p>
+            </div>
+          </button>
+
+          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="3" role="tab" aria-selected="false">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/halls/lounge/04.half.webp">
+              <img class="lounge__img" src="/assets/images/halls/lounge/04.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="פינת ישיבה חיצונית בלאונג' בשעת ערב">
+            </picture>
+            <div class="lounge__label">
+              <h3 class="lounge__title">ערב בחוץ</h3>
+              <p class="lounge__desc">תחת כיפת השמיים: ישיבה רכה, אוויר נעים ושמיים שמתכהים.</p>
+            </div>
+          </button>
+
+          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="4" role="tab" aria-selected="false">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/halls/lounge/05.half.webp">
+              <img class="lounge__img" src="/assets/images/halls/lounge/05.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="אווירת לילה בלאונג' עם תאורה דרמטית">
+            </picture>
+            <div class="lounge__label">
+              <h3 class="lounge__title">אווירת לילה</h3>
+              <p class="lounge__desc">תאורה דרמטית וצללים חמים, הלאונג' לובש את פניו הליליים.</p>
+            </div>
+          </button>
+
+          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="5" role="tab" aria-selected="false">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/halls/lounge/06.half.webp">
+              <img class="lounge__img" src="/assets/images/halls/lounge/06.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="הלאונג' בשעת הזהב, אור זהוב רך">
+            </picture>
+            <div class="lounge__label">
+              <h3 class="lounge__title">שעת הזהב</h3>
+              <p class="lounge__desc">האור הזהוב של סוף היום עוטף את החלל בנגיעה קולנועית.</p>
+            </div>
+          </button>
+
+          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="6" role="tab" aria-selected="false">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/halls/lounge/07.half.webp">
+              <img class="lounge__img" src="/assets/images/halls/lounge/07.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="שקיעה מעל הלאונג' בגוונים חמים">
+            </picture>
+            <div class="lounge__label">
+              <h3 class="lounge__title">שקיעה</h3>
+              <p class="lounge__desc">הרגע שבו השמש נפרדת, גוונים חמים על הבר ועל הפנים.</p>
+            </div>
+          </button>
+
+          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="7" role="tab" aria-selected="false">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/halls/lounge/08.half.webp">
+              <img class="lounge__img" src="/assets/images/halls/lounge/08.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="אירוע לילי בלאונג' עם אורחים ותאורה חגיגית">
+            </picture>
+            <div class="lounge__label">
+              <h3 class="lounge__title">אירוע בלילה</h3>
+              <p class="lounge__desc">השיא: אורחים, צחוק ואור חגיגי שמלווה את הערב לשיאו.</p>
+            </div>
+          </button>
+
+          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="8" role="tab" aria-selected="false">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/halls/lounge/09.half.webp">
+              <img class="lounge__img" src="/assets/images/halls/lounge/09.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="הלאונג' באור אחר הצהריים הרך">
+            </picture>
+            <div class="lounge__label">
+              <h3 class="lounge__title">אור אחר הצהריים</h3>
+              <p class="lounge__desc">אור יום רך ומוזמן, הלאונג' פתוח גם לשעות המוקדמות של הערב.</p>
+            </div>
+          </button>
+
+          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="9" role="tab" aria-selected="false">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/halls/lounge/10.half.webp">
+              <img class="lounge__img" src="/assets/images/halls/lounge/10.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="ערב סתווי בלאונג' עם אווירה חמימה ועוטפת">
+            </picture>
+            <div class="lounge__label">
+              <h3 class="lounge__title">ערב סתווי</h3>
+              <p class="lounge__desc">אוויר צלול וערב עוטף, סתיו שמזמין להישאר עוד רגע אחד.</p>
+            </div>
+          </button>
+        </div>
       </div>
     </section>
 
     <!-- ====================================================================
          #rooms — חדרי נופש
     ==================================================================== -->
-    <section id="rooms" class="rooms" aria-labelledby="rooms-title">
+    <section id="rooms" class="rooms" data-rooms-stage aria-labelledby="rooms-title">
       <header class="section-header">
-        <p class="section-header__eyebrow">חדרי נופש</p>
-        <h2 id="rooms-title" class="section-header__title">חדרים — שינה רגועה בסוף ערב מושלם</h2>
+        <p class="section-header__eyebrow">חדרי אירוח</p>
+        <h2 id="rooms-title" class="section-header__title texture-text texture-text--dark">חדרים לשינה רגועה בסוף ערב מושלם</h2>
       </header>
 
-      <!-- Rooms cards: scaffold with data-placeholder media slots.
-           Agent 08 swaps each .rooms__card-media with real <picture>/<video> when ready. -->
-      <div class="rooms__gallery" role="list" aria-label="גלריית חדרי נופש">
-        <article class="rooms__card" role="listitem">
-          <div class="rooms__card-media" aria-hidden="true"
-               data-placeholder="room-suite"></div>
-          <h3 class="rooms__card-title">סוויטה</h3>
-          <p class="rooms__card-text">חלל מרווח עם אמבט עומד וחלון פנורמי.</p>
-        </article>
-        <article class="rooms__card" role="listitem">
-          <div class="rooms__card-media" aria-hidden="true"
-               data-placeholder="room-deluxe"></div>
-          <h3 class="rooms__card-title">דה-לוקס</h3>
-          <p class="rooms__card-text">חדר זוגי עם מרפסת אל הגן.</p>
-        </article>
-        <article class="rooms__card" role="listitem">
-          <div class="rooms__card-media" aria-hidden="true"
-               data-placeholder="room-classic"></div>
-          <h3 class="rooms__card-title">קלאסי</h3>
-          <p class="rooms__card-text">חדר זוגי קומפקטי בעיצוב חם.</p>
-        </article>
+      <div class="rooms__container">
+        <div class="rooms__layout">
+          <!-- Names list (inline-start / right in RTL) → controls the shared stage. -->
+          <div class="rooms__list" role="tablist" aria-label="בחירת חדר אירוח" aria-orientation="vertical">
+            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="0" role="tab" aria-selected="true" aria-controls="rooms-panel-0">
+              <span class="rooms__trigger-name"><span class="rooms__trigger-num">01</span> סוויטת הגן</span>
+              <span class="rooms__trigger-desc">חלל מרווח הנפתח אל הגן, עם אמבט עומד וחלון פנורמי.</span>
+            </button>
+            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="1" role="tab" aria-selected="false" aria-controls="rooms-panel-1">
+              <span class="rooms__trigger-name"><span class="rooms__trigger-num">02</span> חדר הזוג</span>
+              <span class="rooms__trigger-desc">פינת לילה אינטימית בגוונים חמים, רכות שמלווה עד הבוקר.</span>
+            </button>
+            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="2" role="tab" aria-selected="false" aria-controls="rooms-panel-2">
+              <span class="rooms__trigger-name"><span class="rooms__trigger-num">03</span> סוויטת הגג</span>
+              <span class="rooms__trigger-desc">מבט פתוח אל המתחם, אוויר צלול ושקט של גובה.</span>
+            </button>
+            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="3" role="tab" aria-selected="false" aria-controls="rooms-panel-3">
+              <span class="rooms__trigger-name"><span class="rooms__trigger-num">04</span> חדר דה-לוקס</span>
+              <span class="rooms__trigger-desc">מרפסת פרטית אל הירוק, פינת ישיבה רכה ואור יום נדיב.</span>
+            </button>
+            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="4" role="tab" aria-selected="false" aria-controls="rooms-panel-4">
+              <span class="rooms__trigger-name"><span class="rooms__trigger-num">05</span> חדר קלאסי</span>
+              <span class="rooms__trigger-desc">עיצוב נקי ושלו, כל הפרטים במקומם לקראת לינה רגועה.</span>
+            </button>
+            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="5" role="tab" aria-selected="false" aria-controls="rooms-panel-5">
+              <span class="rooms__trigger-name"><span class="rooms__trigger-num">06</span> סוויטת הספא</span>
+              <span class="rooms__trigger-desc">פינת רחצה מפנקת ותחושת מנוחה עוטפת מהרגע הראשון.</span>
+            </button>
+            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="6" role="tab" aria-selected="false" aria-controls="rooms-panel-6">
+              <span class="rooms__trigger-name"><span class="rooms__trigger-num">07</span> חדר משפחה</span>
+              <span class="rooms__trigger-desc">חלל גדול ונדיב, מקום לכולם בסוף יום של חגיגה.</span>
+            </button>
+            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="7" role="tab" aria-selected="false" aria-controls="rooms-panel-7">
+              <span class="rooms__trigger-name"><span class="rooms__trigger-num">08</span> סוויטת הכלה</span>
+              <span class="rooms__trigger-desc">הפינוק המושלם לליל האירוע, שקט, יוקרה ופרטיות מלאה.</span>
+            </button>
+            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="8" role="tab" aria-selected="false" aria-controls="rooms-panel-8">
+              <span class="rooms__trigger-name"><span class="rooms__trigger-num">09</span> חדר פרמיום</span>
+              <span class="rooms__trigger-desc">גימור עשיר ותשומת לב לכל פרט, חוויית אירוח מוקפדת.</span>
+            </button>
+            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="9" role="tab" aria-selected="false" aria-controls="rooms-panel-9">
+              <span class="rooms__trigger-name"><span class="rooms__trigger-num">10</span> סוויטת בוטיק</span>
+              <span class="rooms__trigger-desc">מפלט קטן ואינטימי, סיום מושלם לערב בלתי נשכח.</span>
+            </button>
+          </div>
+
+          <!-- Shared image stage (visual pane). Display order: 05,04,09,06,07,03,11,08,01,02 -->
+          <div class="rooms__stage">
+            <figure class="rooms__panel is-active" data-rooms-panel data-rooms-index="0" id="rooms-panel-0" role="tabpanel" aria-hidden="false">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/halls/rooms/05.full.webp">
+                <img src="/assets/images/halls/rooms/05.full.jpg" width="1280" height="1600" loading="eager" decoding="async" alt="סוויטת הגן, חלל מרווח הנפתח אל הגן">
+              </picture>
+            </figure>
+            <figure class="rooms__panel" data-rooms-panel data-rooms-index="1" id="rooms-panel-1" role="tabpanel" aria-hidden="true">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/halls/rooms/04.full.webp">
+                <img src="/assets/images/halls/rooms/04.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חדר הזוג, פינת לילה אינטימית בגוונים חמים">
+              </picture>
+            </figure>
+            <figure class="rooms__panel" data-rooms-panel data-rooms-index="2" id="rooms-panel-2" role="tabpanel" aria-hidden="true">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/halls/rooms/09.full.webp">
+                <img src="/assets/images/halls/rooms/09.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="סוויטת הגג, מבט פתוח אל המתחם">
+              </picture>
+            </figure>
+            <figure class="rooms__panel" data-rooms-panel data-rooms-index="3" id="rooms-panel-3" role="tabpanel" aria-hidden="true">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/halls/rooms/06.full.webp">
+                <img src="/assets/images/halls/rooms/06.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חדר דה-לוקס, מרפסת פרטית אל הירוק">
+              </picture>
+            </figure>
+            <figure class="rooms__panel" data-rooms-panel data-rooms-index="4" id="rooms-panel-4" role="tabpanel" aria-hidden="true">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/halls/rooms/07.full.webp">
+                <img src="/assets/images/halls/rooms/07.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חדר קלאסי, עיצוב נקי ושלו">
+              </picture>
+            </figure>
+            <figure class="rooms__panel" data-rooms-panel data-rooms-index="5" id="rooms-panel-5" role="tabpanel" aria-hidden="true">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/halls/rooms/03.full.webp">
+                <img src="/assets/images/halls/rooms/03.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="סוויטת הספא, פינת רחצה מפנקת">
+              </picture>
+            </figure>
+            <figure class="rooms__panel" data-rooms-panel data-rooms-index="6" id="rooms-panel-6" role="tabpanel" aria-hidden="true">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/halls/rooms/11.full.webp">
+                <img src="/assets/images/halls/rooms/11.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חדר משפחה, חלל גדול ונדיב">
+              </picture>
+            </figure>
+            <figure class="rooms__panel" data-rooms-panel data-rooms-index="7" id="rooms-panel-7" role="tabpanel" aria-hidden="true">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/halls/rooms/08.full.webp">
+                <img src="/assets/images/halls/rooms/08.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="סוויטת הכלה, הפינוק המושלם לליל האירוע">
+              </picture>
+            </figure>
+            <figure class="rooms__panel" data-rooms-panel data-rooms-index="8" id="rooms-panel-8" role="tabpanel" aria-hidden="true">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/halls/rooms/01.full.webp">
+                <img src="/assets/images/halls/rooms/01.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חדר פרמיום, גימור עשיר ותשומת לב לכל פרט">
+              </picture>
+            </figure>
+            <figure class="rooms__panel" data-rooms-panel data-rooms-index="9" id="rooms-panel-9" role="tabpanel" aria-hidden="true">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/halls/rooms/02.full.webp">
+                <img src="/assets/images/halls/rooms/02.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="סוויטת בוטיק, מפלט קטן ואינטימי">
+              </picture>
+            </figure>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -519,7 +716,7 @@
              class="culinary scroll-scene"
              data-scrub="culinary"
              data-scrub-mode="canvas-frames"
-             data-scrub-spacer-vh="500"
+             data-scrub-spacer-vh="900"
              aria-labelledby="culinary-title">
 
       <div class="scroll-scene__sticky">
@@ -546,29 +743,89 @@
         <div class="scroll-scene__overlay">
           <header class="section-header">
             <p class="section-header__eyebrow">המטבח שלנו</p>
-            <h2 id="culinary-title" class="section-header__title">
+            <h2 id="culinary-title" class="section-header__title texture-text texture-text--light">
               חוויה קולינרית בלתי נשכחת
             </h2>
             <p class="section-header__lede">
-              מסע גסטרונומי של מנות מנצחות — מיטב המרכיבים הטריים בשילוב צוות מקצועי שיעשה לכם שמח בצלחת. אירועים שנועדו לעורר את החושים ולהשאיר טעם של עוד.
+              מסע גסטרונומי של מנות מנצחות: מיטב המרכיבים הטריים בשילוב צוות מקצועי שיעשה לכם שמח בצלחת. אירועים שנועדו לעורר את החושים ולהשאיר טעם של עוד.
             </p>
           </header>
         </div>
       </div>
 
       <div class="scroll-scene__spacer" aria-hidden="true"
-           style="--scene-spacer: 500vh;"></div>
+           style="--scene-spacer: 900vh;"></div>
 
       <!-- After the sticky stage releases — the static dish gallery.
            Agents 08/09 replace each li[data-placeholder] with real <picture> + caption. -->
       <div class="scroll-scene__post culinary__post">
         <ul class="culinary__grid" role="list" aria-label="גלריית מנות">
-          <li class="culinary__item" data-placeholder="dish-1"></li>
-          <li class="culinary__item" data-placeholder="dish-2"></li>
-          <li class="culinary__item" data-placeholder="dish-3"></li>
-          <li class="culinary__item" data-placeholder="dish-4"></li>
-          <li class="culinary__item" data-placeholder="dish-5"></li>
-          <li class="culinary__item" data-placeholder="dish-6"></li>
+          <li class="culinary__item">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/culinary/01.half.webp">
+              <img src="/assets/images/culinary/01.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנת פתיחה מעוטרת בעדינות">
+            </picture>
+            <figcaption class="culinary__item-caption">
+              <span class="culinary__item-tag">פתיחה</span>
+              <h3 class="culinary__item-name">מנת פתיחה</h3>
+              <p class="culinary__item-desc">פתיח עדין שמכין את החיך לערב של טעמים.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/culinary/05.half.webp">
+              <img src="/assets/images/culinary/05.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנה ראשונה בהגשה אמנותית">
+            </picture>
+            <figcaption class="culinary__item-caption">
+              <span class="culinary__item-tag">ראשונה</span>
+              <h3 class="culinary__item-name">מנה ראשונה</h3>
+              <p class="culinary__item-desc">מרכיבים טריים בהגשה מוקפדת ומדויקת.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/culinary/07.half.webp">
+              <img src="/assets/images/culinary/07.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנה עיקרית עשירה ומלאת טעם">
+            </picture>
+            <figcaption class="culinary__item-caption">
+              <span class="culinary__item-tag">עיקרית</span>
+              <h3 class="culinary__item-name">מנה עיקרית</h3>
+              <p class="culinary__item-desc">לב הארוחה: עשיר, מאוזן ובלתי נשכח.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/culinary/09.half.webp">
+              <img src="/assets/images/culinary/09.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="צלחת שף בעיצוב מודרני">
+            </picture>
+            <figcaption class="culinary__item-caption">
+              <span class="culinary__item-tag">שף</span>
+              <h3 class="culinary__item-name">צלחת השף</h3>
+              <p class="culinary__item-desc">יצירה אישית של הצוות, נגיעה של מקצועיות.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/culinary/12.half.webp">
+              <img src="/assets/images/culinary/12.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="קינוח מעודן בסיום הארוחה">
+            </picture>
+            <figcaption class="culinary__item-caption">
+              <span class="culinary__item-tag">קינוח</span>
+              <h3 class="culinary__item-name">קינוח</h3>
+              <p class="culinary__item-desc">סיום מתוק ומעודן שמשאיר טעם של עוד.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/culinary/13.half.webp">
+              <img src="/assets/images/culinary/13.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מגש פירות ומתוקים חגיגי">
+            </picture>
+            <figcaption class="culinary__item-caption">
+              <span class="culinary__item-tag">מתוקים</span>
+              <h3 class="culinary__item-name">פינת המתוקים</h3>
+              <p class="culinary__item-desc">שפע צבעוני שחותם את החגיגה בנימה מתוקה.</p>
+            </figcaption>
+          </li>
         </ul>
       </div>
     </section>
@@ -603,7 +860,7 @@
           <p class="section-header__eyebrow"
              data-reveal="slide-right"
              style="--reveal-delay: 0ms;">הסיפור שלנו</p>
-          <h2 id="about-title" class="section-header__title"
+          <h2 id="about-title" class="section-header__title texture-text texture-text--dark"
               data-reveal="slide-right"
               style="--reveal-delay: 80ms;">חווית אירועים חדשה בישראל</h2>
         </header>
@@ -617,14 +874,14 @@
           <p class="about__lede"
              data-reveal="slide-right"
              style="--reveal-delay: 220ms;">
-            הקומפלקס ממוקם בפארק ישראל ומכיל שני מתחמי אירועים שונים ונפרדים — אולם וריזורט — המספקים חוויה בלתי נשכחת. שילוב של שניהם זה כבר חוויה שלא תשכחו.
+            הקומפלקס ממוקם בפארק ישראל ומכיל שני מתחמי אירועים שונים ונפרדים, אולם וריזורט, המספקים חוויה בלתי נשכחת. שילוב של שניהם זה כבר חוויה שלא תשכחו.
           </p>
 
           <ul class="about__usp" role="list"
               data-reveal="slide-right"
               style="--reveal-delay: 280ms;">
             <li>שני מתחמי אירועים נפרדים ומושלמים</li>
-            <li>עד <bdi>1,000</bdi> אורחים — ייחודי בישראל</li>
+            <li>עד <bdi>1,000</bdi> אורחים, ייחודי בישראל</li>
             <li>נוף מדבר עוצר נשימה ומיקום אסטרטגי</li>
             <li>חוויה קולינרית ברמה גבוהה</li>
           </ul>
@@ -659,7 +916,7 @@
              data-slider="testimonials">
       <header class="section-header">
         <p class="section-header__eyebrow">המלצות</p>
-        <h2 id="testimonials-title" class="section-header__title">מה מספרים על האירוע אצלנו</h2>
+        <h2 id="testimonials-title" class="section-header__title texture-text texture-text--dark">מה מספרים על האירוע אצלנו</h2>
       </header>
 
       <!-- Testimonial quotes — first-name attribution + event-type meta only.
@@ -674,7 +931,7 @@
                  data-reveal="fade-up" style="--reveal-delay: 120ms;">
           <blockquote class="testimonial__quote">
             <p>חיכינו לחתונה הזאת שנתיים, וקיבלנו ערב שעבר את הציפיות. הצוות הקשיב לכל פרט,
-              האוכל היה מהמם, והמראה של האולם בערב — פשוט קסם. אורחים עדיין שולחים תמונות.</p>
+              האוכל היה מהמם, והמראה של האולם בערב פשוט קסם. אורחים עדיין שולחים תמונות.</p>
           </blockquote>
           <footer class="testimonial__author">
             <cite>נועה ויונתן</cite>
@@ -686,7 +943,7 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 240ms;">
           <blockquote class="testimonial__quote">
-            <p>בר-מצווה לבן הבכור עם משפחה גדולה. הכול זרם — מהאירוע במגרש דרך התפילה
+            <p>בר-מצווה לבן הבכור עם משפחה גדולה. הכול זרם, מהאירוע במגרש דרך התפילה
               ועד הריקודים. הילד הרגיש מלך, ואנחנו זכינו לערב שלא נשכח.</p>
           </blockquote>
           <footer class="testimonial__author">
@@ -751,7 +1008,7 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 840ms;">
           <blockquote class="testimonial__quote">
-            <p>חיתון של ילדים יחד — שני אירועים על אותו ערב, סטייפים נפרדים, צוות
+            <p>חיתון של ילדים יחד, שני אירועים על אותו ערב, סטייפים נפרדים, צוות
               שעבד כשעון. ארגון מקצועי בלי שום פשרה.</p>
           </blockquote>
           <footer class="testimonial__author">
@@ -764,7 +1021,7 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 960ms;">
           <blockquote class="testimonial__quote">
-            <p>הזמנו אירוע ברית. הגענו עם תינוק רך ומשפחה גדולה לחוצה — וקיבלנו
+            <p>הזמנו אירוע ברית. הגענו עם תינוק רך ומשפחה גדולה לחוצה, וקיבלנו
               שקט מוחלט. הצוות עטף אותנו בכל מה שצריך.</p>
           </blockquote>
           <footer class="testimonial__author">
@@ -801,27 +1058,59 @@
       <header class="section-header">
         <p class="section-header__eyebrow"
            data-reveal="slide-right" style="--reveal-delay: 0ms;">גלריה</p>
-        <h2 id="gallery-title" class="section-header__title"
+        <h2 id="gallery-title" class="section-header__title texture-text texture-text--dark"
             data-reveal="slide-right" style="--reveal-delay: 80ms;">רגעים מהמתחם</h2>
       </header>
 
       <ul class="gallery__grid" role="list" data-stagger>
-        <li class="gallery__item" data-placeholder="gallery-1"
-            data-reveal="scale-up" style="--reveal-delay: 0ms;"></li>
-        <li class="gallery__item" data-placeholder="gallery-2"
-            data-reveal="scale-up" style="--reveal-delay: 100ms;"></li>
-        <li class="gallery__item" data-placeholder="gallery-3"
-            data-reveal="scale-up" style="--reveal-delay: 200ms;"></li>
-        <li class="gallery__item" data-placeholder="gallery-4"
-            data-reveal="scale-up" style="--reveal-delay: 300ms;"></li>
-        <li class="gallery__item" data-placeholder="gallery-5"
-            data-reveal="scale-up" style="--reveal-delay: 400ms;"></li>
-        <li class="gallery__item" data-placeholder="gallery-6"
-            data-reveal="scale-up" style="--reveal-delay: 500ms;"></li>
-        <li class="gallery__item" data-placeholder="gallery-7"
-            data-reveal="scale-up" style="--reveal-delay: 600ms;"></li>
-        <li class="gallery__item" data-placeholder="gallery-8"
-            data-reveal="scale-up" style="--reveal-delay: 700ms;"></li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 0ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/01.half.webp">
+            <img src="/assets/images/gallery/01.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מבט רחב על אולם האירועים המפואר">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 100ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/02.half.webp">
+            <img src="/assets/images/gallery/02.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="אורחים חוגגים ברגע של שמחה">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 200ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/03.half.webp">
+            <img src="/assets/images/gallery/03.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="תאורה חמה על במת האירוע">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 300ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/04.half.webp">
+            <img src="/assets/images/gallery/04.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנה מעוטרת בעדינות על השולחן">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 400ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/05.half.webp">
+            <img src="/assets/images/gallery/05.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="עיצוב שולחן אלגנטי בפרטי פרטים">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 500ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/06.half.webp">
+            <img src="/assets/images/gallery/06.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="רחבת ריקודים גועשת בערב">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 600ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/07.half.webp">
+            <img src="/assets/images/gallery/07.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="רגע פורמלי מטקס האירוע">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 700ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/08.half.webp">
+            <img src="/assets/images/gallery/08.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="פרט אישי ואינטימי מהחגיגה">
+          </picture>
+        </li>
       </ul>
     </section>
 
@@ -836,7 +1125,7 @@
         <header class="section-header">
           <p class="section-header__eyebrow"
              data-reveal="slide-left" style="--reveal-delay: 0ms;">אירועים</p>
-          <h2 id="events-title" class="section-header__title"
+          <h2 id="events-title" class="section-header__title texture-text texture-text--dark"
               data-reveal="slide-left" style="--reveal-delay: 80ms;">סוגי אירועים</h2>
         </header>
 
@@ -859,7 +1148,7 @@
               <span class="events__chevron" aria-hidden="true">›</span>
             </summary>
             <div class="events__content">
-              <p>חוויה משפחתית עם הפרדה אלגנטית בין מבוגרים לילדים — אזור פעילות, DJ ואטרקציות.</p>
+              <p>חוויה משפחתית עם הפרדה אלגנטית בין מבוגרים לילדים: אזור פעילות, DJ ואטרקציות.</p>
             </div>
           </details>
 
@@ -881,7 +1170,7 @@
               <span class="events__chevron" aria-hidden="true">›</span>
             </summary>
             <div class="events__content">
-              <p>ימי הולדת, אירוסין וערבי הוקרה — באולם, בלאונג' או בגן.</p>
+              <p>ימי הולדת, אירוסין וערבי הוקרה, באולם, בלאונג' או בגן.</p>
             </div>
           </details>
         </div>
@@ -897,17 +1186,17 @@
     <section id="kosher" class="kosher" aria-labelledby="kosher-title">
       <div class="kosher__container" data-stagger>
         <div class="kosher__seal" aria-hidden="true"
-             data-reveal="rotate-in" style="--reveal-delay: 0ms;">כשר</div>
+             data-reveal="fade-up" style="--reveal-delay: 0ms;">כשר</div>
 
         <header class="section-header section-header--center">
           <p class="section-header__eyebrow"
-             data-reveal="rotate-in" style="--reveal-delay: 120ms;">כשרות</p>
-          <h2 id="kosher-title" class="section-header__title"
-              data-reveal="rotate-in" style="--reveal-delay: 240ms;">כשרות ורבנות</h2>
+             data-reveal="fade-up" style="--reveal-delay: 120ms;">כשרות</p>
+          <h2 id="kosher-title" class="section-header__title texture-text texture-text--dark"
+              data-reveal="fade-up" style="--reveal-delay: 240ms;">כשרות ורבנות</h2>
         </header>
 
         <p class="kosher__body"
-           data-reveal="rotate-in" style="--reveal-delay: 360ms;">
+           data-reveal="fade-up" style="--reveal-delay: 360ms;">
           <!-- Live site does not state a specific rabbinate. Copy is generic-but-accurate;
                owner supplies the rabbinate name + certification level for the final pass. -->
           המתחם פועל בכשרות בהשגחת רבנות מוסמכת, עם הפרדה מלאה בין בשרי לחלבי.
@@ -927,7 +1216,7 @@
         <header class="section-header">
           <p class="section-header__eyebrow"
              data-reveal="slide-right" style="--reveal-delay: 0ms;">צור קשר</p>
-          <h2 id="contact-title" class="section-header__title"
+          <h2 id="contact-title" class="section-header__title texture-text texture-text--dark"
               data-reveal="slide-right" style="--reveal-delay: 80ms;">בואו נתחיל לתכנן</h2>
         </header>
 
@@ -1058,7 +1347,7 @@
                     style="border:0; border-radius: var(--radius-lg);"
                     loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"
-                    title="מפת המתחם — די זהב 7, פארק ישראל, מעלה אדומים"></iframe>
+                    title="מפת המתחם, די זהב 7, פארק ישראל, מעלה אדומים"></iframe>
           </aside>
 
         </div>
@@ -1075,7 +1364,7 @@
             <li>
               <figure>
                 <img src="/assets/images/maps/route-from-jerusalem.png"
-                     alt="מסלול הגעה לגאמוס מירושלים — תלפיות, הר חומה, מרכז העיר"
+                     alt="מסלול הגעה לגאמוס מירושלים: תלפיות, הר חומה, מרכז העיר"
                      loading="lazy" decoding="async" width="829" height="1024">
                 <figcaption>מירושלים</figcaption>
               </figure>
@@ -1083,7 +1372,7 @@
             <li>
               <figure>
                 <img src="/assets/images/maps/route-from-north.png"
-                     alt="מסלול הגעה לגאמוס מצפון — בית אל, עפרה, רימונים, אדם"
+                     alt="מסלול הגעה לגאמוס מצפון: בית אל, עפרה, רימונים, אדם"
                      loading="lazy" decoding="async" width="829" height="1024">
                 <figcaption>מצפון</figcaption>
               </figure>
@@ -1091,7 +1380,7 @@
             <li>
               <figure>
                 <img src="/assets/images/maps/route-from-center.png"
-                     alt="מסלול הגעה לגאמוס מאזור גוש דן — רמות, גבעת זאב, גבעון"
+                     alt="מסלול הגעה לגאמוס מאזור גוש דן: רמות, גבעת זאב, גבעון"
                      loading="lazy" decoding="async" width="829" height="1024">
                 <figcaption>מהמרכז</figcaption>
               </figure>
@@ -1109,54 +1398,81 @@
   <footer id="footer" class="site-footer" role="contentinfo">
     <div class="site-footer__inner">
 
+      <!-- Brand column -->
       <div class="site-footer__brand">
-        <span class="site-footer__brand-mark">גאמוס</span>
+        <img class="site-footer__logo"
+             src="/assets/images/brand/logo-gold.webp"
+             width="200" height="64"
+             loading="lazy" decoding="async"
+             alt="גאמוס מתחם אירועים">
         <p class="site-footer__tagline">
-          חווית אירועים חדשה בישראל
+          מתחם אירועים יוקרתי. אולם, ריזורט וגנים בלב המדבר.
         </p>
       </div>
 
-      <nav class="site-footer__nav" aria-label="ניווט תחתון">
-        <ul role="list">
-          <li><a href="#hall-venue">אולם</a></li>
-          <li><a href="#hall-resort">ריזורט</a></li>
-          <li><a href="#rooms">חדרי נופש</a></li>
-          <li><a href="#culinary">קולינריה</a></li>
-          <li><a href="#about">אודות</a></li>
-          <li><a href="#events">אירועים</a></li>
-          <li><a href="#kosher">כשרות</a></li>
-          <li><a href="#contact">צור קשר</a></li>
+      <!-- Navigation column -->
+      <nav class="site-footer__col" aria-label="ניווט תחתון">
+        <h3 class="site-footer__col-title">ניווט</h3>
+        <ul class="site-footer__list" role="list">
+          <li><a class="site-footer__link" href="#hall-venue">אולם</a></li>
+          <li><a class="site-footer__link" href="#hall-resort">ריזורט</a></li>
+          <li><a class="site-footer__link" href="#rooms">חדרי אירוח</a></li>
+          <li><a class="site-footer__link" href="#culinary">קולינריה</a></li>
+          <li><a class="site-footer__link" href="#about">אודות</a></li>
+          <li><a class="site-footer__link" href="#events">אירועים</a></li>
+          <li><a class="site-footer__link" href="#kosher">כשרות</a></li>
+          <li><a class="site-footer__link" href="#contact">צור קשר</a></li>
         </ul>
       </nav>
 
-      <ul class="site-footer__social" role="list" aria-label="רשתות חברתיות">
-        <!-- Verified socials per site-content-map.md §6 — live site only links FB + IG. -->
-        <li>
-          <a href="https://www.instagram.com/gamos__event/"
-             aria-label="גאמוס באינסטגרם"
-             target="_blank" rel="noopener noreferrer">
-            <span aria-hidden="true">IG</span>
-          </a>
-        </li>
-        <li>
-          <a href="https://www.facebook.com/Pavilionevetns"
-             aria-label="גאמוס בפייסבוק"
-             target="_blank" rel="noopener noreferrer">
-            <span aria-hidden="true">FB</span>
-          </a>
-        </li>
-      </ul>
+      <!-- Contact column -->
+      <div class="site-footer__col">
+        <h3 class="site-footer__col-title">פרטי קשר</h3>
+        <ul class="site-footer__contact" role="list">
+          <li class="site-footer__contact-item">
+            <span class="site-footer__contact-label">טלפון</span>
+            <a class="site-footer__contact-value" href="tel:+972779972343" dir="ltr"><bdi>077-9972343</bdi></a>
+          </li>
+          <li class="site-footer__contact-item">
+            <span class="site-footer__contact-label">דוא"ל</span>
+            <a class="site-footer__contact-value" href="mailto:office@gamos.co.il" dir="ltr">office@gamos.co.il</a>
+          </li>
+          <li class="site-footer__contact-item">
+            <span class="site-footer__contact-label">כתובת</span>
+            <span class="site-footer__contact-value">די זהב 7, פארק ישראל, מעלה אדומים</span>
+          </li>
+        </ul>
+      </div>
 
-      <ul class="site-footer__legal" role="list">
+      <!-- Social column -->
+      <div class="site-footer__col">
+        <h3 class="site-footer__col-title">עקבו אחרינו</h3>
+        <ul class="site-footer__social" role="list" aria-label="רשתות חברתיות">
+          <li>
+            <a class="site-footer__link" href="https://www.instagram.com/gamos__event/"
+               aria-label="גאמוס באינסטגרם" target="_blank" rel="noopener noreferrer">
+              <span aria-hidden="true">Instagram</span>
+            </a>
+          </li>
+          <li>
+            <a class="site-footer__link" href="https://www.facebook.com/Pavilionevetns"
+               aria-label="גאמוס בפייסבוק" target="_blank" rel="noopener noreferrer">
+              <span aria-hidden="true">Facebook</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Bottom strip: copyright + legal links -->
+    <div class="site-footer__legal">
+      <p class="site-footer__copyright"><bdi>© 2026</bdi> גאמוס. כל הזכויות שמורות.</p>
+      <ul class="site-footer__legal-links" role="list">
         <li><a href="/legal/privacy.html">מדיניות פרטיות</a></li>
         <li><a href="/legal/terms.html">תנאי שימוש</a></li>
         <li><a href="/legal/accessibility.html">הצהרת נגישות</a></li>
       </ul>
-
-      <p class="site-footer__copy">
-        <bdi>© 2026</bdi> גאמוס. כל הזכויות שמורות.
-      </p>
-
     </div>
   </footer>
 

@@ -42,17 +42,32 @@
 
 
 /* ---------------------------------------------------------------------------
-   Portal — hotspot button positioned over its bubble in the canvas.
+   Portal — full-viewport plate carrying a FULL-FRAME overlay PNG, plus a
+   sized click hotspot centered on its bubble.
    ---------------------------------------------------------------------------
-   The bubbles in the master video plate occupy roughly the inner 35% of the
-   viewport on each side, vertically centered around 55% of viewport height.
-   These coordinates were measured from frame_0500.webp and scale with vw/vh.
+   The portal-resort / portal-venue art (assets/images/brand/portal-*.webp,
+   ~3825×~1880 source) are FULL-VIEWPORT PLATES — each contains its bubble
+   positioned within the whole frame (resort bubble on the right, venue bubble
+   on the left), mostly-transparent elsewhere. To land each bubble EXACTLY on
+   the canvas's baked-in bubble, the overlay <img> must fill the viewport with
+   the SAME math the canvas renderer uses:
+     canvas: scale = max(cw/iw, ch/ih) * ZOOM_FACTOR  (ZOOM_FACTOR = 1.35)
+     overlay: object-fit:cover (= max ratio) then transform: scale(1.35).
+   Measured bubble centers in the 1280×720 source frame:
+     RESORT ≈ (72.8%, 59.6%)   VENUE ≈ (28.0%, 59.6%)
+   The visual plate is full-viewport (covers everything); the <button> itself
+   is a sized invisible hotspot anchored on the bubble center so the clickable
+   region, focus ring, label, and hover glow stay local to one bubble.
    --------------------------------------------------------------------------- */
 
 .portal {
   position: absolute;
+  /* Hotspot box ≈ size of a bubble; centered on the measured bubble center. */
   inline-size: 30vw;
-  block-size: 60vh;
+  block-size: 44vh;
+  /* Anchor via center: top/left = center%, then translate -50%. Works in RTL
+     because we use physical center coords mapped from the measured frame. */
+  transform-origin: center;
   padding: 0;
   margin: 0;
   border: 0;
@@ -63,61 +78,56 @@
   outline: none;
   -webkit-tap-highlight-color: transparent;
 
-  inset-block-start: 18%;     /* aligned with bubble vertical band */
+  /* Vertical center of both bubbles ≈ 59.6%. */
+  top: 59.6%;
 
   /* Subtle scale + opacity reveal (overall fade controlled by .portals). */
   opacity: 0;
-  transform: scale(0.96);
   transition:
     transform 0.7s var(--ease-out-cinema),
     opacity   0.7s var(--ease-out-cinema),
     filter    0.45s var(--ease-out-cinema);
 }
 
-.portals.is-active .portal {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Right bubble = ריזורט (resort). In RTL DOM order, source-first ⇒ visual right. */
+/* Resort bubble center ≈ 72.8% from the left edge of the frame. */
 .portal--resort {
-  inset-inline-start: 0;      /* RTL → physical right edge */
-  /* In LTR fallback (just in case), align to right physically: */
-  right: 7vw;                  /* ignored under RTL */
+  left: 72.8%;
+  transform: translate(-50%, -50%) scale(0.96);
 }
-[dir="rtl"] .portal--resort {
-  right: auto;
-  inset-inline-start: 7vw;
+/* Venue bubble center ≈ 28.0% from the left edge of the frame. */
+.portal--venue {
+  left: 28.0%;
+  transform: translate(-50%, -50%) scale(0.96);
 }
 
-.portal--venue {
-  inset-inline-end: 0;
-  left: 7vw;                   /* LTR fallback */
-}
-[dir="rtl"] .portal--venue {
-  left: auto;
-  inset-inline-end: 7vw;
+.portals.is-active .portal--resort,
+.portals.is-active .portal--venue {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
 }
 
 
 /* ---------------------------------------------------------------------------
-   Bubble overlay image — sits over the hero canvas plate. Default state is
-   nearly invisible (the bubble in the canvas plate IS what the user sees);
-   on hover/focus we light it up so only THAT bubble glows.
+   Bubble overlay image — a FULL-VIEWPORT plate (not confined to the hotspot
+   box) painted with the SAME cover+zoom math as the canvas so its bubble lands
+   exactly on the canvas's baked-in bubble. Default state defers to the canvas
+   plate; on hover/focus only THIS bubble's plate lights up.
    --------------------------------------------------------------------------- */
 
 .portal__overlay {
-  position: absolute;
+  position: fixed;            /* escape the hotspot box → fill the viewport */
   inset: 0;
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: contain;
+  inline-size: 100vw;
+  block-size: 100vh;
+  object-fit: cover;          /* = max(cw/iw, ch/ih) — matches canvas cover */
   object-position: center;
+  transform: scale(1.35);     /* matches canvas ZOOM_FACTOR (DEFAULTS.zoom) */
+  transform-origin: center;
   pointer-events: none;
   user-select: none;
-  /* Rest state — hint of the bubble outline so users sense the affordance,
-     but mostly defer to the canvas plate's painted bubble. */
-  opacity: 0.35;
+  z-index: -1;                /* behind the hotspot's label, over the canvas */
+  /* Rest state — defer almost entirely to the canvas plate's painted bubble. */
+  opacity: 0;
   filter:
     drop-shadow(0 0 0 transparent)
     drop-shadow(0 0 0 transparent);
@@ -166,7 +176,8 @@
 .portal:hover .portal__overlay,
 .portal:focus-visible .portal__overlay {
   opacity: 1;
-  transform: scale(1.02);
+  /* Keep the 1.35 zoom that aligns with the canvas; add a hair of breathe. */
+  transform: scale(1.37);
   filter:
     drop-shadow(0 0 18px var(--brass-glow))
     drop-shadow(0 0 60px color-mix(in srgb, var(--brass) 70%, transparent))
@@ -187,8 +198,9 @@
   outline-offset: 0;
 }
 
-.portal:active {
-  transform: scale(0.99);
+.portals.is-active .portal:active {
+  /* Preserve center anchoring (translate) while nudging scale on press. */
+  transform: translate(-50%, -50%) scale(0.99);
 }
 
 
@@ -234,9 +246,11 @@
   .portal__label {
     transition: none !important;
   }
+  /* Keep the 1.35 alignment scale (do NOT reset to none — that would
+     unalign the overlay from the canvas); only drop the breathe delta. */
   .portal:hover .portal__overlay,
   .portal:focus-visible .portal__overlay {
-    transform: none;
+    transform: scale(1.35);
   }
   .portal:hover .portal__label,
   .portal:focus-visible .portal__label {
@@ -249,13 +263,11 @@
    Mobile — bubbles smaller, stack closer.
    --------------------------------------------------------------------------- */
 @media (max-width: 767px) {
+  /* Larger touch targets; bubble centers + overlay alignment unchanged. */
   .portal {
-    inline-size: 42vw;
-    block-size: 42vh;
-    inset-block-start: 22%;
+    inline-size: 46vw;
+    block-size: 34vh;
   }
-  [dir="rtl"] .portal--resort { inset-inline-start: 4vw; }
-  [dir="rtl"] .portal--venue  { inset-inline-end: 4vw; }
 
   .portal__label {
     font-size: clamp(1.2rem, 5vw, 1.6rem);

@@ -145,6 +145,15 @@
   --shadow-strong:  0 24px 60px rgba(26, 20, 16, 0.16);
   --focus-ring:     0 0 0 3px var(--brass);
 
+  /* ===== 2.2b Texture fills (background-clip:text headings) =====
+     Background-image fills for texture-filled headings via
+     background-clip:text. -light = sandy fill for text ON DARK surfaces;
+     -dark = black+gold swirl for text ON LIGHT (ivory) surfaces — the
+     dominant case site-wide. The .texture-text rule lives in its own
+     component file (not here — tokens are declarations only). */
+  --texture-light:  url("/assets/images/brand/texture-light.webp");
+  --texture-dark:   url("/assets/images/brand/texture-dark.webp");
+
   /* ===== 2.3 Typography — families ===== */
   --font-display-he:      "Frank Ruhl Libre", "David Libre", "Times New Roman", serif;
   --font-display-en:      "Playfair Display", "Times New Roman", serif;

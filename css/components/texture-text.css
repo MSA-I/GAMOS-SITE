@@ -1,0 +1,44 @@
+/* =====================================================================
+ * texture-text.css — texture-filled headings via background-clip: text
+ * Owner: texture-text agent (2026-06-01)
+ *
+ * Opt-in utility classes that fill the GLYPHS of a heading with a brand
+ * texture image instead of a solid color. Intended for LARGE display text
+ * ONLY (>= 28px) — small text becomes unreadable when filled with texture.
+ *
+ *   .texture-text--dark  -> var(--texture-dark)  (black+gold swirl)
+ *                           use on LIGHT / ivory backgrounds (most of site)
+ *   .texture-text--light -> var(--texture-light) (sandy light texture)
+ *                           use on DARK backgrounds (e.g. dark hero/footer)
+ *
+ * GRACEFUL DEGRADATION: the texture fill lives ENTIRELY inside an
+ * @supports block. Browsers without background-clip:text keep the solid
+ * token color inherited from base.css — headings stay readable.
+ *
+ * RTL: background-clip is direction-agnostic — no logical-property concerns.
+ * Tokens consumed from css/tokens.css — never hard-code the url().
+ * ===================================================================== */
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  /* Text glyphs become a window onto the texture image.
+     `color: transparent` is the standard fallback for the (non-prefixed)
+     background-clip path; `-webkit-text-fill-color` wins where supported. */
+  .texture-text--dark,
+  .texture-text--light {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .texture-text--dark {
+    background-image: var(--texture-dark);
+  }
+
+  .texture-text--light {
+    background-image: var(--texture-light);
+  }
+}

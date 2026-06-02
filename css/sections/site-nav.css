@@ -1,5 +1,20 @@
 /* ===========================================================================
    site-nav.css — sticky top navigation (RTL Hebrew)
+   ---------------------------------------------------------------------------
+   Constitution: §4 (RTL, logical properties only), §5 (single accent —
+   --accent-rose reserved for CTA), §8/§9 (reduced-motion, 3px brass focus
+   ring), §10.2 (tokens are single-source).
+
+   Redesign 2026-06-01:
+   - Single clean breakpoint at 1024px (was a dead-zone at 901–1023px).
+       ≥ 1024px → full desktop bar.
+       < 1024px → hamburger + overlay.
+   - Desktop shows ~6 PRIMARY links; [data-secondary] links are hidden on
+     desktop and surface only in the mobile overlay clone.
+   - Scroll state: .site-nav.is-scrolled condenses the bar (less padding,
+     opaque ivory + shadow, slightly smaller logo). JS adds the class.
+   - RTL underline grows from the inline-start (right) edge correctly.
+   - CTA: outline by default, fills with --accent-rose on hover/focus.
    ========================================================================= */
 
 
@@ -8,24 +23,42 @@
   inset-block-start: 0;
   inset-inline: 0;
   z-index: var(--z-sticky);
-  background: rgba(245, 239, 230, 0.86);
+  background: rgba(245, 239, 230, 0.86); /* ivory @ 86% */
   backdrop-filter: saturate(140%) blur(12px);
   -webkit-backdrop-filter: saturate(140%) blur(12px);
   border-block-end: 1px solid var(--border);
+  transition: background var(--dur-base) var(--ease-out-cinema),
+              box-shadow var(--dur-base) var(--ease-out-cinema),
+              border-color var(--dur-base) var(--ease-out-cinema);
+}
+
+/* Scroll state — condensed, opaque, lifted ------------------------------- */
+.site-nav.is-scrolled {
+  background: rgba(245, 239, 230, 0.97); /* ivory @ 97% — near-solid */
+  box-shadow: var(--shadow-soft);
+  border-block-end-color: transparent;
 }
 
 .site-nav__inner {
   max-inline-size: 1440px;
   margin-inline: auto;
-  padding-block: var(--space-3);
+  padding-block: var(--space-4);
   padding-inline: clamp(16px, 3vw, 32px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-5);
   min-block-size: 64px;
+  transition: padding-block var(--dur-base) var(--ease-out-cinema),
+              min-block-size var(--dur-base) var(--ease-out-cinema);
 }
 
+.site-nav.is-scrolled .site-nav__inner {
+  padding-block: var(--space-2);
+  min-block-size: 52px;
+}
+
+/* Brand -------------------------------------------------------------------- */
 .site-nav__brand {
   display: inline-flex;
   align-items: center;
@@ -37,12 +70,15 @@
 
 .site-nav__brand-logo {
   display: block;
-  height: 36px;
+  height: 40px;
   width: auto;
-  max-inline-size: 180px;
+  max-inline-size: 200px;
   object-fit: contain;
-  transition: opacity var(--dur-base) var(--ease-out-cinema);
+  transition: opacity var(--dur-base) var(--ease-out-cinema),
+              height  var(--dur-base) var(--ease-out-cinema);
 }
+.site-nav.is-scrolled .site-nav__brand-logo { height: 32px; }
+
 .site-nav__brand:hover .site-nav__brand-logo { opacity: 0.85; }
 .site-nav__brand:focus-visible {
   outline: 3px solid var(--brass);
@@ -50,30 +86,23 @@
   border-radius: var(--radius-sm);
 }
 
+/* Link list ---------------------------------------------------------------- */
 .site-nav__links {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
-  gap: clamp(12px, 1.5vw, 24px);
+  gap: clamp(14px, 1.8vw, 28px);
   align-items: center;
   flex: 1;
   justify-content: center;
 }
 
-/* Hide secondary links on smaller desktops to keep nav single-line.
-   Mobile menu (hamburger) still surfaces all of them. */
-@media (max-width: 1199px) {
-  .site-nav__links li:nth-child(n+8) { display: none; }
-}
-@media (max-width: 1023px) {
-  .site-nav__links { display: none; }
-}
-
 .site-nav__links a {
   font-family: var(--font-body);
-  font-size: clamp(0.8rem, 0.95vw, 0.95rem);
+  font-size: clamp(0.85rem, 0.95vw, 0.95rem);
   font-weight: var(--fw-medium);
+  letter-spacing: var(--tracking-normal);
   color: var(--fg);
   text-decoration: none;
   padding-block: var(--space-2);
@@ -82,36 +111,86 @@
   transition: color var(--dur-base) var(--ease-out-cinema);
 }
 
+/* Underline — grows from the inline-start (right edge in RTL).
+   transform-origin keywords are NOT logical, so in an RTL context we want the
+   origin pinned to the RIGHT (the reading start). We set it explicitly to
+   `right center` for the resting/exit state and keep it RIGHT on enter so the
+   wipe always tracks reading direction. */
 .site-nav__links a::after {
   content: "";
   position: absolute;
   inset-block-end: 0;
-  inset-inline-start: 0;
-  width: 100%;
-  height: 1px;
-  background: var(--accent);
+  inset-inline: 0;
+  block-size: 2px;
+  background: var(--brass);
   transform: scaleX(0);
-  transform-origin: inline-end;
+  transform-origin: right center; /* RTL: grow from reading start */
   transition: transform var(--dur-base) var(--ease-out-cinema);
 }
 
-.site-nav__links a:hover { color: var(--accent); }
-.site-nav__links a:hover::after { transform: scaleX(1); transform-origin: inline-start; }
+.site-nav__links a:hover,
+.site-nav__links a:focus-visible {
+  color: var(--brass-deep);
+}
+.site-nav__links a:hover::after,
+.site-nav__links a:focus-visible::after {
+  transform: scaleX(1);
+}
 
+.site-nav__links a:focus-visible {
+  outline: 3px solid var(--brass);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+/* Active link (scroll-spy sets aria-current="true" + .is-active) ----------- */
+.site-nav__links a[aria-current="true"],
+.site-nav__links a.is-active {
+  color: var(--brass-deep);
+}
+.site-nav__links a[aria-current="true"]::after,
+.site-nav__links a.is-active::after {
+  transform: scaleX(1);
+}
+
+/* Secondary links never show on the desktop bar — they live in the overlay. */
+.site-nav__links a[data-secondary],
+.site-nav__links li:has(a[data-secondary]) {
+  display: none;
+}
+
+/* CTA — outline by default, fills with --accent-rose on hover/focus -------- */
 .site-nav__cta {
   font-family: var(--font-body);
   font-size: var(--text-sm);
   font-weight: var(--fw-semibold);
   padding: var(--space-3) var(--space-6);
-  background: var(--accent);
-  color: var(--fg);
+  flex-shrink: 0;
+  color: var(--accent-cta);
+  background: transparent;
+  border: 1.5px solid var(--accent-cta);
   border-radius: var(--radius-pill);
   text-decoration: none;
-  transition: background var(--dur-base) var(--ease-out-cinema);
+  white-space: nowrap;
+  transition: background var(--dur-base) var(--ease-out-cinema),
+              color      var(--dur-base) var(--ease-out-cinema),
+              transform  var(--dur-base) var(--ease-out-cinema),
+              box-shadow var(--dur-base) var(--ease-out-cinema);
 }
 
-.site-nav__cta:hover { background: var(--accent-hover); color: var(--ivory); }
+.site-nav__cta:hover,
+.site-nav__cta:focus-visible {
+  background: var(--accent-cta);
+  color: var(--ivory);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+  outline: none;
+}
+.site-nav__cta:focus-visible {
+  box-shadow: 0 0 0 3px var(--brass);
+}
 
+/* Hamburger toggle --------------------------------------------------------- */
 .site-nav__toggle {
   display: none;
   background: transparent;
@@ -145,7 +224,7 @@
               opacity   var(--dur-base) var(--ease-out-cinema);
 }
 
-/* Hamburger → X morph (CSS-only, agent-23 Phase D2) ---------------------- */
+/* Hamburger → X morph (CSS-only) ----------------------------------------- */
 .site-nav__toggle.is-open .site-nav__toggle-bar:nth-child(1) {
   transform: translateY(7px) rotate(45deg);
 }
@@ -154,6 +233,21 @@
 }
 .site-nav__toggle.is-open .site-nav__toggle-bar:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ===========================================================================
+   Single breakpoint: < 1024px → hamburger + overlay; ≥ 1024px → desktop bar.
+   This eliminates the old 901–1023px dead-zone (was two overlapping rules).
+   ========================================================================= */
+@media (max-width: 1023.98px) {
+  .site-nav__links { display: none; }
+  .site-nav__cta   { display: none; } /* CTA also lives in the overlay below */
+  .site-nav__toggle { display: inline-flex; }
+}
+
+/* On desktop, never show the overlay even if state somehow lingers. */
+@media (min-width: 1024px) {
+  .site-nav__mobile { display: none !important; }
 }
 
 /* ===========================================================================
@@ -169,7 +263,6 @@
   background: rgba(245, 239, 230, 0.97); /* ivory @ 97% — token-mapped */
   backdrop-filter: saturate(140%) blur(16px);
   -webkit-backdrop-filter: saturate(140%) blur(16px);
-  /* Start hidden via [hidden]; .is-open transitions opacity for smoothness. */
   opacity: 0;
   transition: opacity var(--dur-base) var(--ease-out-cinema);
   display: flex;
@@ -204,6 +297,7 @@
   text-align: center;
 }
 
+/* In the overlay, ALL links (primary + secondary) are visible. */
 .site-nav__mobile__links a {
   display: block;
   font-family: var(--font-display-he);
@@ -219,7 +313,7 @@
 
 .site-nav__mobile__links a:hover,
 .site-nav__mobile__links a:focus-visible {
-  color: var(--accent);
+  color: var(--brass-deep);
   background: var(--bg-alt);
   outline: none;
 }
@@ -228,20 +322,39 @@
   box-shadow: var(--focus-ring);
 }
 
+.site-nav__mobile__links a[aria-current="true"],
+.site-nav__mobile__links a.is-active {
+  color: var(--brass-deep);
+}
+
+/* CTA echoed inside the overlay (cloned by JS) gets its own treatment. */
+.site-nav__mobile .site-nav__cta {
+  display: inline-block;
+  margin-block-start: var(--space-8);
+}
+
 /* Body scroll lock while mobile nav is open. */
 html.nav-open,
 html.nav-open body {
   overflow: hidden;
 }
 
-@media (max-width: 900px) {
-  .site-nav__links { display: none; }
-  .site-nav__toggle { display: inline-flex; }
+/* ===========================================================================
+   Reduced motion — kill the condense/underline/CTA transitions.
+   (Token durations already collapse to ~0ms via tokens.css, but we also drop
+   the transform translate on the CTA so nothing jumps.)
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  .site-nav,
+  .site-nav__inner,
+  .site-nav__brand-logo,
+  .site-nav__links a::after,
+  .site-nav__cta,
+  .site-nav__mobile {
+    transition: none;
+  }
+  .site-nav__cta:hover,
+  .site-nav__cta:focus-visible {
+    transform: none;
+  }
 }
-
-/* On desktop, never show the overlay even if state somehow lingers. */
-@media (min-width: 901px) {
-  .site-nav__mobile { display: none !important; }
-}
-
-

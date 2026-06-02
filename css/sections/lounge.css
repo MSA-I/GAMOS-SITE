@@ -1,11 +1,25 @@
 /* =============================================================================
-   Section: #lounge — teaser horizontal scroll-snap rail
-   Owner  : Agent 08 (Phase 4b — Hall Sections Engineer)
+   Section: #lounge — expanding-panels horizontal selector
+   Owner  : Lounge Section Engineer (Wave 1)
    --------------------------------------------------------------------------
-   Layout : Header + horizontal rail with scroll-snap. Each item is min 80%
-            of the rail on mobile (narrower from md/xl). Scrollbar visually
-            hidden — keyboard scroll still works.
-   Rules  : Logical properties only. Tokens for every value.
+   Concept: A row of image panels side by side. The ACTIVE panel grows
+            (flex: 7) while the others stay narrow (flex: 1). The active panel
+            reveals a Hebrew title + description label that slides/fades in.
+            One active at a time (default first), driven by js/lounge-selector.js.
+
+   Markup contract (panels are <button data-lounge-panel data-lounge-index="N">):
+     .lounge
+       .lounge__container
+         header.section-header  (eyebrow + title — site convention)
+         .lounge__rail                       — flex row, the expanding strip
+           button.lounge__panel[.is-active]  — each panel (1 of 10)
+             picture > img.lounge__img       — cover image
+             .lounge__label                  — overlay caption (active-only)
+               .lounge__title                — Hebrew title
+               .lounge__desc                 — Hebrew description
+
+   Rules  : Logical properties only (§4). Every value via tokens.css (§10.2).
+            NO icons anywhere. prefers-reduced-motion honoured (§8).
    ========================================================================== */
 
 .lounge {
@@ -21,203 +35,197 @@
 .lounge__container {
   max-inline-size: var(--container-wide);
   margin-inline: auto;
-  padding-inline: var(--gutter);
 }
 
-/* HEADER --------------------------------------------------------------- */
-.lounge__header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+/* The section header (.section-header) styling lives in section-header.css.
+   We only space it from the rail below. */
+.lounge .section-header {
   margin-block-end: var(--space-12);
-  max-inline-size: var(--container-narrow);
 }
 
-.lounge__eyebrow {
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: var(--fw-medium);
-  letter-spacing: var(--tracking-eyebrow);
-  text-transform: uppercase;
-  color: var(--brass);
-  margin: 0;
-}
-
-.lounge__title {
-  font-family: var(--font-display-he);
-  font-size: clamp(var(--text-2xl), 5vw, var(--text-4xl));
-  font-weight: var(--fw-regular);
-  line-height: var(--lh-tight);
-  letter-spacing: var(--tracking-tight);
-  color: var(--ink-deep);
-  margin: 0;
-  text-wrap: balance;
-}
-
-.lounge__body {
-  font-family: var(--font-body);
-  font-size: var(--text-md);
-  line-height: var(--lh-loose);
-  color: var(--fg);
-  max-inline-size: 56ch;
-  margin: 0;
-}
-
-/* ---------------------------------------------------------------------- *
- *  RAIL — horizontal, scroll-snap, RTL-aware                              *
- * ---------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------
+   RAIL — the expanding-panels flex row
+   --------------------------------------------------------------------------- */
 .lounge__rail {
   display: flex;
-  gap: var(--space-6);
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: var(--gutter);
-  padding-block: var(--space-4);
-  scrollbar-width: none;            /* Firefox */
-  -ms-overflow-style: none;         /* legacy IE/Edge */
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-}
-
-.lounge__rail::-webkit-scrollbar {  /* Chromium / WebKit */
-  display: none;
-  inline-size: 0;
-  block-size: 0;
-}
-
-/* ITEM ----------------------------------------------------------------- */
-.lounge__item {
-  flex: 0 0 auto;
-  inline-size: 80%;
-  min-inline-size: 280px;
-  max-inline-size: 720px;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  position: relative;
+  flex-direction: row;          /* RTL handled by dir; first panel = right edge */
+  gap: var(--space-2);
+  inline-size: 100%;
+  block-size: clamp(360px, 56vh, 620px);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background-color: var(--ink-medium);
-  box-shadow: var(--shadow-soft);
-  transition:
-    transform var(--dur-deluxe) var(--ease-out-cinema),
-    box-shadow var(--dur-deluxe) var(--ease-out-cinema);
-}
-
-@media (min-width: 768px) {
-  .lounge__item {
-    inline-size: 56%;
-  }
-}
-
-@media (min-width: 1280px) {
-  .lounge__item {
-    inline-size: 42%;
-  }
-}
-
-.lounge__item:hover,
-.lounge__item:focus-within {
-  transform: translateY(-4px);
   box-shadow: var(--shadow-strong);
 }
 
-.lounge__item-media {
+/* ---------------------------------------------------------------------------
+   PANEL — base (inactive) state
+   --------------------------------------------------------------------------- */
+.lounge__panel {
+  /* button reset */
+  appearance: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: start;
+
   position: relative;
-  inline-size: 100%;
-  aspect-ratio: 16 / 10;
+  display: block;
+  block-size: 100%;
+  min-inline-size: 0;           /* allow flex children to shrink below content */
+  flex: 1 1 0;                  /* inactive: narrow, equal share */
   overflow: hidden;
+  isolation: isolate;
+  transition:
+    flex-grow var(--dur-deluxe) var(--ease-out-cinema),
+    transform var(--dur-fast)   var(--ease-out-cinema),
+    filter    var(--dur-slow)   var(--ease-out-cinema);
+  /* Inactive panels: slightly darkened + desaturated for depth. */
+  filter: saturate(0.72) brightness(0.78);
 }
 
-.lounge__item-media img {
+/* Press feedback: subtle scale-down confirms the tap/click registered. */
+.lounge__panel:active {
+  transform: scale(0.98);
+}
+
+.lounge__panel.is-active {
+  flex-grow: 7;                 /* active: expands to dominate the row */
+  filter: saturate(1) brightness(1);
+}
+
+/* Visible focus ring (§9). Inset so it isn't clipped by overflow:hidden. */
+.lounge__panel:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 3px var(--brass);
+}
+
+/* ---------------------------------------------------------------------------
+   IMAGE — cover fill
+   --------------------------------------------------------------------------- */
+.lounge__img {
   display: block;
   inline-size: 100%;
   block-size: 100%;
   object-fit: cover;
+  object-position: center;
   transition: transform var(--dur-cinema) var(--ease-out-cinema);
+  will-change: transform;
 }
 
-.lounge__item:hover .lounge__item-media img,
-.lounge__item:focus-within .lounge__item-media img {
-  transform: scale(1.05);
+.lounge__panel.is-active .lounge__img {
+  transform: scale(1.04);       /* gentle Ken-Burns on the active panel */
 }
 
-/* CAPTION -------------------------------------------------------------- */
-.lounge__item-caption {
+/* ---------------------------------------------------------------------------
+   LABEL — caption overlay, visible only when the panel is active
+   --------------------------------------------------------------------------- */
+.lounge__label {
   position: absolute;
   inset-inline: 0;
   inset-block-end: 0;
-  padding-block: var(--space-8) var(--space-6);
-  padding-inline: var(--space-6);
-  background:
-    linear-gradient(
-      to top,
-      rgba(14, 14, 12, 0.78) 0%,
-      rgba(14, 14, 12, 0.35) 60%,
-      rgba(14, 14, 12, 0) 100%
-    );
-  color: var(--ivory);
+  z-index: var(--z-content);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  padding-block: var(--space-12) var(--space-6);
+  padding-inline: var(--space-6);
+  color: var(--fg-on-dark);
+  /* Scrim from the bottom for legibility over varied photography. */
+  background: linear-gradient(
+    to top,
+    rgba(26, 20, 16, 0.82) 0%,
+    rgba(26, 20, 16, 0.40) 55%,
+    rgba(26, 20, 16, 0) 100%
+  );
+  /* Hidden by default: faded + nudged down, and click-through. */
+  opacity: 0;
+  transform: translateY(var(--space-4));
+  pointer-events: none;
+  transition:
+    opacity   var(--dur-slow) var(--ease-out-cinema),
+    transform var(--dur-slow) var(--ease-out-cinema);
 }
 
-.lounge__item-eyebrow {
-  font-family: var(--font-body);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-eyebrow);
-  text-transform: uppercase;
-  color: var(--brass-glow);
+.lounge__panel.is-active .lounge__label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.lounge__title {
   margin: 0;
-}
-
-.lounge__item-title {
   font-family: var(--font-display-he);
-  font-size: clamp(var(--text-md), 2.4vw, var(--text-lg));
+  font-size: clamp(var(--text-md), 2.4vw, var(--text-xl));
   font-weight: var(--fw-regular);
   line-height: var(--lh-snug);
-  color: var(--ivory);
-  margin: 0;
+  letter-spacing: var(--tracking-tight);
+  color: var(--fg-on-dark);
+  text-wrap: balance;
 }
 
-.lounge__item-body {
+.lounge__desc {
+  margin: 0;
   font-family: var(--font-body);
   font-size: var(--text-sm);
   line-height: var(--lh-normal);
-  color: var(--ivory);
-  opacity: 0.9;
-  margin: 0;
-  max-inline-size: 48ch;
+  color: var(--fg-on-dark);
+  opacity: 0.92;
+  max-inline-size: 42ch;
 }
 
-/* HINT (Agent 9 may animate it) ---------------------------------------- */
-.lounge__hint {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin-block-start: var(--space-8);
-  font-family: var(--font-body);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-eyebrow);
-  text-transform: uppercase;
-  color: var(--brass-deep);
-}
-
-/* Reduced motion ------------------------------------------------------- */
-@media (prefers-reduced-motion: reduce) {
+/* ---------------------------------------------------------------------------
+   RESPONSIVE — narrow screens: switch to a vertical stack of panels.
+   Active panel still expands (tall), inactive stay short. The same
+   .is-active class drives both axes.
+   --------------------------------------------------------------------------- */
+@media (max-width: 767px) {
   .lounge__rail {
-    scroll-behavior: auto;
+    flex-direction: column;
+    block-size: auto;
+    max-block-size: 86vh;
   }
-  .lounge__item,
-  .lounge__item-media img {
+
+  .lounge__panel {
+    inline-size: 100%;
+    flex: 1 1 0;
+    block-size: auto;
+    min-block-size: 0;
+    aspect-ratio: 16 / 7;       /* inactive panels: a slim strip */
+    transition:
+      flex-grow var(--dur-deluxe) var(--ease-out-cinema),
+      filter    var(--dur-slow)   var(--ease-out-cinema);
+  }
+
+  .lounge__panel.is-active {
+    flex-grow: 5;
+    aspect-ratio: 4 / 5;        /* active panel: tall hero */
+  }
+
+  /* Always show the label on mobile active panel (no hover affordance there). */
+  .lounge__label {
+    padding-block: var(--space-8) var(--space-4);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   REDUCED MOTION — no flex/scale animation; active is still larger, instant.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .lounge__panel,
+  .lounge__img,
+  .lounge__label {
     transition: none;
   }
-  .lounge__item:hover,
-  .lounge__item:focus-within {
+  .lounge__panel:active {
     transform: none;
   }
-  .lounge__item:hover .lounge__item-media img,
-  .lounge__item:focus-within .lounge__item-media img {
+  .lounge__panel.is-active .lounge__img {
+    transform: none;
+  }
+  .lounge__panel.is-active .lounge__label {
     transform: none;
   }
 }

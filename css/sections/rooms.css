@@ -1,11 +1,22 @@
 /* =============================================================================
-   Section: #rooms (חדרי נופש) — masonry via CSS columns
-   Owner  : Agent 08 (Phase 4b — Hall Sections Engineer)
+   Section: #rooms (חדרי אירוח) — hover/focus-swap name-list → shared image stage
    --------------------------------------------------------------------------
-   Layout : Header + multi-column masonry. Cards each show a picture +
-            caption; hover reveals zoom + brass underline.
-   Rules  : Logical properties only. Tokens for every value. RTL-safe —
-            CSS columns flow per the document direction automatically.
+   Layout : Two panes. Names list (right side in RTL, the inline-start column)
+            + a shared image stage. Hover/focus/tap/keyboard a name reveals its
+            room image via a clip-path inset wipe; all panels stack in one grid
+            cell, only .is-active is visible.
+   Rules  : Logical properties only. Every color/space/font from tokens.css.
+            RTL-first. prefers-reduced-motion → instant swap, no wipe.
+   Class set (BEM-ish):
+     .rooms                 section root  (also carries [data-rooms-stage])
+     .rooms__container      max-width wrapper
+     .rooms__layout         the two-pane grid
+     .rooms__list           the names column   (role=tablist)
+     .rooms__trigger        one name button    ([data-rooms-trigger])
+     .rooms__trigger-name   room title text
+     .rooms__trigger-desc   one-line description
+     .rooms__stage          the image stage (right/visual pane)
+     .rooms__panel          one stacked image cell ([data-rooms-panel])
    ========================================================================== */
 
 .rooms {
@@ -13,7 +24,6 @@
   background-color: var(--bg);
   color: var(--fg);
   padding-block: var(--space-32);
-  /* Inline gutter prevents the heading from overflowing the viewport edge. */
   padding-inline: var(--gutter);
   isolation: isolate;
   overflow: clip;
@@ -22,175 +32,274 @@
 .rooms__container {
   max-inline-size: var(--container-wide);
   margin-inline: auto;
-  padding-inline: var(--gutter);
 }
 
-/* HEADER --------------------------------------------------------------- */
-.rooms__header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+/* The section already renders a .section-header above; spacing handled there.
+   This local container only needs to push the layout below the header. */
+.rooms .section-header {
   margin-block-end: var(--space-12);
-  max-inline-size: var(--container-narrow);
-}
-
-.rooms__eyebrow {
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: var(--fw-medium);
-  letter-spacing: var(--tracking-eyebrow);
-  text-transform: uppercase;
-  color: var(--brass);
-  margin: 0;
-}
-
-.rooms__title {
-  font-family: var(--font-display-he);
-  font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl));
-  font-weight: var(--fw-regular);
-  line-height: var(--lh-tight);
-  letter-spacing: var(--tracking-tight);
-  color: var(--ink-deep);
-  margin: 0;
-  text-wrap: balance;
-  max-inline-size: 100%;
-  overflow-wrap: break-word;
-}
-
-.rooms__body {
-  font-family: var(--font-body);
-  font-size: var(--text-md);
-  line-height: var(--lh-loose);
-  color: var(--fg);
-  max-inline-size: 56ch;
-  margin: 0;
 }
 
 /* ---------------------------------------------------------------------- *
- *  MASONRY (CSS columns)                                                  *
+ *  TWO-PANE LAYOUT                                                        *
+ *  In RTL the first grid column sits on the right (inline-start) → names. *
  * ---------------------------------------------------------------------- */
-.rooms__grid {
-  columns: 1;
-  column-gap: var(--space-4);
+.rooms__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(var(--space-6), 4vw, var(--space-16));
+  align-items: stretch;
 }
 
-@media (min-width: 560px) {
-  .rooms__grid {
-    columns: 2;
-    column-gap: var(--space-6);
-  }
-}
-
-@media (min-width: 1024px) {
-  .rooms__grid {
-    columns: 3;
-    column-gap: var(--space-6);
-  }
-}
-
-/* ITEM ----------------------------------------------------------------- */
-.rooms__item {
-  break-inside: avoid;
-  page-break-inside: avoid;          /* legacy */
-  -webkit-column-break-inside: avoid;
-  display: block;
-  margin-block-end: var(--space-6);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background-color: var(--bg);
-  box-shadow: var(--shadow-soft);
-  transition:
-    transform var(--dur-deluxe) var(--ease-out-cinema),
-    box-shadow var(--dur-deluxe) var(--ease-out-cinema);
-}
-
-.rooms__item:hover,
-.rooms__item:focus-within {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-strong);
-}
-
-.rooms__media {
-  position: relative;
-  display: block;
-  inline-size: 100%;
-  overflow: hidden;
-  background-color: var(--ink-medium);
-}
-
-.rooms__media img {
-  display: block;
-  inline-size: 100%;
-  block-size: auto;
-  object-fit: cover;
-  transition: transform var(--dur-cinema) var(--ease-out-cinema);
-}
-
-/* Aspect-ratio modifiers create masonry rhythm ------------------------- */
-.rooms__item--tall     .rooms__media img { aspect-ratio: 3 / 4; }
-.rooms__item--wide     .rooms__media img { aspect-ratio: 4 / 3; }
-.rooms__item--square   .rooms__media img { aspect-ratio: 1 / 1; }
-.rooms__item--portrait .rooms__media img { aspect-ratio: 4 / 5; }
-
-.rooms__item:hover .rooms__media img,
-.rooms__item:focus-within .rooms__media img {
-  transform: scale(1.06);
-}
-
-/* CAPTION -------------------------------------------------------------- */
-.rooms__caption {
+/* ---------------------------------------------------------------------- *
+ *  NAMES LIST (inline-start pane)                                         *
+ * ---------------------------------------------------------------------- */
+.rooms__list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding-block: var(--space-4) var(--space-6);
-  padding-inline: var(--space-5);
+  gap: var(--space-1);
+  align-self: center;
+  margin: 0;
+  padding: 0;
 }
 
-.rooms__name {
+.rooms__trigger {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  inline-size: 100%;
+  text-align: start;
+  background: transparent;
+  border: 0;
+  border-block-end: 1px solid var(--border);
+  padding-block: var(--space-4);
+  padding-inline: var(--space-2);
+  cursor: pointer;
+  color: var(--fg-muted);
+  transition:
+    color var(--dur-base) var(--ease-out-cinema),
+    padding-inline-start var(--dur-base) var(--ease-out-cinema),
+    transform var(--dur-fast) var(--ease-out-cinema),
+    background-color var(--dur-base) var(--ease-out-cinema);
+}
+
+/* Press feedback: subtle scale-down confirms the tap/click registered. */
+.rooms__trigger:active {
+  transform: scale(0.99);
+}
+
+.rooms__trigger:last-child {
+  border-block-end: 0;
+}
+
+.rooms__trigger-name {
   font-family: var(--font-display-he);
-  font-size: var(--text-md);
+  font-size: clamp(var(--text-md), 2.2vw, var(--text-xl));
   font-weight: var(--fw-regular);
   line-height: var(--lh-snug);
-  color: var(--ink-deep);
+  letter-spacing: var(--tracking-tight);
+  color: inherit;
   margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
 }
 
-.rooms__name::after {
-  content: "";
-  display: block;
-  inline-size: 0;
-  block-size: 1px;
-  background-color: var(--brass);
-  margin-block-start: var(--space-2);
-  transition: inline-size var(--dur-deluxe) var(--ease-out-cinema);
+/* Brass index numeral — kept LTR via isolate per §4 bidi rule. */
+.rooms__trigger-num {
+  font-family: var(--font-display-en);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-regular);
+  color: var(--brass);
+  unicode-bidi: isolate;
+  opacity: 0.55;
+  transition: opacity var(--dur-base) var(--ease-out-cinema);
 }
 
-.rooms__item:hover .rooms__name::after,
-.rooms__item:focus-within .rooms__name::after {
-  inline-size: var(--space-12);
-}
-
-.rooms__desc {
+.rooms__trigger-desc {
   font-family: var(--font-body);
   font-size: var(--text-sm);
   line-height: var(--lh-normal);
   color: var(--fg-muted);
   margin: 0;
+  max-block-size: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    max-block-size var(--dur-slow) var(--ease-out-cinema),
+    opacity var(--dur-slow) var(--ease-out-cinema);
 }
 
-/* Reduced motion ------------------------------------------------------- */
+/* Hover / focus / active states ---------------------------------------- */
+.rooms__trigger:hover,
+.rooms__trigger:focus-visible {
+  color: var(--ink-deep);
+  outline: none;
+}
+
+.rooms__trigger:focus-visible {
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-sm);
+}
+
+.rooms__trigger.is-active {
+  color: var(--ink-deep);
+  padding-inline-start: var(--space-4);
+  background-color: var(--bg-alt);
+  border-radius: var(--radius-sm);
+}
+
+.rooms__trigger.is-active .rooms__trigger-num {
+  opacity: 1;
+}
+
+.rooms__trigger.is-active .rooms__trigger-name {
+  font-weight: var(--fw-medium);
+}
+
+.rooms__trigger.is-active .rooms__trigger-desc {
+  max-block-size: 6rem;
+  opacity: 1;
+  margin-block-start: var(--space-2);
+}
+
+/* ---------------------------------------------------------------------- *
+ *  IMAGE STAGE (visual pane) — stacked panels, clip-path wipe reveal      *
+ * ---------------------------------------------------------------------- */
+.rooms__stage {
+  position: relative;
+  display: grid;
+  /* All panels occupy the same single cell. */
+  grid-template-areas: "stack";
+  aspect-ratio: 4 / 5;
+  inline-size: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background-color: var(--ink-medium);
+  box-shadow: var(--shadow-strong);
+}
+
+.rooms__panel {
+  grid-area: stack;
+  margin: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  /* Hidden default: clipped to nothing from the inline-start edge. */
+  clip-path: inset(0 0 0 100%);
+  opacity: 0;
+  transition:
+    clip-path var(--dur-deluxe) var(--ease-out-cinema),
+    opacity var(--dur-deluxe) var(--ease-out-cinema);
+  pointer-events: none;
+}
+
+.rooms__panel.is-active {
+  clip-path: inset(0 0 0 0);
+  opacity: 1;
+}
+
+.rooms__panel picture,
+.rooms__panel img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+/* Subtle Ken-Burns drift on the active image for "premium" feel. */
+.rooms__panel img {
+  transform: scale(1.04);
+  transition: transform var(--dur-cinema) var(--ease-out-cinema);
+}
+.rooms__panel.is-active img {
+  transform: scale(1);
+}
+
+/* ---------------------------------------------------------------------- *
+ *  RESPONSIVE — stack vertically; names become a horizontal scroller above *
+ * ---------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .rooms__layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+
+  /* Stage first (visual), names scroller below — order via grid source flow. */
+  .rooms__stage {
+    aspect-ratio: 4 / 3;
+    order: -1;
+  }
+
+  .rooms__list {
+    flex-direction: row;
+    gap: var(--space-2);
+    align-self: stretch;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-block-end: var(--space-2);
+  }
+
+  .rooms__trigger {
+    flex: 0 0 auto;
+    inline-size: auto;
+    border-block-end: 0;
+    border-radius: var(--radius-pill);
+    padding-block: var(--space-2);
+    padding-inline: var(--space-4);
+    background-color: var(--bg-alt);
+    scroll-snap-align: start;
+  }
+
+  .rooms__trigger:last-child {
+    border-block-end: 0;
+  }
+
+  .rooms__trigger.is-active {
+    padding-inline-start: var(--space-4);
+    background-color: var(--cocoa);
+    color: var(--fg-on-dark);
+  }
+
+  .rooms__trigger.is-active .rooms__trigger-num {
+    color: var(--brass-glow);
+  }
+
+  /* On mobile the one-liner would jitter the horizontal scroller — hide it. */
+  .rooms__trigger-desc,
+  .rooms__trigger.is-active .rooms__trigger-desc {
+    display: none;
+  }
+
+  .rooms__trigger-name {
+    font-size: var(--text-base);
+    white-space: nowrap;
+  }
+}
+
+/* ---------------------------------------------------------------------- *
+ *  REDUCED MOTION — instant swap, no wipe, no drift                       *
+ * ---------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
-  .rooms__item,
-  .rooms__media img,
-  .rooms__name::after {
+  .rooms__panel {
+    transition: none;
+    /* Hidden panels collapse instantly. */
+    clip-path: inset(0 0 0 100%);
+  }
+  .rooms__panel.is-active {
+    clip-path: inset(0 0 0 0);
+  }
+  .rooms__panel img,
+  .rooms__panel.is-active img {
+    transform: none;
     transition: none;
   }
-  .rooms__item:hover,
-  .rooms__item:focus-within {
-    transform: none;
+  .rooms__trigger,
+  .rooms__trigger-desc {
+    transition: none;
   }
-  .rooms__item:hover .rooms__media img,
-  .rooms__item:focus-within .rooms__media img {
+  .rooms__trigger:active {
     transform: none;
   }
 }

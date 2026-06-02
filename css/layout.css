@@ -262,6 +262,24 @@
     max-inline-size: 40vw;
   }
 
+  /* ----- Contact override (un-crush the page's last section) -----
+     #contact previously inherited .section-rail--end's lopsided
+     padding-inline-start:55vw + max-inline-size:40vw, shoving the form
+     into a narrow off-center column ("weird angle" look). The contact
+     section is a centered, full-width container like every other static
+     section. .section-rail--end stays intact for #about. */
+  .contact .section-rail--end {
+    padding-inline-start: var(--gutter);
+    padding-inline-end: var(--gutter);
+    inline-size: 100%;
+    max-inline-size: var(--container-max);
+    margin-inline: auto;
+  }
+
+  .contact .section-rail--end > * {
+    max-inline-size: 100%;
+  }
+
   @media (max-width: 767px) {
     .section-rail--start,
     .section-rail--end {

@@ -1,6 +1,6 @@
 # GAMOS-SITE — מצב נוכחי
 
-**עודכן:** 2026-06-01
+**עודכן:** 2026-06-01 (9-changes build)
 **Branch:** `main` — מסונכרן עם `origin/main` (https://github.com/MSA-I/GAMOS-SITE)
 **מקור-אמת לתוכנית הראשית:** [`PLANS/research/2026-05-28_master-rebuild-plan.md`](PLANS/research/2026-05-28_master-rebuild-plan.md)
 **מקור-אמת לחוקה:** [`CLAUDE.md`](CLAUDE.md)
@@ -78,12 +78,12 @@
 | 1 | `#hero` | Scroll-scene canvas (528 frames) | ✅ Live |
 | 2 | `#hall-venue` | Scroll-scene poster Ken-Burns | ⏳ Scaffold (ממתין לסרטון) |
 | 3 | `#hall-resort` | Scroll-scene poster Ken-Burns | ⏳ Scaffold (ממתין לסרטון) |
-| 4 | `#lounge` | Static gallery + reveal-animate | ✅ Live |
-| 5 | `#rooms` | Static grid + reveal-animate | ✅ Live |
-| 6 | `#culinary` | Scroll-scene canvas (180 frames) | ✅ Live |
+| 4 | `#lounge` | Expanding-panels selector (10 panels, `lounge-selector.js`) | ✅ Live |
+| 5 | `#rooms` | Two-pane hover-swap gallery (10 rooms, `rooms-gallery.js`) | ✅ Live |
+| 6 | `#culinary` | Scroll-scene canvas (180 frames, 900vh spacer) + 6 dish grid | ✅ Live |
 | 7 | `#about` | Static + counter animations | ✅ Live |
 | 8 | `#testimonials` | Slider (8 ציטוטים) | ✅ Live |
-| 9 | `#gallery` | Static (8-tile mosaic) | ✅ Live |
+| 9 | `#gallery` | Static 8-tile mosaic (images filled) | ✅ Live |
 | 10 | `#events` | Static (event types) | ✅ Live |
 | 11 | `#kosher` | Static (rotate-in stamp) | ⚠️ שם רבנות TODO |
 | 12 | `#contact` | Form + map iframe | ✅ Live |
@@ -121,11 +121,11 @@ HTML5 + CSS3 (custom properties, container queries, logical props)
 ❌ אין framework / bundler / 3D / Tailwind runtime
 ```
 
-**JS modules (17):** `accordions, canvas-frame-renderer, contact-form, counters, hero-video-scrub, lenis, loading-overlay, main, marquee, portals, reveals, scroll-orchestrator, scroll-scene, scrollytelling, side-dot-nav, site-nav, slider`
+**JS modules (20):** `accordions, canvas-frame-renderer, contact-form, counters, hero-video-scrub, lenis, loading-overlay, lounge-selector, main, marquee, portals, reveals, rooms-gallery, scroll-orchestrator, scroll-scene, scroll-spy, scrollytelling, side-dot-nav, site-nav, slider`
 
 **CSS sections (20):** `about, contact, culinary, events, gallery, hall-resort, hall-venue, hero, kosher, lounge, motion-accordions, motion-reveals, motion-slider, portals, rooms, scroll-scene, section-header, site-footer, site-nav, testimonials`
 
-**CSS components (4):** `loading-overlay, side-dot-nav, marquee, scrollytelling-loader`
+**CSS components (5):** `loading-overlay, side-dot-nav, marquee, scrollytelling-loader, texture-text`
 
 ---
 

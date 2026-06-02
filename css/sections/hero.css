@@ -275,12 +275,15 @@
   animation-delay: 0s;
 }
 
-/* D: portals — canvas stays (frozen on last frame by JS), title hidden. */
-.hero__sticky[data-stage="portals"] .hero__static-bg { opacity: 1; }
+/* D: portals — canvas STAYS VISIBLE (frozen on last frame by JS), title hidden.
+   The frozen final frame already shows the two bubbles painted into the plate;
+   the .portal__overlay PNGs are full-viewport plates that land EXACTLY on top of
+   those baked-in bubbles (same ZOOM_FACTOR 1.35 — see portals.css). So the
+   canvas must remain on screen behind the overlays; the desert static-bg stays
+   hidden (it carries no bubbles). */
+.hero__sticky[data-stage="portals"] .hero__static-bg { opacity: 0; }
 .hero__sticky[data-stage="portals"] .hero__title-stack { opacity: 0; }
-/* Canvas (frozen on the last frame, which already shows the bubbles) fades
-   under the real portals so we don't render two pairs of bubbles. */
-.hero__sticky[data-stage="portals"] .hero__canvas { opacity: 0; }
+.hero__sticky[data-stage="portals"] .hero__canvas { opacity: 1; }
 .hero__sticky[data-stage="portals"] .hero__scrub-poster { opacity: 0; }
 
 
