@@ -37,20 +37,28 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 // Scene catalog — add new scenes (resort, venue) here when their MP4s arrive.
 // -----------------------------------------------------------------------------
 const SCENES = {
+  // 2026-06-02 — quality bumped per user direction ("max quality, exceed the
+  // previous limit"). Width 1920 (was 1280); WebP q=88 (was 65); effort=6.
+  // The two-phase preloader in canvas-frame-renderer.js hides total weight
+  // from LCP — only first 10 frames block, the rest stream async low-priority.
   hero: {
     src: "assets/video/hero-master-1080.mp4",
     fps: 30,
-    width: 1280,
-    quality: 65,
+    width: 1920,
+    quality: 88,
   },
   culinary: {
     src: "assets/video/culinary-1080.mp4",
     fps: 30,
-    width: 1280,
-    quality: 65,
+    width: 1920,
+    quality: 88,
+    // Skip the first 3 seconds of the source so the scrub starts from the
+    // mid-point of the dish-plating sequence (per user: "should start from
+    // the middle of the video"). Format accepted by ffmpeg `-ss`.
+    ssStart: "00:00:03",
   },
-  // resort:   { src: "assets/video/resort-1080.mp4",   fps: 30, width: 1280, quality: 65 },
-  // venue:    { src: "assets/video/venue-1080.mp4",    fps: 30, width: 1280, quality: 65 },
+  // resort:   { src: "assets/video/resort-1080.mp4",   fps: 30, width: 1920, quality: 88 },
+  // venue:    { src: "assets/video/venue-1080.mp4",    fps: 30, width: 1920, quality: 88 },
 };
 
 // -----------------------------------------------------------------------------
@@ -105,18 +113,21 @@ async function encodeScene(name, cfg, ffmpeg, sharp) {
   mkdirSync(outDir, { recursive: true });
 
   // 1. Extract PNG via ffmpeg
-  console.log(`[${name}] ffmpeg extract @ ${cfg.fps}fps × ${cfg.width}px...`);
-  const t0 = Date.now();
-  const ff = spawnSync(
-    ffmpeg,
-    [
-      "-hide_banner", "-loglevel", "error", "-y",
-      "-i", srcAbs,
-      "-vf", `fps=${cfg.fps},scale=${cfg.width}:-2`,
-      join(tmpDir, "frame_%04d.png"),
-    ],
-    { stdio: "inherit" }
+  console.log(
+    `[${name}] ffmpeg extract @ ${cfg.fps}fps × ${cfg.width}px${cfg.ssStart ? ` (-ss ${cfg.ssStart})` : ""}...`
   );
+  const t0 = Date.now();
+  // -ss BEFORE -i for fast seek (stream-copy seek). For frame-accurate
+  // seek -ss should be after -i, but for our use the source video has
+  // a key-frame interval that lets fast-seek hit close enough.
+  const ffArgs = ["-hide_banner", "-loglevel", "error", "-y"];
+  if (cfg.ssStart) ffArgs.push("-ss", cfg.ssStart);
+  ffArgs.push(
+    "-i", srcAbs,
+    "-vf", `fps=${cfg.fps},scale=${cfg.width}:-2`,
+    join(tmpDir, "frame_%04d.png")
+  );
+  const ff = spawnSync(ffmpeg, ffArgs, { stdio: "inherit" });
   if (ff.status !== 0) throw new Error(`[${name}] ffmpeg failed (exit ${ff.status})`);
 
   const pngs = readdirSync(tmpDir).filter((f) => f.endsWith(".png")).sort();

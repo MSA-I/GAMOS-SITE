@@ -1,30 +1,53 @@
 /* =====================================================================
  * texture-text.css — texture-filled headings via background-clip: text
- * Owner: texture-text agent (2026-06-01)
+ * Owner: texture-text agent (2026-06-01) · expanded 2026-06-02
  *
- * Opt-in utility classes that fill the GLYPHS of a heading with a brand
- * texture image instead of a solid color. Intended for LARGE display text
- * ONLY (>= 28px) — small text becomes unreadable when filled with texture.
+ * As of 2026-06-02 the user wants EVERY display-text element (titles,
+ * eyebrows — Hebrew AND English) to be filled with the brand texture.
+ * To honor that without hand-tagging every element in markup, this
+ * stylesheet now does TWO things:
  *
- *   .texture-text--dark  -> var(--texture-dark)  (black+gold swirl)
- *                           use on LIGHT / ivory backgrounds (most of site)
- *   .texture-text--light -> var(--texture-light) (sandy light texture)
- *                           use on DARK backgrounds (e.g. dark hero/footer)
+ *   1. The opt-in classes (.texture-text, .texture-text--dark/--light)
+ *      keep working — for places that need to override the auto behavior.
+ *   2. A site-wide RULE applies the dark texture (--typo-dark, the gold-
+ *      flecked black for ivory surfaces) automatically to:
+ *        - .section-header__title
+ *        - .section-header__eyebrow
+ *        - h2.lounge__title, h3.lounge__title  (lounge labels)
+ *        - .hall-* h1/h2 titles
+ *      Sections with dark backgrounds (Culinary, Footer) override to
+ *      .texture-text--light via a class on the section.
+ *
+ * Two textures available:
+ *   --typo-dark  : gold-flecked DARK fill, for headings on LIGHT/ivory bg
+ *                  (the dominant case across the site).
+ *   --typo-light : warm sandy LIGHT fill, for headings on DARK bg
+ *                  (Culinary, Hero static-bg, Footer).
+ * Plus the older --texture-{dark,light} aliases for opt-in compatibility.
  *
  * GRACEFUL DEGRADATION: the texture fill lives ENTIRELY inside an
  * @supports block. Browsers without background-clip:text keep the solid
  * token color inherited from base.css — headings stay readable.
  *
- * RTL: background-clip is direction-agnostic — no logical-property concerns.
- * Tokens consumed from css/tokens.css — never hard-code the url().
+ * RTL: background-clip is direction-agnostic.
+ * Tokens consumed from css/tokens.css — never hard-code url().
  * ===================================================================== */
 
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
-  /* Text glyphs become a window onto the texture image.
-     `color: transparent` is the standard fallback for the (non-prefixed)
-     background-clip path; `-webkit-text-fill-color` wins where supported. */
+
+  /* ---- Shared paint base ---- */
+  .texture-text,
   .texture-text--dark,
-  .texture-text--light {
+  .texture-text--light,
+  .section-header__title,
+  .section-header__eyebrow,
+  .lounge__title,
+  .rooms__name,
+  .hall-venue h1,
+  .hall-venue h2,
+  .hall-resort h1,
+  .hall-resort h2,
+  .feature h3 {
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -34,11 +57,53 @@
     color: transparent;
   }
 
-  .texture-text--dark {
-    background-image: var(--texture-dark);
+  /* ---- Default: dark texture for headings on light/ivory surfaces ---- */
+  .texture-text,
+  .texture-text--dark,
+  .section-header__title,
+  .section-header__eyebrow,
+  .lounge__title,
+  .rooms__name,
+  .hall-venue h1,
+  .hall-venue h2,
+  .hall-resort h1,
+  .hall-resort h2,
+  .feature h3 {
+    background-image: var(--typo-dark);
   }
 
+  /* ---- Light texture override for content on dark surfaces ----
+     Sections with a dark background opt in by adding `data-bg="dark"` or
+     class `.bg-dark` on the section element. Headings inside are then
+     re-fillled with the lighter sandstone texture. */
+  [data-bg="dark"] .section-header__title,
+  [data-bg="dark"] .section-header__eyebrow,
+  .bg-dark .section-header__title,
+  .bg-dark .section-header__eyebrow,
+  .culinary .section-header__title,
+  .culinary .section-header__eyebrow,
+  .site-footer .section-header__title,
+  .site-footer .section-header__eyebrow,
   .texture-text--light {
+    background-image: var(--typo-light);
+  }
+
+  /* ---- Per-element overrides: legacy `.texture-text--dark/--light`
+     classes still pick the older background-tile textures, in case any
+     element wants the surface tile rather than the typo fill. ---- */
+  .texture-text--dark.texture-text--bg {
+    background-image: var(--texture-dark);
+  }
+  .texture-text--light.texture-text--bg {
     background-image: var(--texture-light);
+  }
+
+  /* ---- Brass solid fallback inside the @supports block, for tiny text
+     elements that should NOT be filled (e.g., footer copyright). They opt
+     OUT explicitly via `.texture-text--off`. ---- */
+  .texture-text--off {
+    background: none !important;
+    color: var(--brass) !important;
+    -webkit-text-fill-color: currentColor !important;
   }
 }

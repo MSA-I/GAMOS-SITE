@@ -23,30 +23,44 @@
    inside Hebrew copy without forcing two full webfonts).
    --------------------------------------------------------------------------- */
 
-/* ---- Frank Ruhl Libre (Hebrew display) ---- */
+/* ---- Rubik (Hebrew + Latin display) ----
+   Replaces Frank Ruhl Libre as the display family per user direction
+   (2026-06-02): the literary serif read too "writerly"; Rubik is a modern
+   geometric humanist that flows in Hebrew without losing premium weight.
+   Same WOFF2 file serves 700 + 900 (Google Fonts ships a variable cut).
+   Loaded for both Hebrew + Latin so eyebrows like "GAMOS EVENTS" use the
+   same family as the Hebrew titles. */
 @font-face {
-  font-family: "Frank Ruhl Libre";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("../assets/fonts/frank-ruhl-libre-400.woff2") format("woff2");
-  unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F, U+0020-007E;
-}
-@font-face {
-  font-family: "Frank Ruhl Libre";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("../assets/fonts/frank-ruhl-libre-500.woff2") format("woff2");
-  unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F, U+0020-007E;
-}
-@font-face {
-  font-family: "Frank Ruhl Libre";
+  font-family: "Rubik";
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("../assets/fonts/frank-ruhl-libre-700.woff2") format("woff2");
-  unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F, U+0020-007E;
+  src: url("../assets/fonts/rubik-hebrew.woff2") format("woff2");
+  unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fonts/rubik-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("../assets/fonts/rubik-hebrew.woff2") format("woff2");
+  unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("../assets/fonts/rubik-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 /* ---- Heebo (Hebrew + Latin body) ---- */
@@ -93,17 +107,9 @@
   unicode-range: U+0020-007E, U+00A0-00FF, U+0152-0153, U+02BB-02BC, U+2010-2027, U+20AC;
 }
 
-/* ---- Bodoni Moda 900 (Latin display — Hero "GAMOS" wordmark) ----
-   Per Agent 11 §3 + user decision (Variant A SVG-mask). Subsetted WOFF2
-   covering only "GAMOSEVNT" via Google Fonts text= API (1.8 KB on disk). */
-@font-face {
-  font-family: "Bodoni Moda";
-  font-style: normal;
-  font-weight: 900;
-  font-display: swap;
-  src: url("../assets/fonts/bodoni-moda-900-latin.woff2") format("woff2");
-  unicode-range: U+0041-0054, U+0056, U+0058-005A;
-}
+/* Bodoni Moda removed 2026-06-02 — the Hero wordmark is now an <img> of
+   the central Gamos logo (assets/images/brand/logo-central.webp), so no
+   subsetted Latin Didone is needed in the font cascade. */
 
 
 /* ---------------------------------------------------------------------------
@@ -146,20 +152,30 @@
   --focus-ring:     0 0 0 3px var(--brass);
 
   /* ===== 2.2b Texture fills (background-clip:text headings) =====
-     Background-image fills for texture-filled headings via
-     background-clip:text. -light = sandy fill for text ON DARK surfaces;
-     -dark = black+gold swirl for text ON LIGHT (ivory) surfaces — the
-     dominant case site-wide. The .texture-text rule lives in its own
-     component file (not here — tokens are declarations only). */
+     The site applies textured fills to ALL display headings (h1/h2/h3 and
+     section eyebrows) site-wide as of 2026-06-02. Two pairs of textures:
+       --typo-{light|dark} : the FONT TEXTURE the user provided (gold-flecked
+                             stroke, intended for letterforms). Variant for
+                             dark and for light surfaces.
+       --texture-{light|dark} : background-tile texture (for surface fills,
+                             not glyphs). Light/dark per surface.
+     Naming: -light/-dark refers to the SURFACE the texture sits on, not
+     the texture's own brightness. So `--typo-dark` (used on light/ivory bg
+     — the dominant case) is dark-toned with gold flecks; `--typo-light`
+     (used on dark surfaces like culinary/footer) is lighter sandstone. */
+  --typo-light:     url("/assets/images/brand/typo-light.webp");
+  --typo-dark:      url("/assets/images/brand/typo-dark.webp");
   --texture-light:  url("/assets/images/brand/texture-light.webp");
   --texture-dark:   url("/assets/images/brand/texture-dark.webp");
 
   /* ===== 2.3 Typography — families ===== */
-  --font-display-he:      "Frank Ruhl Libre", "David Libre", "Times New Roman", serif;
-  --font-display-en:      "Playfair Display", "Times New Roman", serif;
-  /* Hero wordmark — Didone with extreme stroke contrast. Falls back to
-     Playfair Display 900 (also self-hosted). Per Agent 11 §3. */
-  --font-display-luxury:  "Bodoni Moda", "Playfair Display", "Didot", "Times New Roman", serif;
+  /* Display family — modern Hebrew + Latin (Rubik). Replaced Frank Ruhl
+     Libre on 2026-06-02 per user direction ("the literary serif feels too
+     writerly; want modern + flowing"). Same family powers BOTH Hebrew
+     headings and English eyebrows like "GAMOS EVENTS". */
+  --font-display-he:      "Rubik", "Heebo", "Arial", sans-serif;
+  --font-display-en:      "Rubik", "Helvetica Neue", "Arial", sans-serif;
+  --font-display-luxury:  var(--font-display-he); /* legacy alias */
   --font-body:            "Heebo", "Arial", sans-serif;
   --font-mono:            ui-monospace, "Menlo", "Consolas", monospace;
 

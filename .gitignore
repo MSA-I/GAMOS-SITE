@@ -29,14 +29,26 @@ remotion/out/
 remotion/public/
 remotion/node_modules/
 
-# Source asset library — READ-ONLY, multi-GB, lives outside repo history
+# Source asset library — READ-ONLY, multi-GB, lives outside repo history.
+# NEVER commit. The user produces videos / images here; the repo only ever
+# carries the encoded outputs under `assets/`.
 תמונות לאנימציית האתר/
 
-# Compiled / processed media — videos are too heavy for git
+# Heavy MP4 sources — stay LOCAL ONLY. The site never loads MP4 directly;
+# the canvas frame renderer paints pre-extracted WebP frame sequences from
+# `assets/frames/<scene>/` instead. Re-encode locally with `npm run encode:*`.
 assets/video/
-# assets/images/ — tracked: brand assets, halls, culinary
-# assets/frames/ — tracked: 30fps WebP frame sequences for canvas scrub
-#   (Hero ~27MB / Culinary ~5MB; required for site to render)
+
+# IMPORTANT — the following directories ARE tracked in git (do NOT ignore):
+#   assets/images/   brand mark, hero static, halls, lounge, gallery, maps
+#   assets/img/      additional section graphics + icons
+#   assets/frames/   30fps WebP frame sequences for canvas scrub (Hero +
+#                    Culinary; sizes have been bumped 2026-06-02 per user
+#                    direction — Hero ≈ 60MB, Culinary ≈ 22MB)
+#   assets/fonts/    self-hosted WOFF2 (Rubik + Heebo + Playfair)
+#   assets/vendor/   GSAP + ScrollToPlugin (self-hosted, no CDN)
+# These are the production payload. If git ever starts ignoring them, the
+# site stops rendering.
 
 # AgentDB / ruflo local state
 ruvector.db

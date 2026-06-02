@@ -51,15 +51,59 @@ const MAPPINGS = [
 ];
 
 // Single-output (non-numbered, non-variant) encodes: produces ONE .webp at the
-// exact target path. Used for brand texture swatches.
+// exact target path. Used for brand texture swatches, the central logo, etc.
+// Each entry may carry optional `width` (default 1600) and `quality` (default 80)
+// to support assets that need higher fidelity than the section-image budget.
 const SINGLE_WEBP = [
+  // Central GAMOS logo (replaces the SVG-mask GAMOS letters in Hero +
+  // logo-gold.webp in the footer). High quality — this is the brand mark.
   {
-    src: "תמונות לאנימציית האתר/פונט/טקסטורה לטיפוגרפיה בהירה.png",
-    out: "assets/images/brand/texture-light.webp",
+    src: "תמונות לאנימציית האתר/לוגו/לוגו מרכזי.png",
+    out: "assets/images/brand/logo-central.webp",
+    width: 1200,
+    quality: 92,
+  },
+  // Texture fills for headings (background-clip: text). The user has 4 source
+  // textures under תמונות/פונט/. We use:
+  //   - "טיפוגרפיה בהירה.png" → typo-light.webp (gold-on-light texture for headings on dark surfaces)
+  //   - "טיפוגרפיה כהה.png"   → typo-dark.webp  (gold-on-dark texture for headings on light surfaces — dominant case)
+  //   - "טקסטורה בהירה.png"   → texture-light.webp (background tile, light)
+  //   - "טקסטורה כהה.png"     → texture-dark.webp  (background tile, dark)
+  // The source filenames may have alternative spellings (some include "טקסטורה ל..."),
+  // so we list multiple candidates per output and pick the first that exists.
+  {
+    srcCandidates: [
+      "תמונות לאנימציית האתר/פונט/טיפוגרפיה בהירה.png",
+      "תמונות לאנימציית האתר/פונט/טקסטורה לטיפוגרפיה בהירה.png",
+    ],
+    out: "assets/images/brand/typo-light.webp",
+    width: 1800,
+    quality: 90,
   },
   {
-    src: "תמונות לאנימציית האתר/פונט/טקסטורה לטיפוגרפיה כהה.png",
+    srcCandidates: [
+      "תמונות לאנימציית האתר/פונט/טיפוגרפיה כהה.png",
+      "תמונות לאנימציית האתר/פונט/טקסטורה לטיפוגרפיה כהה.png",
+    ],
+    out: "assets/images/brand/typo-dark.webp",
+    width: 1800,
+    quality: 90,
+  },
+  {
+    srcCandidates: [
+      "תמונות לאנימציית האתר/פונט/טקסטורה בהירה.png",
+    ],
+    out: "assets/images/brand/texture-light.webp",
+    width: 1600,
+    quality: 88,
+  },
+  {
+    srcCandidates: [
+      "תמונות לאנימציית האתר/פונט/טקסטורה כהה.png",
+    ],
     out: "assets/images/brand/texture-dark.webp",
+    width: 1600,
+    quality: 88,
   },
 ];
 
@@ -137,12 +181,20 @@ async function main() {
     }
   }
 
-  // Single-output webp encodes (brand textures).
+  // Single-output webp encodes (brand assets — logo, textures).
   for (const s of SINGLE_WEBP) {
-    const srcPath = join(ROOT, s.src);
+    const candidates = s.srcCandidates ?? [s.src];
+    let resolvedSrc = null;
+    for (const candidate of candidates) {
+      const candidateAbs = join(ROOT, candidate);
+      if (existsSync(candidateAbs)) {
+        resolvedSrc = { rel: candidate, abs: candidateAbs };
+        break;
+      }
+    }
     const outPath = join(ROOT, s.out);
-    if (!existsSync(srcPath)) {
-      console.log(`[single] source missing, skipping: ${s.src}`);
+    if (!resolvedSrc) {
+      console.log(`[single] source missing, skipping: ${s.out}  (tried: ${candidates.join(", ")})`);
       continue;
     }
     if (!FORCE && existsSync(outPath)) {
@@ -151,11 +203,13 @@ async function main() {
       continue;
     }
     mkdirSync(dirname(outPath), { recursive: true });
-    await sharp(srcPath, { failOn: "warning" })
-      .resize({ width: 1600, withoutEnlargement: true })
-      .webp({ quality: 80, effort: 6 })
+    const width = s.width ?? 1600;
+    const quality = s.quality ?? 80;
+    await sharp(resolvedSrc.abs, { failOn: "warning" })
+      .resize({ width, withoutEnlargement: true })
+      .webp({ quality, effort: 6 })
       .toFile(outPath);
-    console.log(`[single] ${s.src} → ${s.out}`);
+    console.log(`[single] ${resolvedSrc.rel} → ${s.out}  (${width}px q${quality})`);
     totalEncoded++;
   }
 

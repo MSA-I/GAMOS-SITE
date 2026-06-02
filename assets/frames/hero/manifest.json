@@ -2,12 +2,12 @@
   "scene": "hero",
   "frameCount": 528,
   "frameUrl": "/assets/frames/hero/frame_{NNNN}.webp",
-  "width": 1280,
-  "height": 720,
+  "width": 1920,
+  "height": 1080,
   "sourceVideo": "hero-master-1080.mp4",
-  "sourceMtime": "2026-06-01T00:00:00Z",
-  "encoded": "2026-06-01T12:09:08Z",
+  "sourceMtime": "2026-05-28T14:46:29.926Z",
+  "encoded": "2026-06-02T12:33:49.316Z",
   "fpsExtracted": 30,
-  "scaleWidthPx": 1280,
-  "webpQuality": 65
+  "scaleWidthPx": 1920,
+  "webpQuality": 88
 }
