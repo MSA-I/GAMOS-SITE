@@ -93,7 +93,12 @@
 }
 
 .lounge__panel.is-active {
-  flex-grow: 7;                 /* active: expands to dominate the row */
+  flex-grow: 99;                /* active: dominates the row, inactive panels
+                                   collapse to slim strips so the visible image
+                                   actually covers the section. (Was 7 — too
+                                   close to inactive's flex:1, the user saw a
+                                   sliver of "stranger" image bleeding in from
+                                   the side.) */
   filter: saturate(1) brightness(1);
 }
 

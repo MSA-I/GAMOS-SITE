@@ -179,6 +179,30 @@
   gap: var(--space-4);
 }
 
+/* Each channel row is now a 3-column grid: icon | label/value stack | (empty
+   gap). Icons added 2026-06-02 — phone, mail, WhatsApp green. */
+.contact__channel {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: var(--space-4);
+  row-gap: 0;
+}
+
+.contact__channel-icon {
+  inline-size: 22px;
+  block-size: 22px;
+  display: block;
+  color: var(--accent);     /* phone + mail strokes use currentColor */
+  grid-row: 1 / span 2;     /* icon spans both label + value rows */
+}
+
+/* WhatsApp icon ships with its own brand green (#25D366) baked into the SVG
+   fill — keep currentColor inheritance off so the green isn't overridden. */
+.contact__channel-icon--whatsapp {
+  color: #25D366;
+}
+
 .contact__channel-label {
   display: block;
   font-family: var(--font-body);

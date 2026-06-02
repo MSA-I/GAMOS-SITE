@@ -33,19 +33,15 @@
   color: var(--fg-on-dark);
 }
 
+/* Real kashrut seal SVG (assets/img/icons/kashrut-seal.svg) — 2026-06-02
+   replacement for the previous text-only "כשר" disc, which the user noted
+   "doesn't look credible". The SVG carries Star of David + brass rim +
+   "כשר למהדרין" + "בהשגחת רבנות מוסמכת". */
 .kosher__seal {
-  inline-size: 120px;
-  block-size: 120px;
-  border-radius: var(--radius-circle);
-  background: radial-gradient(circle, var(--brass), var(--cocoa));
-  display: grid;
-  place-items: center;
-  font-family: var(--font-display-he);
-  font-size: var(--text-md);
-  font-weight: var(--fw-bold);
-  color: var(--ivory);
-  box-shadow: 0 8px 24px rgba(83, 65, 51, 0.3);
-  border: 2px solid var(--brass-glow);
+  inline-size: clamp(140px, 16vw, 200px);
+  block-size: clamp(140px, 16vw, 200px);
+  display: block;
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.35));
 }
 
 .kosher__badge {

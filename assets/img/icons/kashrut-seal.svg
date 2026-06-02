@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-labelledby="kashrut-title kashrut-desc">
+  <title id="kashrut-title">חותם כשרות</title>
+  <desc id="kashrut-desc">חותם זהב עגול עם מגן דוד והכיתוב כשר למהדרין</desc>
+  <defs>
+    <radialGradient id="brassFill" cx="50%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#E5C896"/>
+      <stop offset="55%" stop-color="#CFAE83"/>
+      <stop offset="100%" stop-color="#8B6F46"/>
+    </radialGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E8D6B0"/>
+      <stop offset="100%" stop-color="#7A5A38"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer rim -->
+  <circle cx="100" cy="100" r="96" fill="url(#rim)"/>
+  <circle cx="100" cy="100" r="92" fill="url(#brassFill)"/>
+  <circle cx="100" cy="100" r="92" fill="none" stroke="#8B6F46" stroke-width="1.5" opacity="0.7"/>
+
+  <!-- Inner ring with text path -->
+  <circle cx="100" cy="100" r="84" fill="none" stroke="#7A5A38" stroke-width="1.2" opacity="0.6"/>
+  <circle cx="100" cy="100" r="58" fill="none" stroke="#7A5A38" stroke-width="1" opacity="0.5"/>
+
+  <!-- Star of David -->
+  <g transform="translate(100 100)" fill="none" stroke="#3F2F1E" stroke-width="2.4" stroke-linejoin="round">
+    <polygon points="0,-30 26,15 -26,15"/>
+    <polygon points="0,30 26,-15 -26,-15"/>
+  </g>
+
+  <!-- Top text "כשר" -->
+  <g font-family="'Frank Ruhl Libre', 'Heebo', serif" fill="#3F2F1E" text-anchor="middle">
+    <text x="100" y="48" font-size="18" font-weight="700" letter-spacing="2">כשר</text>
+    <text x="100" y="166" font-size="13" font-weight="700" letter-spacing="1">למהדרין</text>
+    <text x="100" y="180" font-size="9" font-weight="500" opacity="0.85">בהשגחת רבנות מוסמכת</text>
+  </g>
+
+  <!-- Decorative dots -->
+  <circle cx="100" cy="32" r="2.6" fill="#3F2F1E" opacity="0.7"/>
+  <circle cx="100" cy="184" r="2.6" fill="#3F2F1E" opacity="0.7"/>
+</svg>

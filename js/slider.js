@@ -72,7 +72,16 @@ function createSliderInstance(root) {
     window.matchMedia &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  // Optional: data-slider-initial-index="N" lets the section choose which
+  // slide to land on at first paint. Useful when the first item is meant
+  // as a "preview/peek" and the truly primary content is at index 1+
+  // (e.g., testimonials section on Gamos — user-marked target = card #2).
+  const initialIdxAttr = root.getAttribute("data-slider-initial-index");
   let currentIndex = 0;
+  if (initialIdxAttr != null) {
+    const n = parseInt(initialIdxAttr, 10);
+    if (Number.isFinite(n)) currentIndex = n;
+  }
   let dotEls = [];
   let autoplayTimer = null;
   let isDragging = false;
@@ -253,8 +262,11 @@ function createSliderInstance(root) {
 
   function attach() {
     buildDots();
+    // Clamp now that items are known (initial-index could overshoot).
+    currentIndex = clampIndex(currentIndex);
     applyTrackPosition(false);
     updateAriaCurrent();
+    updateDots();
 
     if (prevBtn) {
       prevBtn.addEventListener("click", prev);

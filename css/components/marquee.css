@@ -53,9 +53,12 @@
 
 .marquee__text {
   font-family: var(--font-display-he);
-  font-size: clamp(6rem, 12vw, 14rem);
+  /* 2026-06-02: dropped from clamp(6rem, 12vw, 14rem) — the previous size
+     ate the entire viewport; the user reported a single Hebrew letter
+     filling the screen. Tuned to read as a continuous band, not a billboard. */
+  font-size: clamp(2rem, 5vw, 4rem);
   font-weight: var(--fw-bold);
-  line-height: 1;
+  line-height: 1.05;
   color: var(--brass);
   letter-spacing: var(--tracking-tight);
   white-space: nowrap;
@@ -76,7 +79,7 @@
     padding-block: var(--space-4);
   }
   .marquee__text {
-    font-size: 9vw;
+    font-size: clamp(1.4rem, 5.5vw, 2.4rem);
   }
   .marquee__track {
     gap: var(--space-8);

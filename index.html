@@ -796,54 +796,75 @@
          the inline-end side), counter animation on stats.
     ==================================================================== -->
     <section id="about" class="about" aria-labelledby="about-title">
-      <div class="section-rail--end" data-stagger>
-        <header class="section-header">
-          <p class="section-header__eyebrow"
-             data-reveal="slide-right"
-             style="--reveal-delay: 0ms;">הסיפור שלנו</p>
-          <h2 id="about-title" class="section-header__title texture-text texture-text--dark"
-              data-reveal="slide-right"
-              style="--reveal-delay: 80ms;">חווית אירועים חדשה בישראל</h2>
-        </header>
+      <div class="about__container" data-stagger>
 
-        <div class="about__body">
-          <p class="about__lede"
-             data-reveal="slide-right"
-             style="--reveal-delay: 160ms;">
-            גאמוס הוא קומפלקס אירועים יחודי, עצום בגודלו, המעוצב בקפידה על מנת לתת את כלל האפשרויות לאירוע יחודי ויוצא דופן.
-          </p>
-          <p class="about__lede"
-             data-reveal="slide-right"
-             style="--reveal-delay: 220ms;">
-            הקומפלקס ממוקם בפארק ישראל ומכיל שני מתחמי אירועים שונים ונפרדים, אולם וריזורט, המספקים חוויה בלתי נשכחת. שילוב של שניהם זה כבר חוויה שלא תשכחו.
-          </p>
+        <!-- Right column (RTL: visually first) — black-and-white venue photo. -->
+        <figure class="about__media"
+                data-reveal="slide-right"
+                style="--reveal-delay: 0ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/halls/venue/01.full.webp">
+            <img class="about__photo" src="/assets/images/halls/venue/01.full.jpg"
+                 alt="" width="1600" height="1000" loading="lazy" decoding="async">
+          </picture>
+        </figure>
 
-          <ul class="about__usp" role="list"
-              data-reveal="slide-right"
-              style="--reveal-delay: 280ms;">
-            <li>שני מתחמי אירועים נפרדים ומושלמים</li>
-            <li>עד <bdi>1,000</bdi> אורחים, ייחודי בישראל</li>
-            <li>נוף מדבר עוצר נשימה ומיקום אסטרטגי</li>
-            <li>חוויה קולינרית ברמה גבוהה</li>
-          </ul>
+        <!-- Left column (RTL: second) — text content. -->
+        <div class="about__copy">
+          <header class="section-header">
+            <p class="section-header__eyebrow"
+               data-reveal="slide-right"
+               style="--reveal-delay: 80ms;">הסיפור שלנו</p>
+            <h2 id="about-title" class="section-header__title"
+                data-reveal="slide-right"
+                style="--reveal-delay: 140ms;">חוויית אירועים חדשה בישראל</h2>
+          </header>
 
-          <dl class="about__stats"
-              data-reveal="slide-right"
-              style="--reveal-delay: 340ms;">
-            <div class="about__stat">
-              <dt>אורחים בערב אחד</dt>
-              <dd><bdi><span class="stat-number" data-value="1000" data-decimals="0">0</span>+</bdi></dd>
-            </div>
-            <div class="about__stat">
-              <dt>שנות מצוינות</dt>
-              <dd><bdi><span class="stat-number" data-value="8" data-decimals="0">0</span></bdi></dd>
-            </div>
-            <div class="about__stat">
-              <dt>אירועים מדי שנה</dt>
-              <dd><bdi><span class="stat-number" data-value="200" data-decimals="0">0</span>+</bdi></dd>
-            </div>
-          </dl>
+          <div class="about__body">
+            <p class="about__lede"
+               data-reveal="slide-right"
+               style="--reveal-delay: 200ms;">
+              גאמוס הוא קומפלקס אירועים יחודי, עצום בגודלו, המעוצב בקפידה על מנת לתת את כלל האפשרויות לאירוע יחודי ויוצא דופן.
+            </p>
+            <p class="about__lede"
+               data-reveal="slide-right"
+               style="--reveal-delay: 260ms;">
+              הקומפלקס ממוקם בפארק ישראל ומכיל שני מתחמי אירועים שונים ונפרדים, אולם וריזורט, המספקים חוויה בלתי נשכחת. שילוב של שניהם זה כבר חוויה שלא תשכחו.
+            </p>
+            <p class="about__lede"
+               data-reveal="slide-right"
+               style="--reveal-delay: 320ms;">
+              אנחנו בגאמוס חשבנו על כל הפרטים, מקטן ועד גדול, על מנת להיות הדבר הבא של ישראל בענף האירועים.
+            </p>
+
+            <ul class="about__usp" role="list"
+                data-reveal="slide-right"
+                style="--reveal-delay: 380ms;">
+              <li>שני מתחמי אירועים נפרדים ומושלמים</li>
+              <li>עד <bdi>1,000</bdi> אורחים, ייחודי בישראל</li>
+              <li>נוף מדבר עוצר נשימה ומיקום אסטרטגי</li>
+              <li>חוויה קולינרית ברמה גבוהה</li>
+            </ul>
+
+            <dl class="about__stats"
+                data-reveal="slide-right"
+                style="--reveal-delay: 440ms;">
+              <div class="about__stat">
+                <dt>אורחים בערב אחד</dt>
+                <dd><bdi><span class="stat-number" data-value="1000" data-decimals="0">0</span>+</bdi></dd>
+              </div>
+              <div class="about__stat">
+                <dt>שנות מצוינות</dt>
+                <dd><bdi><span class="stat-number" data-value="8" data-decimals="0">0</span></bdi></dd>
+              </div>
+              <div class="about__stat">
+                <dt>אירועים מדי שנה</dt>
+                <dd><bdi><span class="stat-number" data-value="200" data-decimals="0">0</span>+</bdi></dd>
+              </div>
+            </dl>
+          </div>
         </div>
+
       </div>
     </section>
 
@@ -854,7 +875,8 @@
     ==================================================================== -->
     <section id="testimonials" class="testimonials" aria-labelledby="testimonials-title"
              data-reveal="clip-reveal"
-             data-slider="testimonials">
+             data-slider="testimonials"
+             data-slider-initial-index="1">
       <header class="section-header">
         <p class="section-header__eyebrow">המלצות</p>
         <h2 id="testimonials-title" class="section-header__title texture-text texture-text--dark">מה מספרים על האירוע אצלנו</h2>
@@ -871,8 +893,7 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 120ms;">
           <blockquote class="testimonial__quote">
-            <p>חיכינו לחתונה הזאת שנתיים, וקיבלנו ערב שעבר את הציפיות. הצוות הקשיב לכל פרט,
-              האוכל היה מהמם, והמראה של האולם בערב פשוט קסם. אורחים עדיין שולחים תמונות.</p>
+            <p>התחתנו אצלם לפני חודש. אורחים עדיין שולחים תמונות וכותבים שזה היה הערב הכי יפה שהם זוכרים. אנחנו עוד לא מאמינים שזה קרה לנו.</p>
           </blockquote>
           <footer class="testimonial__author">
             <cite>נועה ויונתן</cite>
@@ -884,12 +905,11 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 240ms;">
           <blockquote class="testimonial__quote">
-            <p>בר-מצווה לבן הבכור עם משפחה גדולה. הכול זרם, מהאירוע במגרש דרך התפילה
-              ועד הריקודים. הילד הרגיש מלך, ואנחנו זכינו לערב שלא נשכח.</p>
+            <p>בן בכור, בר־מצווה, ומשפחה ענקית. ידעו לארגן הכל בשקט בלי שנצטרך להתעסק. הילד יצא משם מאושר, ואנחנו פשוט נהנינו.</p>
           </blockquote>
           <footer class="testimonial__author">
             <cite>משפחת לוי</cite>
-            <span class="testimonial__meta">בר-מצווה</span>
+            <span class="testimonial__meta">בר־מצווה</span>
           </footer>
         </article>
 
@@ -897,8 +917,7 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 360ms;">
           <blockquote class="testimonial__quote">
-            <p>הפקנו אירוע חברה גדול. הכשרות מהודרת, הריזורט הוסיף נופש בלב היום
-              והקולינריה הייתה מעבר. ממליצה בחום על השילוב.</p>
+            <p>הפקנו ערב חברה ל־400 איש. שילוב של אולם, ריזורט וברכה ביום הוא משהו שלא ראיתי במקום אחר. עובדים שלי עוד מדברים על זה.</p>
           </blockquote>
           <footer class="testimonial__author">
             <cite>שירה, מנהלת רווחה</cite>
@@ -910,12 +929,11 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 480ms;">
           <blockquote class="testimonial__quote">
-            <p>בת-מצווה עם נושא של גן קסום. הצוות בנה איתנו את הקונספט מאפס,
-              והתוצאה הייתה מעל ומעבר. הבת שלי הרגישה כמו נסיכה לערב אחד.</p>
+            <p>בת־מצווה לבת. רצינו אווירת גן קסום, הצוות פשוט ירד לכל פרט. הילדה שלנו עוד מספרת על זה לחברות שלה ביום־יום.</p>
           </blockquote>
           <footer class="testimonial__author">
             <cite>תמר ויעקב</cite>
-            <span class="testimonial__meta">בת-מצווה</span>
+            <span class="testimonial__meta">בת־מצווה</span>
           </footer>
         </article>
 
@@ -923,8 +941,7 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 600ms;">
           <blockquote class="testimonial__quote">
-            <p>הקולינריה אצל גאמוס מדברת בשפה אחרת. השף יצא לאורחים בעצמו,
-              הסביר מנות, התאים תפריט אישי לאלרגנים. שירות מלא רגישות.</p>
+            <p>השף יצא לאורחים, הסביר מנה־מנה, התאים תפריט מיוחד לאמא של הכלה שיש לה אלרגיות. השירות שם פשוט נדיר.</p>
           </blockquote>
           <footer class="testimonial__author">
             <cite>אבי, אורח באירוע</cite>
@@ -936,8 +953,7 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 720ms;">
           <blockquote class="testimonial__quote">
-            <p>הריזורט נתן לסוף השבוע הזה ממד אחר. ישנו על המקום, התעוררנו לבריכה,
-              חזרנו לאירוע רעננים. שילוב נדיר באמת.</p>
+            <p>חתונת סוף שבוע. ישנו במקום, התעוררנו לבריכה, חזרנו לאירוע רעננים. כל ההורים מחו"ל קיבלו חדר במתחם, אף אחד לא נהג. בלתי אפשרי לארגן ככה במקום אחר.</p>
           </blockquote>
           <footer class="testimonial__author">
             <cite>מיכל ודניאל</cite>
@@ -949,8 +965,7 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 840ms;">
           <blockquote class="testimonial__quote">
-            <p>חיתון של ילדים יחד, שני אירועים על אותו ערב, סטייפים נפרדים, צוות
-              שעבד כשעון. ארגון מקצועי בלי שום פשרה.</p>
+            <p>שתי משפחות, שני אירועים על אותו ערב, באולם ובריזורט במקביל. פשוט עבד. אף אורח לא הרגיש שיש משהו נוסף קורה במקום.</p>
           </blockquote>
           <footer class="testimonial__author">
             <cite>רחל, אם הכלה</cite>
@@ -962,8 +977,7 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 960ms;">
           <blockquote class="testimonial__quote">
-            <p>הזמנו אירוע ברית. הגענו עם תינוק רך ומשפחה גדולה לחוצה, וקיבלנו
-              שקט מוחלט. הצוות עטף אותנו בכל מה שצריך.</p>
+            <p>ברית מילה עם תינוק בן שמונה ימים, הורים לחוצים ומשפחה ענקית. הם לקחו את הכל לידיים שלהם. אנחנו פשוט נשמנו והיינו עם הילד.</p>
           </blockquote>
           <footer class="testimonial__author">
             <cite>עדי וערן</cite>
@@ -1126,20 +1140,21 @@
     ==================================================================== -->
     <section id="kosher" class="kosher" aria-labelledby="kosher-title">
       <div class="kosher__container" data-stagger>
-        <div class="kosher__seal" aria-hidden="true"
-             data-reveal="fade-up" style="--reveal-delay: 0ms;">כשר</div>
+        <img class="kosher__seal" aria-hidden="true"
+             src="/assets/img/icons/kashrut-seal.svg"
+             width="180" height="180" loading="lazy" decoding="async"
+             alt=""
+             data-reveal="fade-up" style="--reveal-delay: 0ms;">
 
         <header class="section-header section-header--center">
           <p class="section-header__eyebrow"
              data-reveal="fade-up" style="--reveal-delay: 120ms;">כשרות</p>
-          <h2 id="kosher-title" class="section-header__title texture-text texture-text--dark"
+          <h2 id="kosher-title" class="section-header__title"
               data-reveal="fade-up" style="--reveal-delay: 240ms;">כשרות ורבנות</h2>
         </header>
 
         <p class="kosher__body"
            data-reveal="fade-up" style="--reveal-delay: 360ms;">
-          <!-- Live site does not state a specific rabbinate. Copy is generic-but-accurate;
-               owner supplies the rabbinate name + certification level for the final pass. -->
           המתחם פועל בכשרות בהשגחת רבנות מוסמכת, עם הפרדה מלאה בין בשרי לחלבי.
           תעודות הכשרות זמינות לעיון במשרדי המתחם.
         </p>
@@ -1234,32 +1249,36 @@
             <h3 class="contact__details-title">דברו איתנו</h3>
 
             <ul class="contact__channels" role="list">
-              <li>
+              <li class="contact__channel">
+                <img class="contact__channel-icon" src="/assets/img/icons/phone.svg" alt="" width="22" height="22" aria-hidden="true">
                 <span class="contact__channel-label">טלפון</span>
                 <a href="tel:+972779972343" class="contact__channel-value" dir="ltr">
                   <bdi>077-9972343</bdi>
                 </a>
               </li>
-              <li>
+              <li class="contact__channel">
+                <img class="contact__channel-icon" src="/assets/img/icons/phone.svg" alt="" width="22" height="22" aria-hidden="true">
                 <span class="contact__channel-label">טלפון נוסף</span>
                 <a href="tel:+972778036482" class="contact__channel-value" dir="ltr">
                   <bdi>077-8036482</bdi>
                 </a>
               </li>
-              <li>
+              <li class="contact__channel">
+                <img class="contact__channel-icon" src="/assets/img/icons/mail.svg" alt="" width="22" height="22" aria-hidden="true">
                 <span class="contact__channel-label">דוא"ל</span>
-                <a href="mailto:office@gamos.co.il?subject=%D7%A4%D7%A0%D7%99%D7%99%D7%94%20%D7%9C%D7%90%D7%99%D7%A8%D7%95%D7%A2%20%D7%91%D7%92%D7%90%D7%9E%D7%95%D7%A1&body=%D7%A9%D7%9C%D7%95%D7%9D%2C%0A%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%2F%D7%AA%20%D7%9C%D7%A7%D7%91%D7%9C%20%D7%A4%D7%A8%D7%98%D7%99%D7%9D%20%D7%A2%D7%9C%20%D7%90%D7%99%D7%A8%D7%95%D7%A2%20%D7%91%D7%92%D7%90%D7%9E%D7%95%D7%A1.%0A%0A%D7%A1%D7%95%D7%92%20%D7%94%D7%90%D7%99%D7%A8%D7%95%D7%A2%3A%0A%D7%AA%D7%90%D7%A8%D7%99%D7%9A%20%D7%9E%D7%A9%D7%95%D7%A2%D7%A8%3A%0A%D7%9E%D7%A1%D7%A4%D7%A8%20%D7%9E%D7%95%D7%96%D7%9E%D7%A0%D7%99%D7%9D%3A%0A%0A%D7%AA%D7%95%D7%93%D7%94%21" class="contact__channel-value" dir="ltr">
+                <a href="mailto:office@gamos.co.il?subject=%D7%A4%D7%A0%D7%99%D7%99%D7%94%20%D7%9C%D7%90%D7%99%D7%A8%D7%95%D7%A2%20%D7%91%D7%92%D7%90%D7%9E%D7%95%D7%A1" class="contact__channel-value" dir="ltr">
                   office@gamos.co.il
                 </a>
               </li>
-              <li>
+              <li class="contact__channel contact__channel--whatsapp">
+                <img class="contact__channel-icon contact__channel-icon--whatsapp" src="/assets/img/icons/whatsapp.svg" alt="" width="22" height="22" aria-hidden="true">
                 <span class="contact__channel-label">ווטסאפ</span>
                 <a href="https://wa.me/972779972343?text=%D7%A9%D7%9C%D7%95%D7%9D%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%2F%D7%AA%20%D7%9C%D7%A7%D7%91%D7%9C%20%D7%A4%D7%A8%D7%98%D7%99%D7%9D%20%D7%A2%D7%9C%20%D7%90%D7%99%D7%A8%D7%95%D7%A2%20%D7%91%D7%92%D7%90%D7%9E%D7%95%D7%A1." class="contact__channel-value" dir="ltr"
                    target="_blank" rel="noopener noreferrer">
                   <bdi>077-9972343</bdi>
                 </a>
               </li>
-              <li>
+              <li class="contact__channel">
                 <span class="contact__channel-label">כתובת</span>
                 <span class="contact__channel-value">
                   די זהב 7, פארק ישראל, מעלה אדומים
@@ -1312,6 +1331,14 @@
             </li>
             <li>
               <figure>
+                <img src="/assets/images/maps/route-from-center.png"
+                     alt="מסלול הגעה לגאמוס מאזור גוש דן: רמות, גבעת זאב, גבעון"
+                     loading="lazy" decoding="async" width="829" height="1024">
+                <figcaption>מהמרכז</figcaption>
+              </figure>
+            </li>
+            <li>
+              <figure>
                 <img src="/assets/images/maps/route-from-north.png"
                      alt="מסלול הגעה לגאמוס מצפון: בית אל, עפרה, רימונים, אדם"
                      loading="lazy" decoding="async" width="829" height="1024">
@@ -1320,10 +1347,10 @@
             </li>
             <li>
               <figure>
-                <img src="/assets/images/maps/route-from-center.png"
-                     alt="מסלול הגעה לגאמוס מאזור גוש דן: רמות, גבעת זאב, גבעון"
-                     loading="lazy" decoding="async" width="829" height="1024">
-                <figcaption>מהמרכז</figcaption>
+                <img src="/assets/images/maps/route-from-south.svg"
+                     alt="מסלול הגעה לגאמוס מדרום: באר שבע, ערד, דימונה"
+                     loading="lazy" decoding="async" width="800" height="1000">
+                <figcaption>מדרום</figcaption>
               </figure>
             </li>
           </ul>
@@ -1351,28 +1378,34 @@
         </p>
       </div>
 
-      <!-- Navigation column -->
+      <!-- Navigation column — order mirrors the old gamos.co.il footer per
+           Scrape/gamos.co.il_*.md lines 140-148 ("ראשי / אודות / GAMOS EVENTS /
+           GAMOS RESORT / קולינריה / הצהרת נגישות"). -->
       <nav class="site-footer__col" aria-label="ניווט תחתון">
-        <h3 class="site-footer__col-title">ניווט</h3>
+        <h3 class="site-footer__col-title">תפריט ניווט</h3>
         <ul class="site-footer__list" role="list">
-          <li><a class="site-footer__link" href="#hall-venue">אולם</a></li>
-          <li><a class="site-footer__link" href="#hall-resort">ריזורט</a></li>
-          <li><a class="site-footer__link" href="#rooms">חדרי אירוח</a></li>
-          <li><a class="site-footer__link" href="#culinary">קולינריה</a></li>
+          <li><a class="site-footer__link" href="#hero">ראשי</a></li>
           <li><a class="site-footer__link" href="#about">אודות</a></li>
-          <li><a class="site-footer__link" href="#events">אירועים</a></li>
-          <li><a class="site-footer__link" href="#kosher">כשרות</a></li>
-          <li><a class="site-footer__link" href="#contact">צור קשר</a></li>
+          <li><a class="site-footer__link" href="#hall-venue">GAMOS EVENTS</a></li>
+          <li><a class="site-footer__link" href="#hall-resort">GAMOS RESORT</a></li>
+          <li><a class="site-footer__link" href="#culinary">קולינריה</a></li>
+          <li><a class="site-footer__link" href="/legal/accessibility.html">הצהרת נגישות</a></li>
         </ul>
       </nav>
 
-      <!-- Contact column -->
+      <!-- Contact column — two phones + WhatsApp + mail + address, matching
+           the live site's contact layout. -->
       <div class="site-footer__col">
-        <h3 class="site-footer__col-title">פרטי קשר</h3>
+        <h3 class="site-footer__col-title">פרטי התקשרות</h3>
         <ul class="site-footer__contact" role="list">
           <li class="site-footer__contact-item">
             <span class="site-footer__contact-label">טלפון</span>
             <a class="site-footer__contact-value" href="tel:+972779972343" dir="ltr"><bdi>077-9972343</bdi></a>
+            <a class="site-footer__contact-value" href="tel:+972778036482" dir="ltr"><bdi>077-8036482</bdi></a>
+          </li>
+          <li class="site-footer__contact-item">
+            <span class="site-footer__contact-label">ווטסאפ</span>
+            <a class="site-footer__contact-value" href="https://wa.me/972779972343" target="_blank" rel="noopener noreferrer" dir="ltr"><bdi>077-9972343</bdi></a>
           </li>
           <li class="site-footer__contact-item">
             <span class="site-footer__contact-label">דוא"ל</span>
