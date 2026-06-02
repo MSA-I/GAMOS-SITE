@@ -136,31 +136,65 @@ export function createRenderer({ canvas, manifest, host, options }) {
   // 1. Preload — load all frames into memory; fire onProgress as each decodes
   // -------------------------------------------------------------------------
 
+  // 2026-06-02 perf fix: each frame is decoded ONCE into an ImageBitmap (or
+  // pre-decoded HTMLImageElement when ImageBitmap isn't available). Reverse
+  // scrolling no longer triggers re-decode on every RAF tick — the bitmap is
+  // already in GPU/raster cache. This eliminates the back-scroll freeze
+  // reported by the user. ImageBitmap also lets ctx.drawImage(bitmap,...)
+  // skip the decode path entirely.
+  const supportsImageBitmap =
+    typeof window !== "undefined" &&
+    typeof window.createImageBitmap === "function";
+
   function loadFrame(idx) {
     return new Promise((resolve) => {
+      const url = buildFrameUrl(manifest.frameUrl, idx);
+
+      const finish = (asset) => {
+        frames[idx] = asset;
+        state.loaded++;
+        if (typeof opts.onProgress === "function") {
+          try { opts.onProgress(state.loaded, total); } catch (_) {}
+        }
+        resolve(asset);
+      };
+
+      // Preferred path — fetch + createImageBitmap. Decoded once, painted
+      // many times without re-decoding.
+      if (supportsImageBitmap) {
+        fetch(url, { mode: "same-origin" })
+          .then((r) => (r.ok ? r.blob() : Promise.reject(r.status)))
+          .then((blob) => createImageBitmap(blob))
+          .then((bitmap) => finish(bitmap))
+          .catch(() => {
+            // Fallback to <img> on fetch/decode failure.
+            const img = new Image();
+            img.decoding = "async";
+            img.onload = () => {
+              if (typeof img.decode === "function") {
+                img.decode().then(() => finish(img)).catch(() => finish(img));
+              } else {
+                finish(img);
+              }
+            };
+            img.onerror = () => finish(null);
+            img.src = url;
+          });
+        return;
+      }
+
+      // ImageBitmap unavailable — pre-decode the <img> so subsequent draws are cheap.
       const img = new Image();
       img.decoding = "async";
       img.onload = () => {
-        frames[idx] = img;
-        state.loaded++;
-        if (typeof opts.onProgress === "function") {
-          try {
-            opts.onProgress(state.loaded, total);
-          } catch (_) {}
+        if (typeof img.decode === "function") {
+          img.decode().then(() => finish(img)).catch(() => finish(img));
+        } else {
+          finish(img);
         }
-        resolve(img);
       };
-      img.onerror = () => {
-        // Swallow — drawFrame will fall back to last good frame.
-        state.loaded++;
-        if (typeof opts.onProgress === "function") {
-          try {
-            opts.onProgress(state.loaded, total);
-          } catch (_) {}
-        }
-        resolve(null);
-      };
-      img.src = buildFrameUrl(manifest.frameUrl, idx);
+      img.onerror = () => finish(null);
+      img.src = url;
     });
   }
 
@@ -216,8 +250,9 @@ export function createRenderer({ canvas, manifest, host, options }) {
     if (!img) return; // nothing decoded yet
 
     // Manual object-fit: cover (max ratio) + ZOOM_FACTOR overshoot.
-    const iw = img.naturalWidth;
-    const ih = img.naturalHeight;
+    // ImageBitmap exposes width/height; HTMLImageElement uses naturalWidth/Height.
+    const iw = img.naturalWidth || img.width;
+    const ih = img.naturalHeight || img.height;
     const scale = Math.max(cw / iw, ch / ih) * opts.zoom;
     const dw = iw * scale;
     const dh = ih * scale;
@@ -334,9 +369,17 @@ export function createRenderer({ canvas, manifest, host, options }) {
     if (state.bound.resize) window.removeEventListener("resize", state.bound.resize);
     if (state.bound.mousemove) host.removeEventListener("mousemove", state.bound.mousemove);
     state.bound = { scroll: null, resize: null, mousemove: null };
-    // Release img refs to encourage GC.
+    // Release frame refs / bitmaps to encourage GC. ImageBitmap has its own
+    // close() to free GPU memory; HTMLImageElement gets src=""
     for (let i = 0; i < frames.length; i++) {
-      if (frames[i]) frames[i].src = "";
+      const asset = frames[i];
+      if (asset) {
+        if (typeof asset.close === "function") {
+          try { asset.close(); } catch (_) {}
+        } else if ("src" in asset) {
+          asset.src = "";
+        }
+      }
       frames[i] = null;
     }
   }

@@ -60,13 +60,29 @@
    region, focus ring, label, and hover glow stay local to one bubble.
    --------------------------------------------------------------------------- */
 
+/* ---------------------------------------------------------------------------
+   2026-06-02 redesign — bubbles confined to a small hotspot.
+   ---------------------------------------------------------------------------
+   Previous spec used full-viewport overlay plates with ZOOM_FACTOR=1.35 to
+   match canvas cover-math, but that turned the entire screen brass on hover.
+   The user wants: small bubbles, pixel-perfect over the canvas's baked-in
+   bubbles, label INSIDE the bubble (not floating below).
+
+   New approach: each `.portal` is a small round hotspot anchored at the
+   measured bubble center on the canvas (resort 72.8%/venue 28% × 59.6%).
+   The .portal__overlay is now confined to the hotspot box, and the PNG is
+   rendered at object-fit:contain so its bubble center sits exactly at the
+   center of the hotspot. Glow filters apply only to that small image — not
+   the full viewport.
+   --------------------------------------------------------------------------- */
+
 .portal {
   position: absolute;
-  /* Hotspot box ≈ size of a bubble; centered on the measured bubble center. */
-  inline-size: 30vw;
-  block-size: 44vh;
-  /* Anchor via center: top/left = center%, then translate -50%. Works in RTL
-     because we use physical center coords mapped from the measured frame. */
+  /* Round hotspot ≈ 22vw at desktop, capped so it never dominates the screen.
+     The clip-path keeps the click region perfectly circular. */
+  inline-size: clamp(180px, 22vw, 320px);
+  block-size: clamp(180px, 22vw, 320px);
+  border-radius: 50%;
   transform-origin: center;
   padding: 0;
   margin: 0;
@@ -92,12 +108,12 @@
 /* Resort bubble center ≈ 72.8% from the left edge of the frame. */
 .portal--resort {
   left: 72.8%;
-  transform: translate(-50%, -50%) scale(0.96);
+  transform: translate(-50%, -50%) scale(0.94);
 }
 /* Venue bubble center ≈ 28.0% from the left edge of the frame. */
 .portal--venue {
   left: 28.0%;
-  transform: translate(-50%, -50%) scale(0.96);
+  transform: translate(-50%, -50%) scale(0.94);
 }
 
 .portals.is-active .portal--resort,
@@ -108,25 +124,22 @@
 
 
 /* ---------------------------------------------------------------------------
-   Bubble overlay image — a FULL-VIEWPORT plate (not confined to the hotspot
-   box) painted with the SAME cover+zoom math as the canvas so its bubble lands
-   exactly on the canvas's baked-in bubble. Default state defers to the canvas
-   plate; on hover/focus only THIS bubble's plate lights up.
+   Bubble overlay image — confined to the hotspot, contained at object-fit so
+   the PNG's transparent bubble shape lands centered. Default rest state is
+   nearly invisible (the canvas's baked-in bubble already shows the bubble);
+   on hover/focus the PNG glows brass to indicate selection.
    --------------------------------------------------------------------------- */
 
 .portal__overlay {
-  position: fixed;            /* escape the hotspot box → fill the viewport */
+  position: absolute;
   inset: 0;
-  inline-size: 100vw;
-  block-size: 100vh;
-  object-fit: cover;          /* = max(cw/iw, ch/ih) — matches canvas cover */
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
   object-position: center;
-  transform: scale(1.35);     /* matches canvas ZOOM_FACTOR (DEFAULTS.zoom) */
-  transform-origin: center;
   pointer-events: none;
   user-select: none;
-  z-index: -1;                /* behind the hotspot's label, over the canvas */
-  /* Rest state — defer almost entirely to the canvas plate's painted bubble. */
+  z-index: 1;
   opacity: 0;
   filter:
     drop-shadow(0 0 0 transparent)
@@ -139,27 +152,30 @@
 
 
 /* ---------------------------------------------------------------------------
-   Label — Hebrew display, anchored to the bottom of the bubble area.
+   Label — anchored to CENTER of the bubble (not its bottom). The hotspot
+   box IS the bubble box now, so center-of-hotspot = center-of-bubble.
    --------------------------------------------------------------------------- */
 
 .portal__label {
   position: absolute;
-  inset-block-end: 4%;
-  inset-inline: 0;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
   font-family: var(--font-display-he);
-  font-weight: var(--fw-regular);
-  font-size: clamp(1.5rem, 2.4vw, 2.4rem);
+  font-weight: var(--fw-bold);
+  font-size: clamp(1.4rem, 2.2vw, 2.2rem);
   line-height: var(--lh-tight);
   letter-spacing: var(--tracking-tight);
   color: var(--ivory);
   text-shadow:
-    0 2px 12px rgba(0, 0, 0, 0.7),
-    0 0 28px rgba(0, 0, 0, 0.55);
+    0 2px 12px rgba(0, 0, 0, 0.85),
+    0 0 22px rgba(0, 0, 0, 0.70),
+    0 0 40px rgba(0, 0, 0, 0.55);
   pointer-events: none;
   user-select: none;
-  z-index: 1;
-  opacity: 0.92;
+  z-index: 2;
+  opacity: 0.95;
   transition:
     opacity 0.4s var(--ease-out-cinema),
     transform 0.5s var(--ease-out-cinema),
@@ -176,31 +192,31 @@
 .portal:hover .portal__overlay,
 .portal:focus-visible .portal__overlay {
   opacity: 1;
-  /* Keep the 1.35 zoom that aligns with the canvas; add a hair of breathe. */
-  transform: scale(1.37);
+  transform: scale(1.04);
   filter:
-    drop-shadow(0 0 18px var(--brass-glow))
-    drop-shadow(0 0 60px color-mix(in srgb, var(--brass) 70%, transparent))
-    brightness(1.18) saturate(1.2);
+    drop-shadow(0 0 14px var(--brass-glow))
+    drop-shadow(0 0 32px color-mix(in srgb, var(--brass) 70%, transparent))
+    brightness(1.15) saturate(1.18);
 }
 
 .portal:hover .portal__label,
 .portal:focus-visible .portal__label {
   opacity: 1;
-  transform: translateY(-4px);
+  transform: translate(-50%, calc(-50% - 4px));
   text-shadow:
-    0 2px 16px rgba(0, 0, 0, 0.85),
+    0 2px 16px rgba(0, 0, 0, 0.90),
     0 0 24px var(--brass-glow);
 }
 
 .portal:focus-visible {
   outline: 3px solid var(--brass);
-  outline-offset: 0;
+  outline-offset: 4px;
+  border-radius: 50%;
 }
 
 .portals.is-active .portal:active {
   /* Preserve center anchoring (translate) while nudging scale on press. */
-  transform: translate(-50%, -50%) scale(0.99);
+  transform: translate(-50%, -50%) scale(0.97);
 }
 
 
@@ -246,30 +262,26 @@
   .portal__label {
     transition: none !important;
   }
-  /* Keep the 1.35 alignment scale (do NOT reset to none — that would
-     unalign the overlay from the canvas); only drop the breathe delta. */
   .portal:hover .portal__overlay,
   .portal:focus-visible .portal__overlay {
-    transform: scale(1.35);
+    transform: none;
   }
   .portal:hover .portal__label,
   .portal:focus-visible .portal__label {
-    transform: none;
+    transform: translate(-50%, -50%);
   }
 }
 
 
 /* ---------------------------------------------------------------------------
-   Mobile — bubbles smaller, stack closer.
+   Mobile — bubbles square-ish, slightly larger touch target.
    --------------------------------------------------------------------------- */
 @media (max-width: 767px) {
-  /* Larger touch targets; bubble centers + overlay alignment unchanged. */
   .portal {
-    inline-size: 46vw;
-    block-size: 34vh;
+    inline-size: 38vw;
+    block-size: 38vw;
   }
-
   .portal__label {
-    font-size: clamp(1.2rem, 5vw, 1.6rem);
+    font-size: clamp(1.1rem, 4.6vw, 1.5rem);
   }
 }

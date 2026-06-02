@@ -249,19 +249,26 @@ function onDotClick(event) {
 
   const behavior = state.reducedMotion ? "auto" : "smooth";
 
-  if (sectionId === "hero") {
-    // For #hero — scroll all the way to top so the intro animation re-plays.
+  // Prefer GSAP ScrollToPlugin (self-hosted, already loaded with the page) so
+  // we have a single smooth animation that won't fight the hero RAF orchestrator.
+  const gsap = window.gsap;
+  if (gsap && typeof gsap.to === "function") {
     try {
-      window.scrollTo({ top: 0, behavior });
+      gsap.to(window, {
+        duration: state.reducedMotion ? 0 : 1.1,
+        ease: "power3.inOut",
+        scrollTo: sectionId === "hero" ? 0 : { y: target, autoKill: false },
+      });
     } catch {
-      window.scrollTo(0, 0);
+      // Fall back to native if GSAP misbehaves.
+      if (sectionId === "hero") window.scrollTo({ top: 0, behavior });
+      else target.scrollIntoView({ behavior, block: "start" });
     }
+  } else if (sectionId === "hero") {
+    try { window.scrollTo({ top: 0, behavior }); } catch { window.scrollTo(0, 0); }
   } else {
-    try {
-      target.scrollIntoView({ behavior, block: "start" });
-    } catch {
-      target.scrollIntoView();
-    }
+    try { target.scrollIntoView({ behavior, block: "start" }); }
+    catch { target.scrollIntoView(); }
   }
 
   // Push hash without browser default scroll-jump.

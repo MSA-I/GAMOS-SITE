@@ -77,7 +77,11 @@
 
 
 /* ---------------------------------------------------------------------------
-   Layer B — title-reveal: SVG mask wordmark + Hebrew subtitle
+   Layer B — title-reveal: central GAMOS logo image (2026-06-02)
+   ---------------------------------------------------------------------------
+   Replaced the Bodoni-Moda SVG-mask wordmark with the user's authoritative
+   brand logo (`logo-central.webp`). Animation: scale-up + fade-in from a
+   soft radial scrim. Spec from CLAUDE.md §3 stage B (8%–22%).
    --------------------------------------------------------------------------- */
 
 .hero__title-stack {
@@ -96,8 +100,8 @@
   transition: opacity 0.6s var(--ease-out-cinema);
 }
 
-/* Soft radial scrim behind the wordmark so the textured letters (light sandstone)
-   read against the desert backdrop without dimming the whole hero. */
+/* Soft radial scrim behind the logo so it reads against the desert backdrop
+   without dimming the whole hero. */
 .hero__title-stack::before {
   content: "";
   position: absolute;
@@ -112,9 +116,8 @@
   z-index: -1;
 }
 
-/* Visually hidden heading (real text for SR / SEO). The SVG below carries
-   the visual brand. We mark this with .sr-only-equivalent inline so it does
-   not depend on a global .sr-only utility class. */
+/* Visually hidden heading (real text for SR / SEO). The image below carries
+   the visual brand. */
 .hero__sr-title {
   position: absolute;
   width: 1px;
@@ -127,56 +130,19 @@
   border: 0;
 }
 
-.hero__title-svg {
+/* Central GAMOS logo image. Width fluid 320–760px; reveals via scale + opacity
+   when stage B is active. Soft drop-shadow lifts it off the desert vignette. */
+.hero__logo {
   display: block;
-  width: clamp(280px, 62vw, 1100px);
+  width: clamp(320px, 56vw, 760px);
   height: auto;
   max-width: 100%;
-  /* Soft drop-shadow so the textured letters lift off the desert vignette. */
-  filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.45));
-}
-
-/* Per-letter reveal animation — paused by default; plays when stage B starts.
-   Each letter has a clip-path inset(0 0 100% 0) (fully clipped) initial state,
-   transitioning to inset(0 0 0% 0) (fully visible) over 600ms. Staggered by
-   80ms via animation-delay. The animation runs only when stage B is active
-   (selector below); CSS-only — no JS step-stagger needed. */
-.hero__title-letter {
-  /* opacity, transform, clip-path animate together. */
+  filter: drop-shadow(0 8px 28px rgba(0, 0, 0, 0.55));
   opacity: 0;
-  transform: translateY(24px);
-  /* clip-path inside <text> elements is supported in modern browsers; we
-     also fall back to opacity/translateY for any SVG renderer that ignores it. */
-  clip-path: inset(0 0 100% 0);
-  -webkit-clip-path: inset(0 0 100% 0);
-  transform-box: fill-box;
-  transform-origin: 50% 50%;
-}
-
-@keyframes hero-letter-reveal {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    clip-path: inset(0 0 0% 0);
-    -webkit-clip-path: inset(0 0 0% 0);
-  }
-}
-
-/* Hebrew subtitle "אירועים" — Frank Ruhl Libre 700, fade-up. */
-.hero__subtitle {
-  margin: 0;
-  font-family: var(--font-display-he);
-  font-weight: var(--fw-bold);
-  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
-  letter-spacing: var(--tracking-eyebrow);
-  color: var(--brass);
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
-  opacity: 0;
-  transform: translateY(20px);
+  transform: scale(0.92);
   transition:
-    opacity 0.7s var(--ease-out-cinema),
-    transform 0.7s var(--ease-out-cinema);
-  transition-delay: 0.7s; /* Lands ~140ms after the 'S' of GAMOS — Agent 12 §3.3 */
+    opacity 0.85s var(--ease-out-cinema),
+    transform 0.95s var(--ease-out-cinema);
 }
 
 
@@ -239,21 +205,13 @@
 
 /* A: static-bg — only the desert image (default state above). */
 
-/* B: title-reveal — bg still visible, title fades in, letters animate. */
+/* B: title-reveal — bg still visible, logo fades in + scales. */
 .hero__sticky[data-stage="title-reveal"] .hero__title-stack {
   opacity: 1;
 }
-.hero__sticky[data-stage="title-reveal"] .hero__title-letter {
-  animation: hero-letter-reveal 0.65s var(--ease-out-cinema) forwards;
-}
-.hero__sticky[data-stage="title-reveal"] .hero__title-letter--1 { animation-delay: 0.00s; }
-.hero__sticky[data-stage="title-reveal"] .hero__title-letter--2 { animation-delay: 0.14s; }
-.hero__sticky[data-stage="title-reveal"] .hero__title-letter--3 { animation-delay: 0.28s; }
-.hero__sticky[data-stage="title-reveal"] .hero__title-letter--4 { animation-delay: 0.42s; }
-.hero__sticky[data-stage="title-reveal"] .hero__title-letter--5 { animation-delay: 0.56s; }
-.hero__sticky[data-stage="title-reveal"] .hero__subtitle {
+.hero__sticky[data-stage="title-reveal"] .hero__logo {
   opacity: 1;
-  transform: translateY(0);
+  transform: scale(1);
 }
 
 /* C: scrub — bg fades out, title fades out, canvas (or poster fallback) fades in. */
@@ -266,13 +224,6 @@
 .hero__sticky[data-stage="scrub"] .hero__canvas.is-ready ~ .hero__scrub-poster,
 .hero__sticky[data-stage="scrub"] .hero__scrub-poster:has(+ .hero__canvas.is-ready) {
   opacity: 0;
-}
-/* Once revealed in B, keep letters at final state during C+D so a fast
-   scroller (B → C in <650ms) doesn't see them mid-animation when fading out. */
-.hero__sticky[data-stage="scrub"] .hero__title-letter,
-.hero__sticky[data-stage="portals"] .hero__title-letter {
-  animation: hero-letter-reveal 0.01s linear forwards;
-  animation-delay: 0s;
 }
 
 /* D: portals — canvas STAYS VISIBLE (frozen on last frame by JS), title hidden.
@@ -293,7 +244,7 @@
 
 @media (max-width: 768px) {
   .hero__spacer { height: 100vh; }
-  .hero__title-svg { width: clamp(220px, 78vw, 600px); }
+  .hero__logo { width: clamp(220px, 78vw, 600px); }
 }
 
 
@@ -305,15 +256,8 @@
 @media (prefers-reduced-motion: reduce) {
   .hero__spacer { height: 100vh; }
 
-  /* Letters appear at final state with no animation. */
-  .hero__title-letter {
-    animation: none !important;
-    opacity: 1;
-    transform: none;
-    clip-path: inset(0 0 0% 0);
-    -webkit-clip-path: inset(0 0 0% 0);
-  }
-  .hero__subtitle {
+  /* Logo appears at final state with no animation. */
+  .hero__logo {
     opacity: 1;
     transform: none;
     transition: none;

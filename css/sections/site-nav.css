@@ -159,36 +159,10 @@
   display: none;
 }
 
-/* CTA — outline by default, fills with --accent-rose on hover/focus -------- */
-.site-nav__cta {
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: var(--fw-semibold);
-  padding: var(--space-3) var(--space-6);
-  flex-shrink: 0;
-  color: var(--accent-cta);
-  background: transparent;
-  border: 1.5px solid var(--accent-cta);
-  border-radius: var(--radius-pill);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background var(--dur-base) var(--ease-out-cinema),
-              color      var(--dur-base) var(--ease-out-cinema),
-              transform  var(--dur-base) var(--ease-out-cinema),
-              box-shadow var(--dur-base) var(--ease-out-cinema);
-}
-
-.site-nav__cta:hover,
-.site-nav__cta:focus-visible {
-  background: var(--accent-cta);
-  color: var(--ivory);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-soft);
-  outline: none;
-}
-.site-nav__cta:focus-visible {
-  box-shadow: 0 0 0 3px var(--brass);
-}
+/* CTA removed 2026-06-02 (per user: "the standalone Book button is too
+   aggressive — let the nav bar BE the call to action"). The .site-nav__cta
+   selector and all its rules are intentionally absent now; the contact link
+   inside .site-nav__links carries the same affordance, gracefully styled. */
 
 /* Hamburger toggle --------------------------------------------------------- */
 .site-nav__toggle {
@@ -241,7 +215,6 @@
    ========================================================================= */
 @media (max-width: 1023.98px) {
   .site-nav__links { display: none; }
-  .site-nav__cta   { display: none; } /* CTA also lives in the overlay below */
   .site-nav__toggle { display: inline-flex; }
 }
 
@@ -327,12 +300,6 @@
   color: var(--brass-deep);
 }
 
-/* CTA echoed inside the overlay (cloned by JS) gets its own treatment. */
-.site-nav__mobile .site-nav__cta {
-  display: inline-block;
-  margin-block-start: var(--space-8);
-}
-
 /* Body scroll lock while mobile nav is open. */
 html.nav-open,
 html.nav-open body {
@@ -349,12 +316,7 @@ html.nav-open body {
   .site-nav__inner,
   .site-nav__brand-logo,
   .site-nav__links a::after,
-  .site-nav__cta,
   .site-nav__mobile {
     transition: none;
-  }
-  .site-nav__cta:hover,
-  .site-nav__cta:focus-visible {
-    transform: none;
   }
 }

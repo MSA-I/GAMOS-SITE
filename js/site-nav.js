@@ -102,16 +102,9 @@ function buildOverlay(originalLinks) {
 
   inner.appendChild(ul);
 
-  // The CTA ("קבעו פגישה") is a sibling of the desktop <ul> and is hidden on
-  // mobile by CSS, so clone it into the overlay too — otherwise mobile users
-  // lose the primary conversion action. Looked up relative to the same nav.
-  const navRoot = originalLinks.closest(".site-nav__inner") || document;
-  const cta = navRoot.querySelector(".site-nav__cta");
-  if (cta) {
-    const ctaClone = cta.cloneNode(true);
-    ctaClone.removeAttribute("id"); // avoid duplicate ids if any
-    inner.appendChild(ctaClone);
-  }
+  // The standalone "קבעו פגישה" CTA was removed 2026-06-02 per user direction
+  // ("too aggressive — let the NAV bar BE the call to action"). The contact
+  // link inside the nav list still leads to #contact for the same purpose.
 
   wrap.appendChild(inner);
 
@@ -248,6 +241,71 @@ function onKeyDown(event) {
 }
 
 // ----------------------------------------------------------------------------
+// Desktop link smooth-scroll — bypass the orchestrator's RAF that was
+// interfering with native hash-jump. Uses GSAP ScrollToPlugin if loaded,
+// otherwise falls back to scrollIntoView({behavior:"smooth"}).
+// ----------------------------------------------------------------------------
+
+function smoothScrollTo(target) {
+  if (!target) return;
+  const reduced = typeof window !== "undefined"
+    && window.matchMedia
+    && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Prefer GSAP ScrollToPlugin (already self-hosted at /assets/vendor/) for
+  // a single smooth animation that won't fight the hero's RAF loop.
+  const gsap = typeof window !== "undefined" ? window.gsap : null;
+  if (gsap && typeof gsap.to === "function") {
+    try {
+      gsap.to(window, {
+        duration: reduced ? 0 : 1.1,
+        ease: "power3.inOut",
+        scrollTo: target === "top" ? 0 : { y: target, autoKill: false },
+      });
+      return;
+    } catch { /* fall through to native */ }
+  }
+
+  // Native fallback.
+  try {
+    if (target === "top") {
+      window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+    } else {
+      target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+    }
+  } catch {
+    if (target === "top") window.scrollTo(0, 0);
+    else target.scrollIntoView();
+  }
+}
+
+function onNavLinkClick(event) {
+  const link = event.target.closest("a[href^='#']");
+  if (!link) return;
+  const href = link.getAttribute("href");
+  if (!href || href === "#") return;
+  const id = href.slice(1);
+  const target = id === "hero" || id === "" ? "top" : document.getElementById(id);
+  if (target == null) return;
+  event.preventDefault();
+  smoothScrollTo(target);
+  try { history.pushState({}, "", href); } catch { /* ignore */ }
+}
+
+function wireDesktopLinkScroll() {
+  // Delegated on the entire site-nav (covers desktop links AND footer nav, plus
+  // the brand logo "to top" click). Capture phase so we run before any sticky
+  // orchestrator might intercept.
+  const navRoot = document.querySelector(".site-nav") || document.body;
+  if (!navRoot) return;
+  navRoot.addEventListener("click", onNavLinkClick);
+  // Footer nav links — same treatment.
+  const footer = document.querySelector(".site-footer");
+  if (footer) footer.addEventListener("click", onNavLinkClick);
+}
+
+
+// ----------------------------------------------------------------------------
 // init() / destroy()
 // ----------------------------------------------------------------------------
 
@@ -258,6 +316,11 @@ export function init() {
   // 1. Locate header pieces. Quietly bail if missing.
   state.toggle       = document.querySelector(".site-nav__toggle");
   state.desktopLinks = document.querySelector(".site-nav__links");
+
+  // Even if the mobile toggle is missing, we still want desktop link smooth-
+  // scroll to work — so wire that BEFORE the early-return.
+  wireDesktopLinkScroll();
+
   if (!state.toggle || !state.desktopLinks) return;
 
   // 2. Inject overlay (idempotent — re-use if it already exists).

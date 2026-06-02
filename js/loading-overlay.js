@@ -39,8 +39,8 @@ const FADE_IN_MS        = 200;   // Time to reach full opacity.
 const FADE_OUT_MS       = 200;   // Time to fade back to invisible.
 const HOLD_MS_REDUCED   = 400;   // Reduced-motion hold (registers the moment).
 
-const LOGO_WEBP = "/assets/images/brand/logo-gold.webp";
-const LOGO_PNG  = "/assets/images/brand/logo-gold.png";
+const LOGO_WEBP = "/assets/images/brand/logo-central.webp";
+const LOGO_PNG  = "/assets/images/brand/logo-central.webp";
 
 // ----------------------------------------------------------------------------
 // Module-scoped state

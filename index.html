@@ -32,11 +32,11 @@
   <link rel="preload" as="image" type="image/webp"
         href="/assets/images/brand/hero-static.webp" fetchpriority="high">
 
-  <!-- Performance: preload critical fonts (Hebrew display + Latin wordmark) -->
+  <!-- Performance: preload critical fonts (Rubik display, Hebrew + Latin) -->
   <link rel="preload" as="font" type="font/woff2" crossorigin
-        href="/assets/fonts/frank-ruhl-libre-700.woff2">
+        href="/assets/fonts/rubik-hebrew.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-        href="/assets/fonts/bodoni-moda-900-latin.woff2">
+        href="/assets/fonts/rubik-latin.woff2">
 
   <!-- DNS / preconnect (only if external resources confirmed) -->
   <!-- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> -->
@@ -151,12 +151,9 @@
   <header class="site-nav" role="banner">
     <nav class="site-nav__inner" aria-label="ניווט ראשי">
       <a class="site-nav__brand" href="#hero" aria-label="גאמוס, לדף הבית">
-        <picture>
-          <source type="image/webp" srcset="/assets/images/brand/logo-gold.webp">
-          <img src="/assets/images/brand/logo-gold.png" alt="גאמוס"
-               class="site-nav__brand-logo"
-               width="180" height="auto" decoding="sync" loading="eager">
-        </picture>
+        <img src="/assets/images/brand/logo-central.webp" alt="גאמוס"
+             class="site-nav__brand-logo"
+             width="180" height="90" decoding="sync" loading="eager">
       </a>
 
       <ul class="site-nav__links" role="list">
@@ -172,10 +169,6 @@
         <li><a href="#kosher" data-secondary>כשרות</a></li>
         <li><a href="#contact">צור קשר</a></li>
       </ul>
-
-      <a class="site-nav__cta" href="#contact">
-        <span>קבעו פגישה</span>
-      </a>
 
       <button class="site-nav__toggle" type="button"
               aria-label="פתח תפריט"
@@ -218,72 +211,20 @@
                loading="eager" decoding="sync" fetchpriority="high">
         </picture>
 
-        <!-- Layer B: title reveal — SVG mask + texture (Variant A per Agent 11 §3.1).
-             The <svg> below IS the wordmark visually. The <h1.hero__sr-title> is the
-             real screen-reader heading. SVG explicitly direction="ltr" so RTL on <html>
-             does not flip the Latin glyph order. -->
+        <!-- Layer B: title reveal — central GAMOS brand logo (2026-06-02).
+             Replaces the previous Bodoni Moda SVG-mask wordmark. The <img>
+             IS the visual brand mark; the <h1.hero__sr-title> is the real
+             screen-reader heading. -->
         <div class="hero__title-stack" aria-hidden="true">
-          <svg class="hero__title-svg"
-               viewBox="0 0 1200 360"
-               preserveAspectRatio="xMidYMid meet"
-               direction="ltr"
-               role="img"
-               focusable="false">
-            <defs>
-              <!-- Sand-grain texture cropped from frame-1.png (see encode-hero-v2-assets.js).
-                   Tiles inside the letterforms only. -->
-              <pattern id="hero-title-texture"
-                       patternUnits="userSpaceOnUse"
-                       width="800" height="400"
-                       x="200" y="0">
-                <image href="/assets/images/brand/title-texture.webp"
-                       x="0" y="0" width="800" height="400"
-                       preserveAspectRatio="xMidYMid slice" />
-              </pattern>
+          <img class="hero__logo"
+               src="/assets/images/brand/logo-central.webp"
+               alt=""
+               width="1200" height="600"
+               decoding="async"
+               fetchpriority="high">
 
-              <!-- Per-letter masks: each letter has its own mask so we can stagger
-                   the reveal animation. Mask geometry stays in sync with the
-                   visible <text> via shared font-family and identical attrs. -->
-              <mask id="hero-title-mask-G" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="360">
-                <text class="hero__title-letter hero__title-letter--1" x="280" y="240"
-                      font-family="Bodoni Moda" font-weight="900" font-size="280"
-                      fill="white" letter-spacing="0.04em">G</text>
-              </mask>
-              <mask id="hero-title-mask-A" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="360">
-                <text class="hero__title-letter hero__title-letter--2" x="450" y="240"
-                      font-family="Bodoni Moda" font-weight="900" font-size="280"
-                      fill="white" letter-spacing="0.04em">A</text>
-              </mask>
-              <mask id="hero-title-mask-M" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="360">
-                <text class="hero__title-letter hero__title-letter--3" x="615" y="240"
-                      font-family="Bodoni Moda" font-weight="900" font-size="280"
-                      fill="white" letter-spacing="0.04em">M</text>
-              </mask>
-              <mask id="hero-title-mask-O" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="360">
-                <text class="hero__title-letter hero__title-letter--4" x="800" y="240"
-                      font-family="Bodoni Moda" font-weight="900" font-size="280"
-                      fill="white" letter-spacing="0.04em">O</text>
-              </mask>
-              <mask id="hero-title-mask-S" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="360">
-                <text class="hero__title-letter hero__title-letter--5" x="970" y="240"
-                      font-family="Bodoni Moda" font-weight="900" font-size="280"
-                      fill="white" letter-spacing="0.04em">S</text>
-              </mask>
-            </defs>
-
-            <!-- Each letter: a rect filled with the texture, clipped to the letter shape via mask. -->
-            <rect width="1200" height="360" fill="url(#hero-title-texture)" mask="url(#hero-title-mask-G)"/>
-            <rect width="1200" height="360" fill="url(#hero-title-texture)" mask="url(#hero-title-mask-A)"/>
-            <rect width="1200" height="360" fill="url(#hero-title-texture)" mask="url(#hero-title-mask-M)"/>
-            <rect width="1200" height="360" fill="url(#hero-title-texture)" mask="url(#hero-title-mask-O)"/>
-            <rect width="1200" height="360" fill="url(#hero-title-texture)" mask="url(#hero-title-mask-S)"/>
-          </svg>
-
-          <!-- Real heading for SR + SEO (visually hidden — the SVG is the visual). -->
-          <h1 id="hero-sr-title" class="hero__sr-title">GAMOS אירועים יוקרתיים</h1>
-
-          <!-- Hebrew subtitle (Frank Ruhl Libre 700, fade-up). Visible. -->
-          <p class="hero__subtitle" aria-hidden="true">אירועים</p>
+          <!-- Real heading for SR + SEO (visually hidden — the logo is the visual). -->
+          <h1 id="hero-sr-title" class="hero__sr-title">GAMOS — מתחם אירועים יוקרתי</h1>
         </div>
 
         <!-- Layer C: scroll-driven canvas frame renderer.
@@ -319,7 +260,7 @@
                   data-target="#hall-resort"
                   aria-label="עבור לריזורט וחדרי האירוח">
             <img class="portal__overlay"
-                 src="/assets/images/brand/portal-resort.webp"
+                 src="/assets/images/brand/portal-resort-bubble.webp"
                  alt="" aria-hidden="true"
                  loading="eager" decoding="async">
             <span class="portal__label">ריזורט</span>
@@ -330,7 +271,7 @@
                   data-target="#hall-venue"
                   aria-label="עבור לאולם האירועים">
             <img class="portal__overlay"
-                 src="/assets/images/brand/portal-venue.webp"
+                 src="/assets/images/brand/portal-venue-bubble.webp"
                  alt="" aria-hidden="true"
                  loading="eager" decoding="async">
             <span class="portal__label">אולם</span>
@@ -716,7 +657,7 @@
              class="culinary scroll-scene"
              data-scrub="culinary"
              data-scrub-mode="canvas-frames"
-             data-scrub-spacer-vh="900"
+             data-scrub-spacer-vh="1100"
              aria-labelledby="culinary-title">
 
       <div class="scroll-scene__sticky">
@@ -754,7 +695,7 @@
       </div>
 
       <div class="scroll-scene__spacer" aria-hidden="true"
-           style="--scene-spacer: 900vh;"></div>
+           style="--scene-spacer: 1100vh;"></div>
 
       <!-- After the sticky stage releases — the static dish gallery.
            Agents 08/09 replace each li[data-placeholder] with real <picture> + caption. -->
@@ -1401,8 +1342,8 @@
       <!-- Brand column -->
       <div class="site-footer__brand">
         <img class="site-footer__logo"
-             src="/assets/images/brand/logo-gold.webp"
-             width="200" height="64"
+             src="/assets/images/brand/logo-central.webp"
+             width="240" height="120"
              loading="lazy" decoding="async"
              alt="גאמוס מתחם אירועים">
         <p class="site-footer__tagline">
