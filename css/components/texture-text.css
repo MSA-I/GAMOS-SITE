@@ -69,7 +69,6 @@
   .texture-text,
   .texture-text--dark,
   .section-header__title,
-  .lounge__title,
   .rooms__name,
   .hall-venue h1,
   .hall-venue h2,
@@ -80,10 +79,11 @@
     background-image: var(--typo-on-light);
   }
 
-  /* ---- LIGHT texture override for content on dark surfaces, plus the
-     gallery and kosher titles (user-marked "כתב כהה, טקסטורה בהירה").
-     Eyebrows stay solid (brass), per impeccable: texture only earns its
-     place at display sizes; small text + texture reads as a smudge. ---- */
+  /* ---- LIGHT texture override for content on dark surfaces ----
+     Sections with cocoa/dark imagery, plus the gallery + kosher titles
+     (user-marked "כתב כהה, טקסטורה בהירה"), and the lounge panel titles
+     (which sit over dark indoor photography). Eyebrows stay solid brass,
+     per impeccable: texture only earns its place at display sizes. ---- */
   [data-bg="dark"] .section-header__title,
   .bg-dark .section-header__title,
   .culinary .section-header__title,
@@ -91,6 +91,7 @@
   .hero .section-header__title,
   .gallery .section-header__title,
   .kosher .section-header__title,
+  .lounge__title,
   .texture-text--light {
     background-image: var(--typo-on-dark) !important;
   }
@@ -100,7 +101,8 @@
   .kosher .section-header__title,
   .culinary .section-header__title,
   .hero .section-header__title,
-  .site-footer .site-footer__claim {
+  .site-footer .site-footer__claim,
+  .lounge__title {
     background-repeat: no-repeat;
     background-size: 100% 100%;
     background-position: center;
