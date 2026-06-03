@@ -64,30 +64,28 @@ const SINGLE_WEBP = [
     quality: 92,
   },
   // Texture fills for headings (background-clip: text). The user has 4 source
-  // textures under תמונות/פונט/. We use:
-  //   - "טיפוגרפיה בהירה.png" → typo-light.webp (gold-on-light texture for headings on dark surfaces)
-  //   - "טיפוגרפיה כהה.png"   → typo-dark.webp  (gold-on-dark texture for headings on light surfaces — dominant case)
-  //   - "טקסטורה בהירה.png"   → texture-light.webp (background tile, light)
-  //   - "טקסטורה כהה.png"     → texture-dark.webp  (background tile, dark)
-  // The source filenames may have alternative spellings (some include "טקסטורה ל..."),
-  // so we list multiple candidates per output and pick the first that exists.
+  // textures under תמונות/פונט/. Naming below describes the SURFACE the fill
+  // sits on (not the texture's own brightness — the source filenames are
+  // confusingly inverse to that). Verified empirically 2026-06-03:
+  //   "טיפוגרפיה בהירה.png" — luma 38 (DARK gold-flecked) → for LIGHT surfaces
+  //   "טיפוגרפיה כהה.png"   — luma 193 (LIGHT gold-flecked) → for DARK surfaces
   {
     srcCandidates: [
       "תמונות לאנימציית האתר/פונט/טיפוגרפיה בהירה.png",
       "תמונות לאנימציית האתר/פונט/טקסטורה לטיפוגרפיה בהירה.png",
     ],
-    out: "assets/images/brand/typo-light.webp",
-    width: 1800,
-    quality: 90,
+    out: "assets/images/brand/typo-on-light.webp",
+    width: 2000,
+    quality: 92,
   },
   {
     srcCandidates: [
       "תמונות לאנימציית האתר/פונט/טיפוגרפיה כהה.png",
       "תמונות לאנימציית האתר/פונט/טקסטורה לטיפוגרפיה כהה.png",
     ],
-    out: "assets/images/brand/typo-dark.webp",
-    width: 1800,
-    quality: 90,
+    out: "assets/images/brand/typo-on-dark.webp",
+    width: 2000,
+    quality: 92,
   },
   {
     srcCandidates: [

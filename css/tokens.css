@@ -152,19 +152,20 @@
   --focus-ring:     0 0 0 3px var(--brass);
 
   /* ===== 2.2b Texture fills (background-clip:text headings) =====
-     The site applies textured fills to ALL display headings (h1/h2/h3 and
-     section eyebrows) site-wide as of 2026-06-02. Two pairs of textures:
-       --typo-{light|dark} : the FONT TEXTURE the user provided (gold-flecked
-                             stroke, intended for letterforms). Variant for
-                             dark and for light surfaces.
-       --texture-{light|dark} : background-tile texture (for surface fills,
-                             not glyphs). Light/dark per surface.
-     Naming: -light/-dark refers to the SURFACE the texture sits on, not
-     the texture's own brightness. So `--typo-dark` (used on light/ivory bg
-     — the dominant case) is dark-toned with gold flecks; `--typo-light`
-     (used on dark surfaces like culinary/footer) is lighter sandstone. */
-  --typo-light:     url("/assets/images/brand/typo-light.webp");
-  --typo-dark:      url("/assets/images/brand/typo-dark.webp");
+     2026-06-03 RENAMED for clarity. The previous typo-light/typo-dark pair
+     was mapped backwards: the file labeled "dark" was actually the light
+     texture, so titles disappeared into the background on every page.
+     New names describe the SURFACE the fill sits on:
+       --typo-on-light : DARK texture (gold flecks on near-black) — for
+                         titles/eyebrows on ivory/cream surfaces (dominant
+                         case site-wide).
+       --typo-on-dark  : LIGHT texture (cream + gold) — for titles/eyebrows
+                         on cocoa/dark surfaces (Hero, halls, kosher,
+                         culinary, footer).
+     Legacy --typo-light/--typo-dark aliases removed; texture-text.css now
+     references the new names directly. */
+  --typo-on-light:  url("/assets/images/brand/typo-on-light.webp");
+  --typo-on-dark:   url("/assets/images/brand/typo-on-dark.webp");
   --texture-light:  url("/assets/images/brand/texture-light.webp");
   --texture-dark:   url("/assets/images/brand/texture-dark.webp");
 

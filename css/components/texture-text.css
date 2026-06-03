@@ -9,20 +9,19 @@
  *
  *   1. The opt-in classes (.texture-text, .texture-text--dark/--light)
  *      keep working — for places that need to override the auto behavior.
- *   2. A site-wide RULE applies the dark texture (--typo-dark, the gold-
- *      flecked black for ivory surfaces) automatically to:
+ *   2. A site-wide RULE applies the dark-on-ivory texture automatically to:
  *        - .section-header__title
  *        - .section-header__eyebrow
  *        - h2.lounge__title, h3.lounge__title  (lounge labels)
  *        - .hall-* h1/h2 titles
- *      Sections with dark backgrounds (Culinary, Footer) override to
- *      .texture-text--light via a class on the section.
+ *      Sections with dark backgrounds get the cream-on-cocoa texture instead.
  *
- * Two textures available:
- *   --typo-dark  : gold-flecked DARK fill, for headings on LIGHT/ivory bg
- *                  (the dominant case across the site).
- *   --typo-light : warm sandy LIGHT fill, for headings on DARK bg
- *                  (Culinary, Hero static-bg, Footer).
+ * Two textures available (renamed 2026-06-03 to remove the dark/light
+ * inversion that was making titles vanish):
+ *   --typo-on-light : DARK gold-flecked fill, for headings on LIGHT/ivory bg
+ *                     (the dominant case across the site).
+ *   --typo-on-dark  : LIGHT cream + gold fill, for headings on DARK bg
+ *                     (Hero, Halls, Kosher, Culinary, Footer).
  * Plus the older --texture-{dark,light} aliases for opt-in compatibility.
  *
  * GRACEFUL DEGRADATION: the texture fill lives ENTIRELY inside an
@@ -35,7 +34,13 @@
 
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
 
-  /* ---- Shared paint base ---- */
+  /* ---- Shared paint base ----
+     2026-06-03: switched background-size from `cover` (which fit the entire
+     texture inside the heading box and made each glyph show only a tiny
+     speck of texture) to a value that scales the texture much larger than
+     the heading. Each glyph now reveals a generous slice of the gold flecks.
+     `auto 280%` keeps the texture's aspect ratio and ties height to the
+     element's block-size — about 2.8× the line-height. */
   .texture-text,
   .texture-text--dark,
   .texture-text--light,
@@ -49,7 +54,7 @@
   .hall-resort h2,
   .feature h3 {
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size: auto 280%;
     background-position: center;
     -webkit-background-clip: text;
     background-clip: text;
@@ -57,7 +62,8 @@
     color: transparent;
   }
 
-  /* ---- Default: dark texture for headings on light/ivory surfaces ---- */
+  /* ---- Default: DARK texture (gold flecks on near-black) for headings on
+     light/ivory surfaces — the dominant case across the site. ---- */
   .texture-text,
   .texture-text--dark,
   .section-header__title,
@@ -69,18 +75,16 @@
   .hall-resort h1,
   .hall-resort h2,
   .feature h3 {
-    background-image: var(--typo-dark);
+    background-image: var(--typo-on-light);
   }
 
-  /* ---- Light texture override for content on dark surfaces ----
+  /* ---- LIGHT texture override for content on dark surfaces ----
      Sections with a dark background opt in via `data-bg="dark"` / `.bg-dark`,
-     or by being one of the named dark-bg sections enumerated below. Headings
-     inside switch to the lighter sandstone texture so they don't disappear
-     into the cocoa/desert background.
-     2026-06-03: added .hero, .hall-venue, .hall-resort, .kosher — all four
-     have dark/cocoa backgrounds and were inheriting the default --typo-dark
-     fill, making titles unreadable (the user reported "the text on the dark
-     hall video is barely visible"). */
+     or by being one of the enumerated dark-bg sections below. The light
+     gold-on-cream texture replaces the dark default so headings stand out
+     against cocoa/desert backgrounds.
+     Sections covered: Hero, Hall-venue, Hall-resort, Kosher, Culinary,
+     Footer. */
   [data-bg="dark"] .section-header__title,
   [data-bg="dark"] .section-header__eyebrow,
   .bg-dark .section-header__title,
@@ -104,11 +108,11 @@
   .kosher .section-header__title,
   .kosher .section-header__eyebrow,
   .texture-text--light {
-    background-image: var(--typo-light) !important;
+    background-image: var(--typo-on-dark) !important;
   }
 
   /* ---- Per-element overrides: legacy `.texture-text--dark/--light`
-     classes still pick the older background-tile textures, in case any
+     classes can also pick the older background-tile textures, in case any
      element wants the surface tile rather than the typo fill. ---- */
   .texture-text--dark.texture-text--bg {
     background-image: var(--texture-dark);
@@ -117,9 +121,9 @@
     background-image: var(--texture-light);
   }
 
-  /* ---- Brass solid fallback inside the @supports block, for tiny text
-     elements that should NOT be filled (e.g., footer copyright). They opt
-     OUT explicitly via `.texture-text--off`. ---- */
+  /* ---- Brass solid fallback for tiny text elements that should NOT be
+     filled (footer copyright, slider dots, etc.). Opt out via
+     `.texture-text--off`. ---- */
   .texture-text--off {
     background: none !important;
     color: var(--brass) !important;
