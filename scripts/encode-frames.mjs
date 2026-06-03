@@ -52,10 +52,12 @@ const SCENES = {
     fps: 30,
     width: 1920,
     quality: 88,
-    // Skip the first 3 seconds of the source so the scrub starts from the
-    // mid-point of the dish-plating sequence (per user: "should start from
-    // the middle of the video"). Format accepted by ffmpeg `-ss`.
-    ssStart: "00:00:03",
+    // 2026-06-03: ssStart removed. The source MP4 was previously a 6-second
+    // clip and -ss 00:00:03 left only 90 frames — the scrub appeared to freeze
+    // halfway through the user's scroll because it had already painted every
+    // frame. We re-encoded culinary-1080.mp4 directly from the 4K master
+    // (תמונות לאנימציית האתר/קולינריה 4/1.2.mp4) so it now carries the full
+    // 15s @ 30fps = ~450 frames covering the whole dish sequence.
   },
   // resort:   { src: "assets/video/resort-1080.mp4",   fps: 30, width: 1920, quality: 88 },
   // venue:    { src: "assets/video/venue-1080.mp4",    fps: 30, width: 1920, quality: 88 },

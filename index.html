@@ -410,7 +410,8 @@
           </p>
         </header>
 
-        <div class="lounge__rail" role="tablist" aria-label="גלריית הלאונג'">
+        <div class="lounge__rail" aria-label="גלריית הלאונג'">
+          <div class="lounge__track" role="tablist" aria-label="גלריית הלאונג'">
           <button type="button" class="lounge__panel is-active" data-lounge-panel data-lounge-index="0" role="tab" aria-selected="true">
             <picture>
               <source type="image/webp" srcset="/assets/images/halls/lounge/01.full.webp">
@@ -520,6 +521,7 @@
               <p class="lounge__desc">אוויר צלול וערב עוטף, סתיו שמזמין להישאר עוד רגע אחד.</p>
             </div>
           </button>
+          </div><!-- /.lounge__track -->
         </div>
       </div>
     </section>
@@ -798,18 +800,9 @@
     <section id="about" class="about" aria-labelledby="about-title">
       <div class="about__container" data-stagger>
 
-        <!-- Right column (RTL: visually first) — black-and-white venue photo. -->
-        <figure class="about__media"
-                data-reveal="slide-right"
-                style="--reveal-delay: 0ms;">
-          <picture>
-            <source type="image/webp" srcset="/assets/images/halls/venue/01.full.webp">
-            <img class="about__photo" src="/assets/images/halls/venue/01.full.jpg"
-                 alt="" width="1600" height="1000" loading="lazy" decoding="async">
-          </picture>
-        </figure>
-
-        <!-- Left column (RTL: second) — text content. -->
+        <!-- 2026-06-03: swapped — copy now first in DOM (sits visually right
+             in RTL), photo second (visually left). User direction: "תמונה
+             מצד שמאל, טקסט מצד ימין". -->
         <div class="about__copy">
           <header class="section-header">
             <p class="section-header__eyebrow"
@@ -864,6 +857,17 @@
             </dl>
           </div>
         </div>
+
+        <!-- Photo column — second in DOM = visually left in RTL. -->
+        <figure class="about__media"
+                data-reveal="slide-right"
+                style="--reveal-delay: 0ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/halls/venue/01.full.webp">
+            <img class="about__photo" src="/assets/images/halls/venue/01.full.jpg"
+                 alt="" width="1600" height="1000" loading="lazy" decoding="async">
+          </picture>
+        </figure>
 
       </div>
     </section>
@@ -1343,14 +1347,6 @@
                      alt="מסלול הגעה לגאמוס מצפון: בית אל, עפרה, רימונים, אדם"
                      loading="lazy" decoding="async" width="829" height="1024">
                 <figcaption>מצפון</figcaption>
-              </figure>
-            </li>
-            <li>
-              <figure>
-                <img src="/assets/images/maps/route-from-south.svg"
-                     alt="מסלול הגעה לגאמוס מדרום: באר שבע, ערד, דימונה"
-                     loading="lazy" decoding="async" width="800" height="1000">
-                <figcaption>מדרום</figcaption>
               </figure>
             </li>
           </ul>

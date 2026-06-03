@@ -73,9 +73,14 @@
   }
 
   /* ---- Light texture override for content on dark surfaces ----
-     Sections with a dark background opt in by adding `data-bg="dark"` or
-     class `.bg-dark` on the section element. Headings inside are then
-     re-fillled with the lighter sandstone texture. */
+     Sections with a dark background opt in via `data-bg="dark"` / `.bg-dark`,
+     or by being one of the named dark-bg sections enumerated below. Headings
+     inside switch to the lighter sandstone texture so they don't disappear
+     into the cocoa/desert background.
+     2026-06-03: added .hero, .hall-venue, .hall-resort, .kosher — all four
+     have dark/cocoa backgrounds and were inheriting the default --typo-dark
+     fill, making titles unreadable (the user reported "the text on the dark
+     hall video is barely visible"). */
   [data-bg="dark"] .section-header__title,
   [data-bg="dark"] .section-header__eyebrow,
   .bg-dark .section-header__title,
@@ -84,8 +89,22 @@
   .culinary .section-header__eyebrow,
   .site-footer .section-header__title,
   .site-footer .section-header__eyebrow,
+  .hero .section-header__title,
+  .hero .section-header__eyebrow,
+  .hall-venue .section-header__title,
+  .hall-venue .section-header__eyebrow,
+  .hall-venue h1,
+  .hall-venue h2,
+  .hall-venue .feature h3,
+  .hall-resort .section-header__title,
+  .hall-resort .section-header__eyebrow,
+  .hall-resort h1,
+  .hall-resort h2,
+  .hall-resort .feature h3,
+  .kosher .section-header__title,
+  .kosher .section-header__eyebrow,
   .texture-text--light {
-    background-image: var(--typo-light);
+    background-image: var(--typo-light) !important;
   }
 
   /* ---- Per-element overrides: legacy `.texture-text--dark/--light`

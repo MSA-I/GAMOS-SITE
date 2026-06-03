@@ -44,21 +44,40 @@
 }
 
 /* ---------------------------------------------------------------------------
-   RAIL — the expanding-panels flex row
+   2026-06-03: RAIL is now a CAROUSEL — single visible image at a time, slides
+   horizontally on activeIndex change. The previous expanding-flex layout left
+   "thumbnails" of inactive panels at the edges that the user found unhelpful.
+   Track sits inside a clipped wrapper; transform: translateX(...) drives the
+   slide. RTL: positive translate moves to the right (= "next" forward).
    --------------------------------------------------------------------------- */
 .lounge__rail {
-  display: flex;
-  flex-direction: row;          /* RTL handled by dir; first panel = right edge */
-  gap: var(--space-2);
+  position: relative;
+  display: block;
   inline-size: 100%;
   block-size: clamp(360px, 56vh, 620px);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-strong);
+  /* The track expands to fit (panel-count × 100%); inner translate slides it. */
+  isolation: isolate;
+}
+
+.lounge__track {
+  display: flex;
+  flex-direction: row;
+  block-size: 100%;
+  inline-size: 100%;
+  /* JS sets --lounge-active to the index; CSS applies the slide. RTL: track
+     children sit right-to-left visually, so positive % translates "into" the
+     reading order (right). The sign flips at runtime via --lounge-sign so the
+     direction stays consistent with the user's mental model. */
+  transform: translate3d(calc(var(--lounge-active, 0) * var(--lounge-sign, 1) * 100%), 0, 0);
+  transition: transform 0.8s var(--ease-out-cinema);
+  will-change: transform;
 }
 
 /* ---------------------------------------------------------------------------
-   PANEL — base (inactive) state
+   PANEL — each panel takes the full visible width of the rail.
    --------------------------------------------------------------------------- */
 .lounge__panel {
   /* button reset */
@@ -69,40 +88,20 @@
   background: transparent;
   font: inherit;
   color: inherit;
-  cursor: pointer;
+  cursor: default;
   text-align: start;
 
   position: relative;
   display: block;
   block-size: 100%;
-  min-inline-size: 0;           /* allow flex children to shrink below content */
-  flex: 1 1 0;                  /* inactive: narrow, equal share */
+  flex: 0 0 100%;               /* full rail width per panel */
+  inline-size: 100%;
+  min-inline-size: 0;
   overflow: hidden;
   isolation: isolate;
-  transition:
-    flex-grow var(--dur-deluxe) var(--ease-out-cinema),
-    transform var(--dur-fast)   var(--ease-out-cinema),
-    filter    var(--dur-slow)   var(--ease-out-cinema);
-  /* Inactive panels: slightly darkened + desaturated for depth. */
-  filter: saturate(0.72) brightness(0.78);
 }
 
-/* Press feedback: subtle scale-down confirms the tap/click registered. */
-.lounge__panel:active {
-  transform: scale(0.98);
-}
-
-.lounge__panel.is-active {
-  flex-grow: 99;                /* active: dominates the row, inactive panels
-                                   collapse to slim strips so the visible image
-                                   actually covers the section. (Was 7 — too
-                                   close to inactive's flex:1, the user saw a
-                                   sliver of "stranger" image bleeding in from
-                                   the side.) */
-  filter: saturate(1) brightness(1);
-}
-
-/* Visible focus ring (§9). Inset so it isn't clipped by overflow:hidden. */
+/* Visible focus ring (§9) — only when the user reaches a panel via keyboard. */
 .lounge__panel:focus-visible {
   outline: none;
   box-shadow: inset 0 0 0 3px var(--brass);
@@ -117,12 +116,6 @@
   block-size: 100%;
   object-fit: cover;
   object-position: center;
-  transition: transform var(--dur-cinema) var(--ease-out-cinema);
-  will-change: transform;
-}
-
-.lounge__panel.is-active .lounge__img {
-  transform: scale(1.04);       /* gentle Ken-Burns on the active panel */
 }
 
 /* ---------------------------------------------------------------------------
@@ -139,25 +132,14 @@
   padding-block: var(--space-12) var(--space-6);
   padding-inline: var(--space-6);
   color: var(--fg-on-dark);
-  /* Scrim from the bottom for legibility over varied photography. */
   background: linear-gradient(
     to top,
     rgba(26, 20, 16, 0.82) 0%,
     rgba(26, 20, 16, 0.40) 55%,
     rgba(26, 20, 16, 0) 100%
   );
-  /* Hidden by default: faded + nudged down, and click-through. */
-  opacity: 0;
-  transform: translateY(var(--space-4));
-  pointer-events: none;
-  transition:
-    opacity   var(--dur-slow) var(--ease-out-cinema),
-    transform var(--dur-slow) var(--ease-out-cinema);
-}
-
-.lounge__panel.is-active .lounge__label {
   opacity: 1;
-  transform: translateY(0);
+  pointer-events: none;
 }
 
 .lounge__title {
@@ -182,55 +164,73 @@
 }
 
 /* ---------------------------------------------------------------------------
-   RESPONSIVE — narrow screens: switch to a vertical stack of panels.
-   Active panel still expands (tall), inactive stay short. The same
-   .is-active class drives both axes.
+   DOTS — bottom row, one per panel. JS toggles .is-active on click;
+   tabindex roving + arrow keys handled by the same module.
+   --------------------------------------------------------------------------- */
+.lounge__dots {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: center;
+  margin-block-start: var(--space-6);
+  padding: 0;
+  list-style: none;
+}
+
+.lounge__dot {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: var(--space-2);     /* large enough click target while staying visually small */
+  cursor: pointer;
+  line-height: 0;              /* tighten so the inner circle controls height */
+}
+
+.lounge__dot::before {
+  content: "";
+  display: block;
+  inline-size: 10px;
+  block-size: 10px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--cocoa) 30%, transparent);
+  transition: background var(--dur-base) var(--ease-out-cinema),
+              transform  var(--dur-base) var(--ease-out-cinema);
+}
+
+.lounge__dot:hover::before {
+  background: color-mix(in srgb, var(--brass) 60%, transparent);
+}
+
+.lounge__dot.is-active::before {
+  background: var(--brass);
+  transform: scale(1.4);
+}
+
+.lounge__dot:focus-visible {
+  outline: 3px solid var(--brass);
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+/* ---------------------------------------------------------------------------
+   RESPONSIVE — mobile keeps the same carousel; rail aspect tightens.
    --------------------------------------------------------------------------- */
 @media (max-width: 767px) {
   .lounge__rail {
-    flex-direction: column;
-    block-size: auto;
-    max-block-size: 86vh;
+    block-size: clamp(280px, 56vh, 480px);
   }
-
-  .lounge__panel {
-    inline-size: 100%;
-    flex: 1 1 0;
-    block-size: auto;
-    min-block-size: 0;
-    aspect-ratio: 16 / 7;       /* inactive panels: a slim strip */
-    transition:
-      flex-grow var(--dur-deluxe) var(--ease-out-cinema),
-      filter    var(--dur-slow)   var(--ease-out-cinema);
-  }
-
-  .lounge__panel.is-active {
-    flex-grow: 5;
-    aspect-ratio: 4 / 5;        /* active panel: tall hero */
-  }
-
-  /* Always show the label on mobile active panel (no hover affordance there). */
   .lounge__label {
     padding-block: var(--space-8) var(--space-4);
   }
 }
 
 /* ---------------------------------------------------------------------------
-   REDUCED MOTION — no flex/scale animation; active is still larger, instant.
+   REDUCED MOTION — kill the slide animation; just snap.
    --------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
-  .lounge__panel,
-  .lounge__img,
-  .lounge__label {
+  .lounge__track,
+  .lounge__dot::before {
     transition: none;
-  }
-  .lounge__panel:active {
-    transform: none;
-  }
-  .lounge__panel.is-active .lounge__img {
-    transform: none;
-  }
-  .lounge__panel.is-active .lounge__label {
-    transform: none;
   }
 }

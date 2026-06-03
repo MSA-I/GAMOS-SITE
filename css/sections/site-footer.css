@@ -18,27 +18,33 @@
 
 .site-footer__inner {
   inline-size: 100%;
-  max-inline-size: var(--container-max);
+  /* 2026-06-03: tightened from --container-max (1320px) → 1280px so the
+     four columns sit closer on wide screens. */
+  max-inline-size: 1280px;
   margin-inline: auto;
   display: grid;
-  gap: var(--space-12);
+  gap: var(--space-6);
   grid-template-columns: 1fr;
   align-items: start;
+  align-content: start;
 }
 
 /* ≥ 600px → 2 columns; ≥ 1000px → 4 columns */
 @media (min-width: 600px) {
   .site-footer__inner {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-16) var(--space-12);
+    gap: var(--space-8) var(--space-6);
   }
 }
 
 @media (min-width: 1000px) {
   .site-footer__inner {
-    /* Brand column gets a touch more room than the three link columns. */
-    grid-template-columns: 1.4fr 1fr 1.2fr 1fr;
-    gap: var(--space-12);
+    /* Brand wider; nav narrower (only ~6 short links); contact widest (longer
+       phone/email lines); social narrowest. Reduced gap so columns no longer
+       feel marooned on wide displays — user reported overly large vertical
+       gaps in the short columns. */
+    grid-template-columns: 1.2fr 1fr 1.4fr 1fr;
+    gap: var(--space-6);
   }
 }
 
@@ -111,7 +117,9 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  /* 2026-06-03: tightened from --space-4 → --space-3 to dock the contact
+     channels closer together (phone / WhatsApp / email / address). */
+  gap: var(--space-3);
 }
 
 .site-footer__contact-item {

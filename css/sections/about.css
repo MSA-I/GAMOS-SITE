@@ -135,7 +135,8 @@
 }
 
 /* Tablet & narrower — collapse the 2-column grid into a single column.
-   Photo above the copy on small screens (still RTL but vertical now). */
+   DOM order is copy-first, photo-second; on mobile we keep that order so
+   the user reads the headline before scrolling past the image. */
 @media (max-width: 900px) {
   .about__container {
     grid-template-columns: 1fr;
