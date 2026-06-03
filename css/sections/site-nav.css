@@ -42,20 +42,20 @@
 .site-nav__inner {
   max-inline-size: 1440px;
   margin-inline: auto;
-  padding-block: var(--space-4);
-  padding-inline: clamp(16px, 3vw, 32px);
+  padding-block: var(--space-6);
+  padding-inline: clamp(20px, 3.4vw, 40px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-5);
-  min-block-size: 64px;
+  gap: var(--space-6);
+  min-block-size: 88px;
   transition: padding-block var(--dur-base) var(--ease-out-cinema),
               min-block-size var(--dur-base) var(--ease-out-cinema);
 }
 
 .site-nav.is-scrolled .site-nav__inner {
-  padding-block: var(--space-2);
-  min-block-size: 52px;
+  padding-block: var(--space-3);
+  min-block-size: 68px;
 }
 
 /* Brand -------------------------------------------------------------------- */
@@ -70,14 +70,14 @@
 
 .site-nav__brand-logo {
   display: block;
-  height: 40px;
+  height: 56px;
   width: auto;
-  max-inline-size: 200px;
+  max-inline-size: 260px;
   object-fit: contain;
   transition: opacity var(--dur-base) var(--ease-out-cinema),
               height  var(--dur-base) var(--ease-out-cinema);
 }
-.site-nav.is-scrolled .site-nav__brand-logo { height: 32px; }
+.site-nav.is-scrolled .site-nav__brand-logo { height: 44px; }
 
 .site-nav__brand:hover .site-nav__brand-logo { opacity: 0.85; }
 .site-nav__brand:focus-visible {
@@ -92,7 +92,7 @@
   margin: 0;
   padding: 0;
   display: flex;
-  gap: clamp(14px, 1.8vw, 28px);
+  gap: clamp(20px, 2.4vw, 40px);
   align-items: center;
   flex: 1;
   justify-content: center;
@@ -100,12 +100,12 @@
 
 .site-nav__links a {
   font-family: var(--font-body);
-  font-size: clamp(0.85rem, 0.95vw, 0.95rem);
+  font-size: clamp(1.05rem, 1.2vw, 1.2rem);
   font-weight: var(--fw-medium);
   letter-spacing: var(--tracking-normal);
   color: var(--fg);
   text-decoration: none;
-  padding-block: var(--space-2);
+  padding-block: var(--space-3);
   white-space: nowrap;
   position: relative;
   transition: color var(--dur-base) var(--ease-out-cinema);

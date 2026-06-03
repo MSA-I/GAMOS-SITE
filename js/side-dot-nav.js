@@ -36,12 +36,18 @@
 // Constants — section list (per spec §9)
 // ----------------------------------------------------------------------------
 
+// 2026-06-03: order updated to match index.html DOM order — culinary now
+// precedes rooms (per user request). The active-dot picker (below) is
+// scroll-position-based, not intersection-ratio-based, so HUGE scroll-scenes
+// like culinary (1100vh spacer) correctly hold the active state across their
+// full scrub instead of losing to whichever adjacent section has more pixels
+// in view.
 const SECTIONS = [
   { id: "hero",        label: "פתיחה" },
   { id: "hall-resort", label: "ריזורט" },
   { id: "hall-venue",  label: "אולם" },
-  { id: "rooms",       label: "חדרים" },
   { id: "culinary",    label: "קולינריה" },
+  { id: "rooms",       label: "חדרים" },
   { id: "about",       label: "אודות" },
   { id: "testimonials",label: "המלצות" },
   { id: "contact",     label: "צור קשר" },
@@ -50,9 +56,11 @@ const SECTIONS = [
 // Hero dominance threshold: while hero progress < this, hero dot is active.
 const HERO_DOMINANCE_END = 0.85;
 
-// IO config — section's middle band must cross viewport center band.
-const IO_ROOT_MARGIN = "-40% 0px -40% 0px";
-const IO_THRESHOLD   = [0, 0.5, 1];
+// Active-dot picker — fraction of the viewport height where we read the
+// "active line". 0.5 = exact center; 0.4 (used here) means the line sits a
+// bit above center, which feels natural because reading attention skews
+// toward the upper third on long pages.
+const ACTIVE_LINE_RATIO = 0.4;
 
 // Hero hook polling.
 const HERO_HOOK_TIMEOUT  = 5000;
@@ -66,19 +74,23 @@ const state = {
   initialised:    false,
   nav:            null,           // root <nav.side-dot-nav>
   dots:           [],             // [{ id, label, el, sectionEl }]
-  observer:       null,
   reducedMQ:      null,
   reducedMotion:  false,
   suppressed:     false,          // true while loading-overlay is up
   heroProgress:   0,
   unsubHero:      null,
   hookWaitTimer:  null,
+  rafId:          0,              // queued RAF id for the picker
+  scrollDirty:    false,          // true when a scroll/resize is pending
+  lastActiveId:   null,           // skip DOM writes when active hasn't changed
   bound: {
     onClick:        null,
     onKeydown:      null,
     onLoadingShow:  null,
     onLoadingHide:  null,
     onMediaChange:  null,
+    onScroll:       null,
+    onResize:       null,
   },
 };
 
@@ -131,6 +143,8 @@ function buildNavDom(dots) {
 
 function setActive(sectionId) {
   if (state.suppressed) return;
+  if (state.lastActiveId === sectionId) return;       // no DOM churn
+  state.lastActiveId = sectionId;
   for (const dot of state.dots) {
     if (!dot.el) continue;
     if (dot.id === sectionId) {
@@ -142,46 +156,62 @@ function setActive(sectionId) {
 }
 
 // ----------------------------------------------------------------------------
-// IntersectionObserver setup
+// Scroll-position-based active picker
 // ----------------------------------------------------------------------------
+//
+// Why not IntersectionObserver? Sections of wildly different heights (the
+// culinary scrub takes ~1100vh, while #rooms is ~120vh) make IO's
+// intersectionRatio worthless: a giant section never reaches a high ratio
+// inside an inset rootMargin, while a small adjacent section can reach 1.0
+// with just a sliver of overlap — flipping the active dot off culinary the
+// moment rooms peeks in. The fix is to pick by ABSOLUTE scroll position:
+// among all section tops above the active line (40% from top), the LAST one
+// (largest top) wins. This is monotone with scroll, so the active dot tracks
+// the section the reader is actually inside.
 
-function installIntersectionObserver() {
-  if (!("IntersectionObserver" in window)) return;
+function pickActiveSection() {
+  if (state.suppressed) return null;
 
-  state.observer = new IntersectionObserver(
-    (entries) => {
-      // Suppress during loading-overlay window.
-      if (state.suppressed) return;
+  // Hero gets a dedicated dominance window driven by its own progress hook
+  // (sticky over a 700vh spacer, so naive scroll math would flicker). Once
+  // hero progress crosses the threshold, we hand off to scroll-position.
+  if (state.heroProgress < HERO_DOMINANCE_END) return "hero";
 
-      // Hero takes precedence while in dominance phase.
-      if (state.heroProgress < HERO_DOMINANCE_END) {
-        setActive("hero");
-        return;
-      }
+  const activeY = window.scrollY + window.innerHeight * ACTIVE_LINE_RATIO;
 
-      // Pick the entry with greatest intersectionRatio that is intersecting.
-      let best = null;
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue;
-        if (!best || entry.intersectionRatio > best.intersectionRatio) {
-          best = entry;
-        }
-      }
-      if (best && best.target && best.target.id) {
-        setActive(best.target.id);
-      }
-    },
-    {
-      rootMargin: IO_ROOT_MARGIN,
-      threshold: IO_THRESHOLD,
-    }
-  );
+  let bestId  = state.dots[0] ? state.dots[0].id : null;
+  let bestTop = -Infinity;
 
   for (const dot of state.dots) {
-    if (dot.sectionEl) {
-      state.observer.observe(dot.sectionEl);
+    if (!dot.sectionEl) continue;
+    // offsetTop is layout-thrash-free vs getBoundingClientRect+scrollY.
+    // Scroll containers other than <html> aren't in play here.
+    const top = dot.sectionEl.offsetTop;
+    if (top <= activeY && top > bestTop) {
+      bestTop = top;
+      bestId  = dot.id;
     }
   }
+  return bestId;
+}
+
+function scheduleUpdate() {
+  if (state.scrollDirty) return;
+  state.scrollDirty = true;
+  state.rafId = window.requestAnimationFrame(() => {
+    state.scrollDirty = false;
+    const id = pickActiveSection();
+    if (id) setActive(id);
+  });
+}
+
+function installScrollPicker() {
+  state.bound.onScroll = scheduleUpdate;
+  state.bound.onResize = scheduleUpdate;
+  window.addEventListener("scroll", state.bound.onScroll, { passive: true });
+  window.addEventListener("resize", state.bound.onResize);
+  // Prime the active dot for the initial scroll position.
+  scheduleUpdate();
 }
 
 // ----------------------------------------------------------------------------
@@ -213,10 +243,13 @@ function attachHeroHook() {
       const result = onProgress((p) => {
         state.heroProgress = p;
         if (state.suppressed) return;
-        // While hero dominates, force the hero dot active. When we cross the
-        // threshold, the IO will pick up active-state from real intersections.
+        // While hero dominates, force the hero dot active. After crossing the
+        // threshold, the scroll-position picker takes over — schedule it so
+        // the hand-off happens immediately, not on the next scroll.
         if (p < HERO_DOMINANCE_END) {
           setActive("hero");
+        } else {
+          scheduleUpdate();
         }
       });
       if (typeof result === "function") {
@@ -387,8 +420,9 @@ export function init() {
   // 7. Hero progress hook (special-case for sticky hero).
   attachHeroHook();
 
-  // 8. IntersectionObserver for the rest.
-  installIntersectionObserver();
+  // 8. Scroll-position-based active picker (replaces IO — see comment on
+  // pickActiveSection() for rationale).
+  installScrollPicker();
 
   state.initialised = true;
 }
@@ -412,10 +446,16 @@ export function destroy() {
   }
   state.unsubHero = null;
 
-  // 3. Disconnect IO.
-  if (state.observer) {
-    try { state.observer.disconnect(); } catch { /* ignore */ }
-    state.observer = null;
+  // 3. Cancel any queued RAF + remove scroll/resize listeners.
+  if (state.rafId) {
+    try { window.cancelAnimationFrame(state.rafId); } catch { /* ignore */ }
+    state.rafId = 0;
+  }
+  if (state.bound.onScroll) {
+    window.removeEventListener("scroll", state.bound.onScroll);
+  }
+  if (state.bound.onResize) {
+    window.removeEventListener("resize", state.bound.onResize);
   }
 
   // 4. Remove listeners.
@@ -452,9 +492,13 @@ export function destroy() {
   state.reducedMotion = false;
   state.suppressed    = false;
   state.heroProgress  = 0;
+  state.scrollDirty   = false;
+  state.lastActiveId  = null;
   state.bound.onClick       = null;
   state.bound.onKeydown     = null;
   state.bound.onLoadingShow = null;
   state.bound.onLoadingHide = null;
   state.bound.onMediaChange = null;
+  state.bound.onScroll      = null;
+  state.bound.onResize      = null;
 }

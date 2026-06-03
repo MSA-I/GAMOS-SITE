@@ -110,30 +110,36 @@
   position: absolute;
   inset-block-start: 50%;
   inset-inline-end: calc(100% + var(--space-3));   /* 12px past dot LEADING side */
-  transform: translateY(-50%);
+  transform: translateY(-50%) translateX(4px);
 
   /* Type */
   font-family: var(--font-display-he);
   font-size: var(--text-xs);                       /* 12px */
   letter-spacing: var(--tracking-wide);            /* 0.05em */
   white-space: nowrap;
-  color: var(--ivory);
+  color: var(--brass-deep);
 
-  /* Surface */
-  background: rgba(26, 20, 16, 0.85);              /* --ink-deep + alpha */
+  /* Surface — ivory pill w/ hairline brass border, soft drop-shadow.
+     Replaces the previous near-black surface that read as a "weird
+     black stripe" against the ivory page (user feedback 2026-06-03). */
+  background: var(--ivory);
   padding-inline: var(--space-3);                  /* 12px */
-  padding-block: var(--space-2);                   /* 8px */
-  border-radius: var(--radius-sm);
+  padding-block: 6px;
+  border-radius: 999px;
+  border: 1px solid var(--brass);
+  box-shadow: var(--shadow-soft);
 
   /* Hidden by default */
   opacity: 0;
   pointer-events: none;
-  transition: opacity 150ms var(--ease-out-cinema);
+  transition: opacity 150ms var(--ease-out-cinema),
+              transform 200ms var(--ease-out-cinema);
 }
 
 .side-dot-nav__dot:hover .side-dot-nav__label,
 .side-dot-nav__dot:focus-visible .side-dot-nav__label {
   opacity: 1;
+  transform: translateY(-50%) translateX(0);
 }
 
 
