@@ -187,215 +187,33 @@
   <main id="main-content">
 
     <!-- ====================================================================
-         #hero — V2 multi-stage scroll cinema
-         Stages (driven by [data-stage] on .hero__sticky, set by hero-video-scrub.js):
-           A: static-bg     [0%   .. 8%  )  — desert vista only
-           B: title-reveal  [8%   .. 22% )  — GAMOS letters reveal + "אירועים" subtitle
-           C: scrub         [22%  .. 88% )  — hero-master video scrubbed by scroll
-           D: portals       [88%  .. 100%]  — video freezes on last frame, portals appear
-         Spacer = 700vh (kept from current Constitution §3 — see Agent 12 §1.1).
+         NEW HERO COMPONENT GOES HERE
+         ---------------------------------------------------------------------
+         Removed 2026-06-03 per user (replaced by a new component, awaiting
+         spec):
+           - #hero (multi-stage scroll cinema: static-bg, title-reveal,
+             canvas scrub over 700vh spacer, portal hotspots)
+           - #hall-venue (poster-Ken-Burns scroll-scene + 4 features)
+           - #hall-resort (poster-Ken-Burns scroll-scene + 4 features)
+           - #portals + .portal hotspots
+         The supporting JS modules + CSS are still present in the repo so
+         nothing crashes; they're just no-ops without their DOM. The user
+         will paste the new component below this comment.
+
+         Section IDs other modules link to:
+           - #hero (top-of-page anchor — re-add if the new component
+             should be the scroll-spy "פתיחה" target).
+           - #hall-venue, #hall-resort (linked from the events accordion
+             AND from the new top-of-section nav at "אולם" / "ריזורט" —
+             re-add IDs to whatever the new component uses, OR update
+             js/side-dot-nav.js SECTIONS + nav links once the new IDs
+             are known).
+         (See architecture/section-order.md if it exists; otherwise
+         these are wired in: js/side-dot-nav.js SECTIONS,
+         index.html top-nav links, the events accordion, and any
+         hard-coded data-target="#hall-*" buttons.)
     ==================================================================== -->
-    <section id="hero" class="hero" aria-labelledby="hero-sr-title">
-      <!-- Sticky stage is FIRST inside the section so it can stick to the top
-           while the spacer below it provides the scroll runway. (Reversing
-           order made the section non-scrollable — fixed 2026-06-01.) -->
-      <div class="hero__sticky" data-stage="static-bg">
 
-        <!-- Layer A: static background (frame-1.png — desert vista) — LCP candidate -->
-        <picture class="hero__static-bg" aria-hidden="true">
-          <source media="(max-width: 768px)" type="image/webp"
-                  srcset="/assets/images/brand/hero-static-mobile.webp">
-          <source type="image/webp" srcset="/assets/images/brand/hero-static.webp">
-          <img src="/assets/images/brand/hero-static.jpg" alt=""
-               width="1920" height="1080"
-               loading="eager" decoding="sync" fetchpriority="high">
-        </picture>
-
-        <!-- Layer B: title reveal — central GAMOS brand logo (2026-06-02).
-             Replaces the previous Bodoni Moda SVG-mask wordmark. The <img>
-             IS the visual brand mark; the <h1.hero__sr-title> is the real
-             screen-reader heading. -->
-        <div class="hero__title-stack" aria-hidden="true">
-          <img class="hero__logo"
-               src="/assets/images/brand/logo-central.webp"
-               alt=""
-               width="1200" height="600"
-               decoding="async"
-               fetchpriority="high">
-
-          <!-- Real heading for SR + SEO (visually hidden — the logo is the visual). -->
-          <h1 id="hero-sr-title" class="hero__sr-title">GAMOS — מתחם אירועים יוקרתי</h1>
-        </div>
-
-        <!-- Layer C: scroll-driven canvas frame renderer.
-             Replaces <video class="hero__video"> as of 2026-06-01 (Agent 21,
-             video-to-website skill migration). Frames live at
-             /assets/frames/hero/frame_NNNN.webp; the manifest at the URL
-             below tells canvas-frame-renderer.js the count + dimensions.
-             hero-video-scrub.js fetches the manifest at progress >= 0.06
-             (Stage A → B) so Phase-1 frames are decoded before Stage C.
-
-             A static <picture> sits beneath as the no-JS / pre-load poster;
-             once .is-ready lands on the canvas, CSS hides the poster. -->
-        <picture class="hero__scrub-poster" aria-hidden="true">
-          <source srcset="/assets/video/hero-poster.jpg" type="image/jpeg">
-          <img src="/assets/video/hero-poster.jpg" alt=""
-               width="1920" height="1080"
-               loading="lazy" decoding="async">
-        </picture>
-        <canvas class="hero__canvas"
-                data-manifest-url="/assets/frames/hero/manifest.json"
-                aria-hidden="true"></canvas>
-
-        <!-- Layer D: portal HOTSPOTS — invisible buttons positioned exactly
-             over the bubbles in the hero canvas (which is the master video
-             frame). The bubbles in the canvas are part of the cinematic
-             plate; we layer transparent <img> overlays (from PSB exports)
-             on top so we can apply hover glow + click feedback per bubble.
-
-             Reveal at hero progress >= 0.92 via .portals.is-active. -->
-        <aside id="portals" class="portals" aria-label="קיצורים לאולם וריזורט">
-          <button class="portal portal--resort"
-                  type="button"
-                  data-target="#hall-resort"
-                  aria-label="עבור לריזורט וחדרי האירוח">
-            <img class="portal__overlay"
-                 src="/assets/images/brand/portal-resort-bubble.webp"
-                 alt="" aria-hidden="true"
-                 loading="eager" decoding="async">
-            <span class="portal__label">ריזורט</span>
-          </button>
-
-          <button class="portal portal--venue"
-                  type="button"
-                  data-target="#hall-venue"
-                  aria-label="עבור לאולם האירועים">
-            <img class="portal__overlay"
-                 src="/assets/images/brand/portal-venue-bubble.webp"
-                 alt="" aria-hidden="true"
-                 loading="eager" decoding="async">
-            <span class="portal__label">אולם</span>
-          </button>
-        </aside>
-
-      </div>
-
-      <!-- Spacer dictates total scroll length (700vh). It sits AFTER the
-           sticky element so the sticky has runway to stick against. -->
-      <div class="hero__spacer" aria-hidden="true"></div>
-    </section>
-
-    <!-- ====================================================================
-         #hall-venue — אולם האירועים (GAMOS EVENTS)
-         Scroll-scene scaffold (Agent 18, 2026-06-01) — POSTER-KEN-BURNS mode.
-         No video source yet → poster image with CSS-driven Ken-Burns drift.
-         When real video lands: see docs/adding-hall-video.md (one-file edit).
-         Copy: hybrid of site-content-map.md §3 (live "אהבה ממבט ראשון" + glass walls
-         + 1000 guests) + rebuild section context (cinematic frame for the event).
-    ==================================================================== -->
-    <section id="hall-venue" class="scroll-scene hall-venue"
-             data-scrub="venue"
-             data-scrub-mode="poster-ken-burns"
-             data-scrub-spacer-vh="300"
-             style="--scene-spacer: 300vh;"
-             aria-labelledby="hall-venue-title">
-      <div class="scroll-scene__sticky">
-        <!-- Future: replace this <picture> with <video class="scroll-scene__video">
-             and remove data-scrub-mode="poster-ken-burns" on the <section>.
-             See docs/adding-hall-video.md for the exact swap. -->
-        <picture class="scroll-scene__poster" aria-hidden="true">
-          <source srcset="/assets/img/venue-poster.webp" type="image/webp">
-          <img src="/assets/img/venue-poster.jpg" alt=""
-               width="1920" height="1080" loading="lazy" decoding="async">
-        </picture>
-
-        <div class="scroll-scene__overlay">
-          <header class="section-header">
-            <p class="section-header__eyebrow">GAMOS EVENTS</p>
-            <h2 id="hall-venue-title" class="section-header__title">אהבה ממבט ראשון</h2>
-            <p class="section-header__lede">
-              גן אירועים עם חופה מרחפת מעל המדבר, ואולם של אלף אורחים מאחוריו. קירות זכוכית, תקרה גבוהה, נוף שלא נגמר.
-            </p>
-          </header>
-        </div>
-      </div>
-
-      <div class="scroll-scene__spacer" aria-hidden="true"></div>
-
-      <div class="scroll-scene__post">
-        <ul class="hall-venue__features-scaffold" role="list">
-          <li class="feature">
-            <h3>עד <bdi>1,000</bdi> אורחים בערב אחד</h3>
-            <p>אם זאת חתונה של 200 או של אלף, אצלנו זה מרגיש אותו דבר, מסביב לכם.</p>
-          </li>
-          <li class="feature">
-            <h3>קירות זכוכית, תקרה גבוהה</h3>
-            <p>החלל פתוח לכל הכיוונים, האור נכנס מכל מקום, אקוסטיקה רכה גם כשרחבת הריקודים פעילה.</p>
-          </li>
-          <li class="feature">
-            <h3>הגברה, תאורה ומסכי לד</h3>
-            <p>הכול קבוע במקום, מותקן ומכוון. בלי השכרות חיצוניות ובלי הפתעות.</p>
-          </li>
-          <li class="feature">
-            <h3>שף בית, כשרות מהודרת</h3>
-            <p>תפריט שאתם מרכיבים יחד עם השף, התאמה לאלרגיות וצמחונים ללא תוספת מחיר.</p>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- ====================================================================
-         #hall-resort — ריזורט
-         Scroll-scene scaffold (Agent 18, 2026-06-01) — POSTER-KEN-BURNS mode.
-    ==================================================================== -->
-    <section id="hall-resort" class="scroll-scene hall-resort"
-             data-scrub="resort"
-             data-scrub-mode="poster-ken-burns"
-             data-scrub-spacer-vh="300"
-             style="--scene-spacer: 300vh;"
-             aria-labelledby="hall-resort-title">
-      <div class="scroll-scene__sticky">
-        <!-- Future: replace with <video class="scroll-scene__video"> per docs/adding-hall-video.md. -->
-        <picture class="scroll-scene__poster" aria-hidden="true">
-          <source srcset="/assets/img/resort-poster.webp" type="image/webp">
-          <img src="/assets/img/resort-poster.jpg" alt=""
-               width="1920" height="1080" loading="lazy" decoding="async">
-        </picture>
-
-        <div class="scroll-scene__overlay">
-          <header class="section-header">
-            <p class="section-header__eyebrow">GAMOS RESORT</p>
-            <h2 id="hall-resort-title" class="section-header__title">חוויה שטרם הכרתם בישראל</h2>
-            <p class="section-header__lede">
-              גן, אולם, חדרי אירוח ובריכת חוף, הכל באותו מתחם. אורחים נשארים ללילה, מתעוררים לבוקר אחר.
-            </p>
-          </header>
-        </div>
-      </div>
-
-      <div class="scroll-scene__spacer" aria-hidden="true"></div>
-
-      <div class="scroll-scene__post">
-        <ul class="hall-resort__features" role="list">
-          <li class="feature">
-            <h3>בריכת חוף ענקית</h3>
-            <p>אורחים שוחים ביום, אוכלים בערב, נשארים ללילה. הילדים לא רוצים לצאת.</p>
-          </li>
-          <li class="feature">
-            <h3>חדרי אירוח בלב המתחם</h3>
-            <p>אין נסיעות, אין מוניות, אין אורחים שמפסידים את הסוף. כולם בבית.</p>
-          </li>
-          <li class="feature">
-            <h3>נוף פתוח אל המדבר</h3>
-            <p>השקיעה עושה את העבודה לבד, ההפקה רק צריכה לא להפריע.</p>
-          </li>
-          <li class="feature">
-            <h3>אולם וריזורט יחד</h3>
-            <p>אירוע ביום וערב באותו מתחם, או חתונה ארוכה שלא רוצה להיגמר.</p>
-          </li>
-        </ul>
-      </div>
-    </section>
 
     <!-- ====================================================================
          #lounge — teaser
