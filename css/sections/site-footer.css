@@ -163,18 +163,81 @@ a.site-footer__contact-value:focus-visible {
   color: var(--accent-glow);
 }
 
-/* ----- Social row ----- */
-
+/* ----- Social row -----
+   2026-06-03: replaced text-only "Instagram" / "Facebook" labels with real
+   SVG icons (assets/img/icons/{instagram,facebook}.svg, inlined into the
+   markup). Both glyphs draw with currentColor → they pick up the brass
+   palette of the footer link state and shift to brass-glow on hover/focus,
+   matching the rest of the link affordance. */
 .site-footer__social {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4);
+  gap: var(--space-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-.site-footer__social .site-footer__link {
+.site-footer__social-link {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
+  justify-content: center;
+  inline-size: 40px;
+  block-size: 40px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--brass-glow) 35%, transparent);
+  background: color-mix(in srgb, var(--brass) 8%, transparent);
+  color: var(--accent-glow);
+  text-decoration: none;
+  transition:
+    color      var(--dur-base) var(--ease-out-cinema),
+    background var(--dur-base) var(--ease-out-cinema),
+    border-color var(--dur-base) var(--ease-out-cinema),
+    transform  var(--dur-base) var(--ease-out-cinema);
+}
+
+.site-footer__social-link:hover,
+.site-footer__social-link:focus-visible {
+  color: var(--ivory);
+  background: color-mix(in srgb, var(--brass) 60%, transparent);
+  border-color: var(--brass-glow);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.site-footer__social-link:focus-visible {
+  outline: 3px solid var(--brass);
+  outline-offset: 3px;
+}
+
+.site-footer__social-icon {
+  inline-size: 18px;
+  block-size: 18px;
+  display: block;
+}
+
+/* The text label stays in the markup for screen readers, but the icon
+   carries the visual; hide the text without removing it from the a11y tree. */
+.site-footer__social-label {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-footer__social-link {
+    transition: none;
+  }
+  .site-footer__social-link:hover,
+  .site-footer__social-link:focus-visible {
+    transform: none;
+  }
 }
 
 /* ----- Bottom strip: copyright + legal links ----- */
