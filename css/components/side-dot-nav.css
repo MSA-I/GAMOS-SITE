@@ -90,6 +90,20 @@
   background-color: rgba(207, 174, 131, 0.3);  /* --brass at 30% */
 }
 
+/* Placeholder dots — target section not yet in DOM. Muted, non-interactive,
+   tooltip suppressed. As soon as the section's id="…" lands and the user
+   re-runs init (or just reloads), the dot loses [data-placeholder] and
+   becomes a normal dot. */
+.side-dot-nav__dot[data-placeholder] {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+.side-dot-nav__dot[data-placeholder]:hover {
+  transform: none;
+  background-color: transparent;
+}
+
 .side-dot-nav__dot[aria-current="true"] {
   background-color: var(--brass);
   box-shadow: 0 0 12px var(--brass-glow);

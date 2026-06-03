@@ -36,21 +36,29 @@
 // Constants — section list (per spec §9)
 // ----------------------------------------------------------------------------
 
-// 2026-06-03: order updated to match index.html DOM order — culinary now
-// precedes rooms (per user request). The active-dot picker (below) is
-// scroll-position-based, not intersection-ratio-based, so HUGE scroll-scenes
-// like culinary (1100vh spacer) correctly hold the active state across their
-// full scrub instead of losing to whichever adjacent section has more pixels
-// in view.
+// 2026-06-03: 13 dots — placeholder roster while the new hero component is
+// being wired in. Each entry is { id, label }; ids that don't yet exist in
+// the DOM are skipped at init time (the picker filters via getElementById,
+// see init() below) so nothing crashes — the dot just doesn't render. The
+// user will assign each dot to its real section in a follow-up pass.
+//
+// To re-wire: change `id` to match the section's id="…" attribute and
+// `label` to the dot's hover-tooltip Hebrew text. Order in this array =
+// visual top-to-bottom order on the right edge.
 const SECTIONS = [
-  { id: "hero",        label: "פתיחה" },
-  { id: "hall-resort", label: "ריזורט" },
-  { id: "hall-venue",  label: "אולם" },
-  { id: "culinary",    label: "קולינריה" },
-  { id: "rooms",       label: "חדרים" },
-  { id: "about",       label: "אודות" },
-  { id: "testimonials",label: "המלצות" },
-  { id: "contact",     label: "צור קשר" },
+  { id: "hero",         label: "פתיחה" },
+  { id: "section-2",    label: "סקציה 2" },
+  { id: "section-3",    label: "סקציה 3" },
+  { id: "hall-venue",   label: "אולם" },
+  { id: "hall-resort",  label: "ריזורט" },
+  { id: "lounge",       label: "לאונג'" },
+  { id: "culinary",     label: "קולינריה" },
+  { id: "rooms",        label: "חדרים" },
+  { id: "about",        label: "אודות" },
+  { id: "testimonials", label: "המלצות" },
+  { id: "gallery",      label: "גלריה" },
+  { id: "kosher",       label: "כשרות" },
+  { id: "contact",      label: "צור קשר" },
 ];
 
 // Hero dominance threshold: while hero progress < this, hero dot is active.
@@ -80,8 +88,7 @@ const state = {
   heroProgress:   0,
   unsubHero:      null,
   hookWaitTimer:  null,
-  rafId:          0,              // queued RAF id for the picker
-  scrollDirty:    false,          // true when a scroll/resize is pending
+  rafId:          0,              // active RAF id for the continuous picker
   lastActiveId:   null,           // skip DOM writes when active hasn't changed
   bound: {
     onClick:        null,
@@ -89,8 +96,6 @@ const state = {
     onLoadingShow:  null,
     onLoadingHide:  null,
     onMediaChange:  null,
-    onScroll:       null,
-    onResize:       null,
   },
 };
 
@@ -124,6 +129,13 @@ function buildNavDom(dots) {
     a.className = "side-dot-nav__dot";
     a.href = "#" + dot.id;
     a.dataset.section = dot.id;
+    // Placeholder dots (no DOM target yet) are rendered but inert — muted
+    // visually + not in the tab order + aria-disabled so SR users skip them.
+    if (!dot.sectionEl) {
+      a.setAttribute("data-placeholder", "");
+      a.setAttribute("aria-disabled", "true");
+      a.setAttribute("tabindex", "-1");
+    }
     // Active by default on the first dot only (hero).
     if (dot.id === "hero") {
       a.setAttribute("aria-current", "true");
@@ -156,7 +168,7 @@ function setActive(sectionId) {
 }
 
 // ----------------------------------------------------------------------------
-// Scroll-position-based active picker
+// Active-dot picker — viewport-rect based, continuous RAF loop
 // ----------------------------------------------------------------------------
 //
 // Why not IntersectionObserver? Sections of wildly different heights (the
@@ -164,54 +176,73 @@ function setActive(sectionId) {
 // intersectionRatio worthless: a giant section never reaches a high ratio
 // inside an inset rootMargin, while a small adjacent section can reach 1.0
 // with just a sliver of overlap — flipping the active dot off culinary the
-// moment rooms peeks in. The fix is to pick by ABSOLUTE scroll position:
-// among all section tops above the active line (40% from top), the LAST one
-// (largest top) wins. This is monotone with scroll, so the active dot tracks
-// the section the reader is actually inside.
+// moment rooms peeks in.
+//
+// Why getBoundingClientRect() and not offsetTop? offsetTop is relative to
+// the offsetParent. The sticky-footer rule put `position: relative` on
+// <main>, which changed every section's offsetParent to <main> — so
+// offsetTop went from "document Y" to "main-relative Y" and the picker
+// stopped landing on the correct section. Rect-based reads are always in
+// viewport coordinates, immune to ancestor positioning quirks.
+//
+// Why continuous RAF instead of scroll listener? Smooth-scroll libs and
+// long sticky scrubs can dirty layout without firing user-visible scroll
+// events. A 60fps poll costs ~10 rect reads per frame (free, all from
+// composited layout) and guarantees the dot is always live.
 
 function pickActiveSection() {
   if (state.suppressed) return null;
 
-  // Hero gets a dedicated dominance window driven by its own progress hook
-  // (sticky over a 700vh spacer, so naive scroll math would flicker). Once
-  // hero progress crosses the threshold, we hand off to scroll-position.
+  // Hero is special-cased through its own progress hook (sticky over a
+  // 700vh spacer would confuse a naive picker).
   if (state.heroProgress < HERO_DOMINANCE_END) return "hero";
 
-  const activeY = window.scrollY + window.innerHeight * ACTIVE_LINE_RATIO;
+  const vh = window.innerHeight;
+  const activeY = vh * ACTIVE_LINE_RATIO;     // viewport-relative line
 
+  // Walk dots; the active section is the one whose viewport-relative
+  // top is the LATEST (largest) value still <= activeY. Equivalent to
+  // "the last section the user has scrolled the active line past."
   let bestId  = state.dots[0] ? state.dots[0].id : null;
   let bestTop = -Infinity;
 
   for (const dot of state.dots) {
-    if (!dot.sectionEl) continue;
-    // offsetTop is layout-thrash-free vs getBoundingClientRect+scrollY.
-    // Scroll containers other than <html> aren't in play here.
-    const top = dot.sectionEl.offsetTop;
-    if (top <= activeY && top > bestTop) {
-      bestTop = top;
+    const el = dot.sectionEl;
+    if (!el) continue;
+    const rect = el.getBoundingClientRect();
+    // Active line crosses this section if section.top <= line < section.bottom
+    // — but we want the section whose top is just-above-or-at the line, which
+    // is the same condition expressed monotonically.
+    if (rect.top <= activeY && rect.top > bestTop) {
+      bestTop = rect.top;
       bestId  = dot.id;
     }
   }
+
+  // Edge case: the user scrolls to the very bottom and the LAST section's
+  // top is above the active line, but a later section (e.g. contact) has
+  // its top BELOW the line because the page has run out of scroll. Catch
+  // that by snapping to the last section if its bottom is in view.
+  const last = state.dots[state.dots.length - 1];
+  if (last && last.sectionEl) {
+    const r = last.sectionEl.getBoundingClientRect();
+    if (r.bottom <= vh + 4 && r.bottom > 0) {
+      bestId = last.id;
+    }
+  }
+
   return bestId;
 }
 
-function scheduleUpdate() {
-  if (state.scrollDirty) return;
-  state.scrollDirty = true;
-  state.rafId = window.requestAnimationFrame(() => {
-    state.scrollDirty = false;
-    const id = pickActiveSection();
-    if (id) setActive(id);
-  });
+function rafLoop() {
+  state.rafId = window.requestAnimationFrame(rafLoop);
+  if (state.suppressed) return;
+  const id = pickActiveSection();
+  if (id) setActive(id);
 }
 
 function installScrollPicker() {
-  state.bound.onScroll = scheduleUpdate;
-  state.bound.onResize = scheduleUpdate;
-  window.addEventListener("scroll", state.bound.onScroll, { passive: true });
-  window.addEventListener("resize", state.bound.onResize);
-  // Prime the active dot for the initial scroll position.
-  scheduleUpdate();
+  rafLoop();
 }
 
 // ----------------------------------------------------------------------------
@@ -243,13 +274,11 @@ function attachHeroHook() {
       const result = onProgress((p) => {
         state.heroProgress = p;
         if (state.suppressed) return;
-        // While hero dominates, force the hero dot active. After crossing the
-        // threshold, the scroll-position picker takes over — schedule it so
-        // the hand-off happens immediately, not on the next scroll.
+        // While hero dominates, force the hero dot active. After crossing
+        // the threshold, the RAF picker (running every frame) takes over —
+        // no extra scheduling needed.
         if (p < HERO_DOMINANCE_END) {
           setActive("hero");
-        } else {
-          scheduleUpdate();
         }
       });
       if (typeof result === "function") {
@@ -323,7 +352,10 @@ function onKeydown(event) {
   if (!active || !active.classList.contains("side-dot-nav__dot")) return;
   if (!state.nav.contains(active)) return;
 
-  const dotsEls = state.dots.map((d) => d.el).filter(Boolean);
+  // Only navigable dots (skip placeholders without a real DOM target).
+  const dotsEls = state.dots
+    .filter((d) => d.el && d.sectionEl)
+    .map((d) => d.el);
   const idx = dotsEls.indexOf(active);
   if (idx < 0) return;
 
@@ -378,21 +410,19 @@ export function init() {
   if (state.initialised) return;
   if (typeof document === "undefined" || !document.body) return;
 
-  // 1. Filter SECTIONS to only those whose targets actually exist.
+  // 1. Build the dot list. Targets that aren't in the DOM yet (e.g. the new
+  //    hero component is still being wired) still render as visual placeholders
+  //    so the rail count stays stable; they just have no scroll target and the
+  //    active-picker skips them. The user can rebind ids later without the
+  //    rail flickering between counts.
   const dots = [];
   for (const def of SECTIONS) {
     const sectionEl = document.getElementById(def.id);
     if (!sectionEl) {
       // eslint-disable-next-line no-console
-      console.warn(`[side-dot-nav] section "#${def.id}" missing — dot skipped.`);
-      continue;
+      console.warn(`[side-dot-nav] section "#${def.id}" missing — dot rendered as placeholder.`);
     }
     dots.push({ id: def.id, label: def.label, el: null, sectionEl });
-  }
-  if (dots.length === 0) {
-    // eslint-disable-next-line no-console
-    console.warn("[side-dot-nav] no sections found — module disabled.");
-    return;
   }
   state.dots = dots;
 
@@ -446,16 +476,10 @@ export function destroy() {
   }
   state.unsubHero = null;
 
-  // 3. Cancel any queued RAF + remove scroll/resize listeners.
+  // 3. Cancel the picker RAF loop.
   if (state.rafId) {
     try { window.cancelAnimationFrame(state.rafId); } catch { /* ignore */ }
     state.rafId = 0;
-  }
-  if (state.bound.onScroll) {
-    window.removeEventListener("scroll", state.bound.onScroll);
-  }
-  if (state.bound.onResize) {
-    window.removeEventListener("resize", state.bound.onResize);
   }
 
   // 4. Remove listeners.
@@ -492,13 +516,10 @@ export function destroy() {
   state.reducedMotion = false;
   state.suppressed    = false;
   state.heroProgress  = 0;
-  state.scrollDirty   = false;
   state.lastActiveId  = null;
   state.bound.onClick       = null;
   state.bound.onKeydown     = null;
   state.bound.onLoadingShow = null;
   state.bound.onLoadingHide = null;
   state.bound.onMediaChange = null;
-  state.bound.onScroll      = null;
-  state.bound.onResize      = null;
 }
