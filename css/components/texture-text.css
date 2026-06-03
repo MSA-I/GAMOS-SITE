@@ -35,17 +35,17 @@
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
 
   /* ---- Shared paint base ----
-     2026-06-03: switched background-size from `cover` (which fit the entire
-     texture inside the heading box and made each glyph show only a tiny
-     speck of texture) to a value that scales the texture much larger than
-     the heading. Each glyph now reveals a generous slice of the gold flecks.
-     `auto 280%` keeps the texture's aspect ratio and ties height to the
-     element's block-size — about 2.8× the line-height. */
+     2026-06-03: background-size changed to `100% 100%`. The previous
+     `auto 280%` over-zoomed the texture: each glyph saw only a tiny crop,
+     and if that crop happened to land in a near-bg-luma patch the letter
+     vanished. Forcing the texture to fill the heading box exactly means
+     every glyph samples the entire texture; combined with luma-clamped
+     textures (typo-on-light ≤ 112, typo-on-dark ≥ 153), no letter ever
+     blends into ivory or cocoa. */
   .texture-text,
   .texture-text--dark,
   .texture-text--light,
   .section-header__title,
-  .section-header__eyebrow,
   .lounge__title,
   .rooms__name,
   .hall-venue h1,
@@ -54,7 +54,7 @@
   .hall-resort h2,
   .feature h3 {
     background-repeat: no-repeat;
-    background-size: auto 280%;
+    background-size: 100% 100%;
     background-position: center;
     -webkit-background-clip: text;
     background-clip: text;
@@ -63,11 +63,11 @@
   }
 
   /* ---- Default: DARK texture (gold flecks on near-black) for headings on
-     light/ivory surfaces — the dominant case across the site. ---- */
+     light/ivory surfaces — the dominant case across the site. Hall venue
+     and hall resort features sit on ivory too; they share the default. ---- */
   .texture-text,
   .texture-text--dark,
   .section-header__title,
-  .section-header__eyebrow,
   .lounge__title,
   .rooms__name,
   .hall-venue h1,
@@ -78,37 +78,39 @@
     background-image: var(--typo-on-light);
   }
 
-  /* ---- LIGHT texture override for content on dark surfaces ----
-     Sections with a dark background opt in via `data-bg="dark"` / `.bg-dark`,
-     or by being one of the enumerated dark-bg sections below. The light
-     gold-on-cream texture replaces the dark default so headings stand out
-     against cocoa/desert backgrounds.
-     Sections covered: Hero, Hall-venue, Hall-resort, Kosher, Culinary,
-     Footer. */
+  /* ---- LIGHT texture override for content on dark surfaces, plus the
+     marquee band, the gallery title, and the kosher title (which the user
+     explicitly marked as "כתב כהה, טקסטורה בהירה"). Eyebrows are NOT
+     filled with texture by default; they stay solid brass at small sizes
+     (texture only earns its place at display sizes per the impeccable
+     guidance — small text + texture is unreadable). ---- */
   [data-bg="dark"] .section-header__title,
-  [data-bg="dark"] .section-header__eyebrow,
   .bg-dark .section-header__title,
-  .bg-dark .section-header__eyebrow,
   .culinary .section-header__title,
-  .culinary .section-header__eyebrow,
-  .site-footer .section-header__title,
-  .site-footer .section-header__eyebrow,
+  .site-footer .site-footer__claim,
   .hero .section-header__title,
-  .hero .section-header__eyebrow,
-  .hall-venue .section-header__title,
-  .hall-venue .section-header__eyebrow,
-  .hall-venue h1,
-  .hall-venue h2,
-  .hall-venue .feature h3,
-  .hall-resort .section-header__title,
-  .hall-resort .section-header__eyebrow,
-  .hall-resort h1,
-  .hall-resort h2,
-  .hall-resort .feature h3,
+  .gallery .section-header__title,
   .kosher .section-header__title,
-  .kosher .section-header__eyebrow,
+  .marquee__text,
   .texture-text--light {
     background-image: var(--typo-on-dark) !important;
+  }
+
+  /* The light-bg textures need the same paint base as the default group —
+     opt them in here so background-size/clip apply to them too. */
+  .marquee__text,
+  .gallery .section-header__title,
+  .kosher .section-header__title,
+  .culinary .section-header__title,
+  .hero .section-header__title,
+  .site-footer .site-footer__claim {
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
   }
 
   /* ---- Per-element overrides: legacy `.texture-text--dark/--light`
