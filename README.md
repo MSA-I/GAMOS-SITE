@@ -102,6 +102,22 @@ renderer modes:
 See [`architecture/scroll-orchestrator.md`](./architecture/scroll-orchestrator.md)
 and [`docs/adding-hall-video.md`](./docs/adding-hall-video.md) for swap procedures.
 
+### Section order
+
+Top-to-bottom narrative in `index.html`:
+
+```
+hero → hall-venue → hall-resort → lounge → culinary → rooms
+     → about → testimonials → events → gallery → kosher → contact → footer
+```
+
+The right-edge dot-nav (`js/side-dot-nav.js`) surfaces the 8 hub sections
+and tracks the active one via a scroll-position picker (the section whose top
+is the latest one above the 40%-from-top "active line" — robust to wildly
+unequal section heights like the 1100vh culinary scrub vs. the ~120vh rooms
+gallery). Hero is special-cased through `window.gamosHero.onProgress` because
+its sticky 700vh spacer would confuse a naive picker.
+
 ## Constitution
 
 The single source of process truth is [`CLAUDE.md`](./CLAUDE.md). It locks the

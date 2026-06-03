@@ -527,6 +527,121 @@
     </section>
 
     <!-- ====================================================================
+         #culinary — קולינריה (scroll-scene + dish gallery)
+         Owner: Agent 17 — first live scroll-scene (orchestrator-driven).
+         Spec : architecture/scroll-orchestrator.md §3 (DOM contract).
+         Spacer: 1100vh (long scrub feel over 180 frames).
+         2026-06-03: moved BEFORE #rooms per user — culinary now precedes
+         the rooms gallery in the narrative.
+    ==================================================================== -->
+    <section id="culinary"
+             class="culinary scroll-scene"
+             data-scrub="culinary"
+             data-scrub-mode="canvas-frames"
+             data-scrub-spacer-vh="1100"
+             aria-labelledby="culinary-title">
+
+      <div class="scroll-scene__sticky">
+        <picture class="scroll-scene__poster" aria-hidden="true">
+          <img src="/assets/video/culinary-poster.jpg"
+               alt="" width="1600" height="900"
+               loading="lazy" decoding="async">
+        </picture>
+
+        <canvas class="scroll-scene__canvas"
+                data-manifest-url="/assets/frames/culinary/manifest.json"
+                data-scrollytelling
+                aria-hidden="true"></canvas>
+
+        <div class="scroll-scene__overlay">
+          <header class="section-header">
+            <p class="section-header__eyebrow">המטבח שלנו</p>
+            <h2 id="culinary-title" class="section-header__title texture-text texture-text--light">
+              חוויה קולינרית בלתי נשכחת
+            </h2>
+            <p class="section-header__lede">
+              מסע גסטרונומי של מנות מנצחות: מיטב המרכיבים הטריים בשילוב צוות מקצועי שיעשה לכם שמח בצלחת. אירועים שנועדו לעורר את החושים ולהשאיר טעם של עוד.
+            </p>
+          </header>
+        </div>
+      </div>
+
+      <div class="scroll-scene__spacer" aria-hidden="true"
+           style="--scene-spacer: 1100vh;"></div>
+
+      <div class="scroll-scene__post culinary__post">
+        <ul class="culinary__grid" role="list" aria-label="גלריית מנות">
+          <li class="culinary__item">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/culinary/01.half.webp">
+              <img src="/assets/images/culinary/01.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנת פתיחה מעוטרת בעדינות">
+            </picture>
+            <figcaption class="culinary__item-caption">
+              <span class="culinary__item-tag">פתיחה</span>
+              <h3 class="culinary__item-name">מנת פתיחה</h3>
+              <p class="culinary__item-desc">פתיח עדין שמכין את החיך לערב של טעמים.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/culinary/05.half.webp">
+              <img src="/assets/images/culinary/05.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנה ראשונה בהגשה אמנותית">
+            </picture>
+            <figcaption class="culinary__item-caption">
+              <span class="culinary__item-tag">ראשונה</span>
+              <h3 class="culinary__item-name">מנה ראשונה</h3>
+              <p class="culinary__item-desc">מרכיבים טריים בהגשה מוקפדת ומדויקת.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/culinary/07.half.webp">
+              <img src="/assets/images/culinary/07.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנה עיקרית עשירה ומלאת טעם">
+            </picture>
+            <figcaption class="culinary__item-caption">
+              <span class="culinary__item-tag">עיקרית</span>
+              <h3 class="culinary__item-name">מנה עיקרית</h3>
+              <p class="culinary__item-desc">לב הארוחה: עשיר, מאוזן ובלתי נשכח.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/culinary/09.half.webp">
+              <img src="/assets/images/culinary/09.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="צלחת שף בעיצוב מודרני">
+            </picture>
+            <figcaption class="culinary__item-caption">
+              <span class="culinary__item-tag">שף</span>
+              <h3 class="culinary__item-name">צלחת השף</h3>
+              <p class="culinary__item-desc">יצירה אישית של הצוות, נגיעה של מקצועיות.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/culinary/12.half.webp">
+              <img src="/assets/images/culinary/12.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="קינוח מעודן בסיום הארוחה">
+            </picture>
+            <figcaption class="culinary__item-caption">
+              <span class="culinary__item-tag">קינוח</span>
+              <h3 class="culinary__item-name">קינוח</h3>
+              <p class="culinary__item-desc">סיום מתוק ומעודן שמשאיר טעם של עוד.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/culinary/13.half.webp">
+              <img src="/assets/images/culinary/13.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מגש פירות ומתוקים חגיגי">
+            </picture>
+            <figcaption class="culinary__item-caption">
+              <span class="culinary__item-tag">מתוקים</span>
+              <h3 class="culinary__item-name">פינת המתוקים</h3>
+              <p class="culinary__item-desc">שפע צבעוני שחותם את החגיגה בנימה מתוקה.</p>
+            </figcaption>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ====================================================================
          #rooms — חדרי נופש
     ==================================================================== -->
     <section id="rooms" class="rooms" data-rooms-stage aria-labelledby="rooms-title">
@@ -645,131 +760,6 @@
             </figure>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- ====================================================================
-         #culinary — קולינריה (scroll-scene + dish gallery)
-         Owner: Agent 17 — first live scroll-scene (orchestrator-driven).
-         Spec : architecture/scroll-orchestrator.md §3 (DOM contract).
-         Spacer: 250vh (per scroll-video-system.md §4.2 — short scrub feel
-                 because the source video is ~6s).
-    ==================================================================== -->
-    <section id="culinary"
-             class="culinary scroll-scene"
-             data-scrub="culinary"
-             data-scrub-mode="canvas-frames"
-             data-scrub-spacer-vh="1100"
-             aria-labelledby="culinary-title">
-
-      <div class="scroll-scene__sticky">
-        <!-- Poster fallback (visible behind canvas until .is-ready lands).
-             Also the no-JS / reduced-motion default visual. aria-hidden
-             because the heading inside the overlay carries the accessible name. -->
-        <picture class="scroll-scene__poster" aria-hidden="true">
-          <img src="/assets/video/culinary-poster.jpg"
-               alt="" width="1600" height="900"
-               loading="lazy" decoding="async">
-        </picture>
-
-        <!-- Scrub canvas — driven by scroll-scene.js + canvas-frame-renderer.
-             Replaces <video class="scroll-scene__video"> as of 2026-06-01
-             (Agent 21, video-to-website skill migration). Pre-extracted 30fps
-             WebP frames at /assets/frames/culinary/. Manifest URL below is
-             fetched on init; once Phase 1 (first 10 frames) preloads, .is-ready
-             is added and CSS hides the poster. -->
-        <canvas class="scroll-scene__canvas"
-                data-manifest-url="/assets/frames/culinary/manifest.json"
-                data-scrollytelling
-                aria-hidden="true"></canvas>
-
-        <div class="scroll-scene__overlay">
-          <header class="section-header">
-            <p class="section-header__eyebrow">המטבח שלנו</p>
-            <h2 id="culinary-title" class="section-header__title texture-text texture-text--light">
-              חוויה קולינרית בלתי נשכחת
-            </h2>
-            <p class="section-header__lede">
-              מסע גסטרונומי של מנות מנצחות: מיטב המרכיבים הטריים בשילוב צוות מקצועי שיעשה לכם שמח בצלחת. אירועים שנועדו לעורר את החושים ולהשאיר טעם של עוד.
-            </p>
-          </header>
-        </div>
-      </div>
-
-      <div class="scroll-scene__spacer" aria-hidden="true"
-           style="--scene-spacer: 1100vh;"></div>
-
-      <!-- After the sticky stage releases — the static dish gallery.
-           Agents 08/09 replace each li[data-placeholder] with real <picture> + caption. -->
-      <div class="scroll-scene__post culinary__post">
-        <ul class="culinary__grid" role="list" aria-label="גלריית מנות">
-          <li class="culinary__item">
-            <picture>
-              <source type="image/webp" srcset="/assets/images/culinary/01.half.webp">
-              <img src="/assets/images/culinary/01.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנת פתיחה מעוטרת בעדינות">
-            </picture>
-            <figcaption class="culinary__item-caption">
-              <span class="culinary__item-tag">פתיחה</span>
-              <h3 class="culinary__item-name">מנת פתיחה</h3>
-              <p class="culinary__item-desc">פתיח עדין שמכין את החיך לערב של טעמים.</p>
-            </figcaption>
-          </li>
-          <li class="culinary__item">
-            <picture>
-              <source type="image/webp" srcset="/assets/images/culinary/05.half.webp">
-              <img src="/assets/images/culinary/05.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנה ראשונה בהגשה אמנותית">
-            </picture>
-            <figcaption class="culinary__item-caption">
-              <span class="culinary__item-tag">ראשונה</span>
-              <h3 class="culinary__item-name">מנה ראשונה</h3>
-              <p class="culinary__item-desc">מרכיבים טריים בהגשה מוקפדת ומדויקת.</p>
-            </figcaption>
-          </li>
-          <li class="culinary__item">
-            <picture>
-              <source type="image/webp" srcset="/assets/images/culinary/07.half.webp">
-              <img src="/assets/images/culinary/07.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנה עיקרית עשירה ומלאת טעם">
-            </picture>
-            <figcaption class="culinary__item-caption">
-              <span class="culinary__item-tag">עיקרית</span>
-              <h3 class="culinary__item-name">מנה עיקרית</h3>
-              <p class="culinary__item-desc">לב הארוחה: עשיר, מאוזן ובלתי נשכח.</p>
-            </figcaption>
-          </li>
-          <li class="culinary__item">
-            <picture>
-              <source type="image/webp" srcset="/assets/images/culinary/09.half.webp">
-              <img src="/assets/images/culinary/09.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="צלחת שף בעיצוב מודרני">
-            </picture>
-            <figcaption class="culinary__item-caption">
-              <span class="culinary__item-tag">שף</span>
-              <h3 class="culinary__item-name">צלחת השף</h3>
-              <p class="culinary__item-desc">יצירה אישית של הצוות, נגיעה של מקצועיות.</p>
-            </figcaption>
-          </li>
-          <li class="culinary__item">
-            <picture>
-              <source type="image/webp" srcset="/assets/images/culinary/12.half.webp">
-              <img src="/assets/images/culinary/12.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="קינוח מעודן בסיום הארוחה">
-            </picture>
-            <figcaption class="culinary__item-caption">
-              <span class="culinary__item-tag">קינוח</span>
-              <h3 class="culinary__item-name">קינוח</h3>
-              <p class="culinary__item-desc">סיום מתוק ומעודן שמשאיר טעם של עוד.</p>
-            </figcaption>
-          </li>
-          <li class="culinary__item">
-            <picture>
-              <source type="image/webp" srcset="/assets/images/culinary/13.half.webp">
-              <img src="/assets/images/culinary/13.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מגש פירות ומתוקים חגיגי">
-            </picture>
-            <figcaption class="culinary__item-caption">
-              <span class="culinary__item-tag">מתוקים</span>
-              <h3 class="culinary__item-name">פינת המתוקים</h3>
-              <p class="culinary__item-desc">שפע צבעוני שחותם את החגיגה בנימה מתוקה.</p>
-            </figcaption>
-          </li>
-        </ul>
       </div>
     </section>
 
@@ -1132,6 +1122,17 @@
               <p>ימי הולדת, אירוסין וערבי הוקרה, באולם, בלאונג' או בגן.</p>
             </div>
           </details>
+
+          <details class="events__item" name="events-accordion"
+                   data-reveal="slide-left" style="--reveal-delay: 560ms;">
+            <summary class="events__summary">
+              <span>שבתות חתן</span>
+              <span class="events__chevron" aria-hidden="true">›</span>
+            </summary>
+            <div class="events__content">
+              <p>שבת אירוח שלמה במתחם הריזורט: סעודות, חדרי לינה לכל המוזמנים, ובריכה צמודה לשבת המשפחה.</p>
+            </div>
+          </details>
         </div>
       </div>
     </section>
@@ -1392,6 +1393,16 @@
                 </svg>
               </span>
               <bdi>077-9972343</bdi>
+            </a>
+          </li>
+          <li>
+            <a class="site-footer__channel" href="tel:+972778036482" dir="ltr" aria-label="חייגו לגאמוס, קו נוסף">
+              <span class="site-footer__channel-glyph" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+              </span>
+              <bdi>077-8036482</bdi>
             </a>
           </li>
           <li>
