@@ -36,19 +36,18 @@
 // Constants — section list (per spec §9)
 // ----------------------------------------------------------------------------
 
-// 2026-06-03: 13 dots — placeholder roster while the new hero component is
-// being wired in. Each entry is { id, label }; ids that don't yet exist in
-// the DOM are skipped at init time (the picker filters via getElementById,
-// see init() below) so nothing crashes — the dot just doesn't render. The
-// user will assign each dot to its real section in a follow-up pass.
+// 2026-06-03: 12 dots. The trailing #contact dot covers BOTH the contact
+// form and the routes-map reveal beneath it (same scroll continuum, single
+// hub in the user's mind). Placeholder ids (no DOM target yet) render as
+// muted dots; the picker skips them and they become navigable as soon as
+// the new component supplies the matching id.
 //
-// To re-wire: change `id` to match the section's id="…" attribute and
+// To re-wire: change `id` to match a section's id="…" attribute and
 // `label` to the dot's hover-tooltip Hebrew text. Order in this array =
 // visual top-to-bottom order on the right edge.
 const SECTIONS = [
   { id: "hero",         label: "פתיחה" },
   { id: "section-2",    label: "סקציה 2" },
-  { id: "section-3",    label: "סקציה 3" },
   { id: "hall-venue",   label: "אולם" },
   { id: "hall-resort",  label: "ריזורט" },
   { id: "lounge",       label: "לאונג'" },
