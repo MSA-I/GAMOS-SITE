@@ -21,76 +21,14 @@
    ========================================================================= */
 
 
-/* ===========================================================================
-   STICKY-FOOTER REVEAL (2026-06-03)
-   ---------------------------------------------------------------------------
-   Effect cloned from olivierlarose/sticky-footer:
-   the footer is FIXED to the bottom of the viewport at z=0; <main> sits at
-   z=1 with the page background opaque + a margin-block-end equal to the
-   footer's intrinsic height. As the user scrolls past the last section,
-   <main> slides UP off the screen and the fixed footer is gradually
-   "uncovered" underneath — like a sheet of paper being lifted to expose
-   the desk below.
-
-   Implementation notes
-   - We measure the footer height in CSS via `--footer-h` (a clamp on
-     min-block-size — final height is determined by content). JS could
-     pin it more precisely, but CSS-only is enough; reduced-motion and
-     short viewports both fall back gracefully.
-   - <main> opacity is full so it occludes the footer until scroll
-     reveals it. Background MUST be solid; ours is `--bg` (ivory).
-   - Mobile: same effect; the footer is taller there but the technique
-     scales because the CSS variable controls both the fixed element's
-     min-height AND <main>'s margin.
-   - prefers-reduced-motion: behavior is identical (no animation —
-     the reveal is purely a scroll consequence, no transitions).
-   ========================================================================= */
-
-:root {
-  /* Tuned to match the rendered footer block height. clamp() so it grows
-     with content but never overpowers a tiny phone viewport. */
-  --footer-h: clamp(560px, 72vh, 760px);
-}
-
-main#main-content {
-  position: relative;
-  z-index: 1;
-  background: var(--bg);                  /* MUST be opaque — occludes footer */
-  margin-block-end: var(--footer-h);      /* makes room for the fixed footer */
-}
-
-/* Body background is switched to cocoa so the area "behind" <main> (visible
-   inside main's bottom margin while the user is still mid-page) is the same
-   tone as the footer — the reveal is seamless. The site-footer__claim and
-   meta-strip live ABOVE this in z-order via .site-footer (z=0 fixed) but
-   since main occludes them until scrolled past, the cocoa wash is what the
-   user sees creeping in from the bottom edge. */
-body {
-  background: var(--bg-cocoa);
-}
-
 .site-footer {
-  position: fixed;
-  inset-block-end: 0;
-  inset-inline: 0;
-  z-index: 0;
-  min-block-size: var(--footer-h);
+  position: relative;
   background: var(--bg-cocoa);
   color: var(--fg-on-dark);
   padding-block: var(--space-24) var(--space-8);
   padding-inline: var(--gutter);
   overflow: hidden;
   isolation: isolate;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Stretch the inner container to the full footer height so the closing
-   block + meta + sub strip distribute through the visible reveal area. */
-.site-footer .site-footer__container {
-  min-block-size: 100%;
-  justify-content: center;
 }
 
 /* Brass aurora hairline at the very top edge — premium closing accent. */
