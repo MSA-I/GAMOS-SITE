@@ -52,7 +52,8 @@
   .hall-venue h2,
   .hall-resort h1,
   .hall-resort h2,
-  .feature h3 {
+  .feature h3,
+  .marquee__text {
     background-repeat: no-repeat;
     background-size: 100% 100%;
     background-position: center;
@@ -74,16 +75,15 @@
   .hall-venue h2,
   .hall-resort h1,
   .hall-resort h2,
-  .feature h3 {
+  .feature h3,
+  .marquee__text {
     background-image: var(--typo-on-light);
   }
 
   /* ---- LIGHT texture override for content on dark surfaces, plus the
-     marquee band, the gallery title, and the kosher title (which the user
-     explicitly marked as "כתב כהה, טקסטורה בהירה"). Eyebrows are NOT
-     filled with texture by default; they stay solid brass at small sizes
-     (texture only earns its place at display sizes per the impeccable
-     guidance — small text + texture is unreadable). ---- */
+     gallery and kosher titles (user-marked "כתב כהה, טקסטורה בהירה").
+     Eyebrows stay solid (brass), per impeccable: texture only earns its
+     place at display sizes; small text + texture reads as a smudge. ---- */
   [data-bg="dark"] .section-header__title,
   .bg-dark .section-header__title,
   .culinary .section-header__title,
@@ -91,14 +91,11 @@
   .hero .section-header__title,
   .gallery .section-header__title,
   .kosher .section-header__title,
-  .marquee__text,
   .texture-text--light {
     background-image: var(--typo-on-dark) !important;
   }
 
-  /* The light-bg textures need the same paint base as the default group —
-     opt them in here so background-size/clip apply to them too. */
-  .marquee__text,
+  /* These extra titles also need the paint base (background-clip etc.). */
   .gallery .section-header__title,
   .kosher .section-header__title,
   .culinary .section-header__title,
