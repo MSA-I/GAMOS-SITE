@@ -259,39 +259,36 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Route-maps grid — 3 hand-illustrated maps from gamos.co.il
+   #routes — מסלולי הגעה (extracted from #contact 2026-06-03 so the
+   sticky-reveal pair effect can slide #contact up over #routes).
    --------------------------------------------------------------------------- */
-.contact__routes {
-  margin-block-start: var(--space-12);
-  padding-block-start: var(--space-8);
-  border-block-start: 1px solid color-mix(in srgb, var(--cocoa) 18%, transparent);
+
+.routes {
+  background: var(--bg);
+  padding-block: var(--space-32);
 }
 
-.contact__routes-title {
-  font-family: var(--font-display-he);
-  font-size: clamp(1.5rem, 2.6vw, 2rem);
-  font-weight: var(--fw-bold);
-  color: var(--ink-deep);
-  margin: 0 0 var(--space-2);
+.routes__container {
+  max-inline-size: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
 }
 
-.contact__routes-lede {
-  font-family: var(--font-body);
-  font-size: var(--text-base);
-  color: color-mix(in srgb, var(--ink-deep) 70%, var(--ivory));
-  margin: 0 0 var(--space-6);
+.routes .section-header {
+  text-align: center;
+  margin-block-end: var(--space-10);
 }
 
-.contact__routes-grid {
+.routes__grid {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: var(--space-6);
 }
 
-.contact__routes-grid figure {
+.routes__grid figure {
   margin: 0;
   background: var(--ivory);
   padding: var(--space-3);
@@ -301,12 +298,12 @@
               box-shadow var(--dur-base) var(--ease-out-cinema);
 }
 
-.contact__routes-grid figure:hover {
+.routes__grid figure:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(83, 65, 51, 0.18);
 }
 
-.contact__routes-grid img {
+.routes__grid img {
   display: block;
   inline-size: 100%;
   block-size: auto;
@@ -315,7 +312,7 @@
   object-fit: cover;
 }
 
-.contact__routes-grid figcaption {
+.routes__grid figcaption {
   font-family: var(--font-display-he);
   font-size: var(--text-lg);
   font-weight: var(--fw-bold);
@@ -323,4 +320,50 @@
   text-align: center;
   margin-block-start: var(--space-3);
   margin-block-end: var(--space-2);
+}
+
+/* ---------------------------------------------------------------------------
+   .reveal-pair — sticky reveal between #contact and #routes
+   ---------------------------------------------------------------------------
+   Effect cloned from olivierlarose/sticky-footer:
+   #routes is position:sticky pinned to bottom:0, sitting at z-index:0.
+   #contact above it has z-index:1 and a solid --bg background, so it
+   covers #routes until the user scrolls. As the wrapper scrolls past
+   #contact, #contact slides UP off the viewport while #routes stays
+   pinned at the bottom — gradually revealed underneath, like lifting
+   a sheet of paper to expose the desk below. Pure CSS, no JS.
+
+   The wrapper itself doesn't need any positioning — both children just
+   share its scroll context.
+   --------------------------------------------------------------------------- */
+.reveal-pair {
+  position: relative;
+}
+
+.reveal-pair__top {
+  position: relative;
+  z-index: 1;
+  background: var(--bg);                  /* MUST be opaque to occlude #routes */
+}
+
+.reveal-pair__bottom {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 0;
+  /* Limit height so the reveal completes within one viewport. If routes
+     is taller than 100vh the user has to scroll past contact AND through
+     routes; capping it at viewport height + giving the inner container
+     scroll keeps the moment self-contained. */
+  min-block-size: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.reveal-pair__bottom .routes__container {
+  inline-size: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No transition logic to disable — the reveal is a scroll-position
+     consequence, not an animation. Effect stays identical. */
 }
