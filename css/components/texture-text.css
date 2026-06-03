@@ -53,7 +53,8 @@
   .hall-resort h1,
   .hall-resort h2,
   .feature h3,
-  .marquee__text {
+  .marquee__text,
+  .about__stat dd {
     background-repeat: no-repeat;
     background-size: 100% 100%;
     background-position: center;
@@ -65,7 +66,10 @@
 
   /* ---- Default: DARK texture (gold flecks on near-black) for headings on
      light/ivory surfaces — the dominant case across the site. Hall venue
-     and hall resort features sit on ivory too; they share the default. ---- */
+     and hall resort features sit on ivory too; they share the default.
+     Gallery + kosher titles also live on ivory and want the dark fill
+     (corrected 2026-06-03 — they were previously forced to the light
+     cream texture which disappears on ivory). ---- */
   .texture-text,
   .texture-text--dark,
   .section-header__title,
@@ -75,33 +79,31 @@
   .hall-resort h1,
   .hall-resort h2,
   .feature h3,
-  .marquee__text {
+  .marquee__text,
+  .gallery .section-header__title,
+  .kosher .section-header__title,
+  .about__stat dd {
     background-image: var(--typo-on-light);
   }
 
   /* ---- LIGHT texture override for content on dark surfaces ----
-     Sections with cocoa/dark imagery, plus the gallery + kosher titles
-     (user-marked "כתב כהה, טקסטורה בהירה"), and the lounge panel titles
+     Sections with cocoa/dark imagery, and the lounge panel titles
      (which sit over dark indoor photography). Eyebrows stay solid brass,
-     per impeccable: texture only earns its place at display sizes. ---- */
+     per impeccable: texture only earns its place at display sizes.
+     Footer claim was removed 2026-06-03 — user wants flat ivory text
+     there ("בהיר בלבד ללא טקסטורה מאחורה"). ---- */
   [data-bg="dark"] .section-header__title,
   .bg-dark .section-header__title,
   .culinary .section-header__title,
-  .site-footer .site-footer__claim,
   .hero .section-header__title,
-  .gallery .section-header__title,
-  .kosher .section-header__title,
   .lounge__title,
   .texture-text--light {
     background-image: var(--typo-on-dark) !important;
   }
 
   /* These extra titles also need the paint base (background-clip etc.). */
-  .gallery .section-header__title,
-  .kosher .section-header__title,
   .culinary .section-header__title,
   .hero .section-header__title,
-  .site-footer .site-footer__claim,
   .lounge__title {
     background-repeat: no-repeat;
     background-size: 100% 100%;

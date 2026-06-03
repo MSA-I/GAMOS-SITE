@@ -95,6 +95,7 @@
 
 .about__stat {
   margin: 0;
+  text-align: center;
 }
 
 .about__stat dt {
@@ -109,12 +110,13 @@
 
 .about__stat dd {
   font-family: var(--font-display-luxury);
-  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-size: clamp(2.25rem, 3.6vw, 3.25rem);
   font-weight: 900;
   color: var(--accent);
   line-height: 1;
   margin: 0;
   letter-spacing: var(--tracking-tight);
+  white-space: nowrap;
 }
 
 /* Stat number wrapper — keeps digits LTR inside Hebrew flow, isolates bidi.
