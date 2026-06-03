@@ -1357,67 +1357,88 @@
   </main>
 
   <!-- ========================================================================
-       FOOTER
+       FOOTER — closing block + meta strip + sub strip
+       Rewritten 2026-06-03 (impeccable polish). The previous 4-column
+       sitemap-style footer was identical-card-grid scaffolding with
+       uppercase tracked column titles and a duplicated nav. Replaced with
+       a centered closing statement, three inline contact channels, an
+       address line, and a thin meta strip carrying horizontal nav + socials.
   ======================================================================== -->
   <footer id="footer" class="site-footer" role="contentinfo">
-    <div class="site-footer__inner">
 
-      <!-- Brand column -->
-      <div class="site-footer__brand">
-        <img class="site-footer__logo"
-             src="/assets/images/brand/logo-central.webp"
-             width="240" height="120"
-             loading="lazy" decoding="async"
-             alt="גאמוס מתחם אירועים">
-        <p class="site-footer__tagline">
-          מתחם אירועים יוקרתי. אולם, ריזורט וגנים בלב המדבר.
+    <div class="site-footer__container">
+
+      <!-- 1. CLOSING BLOCK ============================================ -->
+      <div class="site-footer__closing">
+        <a class="site-footer__brandmark" href="#hero" aria-label="גאמוס, חזרה למעלה">
+          <img src="/assets/images/brand/logo-central.webp" alt="גאמוס"
+               width="200" height="100" loading="lazy" decoding="async">
+        </a>
+
+        <h2 class="site-footer__claim">
+          צרו קשר, נבדוק תאריכים יחד.
+        </h2>
+
+        <p class="site-footer__claim-sub">
+          תאריכים אחרונים בהחלט לאירועי קיץ <bdi>2026</bdi>. נשמח לתאם סיור במתחם.
+        </p>
+
+        <ul class="site-footer__channels" role="list">
+          <li>
+            <a class="site-footer__channel" href="tel:+972779972343" dir="ltr" aria-label="חייגו לגאמוס">
+              <span class="site-footer__channel-glyph" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+              </span>
+              <bdi>077-9972343</bdi>
+            </a>
+          </li>
+          <li>
+            <a class="site-footer__channel" href="https://wa.me/972779972343"
+               target="_blank" rel="noopener noreferrer" aria-label="פתחו צ'אט בווטסאפ">
+              <span class="site-footer__channel-glyph" aria-hidden="true" style="color: #25D366;">
+                <svg viewBox="0 0 24 24" fill="currentColor" focusable="false">
+                  <path d="M12.04 2.003a9.94 9.94 0 0 0-8.6 14.92L2 22l5.21-1.36a9.94 9.94 0 0 0 4.83 1.23h.01a9.94 9.94 0 0 0 9.94-9.95 9.85 9.85 0 0 0-2.91-7.04 9.83 9.83 0 0 0-7.04-2.88zm0 18.13h-.01a8.25 8.25 0 0 1-4.21-1.15l-.3-.18-3.1.81.83-3.02-.2-.31a8.27 8.27 0 1 1 6.99 3.85zm4.53-6.18c-.25-.13-1.46-.72-1.69-.8-.23-.08-.39-.13-.56.13-.16.25-.64.8-.78.96-.14.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23a7.5 7.5 0 0 1-1.39-1.72c-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.13-.56-1.36-.78-1.86-.2-.49-.41-.42-.56-.43-.14-.01-.31-.01-.48-.01-.17 0-.43.06-.66.31-.23.25-.86.84-.86 2.05 0 1.21.88 2.38 1 2.55.13.17 1.74 2.66 4.21 3.74.59.25 1.05.41 1.41.52.59.19 1.13.16 1.55.1.47-.07 1.46-.6 1.66-1.17.21-.58.21-1.07.14-1.17-.06-.1-.23-.16-.48-.29z"/>
+                </svg>
+              </span>
+              <span>ווטסאפ</span>
+            </a>
+          </li>
+          <li>
+            <a class="site-footer__channel" href="mailto:office@gamos.co.il" dir="ltr" aria-label="שלחו מייל">
+              <span class="site-footer__channel-glyph" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                  <rect x="2" y="4" width="20" height="16" rx="2"/>
+                  <path d="m22 7-10 6L2 7"/>
+                </svg>
+              </span>
+              office@gamos.co.il
+            </a>
+          </li>
+        </ul>
+
+        <p class="site-footer__address">
+          די זהב <bdi>7</bdi>
+          <span class="site-footer__address-sep" aria-hidden="true">·</span>
+          פארק ישראל
+          <span class="site-footer__address-sep" aria-hidden="true">·</span>
+          מעלה אדומים
         </p>
       </div>
 
-      <!-- Navigation column — order mirrors the old gamos.co.il footer per
-           Scrape/gamos.co.il_*.md lines 140-148 ("ראשי / אודות / GAMOS EVENTS /
-           GAMOS RESORT / קולינריה / הצהרת נגישות"). -->
-      <nav class="site-footer__col" aria-label="ניווט תחתון">
-        <h3 class="site-footer__col-title">תפריט ניווט</h3>
-        <ul class="site-footer__list" role="list">
-          <li><a class="site-footer__link" href="#hero">ראשי</a></li>
-          <li><a class="site-footer__link" href="#about">אודות</a></li>
-          <li><a class="site-footer__link" href="#hall-venue">GAMOS EVENTS</a></li>
-          <li><a class="site-footer__link" href="#hall-resort">GAMOS RESORT</a></li>
-          <li><a class="site-footer__link" href="#culinary">קולינריה</a></li>
-          <li><a class="site-footer__link" href="/legal/accessibility.html">הצהרת נגישות</a></li>
+      <!-- 2. META STRIP =============================================== -->
+      <div class="site-footer__meta">
+        <ul class="site-footer__meta-nav" role="list">
+          <li><a href="#hero">ראשי</a></li>
+          <li><a href="#about">אודות</a></li>
+          <li><a href="#hall-venue">GAMOS EVENTS</a></li>
+          <li><a href="#hall-resort">GAMOS RESORT</a></li>
+          <li><a href="#culinary">קולינריה</a></li>
+          <li><a href="#kosher">כשרות</a></li>
         </ul>
-      </nav>
 
-      <!-- Contact column — two phones + WhatsApp + mail + address, matching
-           the live site's contact layout. -->
-      <div class="site-footer__col">
-        <h3 class="site-footer__col-title">פרטי התקשרות</h3>
-        <ul class="site-footer__contact" role="list">
-          <li class="site-footer__contact-item">
-            <span class="site-footer__contact-label">טלפון</span>
-            <a class="site-footer__contact-value" href="tel:+972779972343" dir="ltr"><bdi>077-9972343</bdi></a>
-            <a class="site-footer__contact-value" href="tel:+972778036482" dir="ltr"><bdi>077-8036482</bdi></a>
-          </li>
-          <li class="site-footer__contact-item">
-            <span class="site-footer__contact-label">ווטסאפ</span>
-            <a class="site-footer__contact-value" href="https://wa.me/972779972343" target="_blank" rel="noopener noreferrer" dir="ltr"><bdi>077-9972343</bdi></a>
-          </li>
-          <li class="site-footer__contact-item">
-            <span class="site-footer__contact-label">דוא"ל</span>
-            <a class="site-footer__contact-value" href="mailto:office@gamos.co.il" dir="ltr">office@gamos.co.il</a>
-          </li>
-          <li class="site-footer__contact-item">
-            <span class="site-footer__contact-label">כתובת</span>
-            <span class="site-footer__contact-value">די זהב 7, פארק ישראל, מעלה אדומים</span>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Social column -->
-      <div class="site-footer__col">
-        <h3 class="site-footer__col-title">עקבו אחרינו</h3>
-        <ul class="site-footer__social" role="list" aria-label="רשתות חברתיות">
+        <ul class="site-footer__meta-social" role="list" aria-label="רשתות חברתיות">
           <li>
             <a class="site-footer__social-link" href="https://www.instagram.com/gamos__event/"
                aria-label="גאמוס באינסטגרם" target="_blank" rel="noopener noreferrer">
@@ -1441,16 +1462,16 @@
         </ul>
       </div>
 
-    </div>
+      <!-- 3. SUB STRIP =============================================== -->
+      <div class="site-footer__sub">
+        <p class="site-footer__copyright"><bdi>© 2026</bdi> גאמוס. כל הזכויות שמורות.</p>
+        <ul class="site-footer__legal-links" role="list">
+          <li><a href="/legal/privacy.html">מדיניות פרטיות</a></li>
+          <li><a href="/legal/terms.html">תנאי שימוש</a></li>
+          <li><a href="/legal/accessibility.html">הצהרת נגישות</a></li>
+        </ul>
+      </div>
 
-    <!-- Bottom strip: copyright + legal links -->
-    <div class="site-footer__legal">
-      <p class="site-footer__copyright"><bdi>© 2026</bdi> גאמוס. כל הזכויות שמורות.</p>
-      <ul class="site-footer__legal-links" role="list">
-        <li><a href="/legal/privacy.html">מדיניות פרטיות</a></li>
-        <li><a href="/legal/terms.html">תנאי שימוש</a></li>
-        <li><a href="/legal/accessibility.html">הצהרת נגישות</a></li>
-      </ul>
     </div>
   </footer>
 

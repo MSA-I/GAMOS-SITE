@@ -1,223 +1,271 @@
 /* ===========================================================================
-   site-footer.css — bottom-of-page luxury footer
+   site-footer.css — closing block + meta strip
    ---------------------------------------------------------------------------
-   Dark (cocoa) full-width footer with a centered max-width container and a
-   responsive 4-column grid (logo+tagline / nav / contact / social) that
-   collapses to 2 cols on tablet and 1 col on mobile. Bottom strip holds the
-   copyright + legal-page links.
-   Tokens only (CLAUDE.md §10.2). Logical properties only (§4). RTL-first.
+   Rewritten 2026-06-03 (impeccable polish pass). The previous 4-column
+   sitemap-style footer was the saturated SaaS-footer template — identical
+   columns each with an uppercase tracked title, duplicate of the top nav,
+   no focal hierarchy. Replaced with:
+
+     1. CLOSING BLOCK — centered, hero-shaped: small logo, single CTA line
+        ("צרו קשר, נבדוק תאריכים יחד"), three contact channels inline,
+        address as a typographic line with `·` separators. This is the
+        actual closing statement of the page, not a sitemap.
+     2. META STRIP — thin band with horizontal nav links (separated by ·),
+        social icons (Instagram + Facebook), divider hairlines top + bottom.
+        The nav lives here as a recap, NOT as the focal element.
+     3. SUB STRIP — copyright + legal links, smallest size, lowest
+        contrast, last in the visual sweep.
+
+   Tokens only. Logical properties only. RTL-first. Min 4.5:1 body contrast,
+   3:1 large-text contrast.
    ========================================================================= */
 
 
 .site-footer {
+  position: relative;
   background: var(--bg-cocoa);
   color: var(--fg-on-dark);
-  padding-block: var(--space-24) var(--space-12);
+  padding-block: var(--space-24) var(--space-8);
   padding-inline: var(--gutter);
+  overflow: hidden;
+  isolation: isolate;
 }
 
-.site-footer__inner {
-  inline-size: 100%;
-  /* 2026-06-03: tightened from --container-max (1320px) → 1280px so the
-     four columns sit closer on wide screens. */
-  max-inline-size: 1280px;
+/* Brass aurora hairline at the very top edge — premium closing accent. */
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: 1px;
+  background: linear-gradient(
+    to inline-end,
+    transparent 0%,
+    color-mix(in srgb, var(--brass-glow) 65%, transparent) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.site-footer__container {
+  position: relative;
+  z-index: 1;
+  max-inline-size: 920px;
   margin-inline: auto;
-  display: grid;
-  gap: var(--space-6);
-  grid-template-columns: 1fr;
-  align-items: start;
-  align-content: start;
-}
-
-/* ≥ 600px → 2 columns; ≥ 1000px → 4 columns */
-@media (min-width: 600px) {
-  .site-footer__inner {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-8) var(--space-6);
-  }
-}
-
-@media (min-width: 1000px) {
-  .site-footer__inner {
-    /* Brand wider; nav narrower (only ~6 short links); contact widest (longer
-       phone/email lines); social narrowest. Reduced gap so columns no longer
-       feel marooned on wide displays — user reported overly large vertical
-       gaps in the short columns. */
-    grid-template-columns: 1.2fr 1fr 1.4fr 1fr;
-    gap: var(--space-6);
-  }
-}
-
-/* ----- Brand column (logo + tagline) ----- */
-
-.site-footer__brand {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-12);
 }
 
-.site-footer__logo {
+
+/* ----- 1. Closing block ─────────────────────────────────────────────────── */
+
+.site-footer__closing {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.site-footer__brandmark {
   display: inline-block;
-  inline-size: clamp(140px, 16vw, 200px);
+  line-height: 0;
+  transition: opacity var(--dur-base) var(--ease-out-cinema);
+  margin-block-end: var(--space-2);
+}
+.site-footer__brandmark:hover,
+.site-footer__brandmark:focus-visible {
+  opacity: 0.82;
+  outline: none;
+}
+.site-footer__brandmark img {
+  display: block;
+  inline-size: clamp(120px, 14vw, 160px);
   block-size: auto;
-  max-inline-size: 100%;
 }
 
-.site-footer__tagline {
+.site-footer__claim {
   margin: 0;
   font-family: var(--font-display-he);
-  font-size: var(--text-md);
-  font-weight: var(--fw-regular);
-  line-height: var(--lh-snug);
-  color: rgba(245, 239, 230, 0.82);
-  max-inline-size: 32ch;
-}
-
-/* ----- Column headings ----- */
-
-.site-footer__col-title {
-  margin: 0 0 var(--space-4) 0;
-  font-family: var(--font-display-he);
-  font-size: var(--text-md);
   font-weight: var(--fw-bold);
-  letter-spacing: var(--tracking-wide);
+  font-size: clamp(1.6rem, 3.2vw, 2.25rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
   color: var(--ivory);
+  text-wrap: balance;
+  max-inline-size: 22ch;
 }
 
-/* ----- Link lists (nav + social) ----- */
-
-.site-footer__list {
-  list-style: none;
+.site-footer__claim-sub {
   margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.site-footer__link {
-  color: rgba(245, 239, 230, 0.78);
-  text-decoration: none;
   font-family: var(--font-body);
-  font-size: var(--text-sm);
-  line-height: var(--lh-normal);
-  transition: color var(--dur-base) var(--ease-out-cinema);
+  font-size: var(--text-base);
+  line-height: var(--lh-snug);
+  color: color-mix(in srgb, var(--ivory) 78%, transparent);
+  max-inline-size: 48ch;
 }
 
-.site-footer__link:hover,
-.site-footer__link:focus-visible {
-  color: var(--accent-glow);
-}
-
-/* ----- Contact column ----- */
-
-.site-footer__contact {
+/* Three primary channels — phone, WhatsApp, email — inline horizontal row.
+   Each is a real link with an inline glyph. The hover state grows a brass
+   underline; the row reads as a luxury concierge "this is how to reach us"
+   rather than a stacked label/value table. */
+.site-footer__channels {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  /* 2026-06-03: each row is a single line — label inline-end of value
-     (RTL: label sits on the right). Tight vertical gap so the column
-     reads as one block instead of feeling marooned. */
-  gap: var(--space-2);
-}
-
-.site-footer__contact-item {
-  /* Two-column row: label fixed-narrow, value fills the rest. RTL handles
-     the visual order (label appears right, value left). */
-  display: grid;
-  grid-template-columns: minmax(70px, auto) 1fr;
-  align-items: baseline;
-  column-gap: var(--space-3);
-  row-gap: 0;
-}
-
-.site-footer__contact-label {
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-eyebrow);
-  text-transform: uppercase;
-  color: var(--accent-glow);
-  /* No more block-end margin (the column gap handles spacing now). */
-  margin: 0;
-}
-
-.site-footer__contact-value {
-  color: rgba(245, 239, 230, 0.86);
-  text-decoration: none;
-  font-size: var(--text-sm);
-  line-height: var(--lh-snug);
-  transition: color var(--dur-base) var(--ease-out-cinema);
-}
-
-/* When a row carries multiple values (phone has two numbers, etc.) the
-   second .site-footer__contact-value drops to its own line under the
-   first, NOT under the label, so the visual alignment stays clean. */
-.site-footer__contact-item .site-footer__contact-value + .site-footer__contact-value {
-  grid-column: 2;
-  margin-block-start: var(--space-1);
-}
-
-a.site-footer__contact-value:hover,
-a.site-footer__contact-value:focus-visible {
-  color: var(--accent-glow);
-}
-
-/* ----- Social row -----
-   2026-06-03: replaced text-only "Instagram" / "Facebook" labels with real
-   SVG icons (assets/img/icons/{instagram,facebook}.svg, inlined into the
-   markup). Both glyphs draw with currentColor → they pick up the brass
-   palette of the footer link state and shift to brass-glow on hover/focus,
-   matching the rest of the link affordance. */
-.site-footer__social {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-3);
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2) var(--space-6);
+  margin-block-start: var(--space-3);
+}
+
+.site-footer__channel {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: var(--fw-medium);
+  color: var(--ivory);
+  text-decoration: none;
+  padding-block: var(--space-1);
+  position: relative;
+  transition: color var(--dur-base) var(--ease-out-cinema);
+}
+.site-footer__channel::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  block-size: 1px;
+  background: var(--brass-glow);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform var(--dur-base) var(--ease-out-cinema);
+}
+.site-footer__channel:hover,
+.site-footer__channel:focus-visible {
+  color: var(--accent-glow);
+  outline: none;
+}
+.site-footer__channel:hover::after,
+.site-footer__channel:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.site-footer__channel-glyph {
+  display: inline-flex;
+  inline-size: 16px;
+  block-size: 16px;
+  color: var(--accent-glow);
+}
+.site-footer__channel-glyph svg {
+  inline-size: 100%;
+  block-size: 100%;
+  display: block;
+}
+
+.site-footer__address {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--ivory) 68%, transparent);
+}
+.site-footer__address-sep {
+  display: inline-block;
+  margin-inline: var(--space-2);
+  color: var(--brass-glow);
+  opacity: 0.6;
+}
+
+
+/* ----- 2. Meta strip ────────────────────────────────────────────────────── */
+
+.site-footer__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4) var(--space-6);
+  padding-block: var(--space-5);
+  border-block-start: 1px solid color-mix(in srgb, var(--ivory) 14%, transparent);
+  border-block-end:   1px solid color-mix(in srgb, var(--ivory) 7%,  transparent);
+}
+
+.site-footer__meta-nav {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-5);
 }
+
+.site-footer__meta-nav a {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: color-mix(in srgb, var(--ivory) 80%, transparent);
+  text-decoration: none;
+  transition: color var(--dur-base) var(--ease-out-cinema);
+}
+.site-footer__meta-nav a:hover,
+.site-footer__meta-nav a:focus-visible {
+  color: var(--accent-glow);
+  outline: none;
+}
+
+.site-footer__meta-social {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+
+/* ----- Social links (Instagram + Facebook glyphs) ───────────────────────── */
 
 .site-footer__social-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: 40px;
-  block-size: 40px;
+  inline-size: 36px;
+  block-size: 36px;
   border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--brass-glow) 35%, transparent);
-  background: color-mix(in srgb, var(--brass) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brass-glow) 30%, transparent);
+  background: color-mix(in srgb, var(--brass) 6%, transparent);
   color: var(--accent-glow);
   text-decoration: none;
   transition:
-    color      var(--dur-base) var(--ease-out-cinema),
-    background var(--dur-base) var(--ease-out-cinema),
+    color        var(--dur-base) var(--ease-out-cinema),
+    background   var(--dur-base) var(--ease-out-cinema),
     border-color var(--dur-base) var(--ease-out-cinema),
-    transform  var(--dur-base) var(--ease-out-cinema);
+    transform    var(--dur-base) var(--ease-out-cinema);
 }
-
 .site-footer__social-link:hover,
 .site-footer__social-link:focus-visible {
   color: var(--ivory);
-  background: color-mix(in srgb, var(--brass) 60%, transparent);
+  background: color-mix(in srgb, var(--brass) 55%, transparent);
   border-color: var(--brass-glow);
   transform: translateY(-1px);
   outline: none;
 }
-
 .site-footer__social-link:focus-visible {
   outline: 3px solid var(--brass);
   outline-offset: 3px;
 }
-
 .site-footer__social-icon {
-  inline-size: 18px;
-  block-size: 18px;
+  inline-size: 16px;
+  block-size: 16px;
   display: block;
 }
-
-/* The text label stays in the markup for screen readers, but the icon
-   carries the visual; hide the text without removing it from the a11y tree. */
 .site-footer__social-label {
   position: absolute;
   inline-size: 1px;
@@ -230,37 +278,21 @@ a.site-footer__contact-value:focus-visible {
   border: 0;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .site-footer__social-link {
-    transition: none;
-  }
-  .site-footer__social-link:hover,
-  .site-footer__social-link:focus-visible {
-    transform: none;
-  }
-}
 
-/* ----- Bottom strip: copyright + legal links ----- */
+/* ----- 3. Sub strip (copyright + legal) ─────────────────────────────────── */
 
-.site-footer__legal {
-  inline-size: 100%;
-  max-inline-size: var(--container-max);
-  margin-inline: auto;
-  margin-block-start: var(--space-16);
-  padding-block-start: var(--space-6);
-  border-block-start: 1px solid rgba(245, 239, 230, 0.18);
+.site-footer__sub {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-4) var(--space-6);
+  gap: var(--space-3) var(--space-6);
+  font-family: var(--font-body);
   font-size: var(--text-xs);
-  color: rgba(245, 239, 230, 0.6);
+  color: color-mix(in srgb, var(--ivory) 55%, transparent);
 }
 
-.site-footer__copyright {
-  margin: 0;
-}
+.site-footer__copyright { margin: 0; }
 
 .site-footer__legal-links {
   list-style: none;
@@ -270,19 +302,36 @@ a.site-footer__contact-value:focus-visible {
   flex-wrap: wrap;
   gap: var(--space-4);
 }
-
 .site-footer__legal-links a {
-  color: rgba(245, 239, 230, 0.6);
+  color: inherit;
   text-decoration: none;
   transition: color var(--dur-base) var(--ease-out-cinema);
 }
-
 .site-footer__legal-links a:hover,
 .site-footer__legal-links a:focus-visible {
   color: var(--accent-glow);
+  outline: none;
 }
 
-/* ----- Focus visibility (WCAG 2.2 AA — §9) ----- */
+
+/* ----- Mobile ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .site-footer { padding-block: var(--space-16) var(--space-6); }
+  .site-footer__container { gap: var(--space-8); }
+  .site-footer__meta {
+    justify-content: center;
+    gap: var(--space-4);
+  }
+  .site-footer__meta-nav { justify-content: center; }
+  .site-footer__sub {
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+
+/* ----- Focus visibility (WCAG 2.2 AA — §9) ───────────────────────────── */
 
 .site-footer a:focus-visible {
   outline: 3px solid var(--brass);
@@ -290,12 +339,20 @@ a.site-footer__contact-value:focus-visible {
   border-radius: var(--radius-sm);
 }
 
-/* ----- Reduced motion (§8) — kill color transitions ----- */
+
+/* ----- Reduced motion (§8) ─────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
-  .site-footer__link,
-  .site-footer__contact-value,
-  .site-footer__legal-links a {
+  .site-footer__brandmark,
+  .site-footer__channel,
+  .site-footer__channel::after,
+  .site-footer__meta-nav a,
+  .site-footer__legal-links a,
+  .site-footer__social-link {
     transition: none;
+  }
+  .site-footer__social-link:hover,
+  .site-footer__social-link:focus-visible {
+    transform: none;
   }
 }
