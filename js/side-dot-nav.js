@@ -47,15 +47,13 @@
 // visual top-to-bottom order on the right edge.
 const SECTIONS = [
   { id: "hero",         label: "פתיחה" },
-  { id: "section-2",    label: "סקציה 2" },
-  { id: "hall-venue",   label: "אולם" },
-  { id: "hall-resort",  label: "ריזורט" },
   { id: "lounge",       label: "לאונג'" },
   { id: "culinary",     label: "קולינריה" },
   { id: "rooms",        label: "חדרים" },
   { id: "about",        label: "אודות" },
   { id: "testimonials", label: "המלצות" },
   { id: "gallery",      label: "גלריה" },
+  { id: "events",       label: "אירועים" },
   { id: "kosher",       label: "כשרות" },
   { id: "contact",      label: "צור קשר" },
 ];

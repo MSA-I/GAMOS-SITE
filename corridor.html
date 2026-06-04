@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#F7F7F7">
+  <meta name="color-scheme" content="light">
+
+  <title>גאמוס — אולם וריזורט | תערוכת מתחם</title>
+  <meta name="description" content="גלריית מתחם גאמוס: אולם האירועים והריזורט המדברי. חוויה תלת-ממדית של חללים ופרטים.">
+
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+
+  <!-- Preload first card image of each hall (LCP candidate) -->
+  <link rel="preload" as="image" type="image/webp"
+        href="/assets/images/corridor/venue/02.full.webp" fetchpriority="high">
+
+  <!-- Preload critical fonts -->
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="/assets/fonts/rubik-hebrew.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="/assets/fonts/rubik-latin.woff2">
+
+  <!-- Stylesheets: foundation + corridor + drawer + minimal nav-hover (so site-nav vars exist if referenced) -->
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/utilities.css">
+  <link rel="stylesheet" href="/css/sections/corridor.css">
+  <link rel="stylesheet" href="/css/components/project-drawer.css">
+
+  <!-- GSAP self-hosted (powers cinema pan + spring slide approximation) -->
+  <script defer src="/assets/vendor/gsap.min.js"></script>
+
+  <!-- Entry script: ESM, deferred -->
+  <script type="module" defer src="/js/corridor-page.js"></script>
+
+  <style>
+    /* Page-level boot CSS — keeps the page hidden offscreen-right until JS
+       slides it in (matches the Hero's exit-left). Inline so it applies
+       BEFORE corridor-page.js runs, eliminating the flash. */
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;        /* corridor is a fixed full-viewport stage */
+      background: #F7F7F7;
+      color: #1A1410;
+      font-family: "Rubik", "Heebo", system-ui, sans-serif;
+      height: 100%;
+    }
+    body { user-select: none; }
+    #corridor-page {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100vh;
+      transform: translateX(100%);  /* slid in by JS on boot */
+      will-change: transform;
+    }
+    /* Deep-link: if ?hall=lumina is in URL, swap default offscreen sides.
+       (Inline script below sets data-active-hall before this rule applies.) */
+    [data-active-hall="oasis"]  .corridor[data-hall="lumina"] { transform: translateX( 100%); }
+    [data-active-hall="lumina"] .corridor[data-hall="oasis"]  { transform: translateX(-100%); }
+    [data-active-hall="oasis"]  .corridor[data-hall="oasis"]  { transform: translateX(0); }
+    [data-active-hall="lumina"] .corridor[data-hall="lumina"] { transform: translateX(0); }
+  </style>
+
+  <!-- Set data-active-hall from URL BEFORE first paint to avoid flash. -->
+  <script>
+    (function () {
+      var p = new URLSearchParams(location.search);
+      var hall = p.get("hall") === "lumina" ? "lumina" : "oasis";
+      document.documentElement.dataset.activeHall = hall;
+    }());
+  </script>
+</head>
+<body data-active-hall="oasis">
+  <main id="corridor-page" data-active-hall="oasis">
+
+    <!-- Top-left HUD: single Home button (only chrome on this page) -->
+    <header class="corridor__topbar" role="banner">
+      <a class="corridor__home-btn" href="/" aria-label="חזרה לדף הבית">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-6h-2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        </svg>
+        <span>Home</span>
+      </a>
+    </header>
+
+    <!-- Side-arrow hall switchers — only the "go to the OTHER hall" arrow is visible.
+         While oasis is active: right-side arrow shows (→ go to lumina).
+         While lumina is active: left-side arrow shows (← go back to oasis). -->
+    <button class="corridor__hall-arrow corridor__hall-arrow--right"
+            type="button" aria-label="מעבר לריזורט המדברי"
+            data-switch-to="lumina">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </button>
+    <button class="corridor__hall-arrow corridor__hall-arrow--left"
+            type="button" aria-label="חזרה לאולם האירועים"
+            data-switch-to="oasis">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+
+    <!-- Both halls mounted at once; CSS + JS slide one or the other offscreen.
+         data-corridor-hall is what js/corridor.js reads to pick archways vs mountains. -->
+    <section class="corridor" data-hall="oasis" data-corridor-hall="oasis"
+             aria-labelledby="oasis-title">
+
+      <div class="corridor__sticky">
+
+        <div class="corridor__perspective" aria-hidden="true">
+          <div class="corridor__perspective-line corridor__perspective-line--top"></div>
+          <div class="corridor__perspective-line corridor__perspective-line--bottom"></div>
+          <div class="corridor__perspective-line corridor__perspective-line--left"></div>
+          <div class="corridor__perspective-line corridor__perspective-line--right"></div>
+        </div>
+
+        <div class="corridor__ambient" aria-hidden="true">
+          <div class="corridor__ambient-fog"></div>
+          <div class="corridor__ambient-glow"></div>
+        </div>
+
+        <div class="corridor__brand" aria-hidden="true">
+          <svg class="corridor__brand-svg" viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="goldLuxuryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%"   stop-color="#DFB06C" stop-opacity="0.95"/>
+                <stop offset="50%"  stop-color="#FFF2D4" stop-opacity="1.00"/>
+                <stop offset="100%" stop-color="#C4934C" stop-opacity="0.90"/>
+              </linearGradient>
+              <linearGradient id="goldLuxuryGradSub" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%"   stop-color="#DFB06C" stop-opacity="0.85"/>
+                <stop offset="100%" stop-color="#C4934C" stop-opacity="0.80"/>
+              </linearGradient>
+            </defs>
+            <text x="50%" y="56" text-anchor="middle"
+                  font-family="'Cinzel','Playfair Display','Didot','Georgia',serif"
+                  font-size="54" font-weight="700" letter-spacing="0.28em"
+                  fill="#C4934C">GAMOS</text>
+            <text x="50%" y="94" text-anchor="middle"
+                  font-family="'Inter','Montserrat','Helvetica',sans-serif"
+                  font-size="10" font-weight="600" letter-spacing="0.45em"
+                  fill="#A87C39">✦ EVENTS ✦</text>
+          </svg>
+        </div>
+
+        <div class="corridor__stage">
+          <div class="corridor__layer">
+            <article class="corridor__card"
+                     data-card-index="0"
+                     data-project-id="oasis-01"
+                     tabindex="0"
+                     role="button"
+                     aria-label="פתח פרטים: היכל האואזיס">
+              <div class="corridor__card-media">
+                <picture>
+                  <source type="image/webp" srcset="/assets/images/corridor/venue/02.full.webp">
+                  <img src="/assets/images/corridor/venue/02.full.jpg"
+                       width="1280" height="853"
+                       loading="eager" decoding="async"
+                       alt="סעודה תחת אהיל הפשתן במרחב הפתוח של המדבר">
+                </picture>
+                <span class="corridor__card-tag">חוויית הסעודה</span>
+              </div>
+              <div class="corridor__card-body">
+                <h3 class="corridor__card-title">היכל האואזיס</h3>
+                <p class="corridor__card-desc">סעודת גורמה תחת כיפת השמיים</p>
+                <div class="corridor__card-meta">
+                  <span>01 GAMOS</span>
+                  <span class="corridor__card-meta-cta">פרטים נוספים</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="corridor__card"
+                     data-card-index="1"
+                     data-project-id="oasis-02"
+                     tabindex="0"
+                     role="button"
+                     aria-label="פתח פרטים: סיפון המיראז'">
+              <div class="corridor__card-media">
+                <picture>
+                  <source type="image/webp" srcset="/assets/images/corridor/venue/04.full.webp">
+                  <img src="/assets/images/corridor/venue/04.full.jpg"
+                       width="1280" height="853"
+                       loading="lazy" decoding="async"
+                       alt="בריכת אינפיניטי ומיטות שיזוף בשילוב הרי המדבר">
+                </picture>
+                <span class="corridor__card-tag">מתחם קבלת הפנים</span>
+              </div>
+              <div class="corridor__card-body">
+                <h3 class="corridor__card-title">סיפון המיראז'</h3>
+                <p class="corridor__card-desc">בריכת אינסוף ומיטות שיזוף מול הדיונות</p>
+                <div class="corridor__card-meta">
+                  <span>02 GAMOS</span>
+                  <span class="corridor__card-meta-cta">פרטים נוספים</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="corridor__card"
+                     data-card-index="2"
+                     data-project-id="oasis-03"
+                     tabindex="0"
+                     role="button"
+                     aria-label="פתח פרטים: במת המים">
+              <div class="corridor__card-media">
+                <picture>
+                  <source type="image/webp" srcset="/assets/images/corridor/venue/05.full.webp">
+                  <img src="/assets/images/corridor/venue/05.full.jpg"
+                       width="1280" height="853"
+                       loading="lazy" decoding="async"
+                       alt="חופה צפה ובמת קשתות ארכיטקטונית">
+                </picture>
+                <span class="corridor__card-tag">מתחם החופה</span>
+              </div>
+              <div class="corridor__card-body">
+                <h3 class="corridor__card-title">במת המים</h3>
+                <p class="corridor__card-desc">חופה ארכיטקטונית צפה על המים</p>
+                <div class="corridor__card-meta">
+                  <span>03 GAMOS</span>
+                  <span class="corridor__card-meta-cta">פרטים נוספים</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="corridor__card"
+                     data-card-index="3"
+                     data-project-id="oasis-04"
+                     tabindex="0"
+                     role="button"
+                     aria-label="פתח פרטים: קבלת פנים שקיעה">
+              <div class="corridor__card-media">
+                <picture>
+                  <source type="image/webp" srcset="/assets/images/corridor/venue/06.full.webp">
+                  <img src="/assets/images/corridor/venue/06.full.jpg"
+                       width="1280" height="853"
+                       loading="lazy" decoding="async"
+                       alt="כניסה מרהיבה וסידורי ישיבה תחת כיפת השמיים">
+                </picture>
+                <span class="corridor__card-tag">שטח פתוח למדבר</span>
+              </div>
+              <div class="corridor__card-body">
+                <h3 class="corridor__card-title">קבלת פנים שקיעה</h3>
+                <p class="corridor__card-desc">מתחם טקסים פנורמי תחת כיפת השמיים</p>
+                <div class="corridor__card-meta">
+                  <span>04 GAMOS</span>
+                  <span class="corridor__card-meta-cta">פרטים נוספים</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="corridor__card"
+                     data-card-index="4"
+                     data-project-id="oasis-05"
+                     tabindex="0"
+                     role="button"
+                     aria-label="פתח פרטים: משתה המדבר">
+              <div class="corridor__card-media">
+                <picture>
+                  <source type="image/webp" srcset="/assets/images/corridor/venue/07.full.webp">
+                  <img src="/assets/images/corridor/venue/07.full.jpg"
+                       width="1280" height="853"
+                       loading="lazy" decoding="async"
+                       alt="שולחן אבירים במרקמים אורגניים">
+                </picture>
+                <span class="corridor__card-tag">חלל משתה אינטימי</span>
+              </div>
+              <div class="corridor__card-body">
+                <h3 class="corridor__card-title">משתה המדבר</h3>
+                <p class="corridor__card-desc">סעודת אבירים ארוכה בעיצוב ארצי מתוחכם</p>
+                <div class="corridor__card-meta">
+                  <span>05 GAMOS</span>
+                  <span class="corridor__card-meta-cta">פרטים נוספים</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="corridor__card"
+                     data-card-index="5"
+                     data-project-id="oasis-06"
+                     tabindex="0"
+                     role="button"
+                     aria-label="פתח פרטים: פרטי האומנות">
+              <div class="corridor__card-media">
+                <picture>
+                  <source type="image/webp" srcset="/assets/images/corridor/venue/7_1.full.webp">
+                  <img src="/assets/images/corridor/venue/7_1.full.jpg"
+                       width="1280" height="853"
+                       loading="lazy" decoding="async"
+                       alt="מקרו של סידור השולחן ופרטי האומנות">
+                </picture>
+                <span class="corridor__card-tag">יצירת אומנות אירועים</span>
+              </div>
+              <div class="corridor__card-body">
+                <h3 class="corridor__card-title">פרטי האומנות</h3>
+                <p class="corridor__card-desc">ניואנסים מעודנים של עושר וטבע</p>
+                <div class="corridor__card-meta">
+                  <span>06 GAMOS</span>
+                  <span class="corridor__card-meta-cta">פרטים נוספים</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="corridor__card"
+                     data-card-index="6"
+                     data-project-id="oasis-07"
+                     tabindex="0"
+                     role="button"
+                     aria-label="פתח פרטים: האולם הפנימי">
+              <div class="corridor__card-media">
+                <picture>
+                  <source type="image/webp" srcset="/assets/images/corridor/venue/09.full.webp">
+                  <img src="/assets/images/corridor/venue/09.full.jpg"
+                       width="1280" height="853"
+                       loading="lazy" decoding="async"
+                       alt="החלל המרכזי בעיצומו של ערב">
+                </picture>
+                <span class="corridor__card-tag">חלל פנימי</span>
+              </div>
+              <div class="corridor__card-body">
+                <h3 class="corridor__card-title">האולם הפנימי</h3>
+                <p class="corridor__card-desc">חלל מרכזי בערב חגיגי</p>
+                <div class="corridor__card-meta">
+                  <span>07 GAMOS</span>
+                  <span class="corridor__card-meta-cta">פרטים נוספים</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="corridor__card"
+                     data-card-index="7"
+                     data-project-id="oasis-08"
+                     tabindex="0"
+                     role="button"
+                     aria-label="פתח פרטים: רגעי האורחים">
+              <div class="corridor__card-media">
+                <picture>
+                  <source type="image/webp" srcset="/assets/images/corridor/venue/11.full.webp">
+                  <img src="/assets/images/corridor/venue/11.full.jpg"
+                       width="1280" height="853"
+                       loading="lazy" decoding="async"
+                       alt="רגעי האורחים על הרחבה">
+                </picture>
+                <span class="corridor__card-tag">רגעי הערב</span>
+              </div>
+              <div class="corridor__card-body">
+                <h3 class="corridor__card-title">רגעי האורחים</h3>
+                <p class="corridor__card-desc">התמונות שנשארות אחרי שהאורות נדלקים</p>
+                <div class="corridor__card-meta">
+                  <span>08 GAMOS</span>
+                  <span class="corridor__card-meta-cta">פרטים נוספים</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="corridor__card"
+                     data-card-index="8"
+                     data-project-id="oasis-09"
+                     tabindex="0"
+                     role="button"
+                     aria-label="פתח פרטים: לב הערב">
+              <div class="corridor__card-media">
+                <picture>
+                  <source type="image/webp" srcset="/assets/images/corridor/venue/13.full.webp">
+                  <img src="/assets/images/corridor/venue/13.full.jpg"
+                       width="1280" height="853"
+                       loading="lazy" decoding="async"
+                       alt="לב הערב על הרחבה">
+                </picture>
+                <span class="corridor__card-tag">אווירת לילה</span>
+              </div>
+              <div class="corridor__card-body">
+                <h3 class="corridor__card-title">לב הערב</h3>
+                <p class="corridor__card-desc">כשהקירות מהדהדים שמחה</p>
+                <div class="corridor__card-meta">
+                  <span>09 GAMOS</span>
+                  <span class="corridor__card-meta-cta">פרטים נוספים</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="corridor__card"
+                     data-card-index="9"
+                     data-project-id="oasis-10"
+                     tabindex="0"
+                     role="button"
+                     aria-label="פתח פרטים: סיום הערב">
+              <div class="corridor__card-media">
+                <picture>
+                  <source type="image/webp" srcset="/assets/images/corridor/venue/14.full.webp">
+                  <img src="/assets/images/corridor/venue/14.full.jpg"
+                       width="1280" height="853"
+                       loading="lazy" decoding="async"
+                       alt="סיום הערב, האורחים האחרונים">
+                </picture>
+                <span class="corridor__card-tag">סיום הערב</span>
+              </div>
+              <div class="corridor__card-body">
+                <h3 class="corridor__card-title">סיום הערב</h3>
+                <p class="corridor__card-desc">השעות הראשונות, הזיכרון נשאר</p>
+                <div class="corridor__card-meta">
+                  <span>10 GAMOS</span>
+                  <span class="corridor__card-meta-cta">פרטים נוספים</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="corridor__hud" aria-hidden="false"><!-- populated by js/corridor.js --></div>
+
+        <h2 id="oasis-title" class="sr-only">אולם האירועים</h2>
+      </div>
+    </section>
+
+    <section class="corridor" data-hall="lumina" data-corridor-hall="lumina"
+             aria-labelledby="lumina-title" aria-hidden="true">
+
+      <div class="corridor__sticky">
+
+        <div class="corridor__perspective" aria-hidden="true">
+          <div class="corridor__perspective-line corridor__perspective-line--top"></div>
+          <div class="corridor__perspective-line corridor__perspective-line--bottom"></div>
+          <div class="corridor__perspective-line corridor__perspective-line--left"></div>
+          <div class="corridor__perspective-line corridor__perspective-line--right"></div>
+        </div>
+
+        <div class="corridor__ambient" aria-hidden="true">
+          <div class="corridor__ambient-fog"></div>
+          <div class="corridor__ambient-glow"></div>
+        </div>
+
+        <div class="corridor__canal" aria-hidden="true"></div>
+
+        <div class="corridor__brand" aria-hidden="true">
+          <svg class="corridor__brand-svg" viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="goldLuxuryGradB" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%"   stop-color="#DFB06C" stop-opacity="0.95"/>
+                <stop offset="50%"  stop-color="#FFF2D4" stop-opacity="1.00"/>
+                <stop offset="100%" stop-color="#C4934C" stop-opacity="0.90"/>
+              </linearGradient>
+              <linearGradient id="goldLuxuryGradSubB" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%"   stop-color="#DFB06C" stop-opacity="0.85"/>
+                <stop offset="100%" stop-color="#C4934C" stop-opacity="0.80"/>
+              </linearGradient>
+            </defs>
+            <text x="50%" y="56" text-anchor="middle"
+                  font-family="'Cinzel','Playfair Display','Didot','Georgia',serif"
+                  font-size="54" font-weight="700" letter-spacing="0.28em"
+                  fill="#C4934C">GAMOS</text>
+            <text x="50%" y="94" text-anchor="middle"
+                  font-family="'Inter','Montserrat','Helvetica',sans-serif"
+                  font-size="10" font-weight="600" letter-spacing="0.45em"
+                  fill="#A87C39">✦ RESORT ✦</text>
+          </svg>
+        </div>
+
+        <div class="corridor__stage">
+          <div class="corridor__layer">
+            <article class="corridor__card"
+                     data-card-index="0"
+                     data-project-id="lumina-01"
+                     tabindex="0"
+                     role="button"
+                     aria-label="פתח פרטים: תעלת האורות">
+              <div class="corridor__card-media">
+                <picture>
+                  <source type="image/webp" srcset="/assets/images/corridor/resort/4_1.full.webp">
+                  <img src="/assets/images/corridor/resort/4_1.full.jpg"
+                       width="1280" height="853"
+                       loading="eager" decoding="async"
+                       alt="שדירת הספירות הזוהרות על ציר המים">
+                </picture>
+                <span class="corridor__card-tag">תערוכת דמדומים</span>
+              </div>
+              <div class="corridor__card-body">
+                <h3 class="corridor__card-title">תעלת האורות</h3>
+                <p class="corridor__card-desc">תמונת המדבר וחוג הספירות הזוהרות</p>
+                <div class="corridor__card-meta">
+                  <span>01 GAMOS</span>
+                  <span class="corridor__card-meta-cta">פרטים נוספים</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="corridor__card"
+                     data-card-index="1"
+                     data-project-id="lumina-02"
+                     tabindex="0"
+                     role="button"
+                     aria-label="פתח פרטים: התרחבות הספירות">
+              <div class="corridor__card-media">
+                <picture>
+                  <source type="image/webp" srcset="/assets/images/corridor/resort/05.full.webp">
+                  <img src="/assets/images/corridor/resort/05.full.jpg"
+                       width="1280" height="853"
+                       loading="lazy" decoding="async"
+                       alt="ספירת אור במרקם מדבר ראשוני">
+                </picture>
+                <span class="corridor__card-tag">עיצוב תאורה סביבתית</span>
+              </div>
+              <div class="corridor__card-body">
+                <h3 class="corridor__card-title">התרחבות הספירות</h3>
+                <p class="corridor__card-desc">ספירות המדבר הצפות ומפזרות זוהר</p>
+                <div class="corridor__card-meta">
+                  <span>02 GAMOS</span>
+                  <span class="corridor__card-meta-cta">פרטים נוספים</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="corridor__card"
+                     data-card-index="2"
+                     data-project-id="lumina-03"
+                     tabindex="0"
+                     role="button"
+                     aria-label="פתח פרטים: שער הדמדומים">
+              <div class="corridor__card-media">
+                <picture>
+                  <source type="image/webp" srcset="/assets/images/corridor/resort/10.full.webp">
+                  <img src="/assets/images/corridor/resort/10.full.jpg"
+                       width="1280" height="853"
+                       loading="lazy" decoding="async"
+                       alt="מגדלורי אור ומבני מראות">
+                </picture>
+                <span class="corridor__card-tag">חוויה פיזיקלית פנורמית</span>
+              </div>
+              <div class="corridor__card-body">
+                <h3 class="corridor__card-title">שער הדמדומים</h3>
+                <p class="corridor__card-desc">טבילה קוסמית של מים והשתקפויות שמיים</p>
+                <div class="corridor__card-meta">
+                  <span>03 GAMOS</span>
+                  <span class="corridor__card-meta-cta">פרטים נוספים</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="corridor__card"
+                     data-card-index="3"
+                     data-project-id="lumina-04"
+                     tabindex="0"
+                     role="button"
+                     aria-label="פתח פרטים: אופקים זוהרים">
+              <div class="corridor__card-media">
+                <picture>
+                  <source type="image/webp" srcset="/assets/images/corridor/resort/14.full.webp">
+                  <img src="/assets/images/corridor/resort/14.full.jpg"
+                       width="1280" height="853"
+                       loading="lazy" decoding="async"
+                       alt="נווה מדבר עתידני בחמוקי הסלעים">
+                </picture>
+                <span class="corridor__card-tag">תפר קדוש ואדריכלות</span>
+              </div>
+              <div class="corridor__card-body">
+                <h3 class="corridor__card-title">אופקים זוהרים</h3>
+                <p class="corridor__card-desc">נוף הרי המדבר מאחורי כדורי הזוהר</p>
+                <div class="corridor__card-meta">
+                  <span>04 GAMOS</span>
+                  <span class="corridor__card-meta-cta">פרטים נוספים</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="corridor__card"
+                     data-card-index="4"
+                     data-project-id="lumina-05"
+                     tabindex="0"
+                     role="button"
+                     aria-label="פתח פרטים: הגסטרונומיה הזוהרת">
+              <div class="corridor__card-media">
+                <picture>
+                  <source type="image/webp" srcset="/assets/images/corridor/resort/15.full.webp">
+                  <img src="/assets/images/corridor/resort/15.full.jpg"
+                       width="1280" height="853"
+                       loading="lazy" decoding="async"
+                       alt="סעודת גורמה מוקפת פעימות אור">
+                </picture>
+                <span class="corridor__card-tag">חווית הסעודה</span>
+              </div>
+              <div class="corridor__card-body">
+                <h3 class="corridor__card-title">הגסטרונומיה הזוהרת</h3>
+                <p class="corridor__card-desc">חווית סעודה מוקפת בספירות חמימות</p>
+                <div class="corridor__card-meta">
+                  <span>05 GAMOS</span>
+                  <span class="corridor__card-meta-cta">פרטים נוספים</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="corridor__card"
+                     data-card-index="5"
+                     data-project-id="lumina-06"
+                     tabindex="0"
+                     role="button"
+                     aria-label="פתח פרטים: חלקיקי הזוהר">
+              <div class="corridor__card-media">
+                <picture>
+                  <source type="image/webp" srcset="/assets/images/corridor/resort/17.full.webp">
+                  <img src="/assets/images/corridor/resort/17.full.jpg"
+                       width="1280" height="853"
+                       loading="lazy" decoding="async"
+                       alt="פרטי זכוכית אמנותיים וחרס מעוצב">
+                </picture>
+                <span class="corridor__card-tag">יצירת אומנות אירועים</span>
+              </div>
+              <div class="corridor__card-body">
+                <h3 class="corridor__card-title">חלקיקי הזוהר</h3>
+                <p class="corridor__card-desc">פרטי העיצוב המהפנטים של האולם השני</p>
+                <div class="corridor__card-meta">
+                  <span>06 GAMOS</span>
+                  <span class="corridor__card-meta-cta">פרטים נוספים</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="corridor__hud" aria-hidden="false"><!-- populated by js/corridor.js --></div>
+
+        <h2 id="lumina-title" class="sr-only">ריזורט המדבר</h2>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

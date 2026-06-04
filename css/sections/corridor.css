@@ -1,0 +1,658 @@
+/* ===========================================================================
+   corridor.css — 3D perspective corridor (LIGHT theme — prototype default)
+   ---------------------------------------------------------------------------
+   Spec   : C:\Users\art1\.claude\plans\quizzical-stirring-castle.md (Phase 5)
+   Source : arch-corridor-gallery/src/components/ThreeDCorridor.tsx — light variant
+
+   Used on /corridor.html. Two halls share this stylesheet, distinguished by
+   data-corridor-hall (drives JS behaviour) + data-hall (drives CSS slide
+   positions).
+
+   Page-level layout
+   - <main #corridor-page> is position: fixed, inset: 0 — fills viewport.
+   - Each .corridor[data-hall] is position: absolute, inset: 0 — both halls
+     overlap. The active one has translateX(0); the inactive one is
+     translated +100% or -100% off-screen by inline JS.
+   ========================================================================= */
+
+
+/* ---------------------------------------------------------------------------
+   Page top-bar (Home button)
+   --------------------------------------------------------------------------- */
+
+.corridor__topbar {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;       /* RTL: inline-start = right edge */
+  padding: clamp(1.25rem, 3vw, 2rem) clamp(1.25rem, 3vw, 2.5rem);
+  pointer-events: none;
+  background: linear-gradient(to bottom,
+    rgba(247, 247, 247, 0.7) 0%,
+    rgba(247, 247, 247, 0) 100%);
+}
+.corridor__topbar > * { pointer-events: auto; }
+
+.corridor__home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: "Heebo", "Rubik", monospace, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #1A1410;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid #E5D9C4;
+  border-radius: 9999px;
+  padding: 0.55rem 1.1rem;
+  text-decoration: none;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+}
+.corridor__home-btn:hover {
+  background: #fff;
+  border-color: #C4934C;
+  transform: translateY(-1px);
+}
+.corridor__home-btn:active { transform: translateY(0); }
+.corridor__home-btn:focus-visible {
+  outline: 3px solid #C4934C;
+  outline-offset: 3px;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Side-arrow hall switchers
+   --------------------------------------------------------------------------- */
+
+.corridor__hall-arrow {
+  position: absolute;
+  inset-block-start: 48%;
+  transform: translateY(-50%);
+  z-index: 60;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  color: #C4934C;
+  border: 1px solid #E5D9C4;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 6px 20px -6px rgba(196, 147, 76, 0.25);
+  animation: corridor-arrow-pulse 1.5s ease-in-out infinite;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+.corridor__hall-arrow:hover {
+  background: #fff;
+  border-color: #C4934C;
+}
+.corridor__hall-arrow:active { transform: translateY(-50%) scale(0.95); }
+.corridor__hall-arrow:focus-visible {
+  outline: 3px solid #C4934C;
+  outline-offset: 3px;
+}
+.corridor__hall-arrow--right { inset-inline-end: clamp(1rem, 2.5vw, 2rem); animation-name: corridor-arrow-pulse-right; }
+.corridor__hall-arrow--left  { inset-inline-start: clamp(1rem, 2.5vw, 2rem); animation-name: corridor-arrow-pulse-left; }
+.corridor__hall-arrow[hidden] { display: none; }
+
+@keyframes corridor-arrow-pulse-right {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50%      { transform: translateY(-50%) translateX(8px); }
+}
+@keyframes corridor-arrow-pulse-left {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50%      { transform: translateY(-50%) translateX(-8px); }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Section root + sticky stage — LIGHT
+   --------------------------------------------------------------------------- */
+
+.corridor {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #F7F7F7;
+  color: #1A1410;
+  isolation: isolate;
+  overflow: hidden;
+  will-change: transform, opacity, filter;
+}
+
+.corridor__sticky {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  perspective: 1200px;
+  perspective-origin: 50% 45%;
+  transform-style: preserve-3d;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Background perspective lines — 4 clipped borders converging at center
+   (LIGHT: #D1D1D1 borders, opacity 0.35)
+   --------------------------------------------------------------------------- */
+
+.corridor__perspective {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.35;
+}
+.corridor__perspective-line {
+  position: absolute;
+  inset: 0;
+  border: 1px solid #D1D1D1;
+}
+.corridor__perspective-line--top    { clip-path: polygon(0% 0%, 100% 0%, 60% 40%, 40% 40%); }
+.corridor__perspective-line--bottom { clip-path: polygon(0% 100%, 100% 100%, 60% 60%, 40% 60%); }
+.corridor__perspective-line--left   { clip-path: polygon(0% 0%, 0% 100%, 40% 60%, 40% 40%); }
+.corridor__perspective-line--right  { clip-path: polygon(100% 0%, 100% 100%, 60% 60%, 60% 40%); }
+
+
+/* ---------------------------------------------------------------------------
+   Ambient fog — light radial spotlight + soft pulsing glow (no harsh amber)
+   --------------------------------------------------------------------------- */
+
+.corridor__ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.corridor__ambient-fog {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 45%,
+    rgba(247, 247, 247, 0.6) 0%,
+    rgba(214, 211, 209, 0.20) 100%
+  );
+}
+.corridor__ambient-glow {
+  position: absolute;
+  inset-block-start: 35%;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  max-width: 80vw;
+  height: 300px;
+  background: rgba(207, 174, 131, 0.10);
+  border-radius: 50%;
+  filter: blur(140px);
+  opacity: 0.6;
+  animation: corridor-pulse 4s ease-in-out infinite;
+}
+@keyframes corridor-pulse {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 0.85; }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Vanishing brand SVG — light drop-shadow
+   --------------------------------------------------------------------------- */
+
+.corridor__brand {
+  position: absolute;
+  inset-block-start: 42%;
+  inset-inline-start: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 14px rgba(74, 59, 50, 0.12));
+  user-select: none;
+}
+.corridor__brand-svg {
+  width: clamp(200px, 22vw, 320px);
+  height: auto;
+  display: block;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Lumina water canal (only when data-corridor-hall="lumina")
+   Light variant: warm amber gradient on top of the light backdrop.
+   --------------------------------------------------------------------------- */
+
+.corridor__canal {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  width: 38vw;
+  min-width: 280px;
+  height: 30vh;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.6;
+  clip-path: polygon(48% 0%, 52% 0%, 100% 100%, 0% 100%);
+  background: linear-gradient(to top,
+    rgba(235, 175, 110, 0.45) 0%,
+    rgba(245, 158, 11, 0.10) 80%,
+    rgba(245, 158, 11, 0) 100%);
+  border-inline-start: 1px solid rgba(245, 158, 11, 0.25);
+  border-inline-end:   1px solid rgba(245, 158, 11, 0.25);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+
+/* ---------------------------------------------------------------------------
+   3D perspective stage + layer
+   --------------------------------------------------------------------------- */
+
+.corridor__stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+  overflow: hidden;
+  transform-style: preserve-3d;
+}
+.corridor__layer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Archway columns (oasis only) — LIGHT cream gradient
+   --------------------------------------------------------------------------- */
+
+.corridor__archways {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  transform-style: preserve-3d;
+}
+.corridor__archway {
+  position: absolute;
+  inset-block: 0;
+  width: 18%;
+  height: 85vh;
+  border-block-start: 1px solid #E5D9C4;
+  background: linear-gradient(to top right,
+    rgba(245, 235, 230, 0.30) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(223, 211, 195, 0.40) 100%);
+  will-change: transform, opacity;
+  opacity: 0;
+}
+.corridor__archway--left {
+  border-start-end-radius: 9999px;
+  border-end-end-radius: 8px;
+  border-end-start-radius: 8px;
+  border-inline-end: 1px solid #E5D9C4;
+}
+.corridor__archway--right {
+  border-start-start-radius: 9999px;
+  border-end-start-radius: 8px;
+  border-end-end-radius: 8px;
+  border-inline-start: 1px solid #E5D9C4;
+}
+@media (max-width: 768px) {
+  .corridor__archway { width: 15%; }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Mountain curves (lumina only) — LIGHT variant matches archways
+   --------------------------------------------------------------------------- */
+
+.corridor__mountains {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  transform-style: preserve-3d;
+}
+.corridor__mountain {
+  position: absolute;
+  inset-block-end: 0;
+  width: 42vw;
+  max-width: 620px;
+  border-block-start: 1px solid #E5D9C4;
+  background: linear-gradient(to top right,
+    rgba(245, 235, 230, 0.18) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(223, 211, 195, 0.24) 100%);
+  box-shadow: 0 15px 30px rgba(196, 147, 76, 0.03);
+  will-change: transform, opacity;
+  opacity: 0;
+}
+.corridor__mountain--left {
+  border-start-end-radius: 100%;
+  border-inline-end: 1px solid #E5D9C4;
+  transform-origin: bottom left;
+}
+.corridor__mountain--right {
+  border-start-start-radius: 100%;
+  border-inline-start: 1px solid #E5D9C4;
+  transform-origin: bottom right;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Floating cards — LIGHT (white background, cream borders, ink text)
+   --------------------------------------------------------------------------- */
+
+.corridor__card {
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-start: 50%;
+  width: min(82vw, 32rem);
+  height: min(52vh, 26rem);
+  min-height: 365px;
+  margin: 0;
+  padding: 1rem;
+  background: #FFFFFF;
+  border: 1px solid #E5D9C4;
+  color: #1A1A1A;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: auto;
+  cursor: pointer;
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  opacity: 0;
+  box-shadow: 0 24px 60px -24px rgba(26, 20, 16, 0.18);
+  transition: box-shadow 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.corridor__card:hover {
+  box-shadow: 0 28px 70px -16px rgba(196, 147, 76, 0.30),
+              0 14px 30px -10px rgba(26, 20, 16, 0.18);
+}
+.corridor__card[data-active="true"] {
+  box-shadow: 0 0 0 2px rgba(196, 147, 76, 0.20),
+              0 32px 70px -10px rgba(26, 20, 16, 0.22);
+}
+.corridor__card:focus-visible {
+  outline: 3px solid #C4934C;
+  outline-offset: 4px;
+}
+
+
+.corridor__card-media {
+  position: relative;
+  width: 100%;
+  height: 58%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #F4ECE0;
+  border: 1px solid transparent;
+}
+.corridor__card-media picture,
+.corridor__card-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  transition: transform 2s ease;
+}
+.corridor__card-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0) 50%);
+  pointer-events: none;
+}
+.corridor__card-tag {
+  position: absolute;
+  inset-block-end: 12px;
+  inset-inline-start: 16px;
+  font-family: "Heebo", "Rubik", monospace, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: #FEF3C7;                                  /* amber-100 */
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 4px 10px;
+  border: 1px solid rgba(245, 158, 11, 0.20);
+  z-index: 2;
+}
+
+.corridor__card-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-block-start: 1rem;
+  padding-block-end: 0.25rem;
+  text-align: start;
+  direction: rtl;
+}
+.corridor__card-title {
+  margin: 0 0 0.4rem;
+  font-family: "Rubik", "Heebo", sans-serif;
+  font-size: clamp(1rem, 1.3vw, 1.15rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: #1A1A1A;
+}
+.corridor__card-desc {
+  margin: 0;
+  font-family: "Heebo", "Rubik", sans-serif;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: #78716C;                                  /* stone-500 */
+}
+.corridor__card-meta {
+  margin-block-start: 0.5rem;
+  padding-block-start: 0.5rem;
+  border-block-start: 1px solid #E5E5E5;           /* stone-200 */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: "Heebo", "Rubik", sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #A8A29E;                                  /* stone-400 */
+}
+.corridor__card-meta-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  background: #1A1A1A;
+  color: #FFFFFF;
+  padding: 6px 14px;
+  border: 0;
+  font: inherit;
+  letter-spacing: 0.12em;
+  cursor: inherit;
+  transition: background 0.25s ease, transform 0.15s ease;
+}
+.corridor__card:hover .corridor__card-meta-cta { background: #C4934C; }
+.corridor__card:active .corridor__card-meta-cta { transform: scale(0.96); }
+
+
+/* ---------------------------------------------------------------------------
+   HUD — bottom prev/next + jump pills (LIGHT)
+   --------------------------------------------------------------------------- */
+
+.corridor__hud {
+  position: absolute;
+  inset-block-end: 1.5rem;
+  inset-inline: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  z-index: 30;
+  pointer-events: none;
+  font-family: "Heebo", "Rubik", sans-serif;
+}
+.corridor__hud > * { pointer-events: auto; }
+
+.corridor__hud-step {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.corridor__hud-btn {
+  width: 2.4rem;
+  height: 2.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #E5D9C4;
+  color: #1A1410;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0;
+  border-radius: 9999px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
+}
+.corridor__hud-btn:hover  { background: #fff; border-color: #C4934C; }
+.corridor__hud-btn:active { transform: scale(0.96); }
+.corridor__hud-btn:focus-visible {
+  outline: 3px solid #C4934C;
+  outline-offset: 3px;
+}
+
+.corridor__hud-counter {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #78716C;
+  font-variant-numeric: tabular-nums;
+}
+
+.corridor__hud-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  max-width: 60vw;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 0.4rem 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid #E5D9C4;
+}
+.corridor__hud-pills::-webkit-scrollbar { display: none; }
+
+.corridor__hud-pill {
+  border: 1px solid #E5E5E5;
+  background: #FFFFFF;
+  color: #78716C;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.4em 0.8em;
+  cursor: pointer;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.corridor__hud-pill:hover  { background: #F5F5F4; color: #1A1A1A; border-color: #C4934C; }
+.corridor__hud-pill[aria-current="true"] {
+  background: #1A1A1A;
+  color: #FFFFFF;
+  border-color: #292524;
+}
+.corridor__hud-pill:focus-visible {
+  outline: 3px solid #C4934C;
+  outline-offset: 3px;
+}
+
+.corridor__hud-status {
+  display: none;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: "Heebo", "Rubik", monospace, sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.20em;
+  color: #A8A29E;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.corridor__hud-status-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #C4934C;
+  animation: corridor-status-pulse 2.4s ease-in-out infinite;
+}
+@keyframes corridor-status-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%      { opacity: 1.0; transform: scale(1.2); }
+}
+@media (min-width: 1024px) {
+  .corridor__hud-status { display: inline-flex; }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Mobile — collapse 3D, simplify ornaments
+   --------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  .corridor__sticky        { perspective: none; }
+  .corridor__perspective,
+  .corridor__brand         { display: none; }
+  .corridor__card          {
+    width: 78vw;
+    height: 60vh;
+    max-height: 480px;
+    min-height: 320px;
+  }
+  .corridor__hud-pills     { max-width: 50vw; }
+  .corridor__topbar        { padding: 1rem 1.25rem; }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Reduced motion — kill animations + parallax
+   --------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .corridor__ambient-glow,
+  .corridor__hud-status-dot,
+  .corridor__hall-arrow,
+  .corridor__card,
+  .corridor__archway,
+  .corridor__mountain {
+    transition: none !important;
+    animation: none !important;
+    will-change: auto;
+  }
+}

@@ -1,0 +1,63 @@
+/* ===========================================================================
+   site-nav-hover.css — Hero hover-reveal mode (2026-06-04)
+   ---------------------------------------------------------------------------
+   While the user is in the hero (top of page), the site-nav is hidden under
+   the WebGL distortion canvas. Cursor entering the top 12vh trigger band
+   reveals the bar; leaving hides it. js/site-nav-hover-reveal.js toggles
+   `[data-hero-mode]` on <html> while #hero is at viewport-top, and writes
+   `[data-nav-revealed]` on <html> based on cursor position.
+
+   When the hero is scrolled past, the bar reverts to its native sticky
+   behaviour (no hover-mode at all).
+   ========================================================================= */
+
+html[data-hero-mode="true"] .site-nav {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 120;            /* above the hero canvas (z-index: 110) */
+  transform: translateY(-100%);
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              background  0.4s ease;
+  pointer-events: none;
+  background: rgba(245, 239, 230, 0.0);   /* fully transparent on first reveal */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-block-end-color: transparent;
+  box-shadow: none;
+}
+
+html[data-hero-mode="true"][data-nav-revealed="true"] .site-nav {
+  transform: translateY(0);
+  pointer-events: auto;
+  background: rgba(245, 239, 230, 0.92);
+  backdrop-filter: saturate(140%) blur(12px);
+  -webkit-backdrop-filter: saturate(140%) blur(12px);
+  box-shadow: 0 12px 40px -16px rgba(26, 20, 16, 0.45);
+}
+
+/* Tiny invisible trigger band at the top of the viewport — keeps the bar
+   reachable even before the cursor crosses the (hidden) bar's bounding box.
+   pointer-events:none on the band itself; the band is just a "tripwire"
+   read by the hover-reveal JS via mouseenter coordinates, not by CSS hover.
+   But it also needs to NOT block hero canvas pointer events. */
+.site-nav-hover-band {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  height: 14vh;
+  z-index: 55;            /* above hero canvas (50), below revealed nav (60) */
+  pointer-events: none;
+}
+
+/* Reduced motion — disable transform, just toggle opacity instantly. */
+@media (prefers-reduced-motion: reduce) {
+  html[data-hero-mode="true"] .site-nav {
+    transition: opacity 0.2s ease;
+    transform: none;
+    opacity: 0;
+  }
+  html[data-hero-mode="true"][data-nav-revealed="true"] .site-nav {
+    opacity: 1;
+  }
+}

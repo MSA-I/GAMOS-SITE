@@ -48,6 +48,11 @@ const MAPPINGS = [
   // New staged sources (copied into the repo under assets/_src/).
   { srcDir: "assets/_src/lounge",  outDir: "assets/images/halls/lounge", exts: [".jpg", ".jpeg", ".png"], srcBase: "root" },
   { srcDir: "assets/_src/gallery", outDir: "assets/images/gallery",      exts: [".jpg", ".jpeg", ".png"], srcBase: "root" },
+  // 2026-06-04: Corridor galleries (arch-corridor-gallery port). 10 venue + 6 resort
+  // floating cards. NEW outDir to avoid collision with existing halls/* images
+  // referenced elsewhere (about-section, legacy markup).
+  { srcDir: "השראות/תמונות מרחפות/אולם",   outDir: "assets/images/corridor/venue",  exts: [".png", ".jpg", ".jpeg"] },
+  { srcDir: "השראות/תמונות מרחפות/ריזורט", outDir: "assets/images/corridor/resort", exts: [".png", ".jpg", ".jpeg"] },
 ];
 
 // Single-output (non-numbered, non-variant) encodes: produces ONE .webp at the
@@ -71,6 +76,7 @@ const SINGLE_WEBP = [
   //   "טיפוגרפיה כהה.png"   — luma 193 (LIGHT gold-flecked) → for DARK surfaces
   {
     srcCandidates: [
+      "תמונות לאנימציית האתר/פונט/טקסטורה מלאה כהה.png",
       "תמונות לאנימציית האתר/פונט/טיפוגרפיה בהירה.png",
       "תמונות לאנימציית האתר/פונט/טקסטורה לטיפוגרפיה בהירה.png",
     ],

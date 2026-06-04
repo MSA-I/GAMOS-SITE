@@ -13,6 +13,7 @@
 
 // Section modules — placeholder shells. Each exposes `init()`.
 import * as scrollOrchestrator from "./scroll-orchestrator.js";
+import * as heroShader          from "./hero-shader.js";    // 2026-06-04 — Three.js WebGL hero
 import * as scrollScene         from "./scroll-scene.js";
 import * as heroVideoScrub      from "./hero-video-scrub.js";
 import * as portals             from "./portals.js";
@@ -29,6 +30,9 @@ import * as siteNav             from "./site-nav.js";       // Agent 23 — Phas
 import * as scrollytelling      from "./scrollytelling.js"; // 2026-06-01 — GSAP + parallax + loader pct
 import * as roomsGallery        from "./rooms-gallery.js";  // #rooms — חדרי נופש gallery
 import * as loungeSelector      from "./lounge-selector.js";// #lounge — lounge selector
+import * as corridor            from "./corridor.js";       // 2026-06-04 — corridor halls
+import * as projectDrawer       from "./project-drawer.js"; // 2026-06-04 — ProjectDetail side panel
+import * as siteNavHoverReveal  from "./site-nav-hover-reveal.js"; // 2026-06-04 — hide site-nav while in hero
 import * as scrollSpy           from "./scroll-spy.js";     // .site-nav — aria-current scroll-spy
 
 // Order matters:
@@ -46,10 +50,14 @@ import * as scrollSpy           from "./scroll-spy.js";     // .site-nav — ari
 const MODULES = [
   ["lenis",               lenis],
   ["scroll-orchestrator", scrollOrchestrator],
-  ["hero-video-scrub",    heroVideoScrub],
+  ["loading-overlay",     loadingOverlay],   // moved earlier so window.gamosLoading is ready before hero-shader click handlers
+  ["hero-shader",         heroShader],       // 2026-06-04: must precede side-dot-nav so gamosHero stub releases the dominance gate
+  ["hero-video-scrub",    heroVideoScrub],   // legacy hero (no-op when #hero is the new shader hero)
+  ["corridor",            corridor],         // 2026-06-04: scroll-driven 3D corridor + window.gamosCorridor + window.gamosHeroToGallery
+  ["project-drawer",      projectDrawer],    // 2026-06-04: window.gamosProjectDrawer.open(id) — must follow corridor so card-click can call it
+  ["site-nav-hover-reveal", siteNavHoverReveal], // 2026-06-04: hide site-nav while in hero (revealed only on cursor in top band)
   ["scroll-scene",        scrollScene],
   ["portals",             portals],
-  ["loading-overlay",     loadingOverlay],
   ["side-dot-nav",        sideDotNav],
   ["reveals",             reveals],
   ["accordions",          accordions],

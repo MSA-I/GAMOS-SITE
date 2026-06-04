@@ -28,9 +28,9 @@
   <!-- Favicon — SVG primary; Agent 03 ships the rasterized 16/32/180 set later. -->
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 
-  <!-- Performance: preload LCP image (hero static — the first painted full-bleed surface) -->
+  <!-- Performance: preload LCP image (hero shader base texture — first paint of #hero) -->
   <link rel="preload" as="image" type="image/webp"
-        href="/assets/images/brand/hero-static.webp" fetchpriority="high">
+        href="/assets/images/brand/hero-distort.full.webp" fetchpriority="high">
 
   <!-- Performance: preload critical fonts (Rubik display, Hebrew + Latin) -->
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -102,8 +102,10 @@
 
   <!-- Stylesheets: per-section (one per architectural section, per Constitution §10.1) -->
   <link rel="stylesheet" href="/css/sections/hero.css">
+  <link rel="stylesheet" href="/css/sections/hero-shader.css">
   <link rel="stylesheet" href="/css/sections/portals.css">
   <link rel="stylesheet" href="/css/sections/scroll-scene.css">
+  <link rel="stylesheet" href="/css/sections/corridor.css">
   <link rel="stylesheet" href="/css/sections/hall-venue.css">
   <link rel="stylesheet" href="/css/sections/hall-resort.css">
   <link rel="stylesheet" href="/css/sections/lounge.css">
@@ -128,6 +130,8 @@
   <link rel="stylesheet" href="/css/components/marquee.css">
   <link rel="stylesheet" href="/css/components/scrollytelling-loader.css">
   <link rel="stylesheet" href="/css/components/texture-text.css">
+  <link rel="stylesheet" href="/css/components/site-nav-hover.css">
+  <link rel="stylesheet" href="/css/components/project-drawer.css">
 
   <!-- GSAP + ScrollToPlugin (self-hosted; powers cinematic scroll +
        parallax in js/scrollytelling.js per video-to-website spec). -->
@@ -157,8 +161,8 @@
       </a>
 
       <ul class="site-nav__links" role="list">
-        <li><a href="#hall-venue">אולם</a></li>
-        <li><a href="#hall-resort">ריזורט</a></li>
+        <li><a href="/corridor.html?hall=oasis">אולם</a></li>
+        <li><a href="/corridor.html?hall=lumina">ריזורט</a></li>
         <li><a href="#lounge" data-secondary>לאונג'</a></li>
         <li><a href="#rooms">חדרי נופש</a></li>
         <li><a href="#culinary">קולינריה</a></li>
@@ -187,31 +191,26 @@
   <main id="main-content">
 
     <!-- ====================================================================
-         NEW HERO COMPONENT GOES HERE
-         ---------------------------------------------------------------------
-         Removed 2026-06-03 per user (replaced by a new component, awaiting
-         spec):
-           - #hero (multi-stage scroll cinema: static-bg, title-reveal,
-             canvas scrub over 700vh spacer, portal hotspots)
-           - #hall-venue (poster-Ken-Burns scroll-scene + 4 features)
-           - #hall-resort (poster-Ken-Burns scroll-scene + 4 features)
-           - #portals + .portal hotspots
-         The supporting JS modules + CSS are still present in the repo so
-         nothing crashes; they're just no-ops without their DOM. The user
-         will paste the new component below this comment.
+         #hero — Three.js WebGL shader (2026-06-04 rebuild)
+         Module: js/hero-shader.js  |  Spec: plans/quizzical-stirring-castle.md
+         Single 100vh section. Click on the canvas-rendered "אולם" / "ריזורט"
+         labels triggers a 1.1s loading overlay → smooth-scroll to the
+         matching corridor section below.
+    ==================================================================== -->
+    <section id="hero" class="hero-shader" aria-label="פתיחה">
+      <div class="hero-shader__sticky">
+        <canvas data-hero-shader aria-hidden="true"></canvas>
+      </div>
+    </section>
 
-         Section IDs other modules link to:
-           - #hero (top-of-page anchor — re-add if the new component
-             should be the scroll-spy "פתיחה" target).
-           - #hall-venue, #hall-resort (linked from the events accordion
-             AND from the new top-of-section nav at "אולם" / "ריזורט" —
-             re-add IDs to whatever the new component uses, OR update
-             js/side-dot-nav.js SECTIONS + nav links once the new IDs
-             are known).
-         (See architecture/section-order.md if it exists; otherwise
-         these are wired in: js/side-dot-nav.js SECTIONS,
-         index.html top-nav links, the events accordion, and any
-         hard-coded data-target="#hall-*" buttons.)
+    <!-- ====================================================================
+         Corridor halls live on a separate page — /corridor.html
+         ---------------------------------------------------------------------
+         Click "אולם" / "ריזורט" on the hero (or the top-nav links) plays a
+         GSAP cinema pan on #hero (translateX(-100%)) and navigates to
+         /corridor.html?hall=oasis or ?hall=lumina. The corridor page hosts
+         BOTH halls and uses arrow-button hall-switching internally.
+         (See plans/quizzical-stirring-castle.md.)
     ==================================================================== -->
 
 
@@ -422,8 +421,8 @@
           </li>
           <li class="culinary__item">
             <picture>
-              <source type="image/webp" srcset="/assets/images/culinary/09.full.webp">
-              <img src="/assets/images/culinary/09.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="צלחת שף בעיצוב מודרני">
+              <source type="image/webp" srcset="/assets/images/culinary/10.full.webp">
+              <img src="/assets/images/culinary/10.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="קרפצ'יו סלמון עדין בקערה רחבה עם צ'ילי ורדישונים">
             </picture>
             <figcaption class="culinary__item-caption">
               <span class="culinary__item-tag">שף</span>
