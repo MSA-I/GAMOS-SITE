@@ -340,6 +340,7 @@ function buildTextCanvas(width, height, dpr) {
     zones.push({
       id: line.id,
       target: line.target,
+      galleryId: line.galleryId,   // 2026-06-04: required by navigateToTarget()
       x: cx - w / 2,
       y: y - labelSize,
       w,
