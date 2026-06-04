@@ -59,8 +59,6 @@ const FRAG = `
   uniform float uTime;
   uniform float uLensRadius;
   uniform float uLensFalloff;
-  uniform vec3  uTextColor;
-
   const float STEPS = 16.0;
   const float PI = 3.14159265359;
 
@@ -152,29 +150,6 @@ const FRAG = `
     return vec2(u / aspect, v);
   }
 
-  vec3 chromAbAlpha(sampler2D tex, vec2 st, float angle, float amount) {
-    float aspect = uResolution.x / uResolution.y;
-    float rot = angle * 360.0 * PI / 180.0;
-    vec2 aber = amount * vec2(0.1 * sin(rot) * aspect, 0.1 * cos(rot));
-    aber *= distance(st, vec2(0.5)) * 2.0;
-
-    float rA = 0.0;
-    float gA = 0.0;
-    float bA = 0.0;
-    float iStep = 1.0 / STEPS;
-
-    for (float i = 1.0; i <= STEPS; i++) {
-      vec2 off = aber * (i * iStep);
-      rA += texture2D(tex, st - off).a * iStep;
-      bA += texture2D(tex, st + off).a * iStep;
-    }
-    for (float i = 1.0; i <= STEPS; i++) {
-      vec2 off = aber * ((i * iStep) - 0.5);
-      gA += texture2D(tex, st + off).a * iStep;
-    }
-    return vec3(rA, gA, bA);
-  }
-
   vec3 chromAb(sampler2D tex, vec2 st, float angle, float amount) {
     float aspect = uResolution.x / uResolution.y;
     float rot = angle * 360.0 * PI / 180.0;
@@ -226,23 +201,13 @@ const FRAG = `
 
     vec3 imgRgb = mix(baseRgb, topRgb, reveal);
 
-    vec2 textUv = vTextureCoord;
-
-    vec3 textRgbAlpha;
-    if (reveal < 0.999) {
-      textRgbAlpha = chromAbAlpha(
-        uTextureText, textUv,
-        atan(textUv.y - uMouse.y, textUv.x - uMouse.x),
-        dPos * 0.10
-      );
-    } else {
-      float a = texture2D(uTextureText, textUv).a;
-      textRgbAlpha = vec3(a);
-    }
-
-    float textAlpha = max(max(textRgbAlpha.r, textRgbAlpha.g), textRgbAlpha.b);
-    vec3 fringe = mix(imgRgb, uTextColor, textRgbAlpha);
-    vec3 final = mix(imgRgb, fringe, textAlpha);
+    // 2026-06-04: text labels are pre-coloured (texture-filled) on the canvas
+    // side. Sample RGBA directly, drop the chromatic-aberration pass on the
+    // text (no more colour fringing), and gate alpha by (1 - reveal) so the
+    // label fades out when the lens distortion overlaps it.
+    vec4 textTex = texture2D(uTextureText, vTextureCoord);
+    float textAlpha = textTex.a * (1.0 - reveal);
+    vec3 final = mix(imgRgb, textTex.rgb, textAlpha);
 
     gl_FragColor = vec4(final, 1.0);
   }
@@ -261,12 +226,14 @@ const TOP_ASPECT   = 6688 / 3764;
 const LENS_RADIUS  = 0.55;
 const LENS_FALLOFF = 0.12;
 const MOUSE_LERP   = 0.10;
-const TEXT_COLOR_HEX = "#f5efe6"; // matches --ivory
 const DPR_CAP      = 1.75;
 
 const TEXT_LINES = [
-  { label: "אולם",   id: "venue",  target: "#hall-venue",  galleryId: "a" },
-  { label: "ריזורט", id: "resort", target: "#hall-resort", galleryId: "b" },
+  // 2026-06-04: Latin labels per user (was Hebrew אולם / ריזורט). The id /
+  // target / galleryId are internal identifiers — kept stable so the
+  // /halls/dist/{oasis,lumina}/ routing in navigateToTarget() still works.
+  { label: "Events", id: "venue",  target: "#hall-venue",  galleryId: "a" },
+  { label: "Resort", id: "resort", target: "#hall-resort", galleryId: "b" },
 ];
 
 
@@ -308,6 +275,35 @@ const state = {
 // Helpers — text canvas + hit zones
 // ---------------------------------------------------------------------------
 
+// 2026-06-04: Text labels are filled with the brand's "typo-on-dark" texture
+// (cream + gold flecks). The image is shared across all rebuilds — load it
+// once at module init and reuse. While it's pending, we draw with a solid
+// stencil so the shader has something to sample; rebuildText() is invoked on
+// load to upgrade to the textured fill.
+const TEXTURE_FILL_URL = "/assets/images/brand/typo-on-dark.webp";
+let textureFillImg = null;       // HTMLImageElement once loaded
+let textureFillReady = false;
+const textureFillSubs = new Set(); // callbacks to re-run after image loads
+
+(function loadTextureFill() {
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.decoding = "async";
+  img.onload = () => {
+    textureFillImg = img;
+    textureFillReady = true;
+    for (const cb of textureFillSubs) {
+      try { cb(); } catch { /* ignore */ }
+    }
+    textureFillSubs.clear();
+  };
+  img.onerror = () => {
+    // Fallback: leave textureFillReady=false; buildTextCanvas falls back to
+    // solid ivory fill so the labels are still readable.
+  };
+  img.src = TEXTURE_FILL_URL;
+})();
+
 function buildTextCanvas(width, height, dpr) {
   const c = document.createElement("canvas");
   c.width  = Math.max(1, Math.floor(width  * dpr));
@@ -322,7 +318,10 @@ function buildTextCanvas(width, height, dpr) {
   const lineGap   = labelSize * 0.4;
 
   let y = height * 0.78 + labelSize;
-  ctx.fillStyle = TEXT_COLOR_HEX;
+  // Solid stencil — replaced by source-in compositing of the texture image
+  // below. Color doesn't matter (any non-transparent pixel works) but white
+  // keeps the fallback (no-texture) state legible.
+  ctx.fillStyle = "#ffffff";
   ctx.textBaseline = "alphabetic";
   ctx.textAlign = "center";
 
@@ -330,8 +329,12 @@ function buildTextCanvas(width, height, dpr) {
   const zones = [];
 
   for (const line of TEXT_LINES) {
-    ctx.font = `700 ${labelSize}px "Heebo", "Rubik", "Arial Hebrew", sans-serif`;
-    ctx.direction = "rtl";
+    // Font stack: Playfair Display first (declared in tokens.css; lands when
+    // the WOFF2 ships), then Cormorant Garamond / Didot / Georgia as graceful
+    // serif fallbacks. Avoid sans-serif fallback — an English display label
+    // is much weaker without the serif.
+    ctx.font = `700 ${labelSize}px "Playfair Display", "Cormorant Garamond", "Didot", "Georgia", serif`;
+    ctx.direction = "ltr";
 
     ctx.fillText(line.label, cx, y);
 
@@ -348,6 +351,15 @@ function buildTextCanvas(width, height, dpr) {
     });
 
     y += labelSize + lineGap;
+  }
+
+  // Apply the dark-texture fill to the just-drawn glyphs by clipping the
+  // texture image to the existing alpha (stencil). source-in keeps texture
+  // pixels only where the canvas already had paint — i.e. inside the letters.
+  if (textureFillReady && textureFillImg) {
+    ctx.globalCompositeOperation = "source-in";
+    ctx.drawImage(textureFillImg, 0, 0, width, height);
+    ctx.globalCompositeOperation = "source-over";
   }
 
   return { canvas: c, zones };
@@ -526,7 +538,10 @@ export function init() {
     const texText = new THREE.CanvasTexture(state.textCanvas);
     texText.minFilter = THREE.LinearFilter;
     texText.magFilter = THREE.LinearFilter;
-    texText.colorSpace = THREE.NoColorSpace;
+    // 2026-06-04: text canvas now carries the texture-filled glyphs (cream +
+    // gold flecks). Sample as sRGB so the colours land linearly in the FRAG
+    // shader's mix().
+    texText.colorSpace = THREE.SRGBColorSpace;
     texText.flipY = true;
     state.texText = texText;
 
@@ -541,7 +556,6 @@ export function init() {
       uTime:        { value: 0 },
       uLensRadius:  { value: LENS_RADIUS },
       uLensFalloff: { value: LENS_FALLOFF },
-      uTextColor:   { value: new THREE.Color(TEXT_COLOR_HEX) },
     };
 
     state.material = new THREE.ShaderMaterial({
@@ -575,6 +589,12 @@ export function init() {
       rebuildText();
     }
     resize();
+
+    // If the dark-texture image is still loading, schedule a rebuild once it's
+    // ready so the labels upgrade from the white stencil to the textured fill.
+    if (!textureFillReady) {
+      textureFillSubs.add(() => { try { rebuildText(); } catch { /* ignore */ } });
+    }
 
     state.ro = new ResizeObserver(resize);
     state.ro.observe(host);

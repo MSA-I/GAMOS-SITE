@@ -109,6 +109,16 @@ const SINGLE_WEBP = [
     width: 1600,
     quality: 88,
   },
+  // 2026-06-04: Hero base layer replaced with השראות/2.1.png per user.
+  // Higher width (2400) and quality (85) than the previous encode — hero is
+  // full-bleed and any softness shows on a 4K display. Aspect 1.7708 ≈ the
+  // shader's BASE_ASPECT 1.7768 (sub-1% delta — no shader change needed).
+  {
+    src: "תמונות לאנימציית האתר/השראות/2.1.png",
+    out: "assets/images/brand/hero-distort.full.webp",
+    width: 2400,
+    quality: 85,
+  },
 ];
 
 async function loadSharp() {
