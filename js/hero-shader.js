@@ -228,12 +228,22 @@ const LENS_FALLOFF = 0.12;
 const MOUSE_LERP   = 0.10;
 const DPR_CAP      = 1.75;
 
+// 2026-06-04: Labels are now pre-rendered <img> wordmarks (same brand
+// typography as logo-central.webp). Each line carries a `src` whose aspect
+// ratio is captured below. The id / target / galleryId are internal
+// identifiers — kept stable so navigateToTarget() routes correctly to
+// /halls/dist/{oasis,lumina}/.
 const TEXT_LINES = [
-  // 2026-06-04: Latin labels per user (was Hebrew אולם / ריזורט). The id /
-  // target / galleryId are internal identifiers — kept stable so the
-  // /halls/dist/{oasis,lumina}/ routing in navigateToTarget() still works.
-  { label: "Events", id: "venue",  target: "#hall-venue",  galleryId: "a" },
-  { label: "Resort", id: "resort", target: "#hall-resort", galleryId: "b" },
+  {
+    label: "Events", id: "venue",  target: "#hall-venue",  galleryId: "a",
+    src: "/assets/images/brand/hero-label-events.webp",
+    aspect: 315 / 130,   // src PNG dimensions, matches WebP output ratio
+  },
+  {
+    label: "Resort", id: "resort", target: "#hall-resort", galleryId: "b",
+    src: "/assets/images/brand/hero-label-resort.webp",
+    aspect: 342 / 120,
+  },
 ];
 
 
@@ -275,34 +285,35 @@ const state = {
 // Helpers — text canvas + hit zones
 // ---------------------------------------------------------------------------
 
-// 2026-06-04: Text labels are filled with the brand's "typo-on-dark" texture
-// (cream + gold flecks). The image is shared across all rebuilds — load it
-// once at module init and reuse. While it's pending, we draw with a solid
-// stencil so the shader has something to sample; rebuildText() is invoked on
-// load to upgrade to the textured fill.
-const TEXTURE_FILL_URL = "/assets/images/brand/typo-on-dark.webp";
-let textureFillImg = null;       // HTMLImageElement once loaded
-let textureFillReady = false;
-const textureFillSubs = new Set(); // callbacks to re-run after image loads
+// 2026-06-04: Labels are pre-rendered wordmark images (same brand typography
+// as the central GAMOS logo). Each TEXT_LINES entry has a `src` that we load
+// once at module init; buildTextCanvas() draws them at the desired pixel
+// height. While images are pending the canvas is empty — they pop in once
+// loaded via the labelImageSubs callback (rebuilds the text canvas).
+const labelImages = new Map(); // src → { img, ready }
+const labelImageSubs = new Set();
 
-(function loadTextureFill() {
-  const img = new Image();
-  img.crossOrigin = "anonymous";
-  img.decoding = "async";
-  img.onload = () => {
-    textureFillImg = img;
-    textureFillReady = true;
-    for (const cb of textureFillSubs) {
-      try { cb(); } catch { /* ignore */ }
-    }
-    textureFillSubs.clear();
-  };
-  img.onerror = () => {
-    // Fallback: leave textureFillReady=false; buildTextCanvas falls back to
-    // solid ivory fill so the labels are still readable.
-  };
-  img.src = TEXTURE_FILL_URL;
+(function loadLabelImages() {
+  for (const line of TEXT_LINES) {
+    const entry = { img: new Image(), ready: false };
+    entry.img.crossOrigin = "anonymous";
+    entry.img.decoding = "async";
+    entry.img.onload = () => {
+      entry.ready = true;
+      for (const cb of labelImageSubs) {
+        try { cb(); } catch { /* ignore */ }
+      }
+    };
+    entry.img.onerror = () => { /* leave .ready=false; fallback handled in builder */ };
+    entry.img.src = line.src;
+    labelImages.set(line.src, entry);
+  }
 })();
+
+// hoveredZoneId tracks which label the cursor is currently over so we can
+// scale it up. Drives a rebuildText() trigger only on STATE CHANGE — not on
+// every mouse-move — so this is cheap.
+let hoveredZoneId = null;
 
 function buildTextCanvas(width, height, dpr) {
   const c = document.createElement("canvas");
@@ -314,52 +325,47 @@ function buildTextCanvas(width, height, dpr) {
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, width, height);
 
-  const labelSize = Math.max(40, Math.min(width, height) * 0.07);
-  const lineGap   = labelSize * 0.4;
+  // Base label height — slightly larger than the previous `labelSize * 0.07`
+  // because wordmark images hint a more compact glyph than rendered text.
+  const baseHeight = Math.max(46, Math.min(width, height) * 0.085);
+  const lineGap    = baseHeight * 0.42;
+  const HOVER_SCALE = 1.18;   // ← "the hovered label pops" — 18% scale-up
 
-  let y = height * 0.78 + labelSize;
-  // Solid stencil — replaced by source-in compositing of the texture image
-  // below. Color doesn't matter (any non-transparent pixel works) but white
-  // keeps the fallback (no-texture) state legible.
-  ctx.fillStyle = "#ffffff";
-  ctx.textBaseline = "alphabetic";
-  ctx.textAlign = "center";
+  // 2026-06-04 (user mandate): position the labels HIGHER on the canvas.
+  // Was 0.78 (≈ 78% down). Moved up to 0.66 so they sit just below center.
+  const baseY = height * 0.66 + baseHeight;
 
   const cx = width / 2;
   const zones = [];
 
+  // First pass — compute zones (positions + sizes) for hit-testing AND
+  // eventual draw. We do this regardless of image-load state so click works
+  // immediately, even before the wordmarks finish loading.
+  let y = baseY;
   for (const line of TEXT_LINES) {
-    // Font stack: Playfair Display first (declared in tokens.css; lands when
-    // the WOFF2 ships), then Cormorant Garamond / Didot / Georgia as graceful
-    // serif fallbacks. Avoid sans-serif fallback — an English display label
-    // is much weaker without the serif.
-    ctx.font = `700 ${labelSize}px "Playfair Display", "Cormorant Garamond", "Didot", "Georgia", serif`;
-    ctx.direction = "ltr";
+    const isHover = hoveredZoneId === line.id;
+    const lineHeight = baseHeight * (isHover ? HOVER_SCALE : 1.0);
+    const lineWidth  = lineHeight * line.aspect;
 
-    ctx.fillText(line.label, cx, y);
-
-    const m = ctx.measureText(line.label);
-    const w = m.width;
     zones.push({
       id: line.id,
       target: line.target,
-      galleryId: line.galleryId,   // 2026-06-04: required by navigateToTarget()
-      x: cx - w / 2,
-      y: y - labelSize,
-      w,
-      h: labelSize * 1.25,
+      galleryId: line.galleryId,
+      src: line.src,
+      x: cx - lineWidth / 2,
+      y: y - lineHeight,
+      w: lineWidth,
+      h: lineHeight,
     });
 
-    y += labelSize + lineGap;
+    y += lineHeight + lineGap;
   }
 
-  // Apply the dark-texture fill to the just-drawn glyphs by clipping the
-  // texture image to the existing alpha (stencil). source-in keeps texture
-  // pixels only where the canvas already had paint — i.e. inside the letters.
-  if (textureFillReady && textureFillImg) {
-    ctx.globalCompositeOperation = "source-in";
-    ctx.drawImage(textureFillImg, 0, 0, width, height);
-    ctx.globalCompositeOperation = "source-over";
+  // Second pass — paint. drawImage() draws nothing until the image loads.
+  for (const z of zones) {
+    const entry = labelImages.get(z.src);
+    if (!entry || !entry.ready) continue;
+    ctx.drawImage(entry.img, z.x, z.y, z.w, z.h);
   }
 
   return { canvas: c, zones };
@@ -590,11 +596,10 @@ export function init() {
     }
     resize();
 
-    // If the dark-texture image is still loading, schedule a rebuild once it's
-    // ready so the labels upgrade from the white stencil to the textured fill.
-    if (!textureFillReady) {
-      textureFillSubs.add(() => { try { rebuildText(); } catch { /* ignore */ } });
-    }
+    // Wordmark images may still be loading on first paint — when each one
+    // resolves, rebuild the text canvas so it pops in.
+    const onLabelLoaded = () => { try { rebuildText(); } catch { /* ignore */ } };
+    labelImageSubs.add(onLabelLoaded);
 
     state.ro = new ResizeObserver(resize);
     state.ro.observe(host);
@@ -608,14 +613,28 @@ export function init() {
       const localY = e.clientY - r.top;
       state.target.set(localX / r.width, 1.0 - localY / r.height);
 
-      const overLink = state.textZones.some((z) =>
-        localX >= z.x && localX <= z.x + z.w &&
-        localY >= z.y && localY <= z.y + z.h
-      );
-      canvas.style.cursor = overLink ? "pointer" : "";
+      // Detect which label the cursor is over (if any) and rebuild only when
+      // the hovered ID actually changes — keeps mouse-move cheap.
+      let nextHoverId = null;
+      for (const z of state.textZones) {
+        if (localX >= z.x && localX <= z.x + z.w &&
+            localY >= z.y && localY <= z.y + z.h) {
+          nextHoverId = z.id;
+          break;
+        }
+      }
+      if (nextHoverId !== hoveredZoneId) {
+        hoveredZoneId = nextHoverId;
+        try { rebuildText(); } catch { /* ignore */ }
+      }
+      canvas.style.cursor = nextHoverId ? "pointer" : "";
     };
     state.bound.onPointerLeave = () => {
       state.target.set(0.5, 0.5);
+      if (hoveredZoneId !== null) {
+        hoveredZoneId = null;
+        try { rebuildText(); } catch { /* ignore */ }
+      }
       canvas.style.cursor = "";
     };
     state.bound.onPointerDown = (e) => {

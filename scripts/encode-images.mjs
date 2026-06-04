@@ -119,6 +119,23 @@ const SINGLE_WEBP = [
     width: 2400,
     quality: 85,
   },
+  // 2026-06-04: Hero clickable labels — pre-rendered "Events" and "Resort"
+  // wordmarks in the same brand typography as logo-central.webp (cream/gold
+  // with serif strokes). The PNGs are tiny (315×130 / 342×120) but the hero
+  // canvas paints them at multiple sizes; encode at 2× source so down-scaling
+  // stays sharp on retina without serving a giant file.
+  {
+    src: "תמונות לאנימציית האתר/לוגו/EVENTS.png",
+    out: "assets/images/brand/hero-label-events.webp",
+    width: 800,
+    quality: 92,
+  },
+  {
+    src: "תמונות לאנימציית האתר/לוגו/RESORT.png",
+    out: "assets/images/brand/hero-label-resort.webp",
+    width: 800,
+    quality: 92,
+  },
 ];
 
 async function loadSharp() {
