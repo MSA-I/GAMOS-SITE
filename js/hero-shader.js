@@ -375,10 +375,13 @@ function buildTextCanvas(width, height, dpr) {
     y += size + lineGap;
   }
 
-  // Overlay the dark texture INSIDE the cream/white glyphs. Build it on a
-  // detached canvas so we can multiply the texture against itself (heavy
-  // grain) and then alpha-clip to glyph shapes via source-atop without
-  // affecting the rest of the empty hero canvas.
+  // Overlay the dark texture INSIDE the cream glyphs — but the source
+  // texture is "טקסטורה מלאה כהה" (mostly DARK), so painting it directly
+  // turned the labels nearly black. Invert it first so the dark base becomes
+  // light, leaving the gold flecks as the only standout detail. Then blit
+  // it at moderate opacity so the cream base shows through where the
+  // (inverted) flecks aren't, giving a "light text with subtle grain"
+  // effect rather than a flat dark fill.
   if (textureFillReady && textureFillImg) {
     const tcw = c.width;
     const tch = c.height;
@@ -387,18 +390,19 @@ function buildTextCanvas(width, height, dpr) {
     tex.height = tch;
     const tctx = tex.getContext("2d");
     if (tctx) {
-      // Paint the texture twice so the darks deepen significantly. drawImage
-      // uses the natural texture luma; second pass at multiply intensifies it.
+      // CSS filter: invert flips luma (black↔white) but desaturates the
+      // gold highlights to mid-tones; pair with sepia/saturate to recover
+      // a warm cream palette + deeper amber accents.
+      tctx.filter = "invert(1) sepia(0.45) saturate(1.6) brightness(1.05)";
       tctx.drawImage(textureFillImg, 0, 0, tcw, tch);
-      tctx.globalCompositeOperation = "multiply";
-      tctx.drawImage(textureFillImg, 0, 0, tcw, tch);
+      tctx.filter = "none";
     }
 
-    // Now blend the boosted texture INTO the cream glyphs at high opacity.
+    // Blit the inverted+toned texture INTO the cream glyphs.
     ctx.save();
     ctx.setTransform(1, 0, 0, 1, 0, 0);   // bypass the dpr scale for the blit
     ctx.globalCompositeOperation = "source-atop";
-    ctx.globalAlpha = 0.85;
+    ctx.globalAlpha = 0.7;
     ctx.drawImage(tex, 0, 0);
     ctx.restore();
   }
