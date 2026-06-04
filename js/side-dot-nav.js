@@ -49,6 +49,7 @@ const SECTIONS = [
   { id: "hero",         label: "פתיחה" },
   { id: "lounge",       label: "לאונג'" },
   { id: "culinary",     label: "קולינריה" },
+  { id: "shabbat-chatan", label: "שבתות חתן" },
   { id: "rooms",        label: "חדרים" },
   { id: "about",        label: "אודות" },
   { id: "testimonials", label: "המלצות" },

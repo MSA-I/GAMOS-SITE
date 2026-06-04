@@ -1,0 +1,246 @@
+/* =============================================================================
+   Section: #shabbat-chatan — שבתות חתן
+   --------------------------------------------------------------------------
+   Vanilla port of olivierlarose/parallax-scroll's `page.module.scss`,
+   extended into a 4-panel scroll sequence so all 10 source images appear
+   across the section. Each panel uses the repo's exact 3-image absolute
+   layout (50vh×60vh / 30vh×40vh / 20vh×25vh; left 55vw / 27.5vw; top
+   15vh / 40vh). At p=0 the user sees panel-1 (matches repo landing).
+   As p runs 0..1 the inner stack translates up to reveal panels 2-4.
+   Inside each panel, images keep the repo's per-image rates
+   (-50px / -150px / -255px) using their local --panel-progress band.
+   Constitution §2 (vanilla), §10.2 (tokens), §10.4 (RTL logical props).
+   ========================================================================== */
+
+.shabbat {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  background-color: var(--ink-deep);
+  color: var(--ivory);
+  /* Number of panels (= image groups). The stack height is N×100vh; on
+     scroll the stack translates by (N-1)×100vh between p=0 and p=1. */
+  --shabbat-panel-count: 4;
+}
+
+/* The sticky viewport — exactly one 100vh window through which the panel
+   stack scrolls. Override the generic .scroll-scene__sticky background-color
+   so the dark theme reads correctly. */
+.shabbat__viewport.scroll-scene__sticky,
+.shabbat .scroll-scene__sticky {
+  background-color: var(--ink-deep);
+}
+
+/* ---------- TITLE BODY (fixed inside the viewport) ----------
+   The repo places the body at margin-left: 10vw with z above the images.
+   We pin it to the viewport so the title doesn't translate with the panels;
+   only its title-1 + per-letter spans get scrub motion. RTL: inline-start
+   = right edge in Hebrew. */
+.shabbat__body {
+  position: absolute;
+  inset-block-start: 4vh;
+  inset-inline-start: 10vw;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.shabbat__title-1,
+.shabbat__title-2 {
+  margin: 0;
+  margin-block-start: 0.625rem;
+  font-family: var(--font-display, "Rubik", system-ui, sans-serif);
+  font-weight: 900;
+  font-size: clamp(3rem, 9vw, 9vw);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--ivory);
+  text-transform: uppercase;
+}
+
+/* Title-1 still gets the repo's -50px scrub (matches GSAP
+   `.to(title1.current, {y: -50}, 0)` and FM `useTransform([0,1],[0,-50])`). */
+.shabbat__title-1 {
+  transform: translate3d(0, calc(var(--shabbat-progress, 0) * -50px), 0);
+  will-change: transform;
+}
+
+.shabbat__word {
+  margin: 0;
+  margin-block-start: 0.625rem;
+  font-family: var(--font-display, "Rubik", system-ui, sans-serif);
+  font-weight: 700;
+  font-size: clamp(1.75rem, 5vw, 5vw);
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--ivory);
+}
+
+.shabbat__word [data-shabbat-letter] {
+  position: relative;
+  display: inline-block;
+  top: var(--letter-y, 0px);
+  will-change: top;
+}
+
+/* ---------- PANEL STACK ----------
+   N panels stacked vertically; total height = N×100vh. JS writes
+   --shabbat-stack-y in vh units (0 → -(N-1)×100). */
+.shabbat__stack {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  inline-size: 100%;
+  block-size: calc(var(--shabbat-panel-count) * 100vh);
+  transform: translate3d(0, calc(var(--shabbat-stack-y, 0) * 1vh), 0);
+  will-change: transform;
+  z-index: 1;
+}
+
+/* One panel = one viewport. */
+.shabbat__panel {
+  position: relative;
+  inline-size: 100%;
+  block-size: 100vh;
+}
+
+/* ---------- IMAGE CONTAINERS — repo coordinates verbatim ---------- */
+.shabbat__image-container {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 4px;
+  box-shadow: 0 30px 80px -40px rgba(0, 0, 0, 0.6);
+}
+
+.shabbat__image-container picture,
+.shabbat__image-container img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.shabbat__image-container img {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Image 1 — repo: height 60vh, width 50vh, z 1. NO parallax. */
+.shabbat__image-container--1 {
+  block-size: 60vh;
+  inline-size: 50vh;
+  z-index: 1;
+  /* Repo doesn't position image 1 — it sits in flex centering. We use
+     left: 50% / translateX(-50%) wrapped under the 60vh height to keep
+     the panel centered horizontally. inset-block-start to push it down a
+     bit so panel-1 reads with breathing room beneath the title. */
+  inset-block-start: 22vh;
+  inset-inline-start: 50%;
+  transform: translate3d(-50%, 0, 0);
+}
+
+/* Image 2 — repo: left 55vw, top 15vh, height 40vh, width 30vh, z 2.
+   Parallax: y = -150px × panel-progress. */
+.shabbat__image-container--2 {
+  inset-inline-start: 55vw;
+  inset-block-start: 15vh;
+  block-size: 40vh;
+  inline-size: 30vh;
+  z-index: 2;
+  transform: translate3d(0, calc(var(--panel-progress, 0) * -150px), 0);
+  will-change: transform;
+}
+
+/* Image 3 — repo: left 27.5vw, top 40vh, height 25vh, width 20vh, z 3.
+   Parallax: y = -255px × panel-progress. */
+.shabbat__image-container--3 {
+  inset-inline-start: 27.5vw;
+  inset-block-start: 40vh;
+  block-size: 25vh;
+  inline-size: 20vh;
+  z-index: 3;
+  transform: translate3d(0, calc(var(--panel-progress, 0) * -255px), 0);
+  will-change: transform;
+}
+
+/* ---------------------------------------------------------------------------
+   Mobile — collapse the stack into one panel; show first 3 images only.
+   At narrow widths the repo's vh-coordinate layout still works but the
+   3-image overlap gets cramped; we reduce sizes + freeze the panel stack.
+   --------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .shabbat__title-1,
+  .shabbat__title-2 {
+    font-size: clamp(2.25rem, 12vw, 3.5rem);
+  }
+  .shabbat__word {
+    font-size: clamp(1.25rem, 6vw, 2rem);
+  }
+
+  .shabbat__image-container--1 {
+    block-size: 38vh;
+    inline-size: 32vh;
+    inset-block-start: 28vh;
+  }
+  .shabbat__image-container--2 {
+    inset-inline-start: 55vw;
+    inset-block-start: 8vh;
+    block-size: 26vh;
+    inline-size: 22vh;
+  }
+  .shabbat__image-container--3 {
+    inset-inline-start: 30vw;
+    inset-block-start: 32vh;
+    block-size: 18vh;
+    inline-size: 16vh;
+  }
+
+  .shabbat__title-1,
+  .shabbat__image-container--2,
+  .shabbat__image-container--3,
+  .shabbat__word [data-shabbat-letter] {
+    transform: none;
+    top: 0;
+  }
+
+  /* Disable the panel-stack scroll on mobile — show only panel 1. */
+  .shabbat__stack {
+    transform: none;
+    block-size: 100vh;
+  }
+  .shabbat__panel:not([data-shabbat-panel="0"]) {
+    display: none;
+  }
+
+  .shabbat .scroll-scene__spacer {
+    block-size: 100vh;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Reduced motion — kill all transforms (Constitution §8 + §9).
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .shabbat__title-1,
+  .shabbat__image-container--2,
+  .shabbat__image-container--3,
+  .shabbat__stack {
+    transform: none;
+    will-change: auto;
+  }
+  /* Image 1 keeps its centering translate even under reduced-motion. */
+  .shabbat__image-container--1 {
+    transform: translate3d(-50%, 0, 0);
+  }
+  .shabbat__word [data-shabbat-letter] {
+    top: 0;
+    will-change: auto;
+  }
+  .shabbat__stack {
+    block-size: 100vh;
+  }
+  .shabbat__panel:not([data-shabbat-panel="0"]) {
+    display: none;
+  }
+  .shabbat .scroll-scene__spacer {
+    block-size: 100vh;
+  }
+}
