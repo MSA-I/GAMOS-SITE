@@ -334,9 +334,9 @@ function buildTextCanvas(width, height, dpr) {
   const lineGap   = baseSize * 0.5;
   const HOVER_SCALE = 1.08;
 
-  // User: position labels higher (was 0.78 → 0.66 → now 0.62 to sit
-  // just under the GAMOS wordmark with breathing room).
-  const baseY = height * 0.62 + baseSize;
+  // Position labels just below the GAMOS wordmark, slightly lower than the
+  // previous 0.62 placement.
+  const baseY = height * 0.7 + baseSize;
 
   // Solid ivory stencil — only visible until the texture image lands;
   // then source-in replaces it.
@@ -375,13 +375,16 @@ function buildTextCanvas(width, height, dpr) {
     y += size + lineGap;
   }
 
-  // Apply the dark-texture fill: clip the texture to the existing alpha
-  // (the just-drawn glyphs). source-in keeps texture pixels only where the
-  // canvas already had paint — i.e. inside the letters.
+  // Overlay the dark texture INSIDE the cream/ivory glyphs at reduced
+  // opacity. source-atop clips the texture to the existing alpha (glyph
+  // shapes only) and the lower globalAlpha lets the cream base bleed
+  // through — net effect: light text with dark grain visible inside it.
   if (textureFillReady && textureFillImg) {
-    ctx.globalCompositeOperation = "source-in";
+    ctx.save();
+    ctx.globalCompositeOperation = "source-atop";
+    ctx.globalAlpha = 0.55;
     ctx.drawImage(textureFillImg, 0, 0, width, height);
-    ctx.globalCompositeOperation = "source-over";
+    ctx.restore();
   }
 
   return { canvas: c, zones };
