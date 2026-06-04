@@ -26,11 +26,17 @@
 **Wire-up:** `js/hero-shader.js` `navigateToTarget()` מנווט עכשיו ל-`/halls/oasis/` או `/halls/lumina/` (לפי `pitchDown` flag = label לחוץ), עם `window.gamosLoading.show()` כ-700ms transition. ה-vanilla `corridor.html` + `js/corridor.js` נשארים על-מקום כ-fallback.
 
 **Verification (manual, ע"י המשתמש):**
-1. `npm run build:halls` — מאמת בנייה.
-2. `npm run dev` (port 8000) — שרת סטטי.
+1. `npm run dev` (single command — בונה halls/ אם צריך + מפעיל serve על port 8000).
+2. `http://localhost:8000/` → אתר הוונילה הראשי.
 3. `http://localhost:8000/halls/dist/oasis/` → ThreeDCorridor archways view.
 4. `http://localhost:8000/halls/dist/lumina/` → ThreeDCorridor mountain view.
-5. Click "אולם"/"ריזורט" ב-hero של `/` → ניווט ל-`/halls/dist/{oasis,lumina}/` אחרי loading overlay.
+5. Click "אולם"/"ריזורט" ב-hero של `/` או בתפריט העליון → ניווט ל-`/halls/dist/{oasis,lumina}/` אחרי loading overlay.
+
+**Scripts:**
+- `npm run dev` — שרת אחד, שלושה דפים (build idempotent: מדלג אם `halls/dist/` עדכני מול `halls/src/`).
+- `npm run dev:fast` — מדלג על בדיקת build, סתם `npx serve` (כשאתה יודע שה-bundle עדכני).
+- `npm run dev:halls` — Vite dev server של halls בלבד (port 5173) ל-React HMR.
+- `npm run build:halls` — `cd halls && npm install && npm run build`.
 
 ראה Constitution §2.1 ו-§12 (2026-06-04 entry).
 
