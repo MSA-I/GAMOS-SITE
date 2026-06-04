@@ -45,6 +45,8 @@ const MAPPINGS = [
   { srcDir: "קולינריה 4",    outDir: "assets/images/culinary",      exts: [".jpg", ".jpeg"] },
   { srcDir: "LAUNGE",        outDir: "assets/images/halls/lounge",  exts: [".jpg", ".jpeg", ".png"] },
   { srcDir: "חדרי נופש 2",   outDir: "assets/images/halls/rooms",   exts: [".jpg", ".jpeg", ".png"] },
+  // 2026-06-04: שבתות חתן section (vertical parallax column).
+  { srcDir: "שבתות חתן 5",   outDir: "assets/images/shabbat-chatan", exts: [".jpg", ".jpeg"] },
   // New staged sources (copied into the repo under assets/_src/).
   { srcDir: "assets/_src/lounge",  outDir: "assets/images/halls/lounge", exts: [".jpg", ".jpeg", ".png"], srcBase: "root" },
   { srcDir: "assets/_src/gallery", outDir: "assets/images/gallery",      exts: [".jpg", ".jpeg", ".png"], srcBase: "root" },
@@ -118,23 +120,6 @@ const SINGLE_WEBP = [
     out: "assets/images/brand/hero-distort.full.webp",
     width: 2400,
     quality: 85,
-  },
-  // 2026-06-04: Hero clickable labels — pre-rendered "Events" and "Resort"
-  // wordmarks in the same brand typography as logo-central.webp (cream/gold
-  // with serif strokes). The PNGs are tiny (315×130 / 342×120) but the hero
-  // canvas paints them at multiple sizes; encode at 2× source so down-scaling
-  // stays sharp on retina without serving a giant file.
-  {
-    src: "תמונות לאנימציית האתר/לוגו/EVENTS.png",
-    out: "assets/images/brand/hero-label-events.webp",
-    width: 800,
-    quality: 92,
-  },
-  {
-    src: "תמונות לאנימציית האתר/לוגו/RESORT.png",
-    out: "assets/images/brand/hero-label-resort.webp",
-    width: 800,
-    quality: 92,
   },
 ];
 

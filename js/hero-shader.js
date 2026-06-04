@@ -228,23 +228,19 @@ const LENS_FALLOFF = 0.12;
 const MOUSE_LERP   = 0.10;
 const DPR_CAP      = 1.75;
 
-// 2026-06-04: Labels are now pre-rendered <img> wordmarks (same brand
-// typography as logo-central.webp). Each line carries a `src` whose aspect
-// ratio is captured below. The id / target / galleryId are internal
-// identifiers — kept stable so navigateToTarget() routes correctly to
-// /halls/dist/{oasis,lumina}/.
+// 2026-06-04: Labels are rendered to a canvas in **Cinzel 700** (the
+// engraved serif that matches the GAMOS wordmark aesthetic) and filled with
+// the brand "typo-on-dark" texture (cream + gold flecks) via source-in
+// compositing — same fill applied site-wide to dark-bg headings.
+// id / target / galleryId are internal identifiers — kept stable so
+// navigateToTarget() routes correctly to /halls/dist/{oasis,lumina}/.
 const TEXT_LINES = [
-  {
-    label: "Events", id: "venue",  target: "#hall-venue",  galleryId: "a",
-    src: "/assets/images/brand/hero-label-events.webp",
-    aspect: 315 / 130,   // src PNG dimensions, matches WebP output ratio
-  },
-  {
-    label: "Resort", id: "resort", target: "#hall-resort", galleryId: "b",
-    src: "/assets/images/brand/hero-label-resort.webp",
-    aspect: 342 / 120,
-  },
+  { label: "Events", id: "venue",  target: "#hall-venue",  galleryId: "a" },
+  { label: "Resort", id: "resort", target: "#hall-resort", galleryId: "b" },
 ];
+
+const HERO_FONT_FAMILY = '"Cinzel", "Playfair Display", "Didot", "Georgia", serif';
+const HERO_FONT_WEIGHT = 700;
 
 
 // ---------------------------------------------------------------------------
@@ -285,34 +281,40 @@ const state = {
 // Helpers — text canvas + hit zones
 // ---------------------------------------------------------------------------
 
-// 2026-06-04: Labels are pre-rendered wordmark images (same brand typography
-// as the central GAMOS logo). Each TEXT_LINES entry has a `src` that we load
-// once at module init; buildTextCanvas() draws them at the desired pixel
-// height. While images are pending the canvas is empty — they pop in once
-// loaded via the labelImageSubs callback (rebuilds the text canvas).
-const labelImages = new Map(); // src → { img, ready }
-const labelImageSubs = new Set();
+// 2026-06-04: Brand "typo-on-dark" texture (cream + gold on dark) is loaded
+// once and used as the fill for the canvas-rendered labels. Same texture as
+// the rest of the site's dark-bg headings.
+const TEXTURE_FILL_URL = "/assets/images/brand/typo-on-dark.webp";
+let textureFillImg = null;
+let textureFillReady = false;
+const rebuildSubs = new Set();   // callbacks to fire when texture/font readies
 
-(function loadLabelImages() {
-  for (const line of TEXT_LINES) {
-    const entry = { img: new Image(), ready: false };
-    entry.img.crossOrigin = "anonymous";
-    entry.img.decoding = "async";
-    entry.img.onload = () => {
-      entry.ready = true;
-      for (const cb of labelImageSubs) {
-        try { cb(); } catch { /* ignore */ }
-      }
-    };
-    entry.img.onerror = () => { /* leave .ready=false; fallback handled in builder */ };
-    entry.img.src = line.src;
-    labelImages.set(line.src, entry);
-  }
+(function loadTextureFill() {
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.decoding = "async";
+  img.onload = () => {
+    textureFillImg = img;
+    textureFillReady = true;
+    for (const cb of rebuildSubs) { try { cb(); } catch { /* ignore */ } }
+  };
+  img.onerror = () => { /* fallback: ivory fill via fillStyle */ };
+  img.src = TEXTURE_FILL_URL;
 })();
 
+// Force the Cinzel WOFF2 to load even if no DOM node references it.
+// Resolves once the font is in the FontFaceSet so canvas rendering picks
+// it up instead of falling back to Georgia/serif.
+let heroFontReady = false;
+if (typeof document !== "undefined" && document.fonts && document.fonts.load) {
+  document.fonts.load(`${HERO_FONT_WEIGHT} 64px "Cinzel"`).then(() => {
+    heroFontReady = true;
+    for (const cb of rebuildSubs) { try { cb(); } catch { /* ignore */ } }
+  }).catch(() => { /* leave heroFontReady=false; fallback stack still serifs */ });
+}
+
 // hoveredZoneId tracks which label the cursor is currently over so we can
-// scale it up. Drives a rebuildText() trigger only on STATE CHANGE — not on
-// every mouse-move — so this is cheap.
+// scale it up. Drives a rebuildText() trigger only on STATE CHANGE.
 let hoveredZoneId = null;
 
 function buildTextCanvas(width, height, dpr) {
@@ -325,47 +327,58 @@ function buildTextCanvas(width, height, dpr) {
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, width, height);
 
-  // Base label height — slightly larger than the previous `labelSize * 0.07`
-  // because wordmark images hint a more compact glyph than rendered text.
-  const baseHeight = Math.max(46, Math.min(width, height) * 0.085);
-  const lineGap    = baseHeight * 0.42;
-  const HOVER_SCALE = 1.18;   // ← "the hovered label pops" — 18% scale-up
+  const baseSize  = Math.max(54, Math.min(width, height) * 0.095);
+  const lineGap   = baseSize * 0.45;
+  const HOVER_SCALE = 1.22;
 
-  // 2026-06-04 (user mandate): position the labels HIGHER on the canvas.
-  // Was 0.78 (≈ 78% down). Moved up to 0.66 so they sit just below center.
-  const baseY = height * 0.66 + baseHeight;
+  // User: position labels higher (was 0.78 → 0.66 → now 0.62 to sit
+  // just under the GAMOS wordmark with breathing room).
+  const baseY = height * 0.62 + baseSize;
+
+  // Solid ivory stencil — only visible until the texture image lands;
+  // then source-in replaces it.
+  ctx.fillStyle = "#f5efe6";
+  ctx.textBaseline = "alphabetic";
+  ctx.textAlign = "center";
 
   const cx = width / 2;
   const zones = [];
-
-  // First pass — compute zones (positions + sizes) for hit-testing AND
-  // eventual draw. We do this regardless of image-load state so click works
-  // immediately, even before the wordmarks finish loading.
   let y = baseY;
+
   for (const line of TEXT_LINES) {
     const isHover = hoveredZoneId === line.id;
-    const lineHeight = baseHeight * (isHover ? HOVER_SCALE : 1.0);
-    const lineWidth  = lineHeight * line.aspect;
+    const size = baseSize * (isHover ? HOVER_SCALE : 1.0);
+    // letter-spacing emulation via canvas — wide tracking matches GAMOS look.
+    ctx.font = `${HERO_FONT_WEIGHT} ${size}px ${HERO_FONT_FAMILY}`;
+    ctx.direction = "ltr";
+    if ("letterSpacing" in ctx) {
+      try { ctx.letterSpacing = `${size * 0.08}px`; } catch { /* ignore */ }
+    }
 
+    ctx.fillText(line.label, cx, y);
+
+    const m = ctx.measureText(line.label);
+    const w = Math.max(m.width, size * line.label.length * 0.55);
     zones.push({
       id: line.id,
       target: line.target,
       galleryId: line.galleryId,
-      src: line.src,
-      x: cx - lineWidth / 2,
-      y: y - lineHeight,
-      w: lineWidth,
-      h: lineHeight,
+      x: cx - w / 2,
+      y: y - size,
+      w,
+      h: size * 1.25,
     });
 
-    y += lineHeight + lineGap;
+    y += size + lineGap;
   }
 
-  // Second pass — paint. drawImage() draws nothing until the image loads.
-  for (const z of zones) {
-    const entry = labelImages.get(z.src);
-    if (!entry || !entry.ready) continue;
-    ctx.drawImage(entry.img, z.x, z.y, z.w, z.h);
+  // Apply the dark-texture fill: clip the texture to the existing alpha
+  // (the just-drawn glyphs). source-in keeps texture pixels only where the
+  // canvas already had paint — i.e. inside the letters.
+  if (textureFillReady && textureFillImg) {
+    ctx.globalCompositeOperation = "source-in";
+    ctx.drawImage(textureFillImg, 0, 0, width, height);
+    ctx.globalCompositeOperation = "source-over";
   }
 
   return { canvas: c, zones };
@@ -596,10 +609,12 @@ export function init() {
     }
     resize();
 
-    // Wordmark images may still be loading on first paint — when each one
-    // resolves, rebuild the text canvas so it pops in.
-    const onLabelLoaded = () => { try { rebuildText(); } catch { /* ignore */ } };
-    labelImageSubs.add(onLabelLoaded);
+    // The Cinzel font and the typo-on-dark texture both load asynchronously.
+    // When either lands, rebuild the text canvas so the labels pop in
+    // (correct font + textured fill) instead of staying on the stencil/serif
+    // fallback.
+    const onAssetReady = () => { try { rebuildText(); } catch { /* ignore */ } };
+    rebuildSubs.add(onAssetReady);
 
     state.ro = new ResizeObserver(resize);
     state.ro.observe(host);
