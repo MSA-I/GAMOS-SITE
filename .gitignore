@@ -6,6 +6,12 @@ dist/
 build/
 .cache/
 
+# Halls sub-app (Constitution §2.1) — track its build output so static
+# deploy works after `git clone` without requiring a build step on the
+# server. To re-build locally: `npm run build:halls` from repo root.
+!halls/dist/
+!halls/dist/**
+
 # Workbench
 .tmp/
 *.local

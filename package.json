@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "npx --yes serve . -p 8000 -L",
     "dev:python": "python -m http.server 8000",
+    "dev:halls": "cd halls && npm run dev -- --port 5173",
+    "build:halls": "cd halls && npm install && npm run build",
     "encode:hero": "node scripts/encode-frames.mjs hero",
     "encode:culinary": "node scripts/encode-frames.mjs culinary",
     "encode:all": "node scripts/encode-frames.mjs hero culinary",

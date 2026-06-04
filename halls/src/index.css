@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400&family=Heebo:wght@700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-display: "Syne", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+/* Custom styles for gorgeous Unseen Studio effect */
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #0d0d0d;
+  color: #f7f7f7;
+  font-family: var(--font-sans);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Hide scrollbar for clean custom navigation look */
+::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.dark-glass-panel {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* 3D Scene adjustments */
+.three-d-scene {
+  perspective: 1200px;
+  perspective-origin: 50% 45%;
+}
+
+.three-d-layer {
+  transform-style: preserve-3d;
+}
+
+/* Liquid fluid distortion effects under images */
+.liquid-glow {
+  filter: blur(80px);
+  opacity: 0.15;
+  mix-blend-mode: screen;
+}
+
+/* Shimmer animations */
+@keyframes pulseGlow {
+  0%, 100% {
+    transform: scale(1) translateY(0px);
+    opacity: 0.12;
+  }
+  50% {
+    transform: scale(1.05) translateY(-15px);
+    opacity: 0.18;
+  }
+}
+
+.animated-orb {
+  animation: pulseGlow 8s ease-in-out infinite;
+}

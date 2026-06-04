@@ -1,0 +1,32 @@
+{
+  "name": "gamos-halls",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5173 --host 0.0.0.0",
+    "build": "vite build && node scripts/post-build.mjs",
+    "preview": "vite preview",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.14",
+    "@types/three": "^0.184.1",
+    "@vitejs/plugin-react": "^5.0.4",
+    "gsap": "^3.15.0",
+    "lucide-react": "^0.546.0",
+    "motion": "^12.23.24",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "three": "^0.184.0",
+    "vite": "^6.2.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "autoprefixer": "^10.4.21",
+    "esbuild": "^0.25.0",
+    "tailwindcss": "^4.1.14",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.3"
+  }
+}

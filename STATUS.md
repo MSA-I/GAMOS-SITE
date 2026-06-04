@@ -1,9 +1,40 @@
 # GAMOS-SITE — מצב נוכחי
 
-**עודכן:** 2026-06-01 (9-changes build)
+**עודכן:** 2026-06-04 (halls/ React sub-app shipped)
 **Branch:** `main` — מסונכרן עם `origin/main` (https://github.com/MSA-I/GAMOS-SITE)
 **מקור-אמת לתוכנית הראשית:** [`PLANS/research/2026-05-28_master-rebuild-plan.md`](PLANS/research/2026-05-28_master-rebuild-plan.md)
 **מקור-אמת לחוקה:** [`CLAUDE.md`](CLAUDE.md)
+
+---
+
+## ⭐ NEW (2026-06-04) — Halls sub-app (React/Vite/Tailwind under §2.1)
+
+שני דפי האולמות הפכו ל-React sub-app ב-`halls/` לפי בקשת המשתמש בסשן הזה.
+ה-Constitution §2.1 מאשר את החריגה לשני הנתיבים בלבד: `/halls/oasis/` ו-`/halls/lumina/`.
+
+| נתיב | initialHall | תוכן |
+|------|-------------|------|
+| `/halls/dist/oasis/` (default) | oasis | ThreeDCorridor עם archways, GAMOS EVENTS branding, 6 קלפי oasis |
+| `/halls/dist/lumina/` | lumina | ThreeDCorridor עם mountain-curves + water-canal, GAMOS RESORT, 6 קלפי lumina |
+
+> **הערה על הנתיב:** `vite.config.ts` מגדיר `base: "/halls/dist/"` כדי שכל ה-asset URLs ייצאו עם prefix נכון. ה-static server של GAMOS-SITE (`npx serve`) מגיש את `halls/dist/` כקבצים סטטיים מהשורש. כדי לקבל URLs נקיים יותר (`/halls/oasis/` במקום `/halls/dist/oasis/`), אפשר בעתיד להוסיף rewrite rule ב-`serve.json` או בשרת הפרודקשן.
+
+**Stack בתת-האפליקציה:** React 19 + TypeScript + Vite 6 + Tailwind v4 + Motion + Lucide + Three.js. פורט מדויק של `D:\משה פרוייקטים\arch-corridor-gallery\src\` (LandingHero מועתק verbatim, ThreeDCorridor + ProjectDetail מועתקים, App.tsx + main.tsx הותאמו ל-`initialHall` prop במקום `view`+`selectedHall` state). שינוי יחיד ב-ThreeDCorridor: `handleSwitchHall` מנווט דרך `window.location.href`, לא משנה state.
+
+**Build:** `npm run build:halls` (= `cd halls && npm install && npm run build`) → `halls/dist/{oasis,lumina}/index.html` + `halls/dist/assets/main-*.{js,css}` + `halls/dist/images/projects/{oasis,lumina}-{01..06}.jpg`. גודל: ~376KB JS / ~120KB gzip + ~43KB CSS / ~8KB gzip + ~1MB תמונות.
+
+**Wire-up:** `js/hero-shader.js` `navigateToTarget()` מנווט עכשיו ל-`/halls/oasis/` או `/halls/lumina/` (לפי `pitchDown` flag = label לחוץ), עם `window.gamosLoading.show()` כ-700ms transition. ה-vanilla `corridor.html` + `js/corridor.js` נשארים על-מקום כ-fallback.
+
+**Verification (manual, ע"י המשתמש):**
+1. `npm run build:halls` — מאמת בנייה.
+2. `npm run dev` (port 8000) — שרת סטטי.
+3. `http://localhost:8000/halls/dist/oasis/` → ThreeDCorridor archways view.
+4. `http://localhost:8000/halls/dist/lumina/` → ThreeDCorridor mountain view.
+5. Click "אולם"/"ריזורט" ב-hero של `/` → ניווט ל-`/halls/dist/{oasis,lumina}/` אחרי loading overlay.
+
+ראה Constitution §2.1 ו-§12 (2026-06-04 entry).
+
+---
 
 > מסמך זה מסכם מה נבנה בפועל לעומת התוכנית ב-10 הסוכנים, ומה נשאר.
 > תוכניות עתידיות (לא הושלמו) נמצאות תחת [`PLANS/next-steps/`](PLANS/next-steps).

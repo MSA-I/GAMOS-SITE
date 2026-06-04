@@ -394,17 +394,20 @@ function installGamosHeroStub() {
 function navigateToTarget(targetSelector, pitchDown, galleryId) {
   try { playWhoosh(pitchDown); } catch { /* ignore */ }
 
-  // MOZES horizontal-pan handoff: prefer window.gamosHeroToGallery if present
-  // (it owns the GSAP cinema pan). Fall back to vertical scroll when not
-  // installed (e.g. reduced-motion bail or module load failure).
-  if (window.gamosHeroToGallery &&
-      typeof window.gamosHeroToGallery.enter === "function" &&
-      galleryId) {
-    window.gamosHeroToGallery.enter(galleryId);
+  // 2026-06-04 — Click on hero label "אולם" / "ריזורט" navigates to the
+  // dedicated React/Vite immersive sub-app under /halls/dist/ (Constitution §2.1).
+  // pitchDown=true marks the "ריזורט" label (lumina), false marks "אולם" (oasis).
+  if (galleryId) {
+    const hallPath = pitchDown ? "/halls/dist/lumina/" : "/halls/dist/oasis/";
+    // Show loading overlay briefly before page transition (matches whoosh duration).
+    if (window.gamosLoading && typeof window.gamosLoading.show === "function") {
+      try { window.gamosLoading.show(); } catch { /* ignore */ }
+    }
+    setTimeout(() => { window.location.href = hallPath; }, state.reducedMotion ? 0 : 700);
     return;
   }
 
-  // Vertical-scroll fallback.
+  // Vertical-scroll fallback (no galleryId — used for nav-link style targets).
   const target = document.querySelector(targetSelector);
   if (target) {
     if (window.gsap && typeof window.gsap.to === "function" && window.ScrollToPlugin) {
