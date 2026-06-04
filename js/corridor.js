@@ -464,12 +464,13 @@ function handleScrub(p, sectionEl) {
 
 
 // ---------------------------------------------------------------------------
-// Hero → corridor cinema pan + navigate to corridor.html
-// Maps `galleryId` ("a"/"b") → `?hall=oasis|lumina` and slides #hero out to
-// the LEFT (RTL: this is the "מסך זז ימינה" perception — the page slides
-// rightward as the hero tile exits to the left). Then location.href so the
-// browser loads /corridor.html, where corridor-page.js plays the matching
-// "enter from right" timeline.
+// Hero → corridor cinema pan + navigate to /halls/ React sub-app
+// 2026-06-04: Per Constitution §2.1, the immersive hall views moved from
+// the vanilla /corridor.html to a dedicated React/Vite sub-app under
+// /halls/dist/{oasis,lumina}/. galleryId "a" → oasis, "b" → lumina.
+// hero-shader.js already short-circuits to the /halls/ URLs directly when
+// it has a galleryId, so heroEnter() here is a fallback path; we keep it
+// pointing at the same /halls/ targets to stay consistent.
 // ---------------------------------------------------------------------------
 
 const HALL_BY_GALLERY = { a: "oasis", b: "lumina" };
@@ -477,7 +478,7 @@ const HALL_BY_GALLERY = { a: "oasis", b: "lumina" };
 function heroEnter(galleryId) {
   const hall = HALL_BY_GALLERY[galleryId];
   if (!hall) return;
-  const url = `/corridor.html?hall=${hall}`;
+  const url = `/halls/dist/${hall}/`;
 
   // Reduced-motion or no GSAP: skip pan, navigate immediately.
   if (state.reducedMotion || !window.gsap || typeof window.gsap.to !== "function") {
