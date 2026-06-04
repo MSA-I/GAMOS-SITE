@@ -51,7 +51,6 @@ const FRAG = `
 
   uniform sampler2D uTextureBase;
   uniform sampler2D uTextureTop;
-  uniform sampler2D uTextureText;
   uniform vec2  uResolution;
   uniform float uBaseAspect;
   uniform float uTopAspect;
@@ -199,16 +198,7 @@ const FRAG = `
       topRgb = vec3(0.0);
     }
 
-    vec3 imgRgb = mix(baseRgb, topRgb, reveal);
-
-    // 2026-06-04: text labels are pre-coloured (texture-filled) on the canvas
-    // side. Sample RGBA directly, drop the chromatic-aberration pass on the
-    // text (no more colour fringing), and gate alpha by (1 - reveal) so the
-    // label fades out when the lens distortion overlaps it.
-    vec4 textTex = texture2D(uTextureText, vTextureCoord);
-    float textAlpha = textTex.a * (1.0 - reveal);
-    vec3 final = mix(imgRgb, textTex.rgb, textAlpha);
-
+    vec3 final = mix(baseRgb, topRgb, reveal);
     gl_FragColor = vec4(final, 1.0);
   }
 `;
@@ -228,21 +218,6 @@ const LENS_FALLOFF = 0.12;
 const MOUSE_LERP   = 0.10;
 const DPR_CAP      = 1.75;
 
-// 2026-06-04: Labels are rendered to a canvas in **Cinzel 700** (the
-// engraved serif that matches the GAMOS wordmark aesthetic) and filled with
-// the brand "typo-on-dark" texture (cream + gold flecks) via source-in
-// compositing — same fill applied site-wide to dark-bg headings.
-// id / target / galleryId are internal identifiers — kept stable so
-// navigateToTarget() routes correctly to /halls/dist/{oasis,lumina}/.
-const TEXT_LINES = [
-  { label: "Events", id: "venue",  target: "#hall-venue",  galleryId: "a" },
-  { label: "Resort", id: "resort", target: "#hall-resort", galleryId: "b" },
-];
-
-const HERO_FONT_FAMILY = '"Cinzel", "Playfair Display", "Didot", "Georgia", serif';
-const HERO_FONT_WEIGHT = 700;
-
-
 // ---------------------------------------------------------------------------
 // Module state
 // ---------------------------------------------------------------------------
@@ -258,9 +233,6 @@ const state = {
   uniforms:    null,
   texBase:     null,
   texTop:      null,
-  texText:     null,
-  textCanvas:  null,
-  textZones:   [],
   target:      null,                  // THREE.Vector2
   rafId:       0,
   ro:          null,                  // ResizeObserver
@@ -270,145 +242,10 @@ const state = {
   bound: {
     onPointerMove:  null,
     onPointerLeave: null,
-    onPointerDown:  null,
     onClickFallback: null,
   },
   hookSubs: new Set(),
 };
-
-
-// ---------------------------------------------------------------------------
-// Helpers — text canvas + hit zones
-// ---------------------------------------------------------------------------
-
-// 2026-06-04: Hero label fill — "טקסטורה מלאה כהה" (the full-coverage dark
-// texture from פונט/, distinct from typo-on-dark which the rest of the site
-// uses on dark-bg headings). User pointed at this specific source file.
-const TEXTURE_FILL_URL = "/assets/images/brand/hero-text-fill.webp";
-let textureFillImg = null;
-let textureFillReady = false;
-const rebuildSubs = new Set();   // callbacks to fire when texture/font readies
-
-(function loadTextureFill() {
-  const img = new Image();
-  img.crossOrigin = "anonymous";
-  img.decoding = "async";
-  img.onload = () => {
-    textureFillImg = img;
-    textureFillReady = true;
-    for (const cb of rebuildSubs) { try { cb(); } catch { /* ignore */ } }
-  };
-  img.onerror = () => { /* fallback: ivory fill via fillStyle */ };
-  img.src = TEXTURE_FILL_URL;
-})();
-
-// Force the Cinzel WOFF2 to load even if no DOM node references it.
-// Resolves once the font is in the FontFaceSet so canvas rendering picks
-// it up instead of falling back to Georgia/serif.
-let heroFontReady = false;
-if (typeof document !== "undefined" && document.fonts && document.fonts.load) {
-  document.fonts.load(`${HERO_FONT_WEIGHT} 64px "Cinzel"`).then(() => {
-    heroFontReady = true;
-    for (const cb of rebuildSubs) { try { cb(); } catch { /* ignore */ } }
-  }).catch(() => { /* leave heroFontReady=false; fallback stack still serifs */ });
-}
-
-// hoveredZoneId tracks which label the cursor is currently over so we can
-// scale it up. Drives a rebuildText() trigger only on STATE CHANGE.
-let hoveredZoneId = null;
-
-function buildTextCanvas(width, height, dpr) {
-  const c = document.createElement("canvas");
-  c.width  = Math.max(1, Math.floor(width  * dpr));
-  c.height = Math.max(1, Math.floor(height * dpr));
-  const ctx = c.getContext("2d");
-  if (!ctx) return { canvas: c, zones: [] };
-
-  ctx.scale(dpr, dpr);
-  ctx.clearRect(0, 0, width, height);
-
-  // 2026-06-04 (user feedback): labels were too large. Smaller base size
-  // (≈ 5.5% of the smaller canvas edge, was 9.5%). Hover lift toned down
-  // from 1.22 → 1.08 — subtler reaction.
-  const baseSize  = Math.max(34, Math.min(width, height) * 0.055);
-  const lineGap   = baseSize * 0.5;
-  const HOVER_SCALE = 1.08;
-
-  // Position labels just below the GAMOS wordmark, slightly lower than the
-  // previous 0.62 placement.
-  const baseY = height * 0.7 + baseSize;
-
-  // Bright cream/white stencil — base layer that the dark texture is
-  // overlaid on top of via source-atop below.
-  ctx.fillStyle = "#fbf6ec";
-  ctx.textBaseline = "alphabetic";
-  ctx.textAlign = "center";
-
-  const cx = width / 2;
-  const zones = [];
-  let y = baseY;
-
-  for (const line of TEXT_LINES) {
-    const isHover = hoveredZoneId === line.id;
-    const size = baseSize * (isHover ? HOVER_SCALE : 1.0);
-    // letter-spacing emulation via canvas — wide tracking matches GAMOS look.
-    ctx.font = `${HERO_FONT_WEIGHT} ${size}px ${HERO_FONT_FAMILY}`;
-    ctx.direction = "ltr";
-    if ("letterSpacing" in ctx) {
-      try { ctx.letterSpacing = `${size * 0.08}px`; } catch { /* ignore */ }
-    }
-
-    ctx.fillText(line.label, cx, y);
-
-    const m = ctx.measureText(line.label);
-    const w = Math.max(m.width, size * line.label.length * 0.55);
-    zones.push({
-      id: line.id,
-      target: line.target,
-      galleryId: line.galleryId,
-      x: cx - w / 2,
-      y: y - size,
-      w,
-      h: size * 1.25,
-    });
-
-    y += size + lineGap;
-  }
-
-  // Overlay the dark texture INSIDE the cream glyphs — but the source
-  // texture is "טקסטורה מלאה כהה" (mostly DARK), so painting it directly
-  // turned the labels nearly black. Invert it first so the dark base becomes
-  // light, leaving the gold flecks as the only standout detail. Then blit
-  // it at moderate opacity so the cream base shows through where the
-  // (inverted) flecks aren't, giving a "light text with subtle grain"
-  // effect rather than a flat dark fill.
-  if (textureFillReady && textureFillImg) {
-    const tcw = c.width;
-    const tch = c.height;
-    const tex = document.createElement("canvas");
-    tex.width = tcw;
-    tex.height = tch;
-    const tctx = tex.getContext("2d");
-    if (tctx) {
-      // CSS filter: invert flips luma (black↔white) but desaturates the
-      // gold highlights to mid-tones; pair with sepia/saturate to recover
-      // a warm cream palette + deeper amber accents.
-      tctx.filter = "invert(1) sepia(0.45) saturate(1.6) brightness(1.05)";
-      tctx.drawImage(textureFillImg, 0, 0, tcw, tch);
-      tctx.filter = "none";
-    }
-
-    // Blit the inverted+toned texture INTO the cream glyphs.
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, 0, 0);   // bypass the dpr scale for the blit
-    ctx.globalCompositeOperation = "source-atop";
-    ctx.globalAlpha = 0.7;
-    ctx.drawImage(tex, 0, 0);
-    ctx.restore();
-  }
-
-  return { canvas: c, zones };
-}
 
 
 // ---------------------------------------------------------------------------
@@ -446,42 +283,6 @@ function installGamosHeroStub() {
 
 
 // ---------------------------------------------------------------------------
-// Click → navigate
-// ---------------------------------------------------------------------------
-
-function navigateToTarget(targetSelector, pitchDown, galleryId) {
-  try { playWhoosh(pitchDown); } catch { /* ignore */ }
-
-  // 2026-06-04 — Click on hero label "אולם" / "ריזורט" navigates to the
-  // dedicated React/Vite immersive sub-app under /halls/dist/ (Constitution §2.1).
-  // pitchDown=true marks the "ריזורט" label (lumina), false marks "אולם" (oasis).
-  if (galleryId) {
-    const hallPath = pitchDown ? "/halls/dist/lumina/" : "/halls/dist/oasis/";
-    // Show loading overlay briefly before page transition (matches whoosh duration).
-    if (window.gamosLoading && typeof window.gamosLoading.show === "function") {
-      try { window.gamosLoading.show(); } catch { /* ignore */ }
-    }
-    setTimeout(() => { window.location.href = hallPath; }, state.reducedMotion ? 0 : 700);
-    return;
-  }
-
-  // Vertical-scroll fallback (no galleryId — used for nav-link style targets).
-  const target = document.querySelector(targetSelector);
-  if (target) {
-    if (window.gsap && typeof window.gsap.to === "function" && window.ScrollToPlugin) {
-      window.gsap.to(window, {
-        duration: state.reducedMotion ? 0 : 1.0,
-        ease: "power3.inOut",
-        scrollTo: { y: target, autoKill: false },
-      });
-    } else {
-      target.scrollIntoView({ behavior: state.reducedMotion ? "auto" : "smooth", block: "start" });
-    }
-  }
-}
-
-
-// ---------------------------------------------------------------------------
 // Static fallback (no WebGL or ?nogl=1)
 // ---------------------------------------------------------------------------
 
@@ -497,19 +298,9 @@ function installFallback(host, canvas) {
     </picture>
   `;
 
-  for (const line of TEXT_LINES) {
-    const a = document.createElement("a");
-    a.className = "hero-shader__fallback-link";
-    a.href = line.target;
-    a.textContent = line.label;
-    a.addEventListener("click", (e) => {
-      e.preventDefault();
-      navigateToTarget(line.target, line.id === "resort", line.galleryId);
-    });
-    wrap.appendChild(a);
-  }
-
   host.appendChild(wrap);
+  // Hero links are DOM-rendered (.hero-shader__links a) and live in the
+  // sticky alongside the canvas; they remain visible in fallback mode too.
 }
 
 
@@ -575,25 +366,9 @@ export function init() {
     state.texBase = makeImageTex(TEX_BASE_URL);
     state.texTop  = makeImageTex(TEX_TOP_URL);
 
-    const initialDpr = Math.min(window.devicePixelRatio || 1, DPR_CAP);
-    const built = buildTextCanvas(host.clientWidth || 1, host.clientHeight || 1, initialDpr);
-    state.textCanvas = built.canvas;
-    state.textZones = built.zones;
-
-    const texText = new THREE.CanvasTexture(state.textCanvas);
-    texText.minFilter = THREE.LinearFilter;
-    texText.magFilter = THREE.LinearFilter;
-    // 2026-06-04: text canvas now carries the texture-filled glyphs (cream +
-    // gold flecks). Sample as sRGB so the colours land linearly in the FRAG
-    // shader's mix().
-    texText.colorSpace = THREE.SRGBColorSpace;
-    texText.flipY = true;
-    state.texText = texText;
-
     state.uniforms = {
       uTextureBase: { value: state.texBase },
       uTextureTop:  { value: state.texTop },
-      uTextureText: { value: state.texText },
       uResolution:  { value: new THREE.Vector2(1, 1) },
       uBaseAspect:  { value: BASE_ASPECT },
       uTopAspect:   { value: TOP_ASPECT },
@@ -615,85 +390,47 @@ export function init() {
     state.scene.add(quad);
 
     // ---- resize ------------------------------------------------------------
-    function rebuildText() {
-      const r = host.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP);
-      const fresh = buildTextCanvas(r.width || 1, r.height || 1, dpr);
-      state.texText.image = fresh.canvas;
-      state.texText.needsUpdate = true;
-      state.textZones = fresh.zones;
-      state.textCanvas = fresh.canvas;
-    }
-
     function resize() {
       const r = host.getBoundingClientRect();
       const w = Math.max(1, Math.floor(r.width));
       const h = Math.max(1, Math.floor(r.height));
       state.renderer.setSize(w, h, false);
       state.uniforms.uResolution.value.set(w, h);
-      rebuildText();
     }
     resize();
-
-    // The Cinzel font and the typo-on-dark texture both load asynchronously.
-    // When either lands, rebuild the text canvas so the labels pop in
-    // (correct font + textured fill) instead of staying on the stencil/serif
-    // fallback.
-    const onAssetReady = () => { try { rebuildText(); } catch { /* ignore */ } };
-    rebuildSubs.add(onAssetReady);
 
     state.ro = new ResizeObserver(resize);
     state.ro.observe(host);
 
     state.target = new THREE.Vector2(0.5, 0.5);
 
-    // ---- pointer + click handlers -----------------------------------------
+    // ---- pointer move drives the lens position ----------------------------
     state.bound.onPointerMove = (e) => {
       const r = host.getBoundingClientRect();
       const localX = e.clientX - r.left;
       const localY = e.clientY - r.top;
       state.target.set(localX / r.width, 1.0 - localY / r.height);
-
-      // Detect which label the cursor is over (if any) and rebuild only when
-      // the hovered ID actually changes — keeps mouse-move cheap.
-      let nextHoverId = null;
-      for (const z of state.textZones) {
-        if (localX >= z.x && localX <= z.x + z.w &&
-            localY >= z.y && localY <= z.y + z.h) {
-          nextHoverId = z.id;
-          break;
-        }
-      }
-      if (nextHoverId !== hoveredZoneId) {
-        hoveredZoneId = nextHoverId;
-        try { rebuildText(); } catch { /* ignore */ }
-      }
-      canvas.style.cursor = nextHoverId ? "pointer" : "";
     };
     state.bound.onPointerLeave = () => {
       state.target.set(0.5, 0.5);
-      if (hoveredZoneId !== null) {
-        hoveredZoneId = null;
-        try { rebuildText(); } catch { /* ignore */ }
-      }
-      canvas.style.cursor = "";
-    };
-    state.bound.onPointerDown = (e) => {
-      const r = host.getBoundingClientRect();
-      const localX = e.clientX - r.left;
-      const localY = e.clientY - r.top;
-      for (const z of state.textZones) {
-        if (localX >= z.x && localX <= z.x + z.w &&
-            localY >= z.y && localY <= z.y + z.h) {
-          navigateToTarget(z.target, z.id === "resort", z.galleryId);
-          return;
-        }
-      }
     };
 
     host.addEventListener("pointermove", state.bound.onPointerMove);
     host.addEventListener("pointerleave", state.bound.onPointerLeave);
-    host.addEventListener("pointerdown", state.bound.onPointerDown);
+
+    // 2026-06-04: Hero labels are now DOM nodes (.hero-shader__link). They
+    // navigate via standard <a href> — no JS handler needed for the basic
+    // route. The whoosh sound is a luxury — wire it on click without
+    // preventing default so the browser handles the navigation itself.
+    const links = host.querySelectorAll(".hero-shader__link");
+    state.bound.onClickFallback = (e) => {
+      const id = e.currentTarget.getAttribute("data-hero-link");
+      try { playWhoosh(id === "resort"); } catch { /* ignore */ }
+      if (window.gamosLoading && typeof window.gamosLoading.show === "function") {
+        try { window.gamosLoading.show(); } catch { /* ignore */ }
+      }
+    };
+    links.forEach((a) => a.addEventListener("click", state.bound.onClickFallback));
 
     // ---- battery-saver: pause when offscreen -------------------------------
     state.io = new IntersectionObserver((entries) => {
@@ -741,15 +478,16 @@ export function destroy() {
     if (state.bound.onPointerLeave) {
       state.host.removeEventListener("pointerleave", state.bound.onPointerLeave);
     }
-    if (state.bound.onPointerDown) {
-      state.host.removeEventListener("pointerdown", state.bound.onPointerDown);
+    if (state.bound.onClickFallback) {
+      state.host.querySelectorAll(".hero-shader__link").forEach((a) =>
+        a.removeEventListener("click", state.bound.onClickFallback)
+      );
     }
   }
 
   if (state.material) state.material.dispose();
   if (state.texBase) state.texBase.dispose();
   if (state.texTop) state.texTop.dispose();
-  if (state.texText) state.texText.dispose();
   if (state.renderer) state.renderer.dispose();
 
   state.initialised = false;
@@ -762,12 +500,9 @@ export function destroy() {
   state.uniforms = null;
   state.texBase = null;
   state.texTop = null;
-  state.texText = null;
-  state.textCanvas = null;
-  state.textZones = [];
   state.target = null;
   state.bound.onPointerMove = null;
   state.bound.onPointerLeave = null;
-  state.bound.onPointerDown = null;
+  state.bound.onClickFallback = null;
   state.hookSubs.clear();
 }

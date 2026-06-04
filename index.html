@@ -111,6 +111,7 @@
   <link rel="stylesheet" href="/css/sections/lounge.css">
   <link rel="stylesheet" href="/css/sections/rooms.css">
   <link rel="stylesheet" href="/css/sections/culinary.css">
+  <link rel="stylesheet" href="/css/sections/shabbat-chatan.css">
   <link rel="stylesheet" href="/css/sections/about.css">
   <link rel="stylesheet" href="/css/sections/testimonials.css">
   <link rel="stylesheet" href="/css/sections/contact.css">
@@ -163,9 +164,10 @@
       <ul class="site-nav__links" role="list">
         <li><a href="/halls/dist/oasis/">אולם</a></li>
         <li><a href="/halls/dist/lumina/">ריזורט</a></li>
-        <li><a href="#lounge" data-secondary>לאונג'</a></li>
-        <li><a href="#rooms">חדרי נופש</a></li>
         <li><a href="#culinary">קולינריה</a></li>
+        <li><a href="#shabbat-chatan">שבתות חתן</a></li>
+        <li><a href="#rooms">חדרי נופש</a></li>
+        <li><a href="#lounge" data-secondary>לאונג'</a></li>
         <li><a href="#about" data-secondary>אודות</a></li>
         <li><a href="#testimonials" data-secondary>המלצות</a></li>
         <li><a href="#gallery">גלריה</a></li>
@@ -200,6 +202,12 @@
     <section id="hero" class="hero-shader" aria-label="פתיחה">
       <div class="hero-shader__sticky">
         <canvas data-hero-shader aria-hidden="true"></canvas>
+        <nav class="hero-shader__links" aria-label="כניסות מהירות">
+          <a class="hero-shader__link" href="/halls/dist/oasis/"
+             data-hero-link="venue" data-gallery-id="a">Events</a>
+          <a class="hero-shader__link" href="/halls/dist/lumina/"
+             data-hero-link="resort" data-gallery-id="b">Resort</a>
+        </nav>
       </div>
     </section>
 
@@ -486,6 +494,128 @@
             </figcaption>
           </li>
         </ul>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         #shabbat-chatan — שבתות חתן
+         Vanilla port of https://github.com/olivierlarose/parallax-scroll's
+         3-image absolute layout (page.module.scss .imageContainer:nth-of-type
+         coordinates kept verbatim). Extended to 4 stacked panels so all 10
+         source images are revealed across the section's scroll band.
+         At p=0 the user sees panel-1 (title body + imgs 01/02/03) — same
+         composition as the repo's landing state. As p runs 0..1, the inner
+         stack translates up to reveal panel-2 (04/05/06), panel-3 (07/08/09),
+         and panel-4 closing (img 10 + tagline). Each image keeps the repo's
+         per-image parallax rate (-50px / -150px / -255px) on top of the
+         panel translate. Constitution §2 (vanilla), §10.3 (module-scoped).
+    ==================================================================== -->
+    <section id="shabbat-chatan"
+             class="shabbat scroll-scene"
+             data-scrub="shabbat"
+             data-scrub-mode="custom"
+             data-scrub-handler="gamosShabbat"
+             data-scrub-spacer-vh="500"
+             aria-labelledby="shabbat-title">
+      <div class="scroll-scene__spacer" aria-hidden="true" style="--scene-spacer: 500vh"></div>
+      <div class="scroll-scene__sticky shabbat__viewport">
+
+        <!-- Title body — fixed to the sticky stage (does NOT translate with
+             the panel stack). Title-1 still gets the repo's -50px scrub. -->
+        <div class="shabbat__body">
+          <h2 id="shabbat-title" class="shabbat__title-1">שבתות</h2>
+          <h2 class="shabbat__title-2">חתן</h2>
+          <p class="shabbat__word" aria-label="סוף שבוע שלם">
+            <span data-shabbat-letter>ס</span><span data-shabbat-letter>ו</span><span data-shabbat-letter>ף</span><span data-shabbat-letter>&nbsp;</span><span data-shabbat-letter>ש</span><span data-shabbat-letter>ב</span><span data-shabbat-letter>ו</span><span data-shabbat-letter>ע</span><span data-shabbat-letter>&nbsp;</span><span data-shabbat-letter>ש</span><span data-shabbat-letter>ל</span><span data-shabbat-letter>ם</span>
+          </p>
+        </div>
+
+        <!-- Stacked image panels — JS translates this inner stack via
+             --shabbat-stack-y (0 → -3 × 100vh) so each panel passes through
+             the viewport in turn. Each panel uses the repo's exact 3-image
+             absolute layout. Each .shabbat__image-container exposes
+             --panel-progress 0..1 (its own local band) so its per-image
+             parallax rate produces the same -50/-150/-255px translation. -->
+        <div class="shabbat__stack" aria-hidden="true">
+
+          <!-- Panel 1 — landing composition (matches repo at p=0). -->
+          <div class="shabbat__panel" data-shabbat-panel="0">
+            <div class="shabbat__image-container shabbat__image-container--1">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/shabbat-chatan/01.full.webp 1920w, /assets/images/shabbat-chatan/01.half.webp 960w" sizes="50vh">
+                <img src="/assets/images/shabbat-chatan/01.full.jpg" alt="" loading="lazy" decoding="async">
+              </picture>
+            </div>
+            <div class="shabbat__image-container shabbat__image-container--2">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/shabbat-chatan/02.full.webp 1920w, /assets/images/shabbat-chatan/02.half.webp 960w" sizes="30vh">
+                <img src="/assets/images/shabbat-chatan/02.full.jpg" alt="" loading="lazy" decoding="async">
+              </picture>
+            </div>
+            <div class="shabbat__image-container shabbat__image-container--3">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/shabbat-chatan/03.full.webp 1920w, /assets/images/shabbat-chatan/03.half.webp 960w" sizes="20vh">
+                <img src="/assets/images/shabbat-chatan/03.full.jpg" alt="" loading="lazy" decoding="async">
+              </picture>
+            </div>
+          </div>
+
+          <!-- Panel 2 — imgs 04 / 05 / 06. -->
+          <div class="shabbat__panel" data-shabbat-panel="1">
+            <div class="shabbat__image-container shabbat__image-container--1">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/shabbat-chatan/04.full.webp 1920w, /assets/images/shabbat-chatan/04.half.webp 960w" sizes="50vh">
+                <img src="/assets/images/shabbat-chatan/04.full.jpg" alt="" loading="lazy" decoding="async">
+              </picture>
+            </div>
+            <div class="shabbat__image-container shabbat__image-container--2">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/shabbat-chatan/05.full.webp 1920w, /assets/images/shabbat-chatan/05.half.webp 960w" sizes="30vh">
+                <img src="/assets/images/shabbat-chatan/05.full.jpg" alt="" loading="lazy" decoding="async">
+              </picture>
+            </div>
+            <div class="shabbat__image-container shabbat__image-container--3">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/shabbat-chatan/06.full.webp 1920w, /assets/images/shabbat-chatan/06.half.webp 960w" sizes="20vh">
+                <img src="/assets/images/shabbat-chatan/06.full.jpg" alt="" loading="lazy" decoding="async">
+              </picture>
+            </div>
+          </div>
+
+          <!-- Panel 3 — imgs 07 / 08 / 09. -->
+          <div class="shabbat__panel" data-shabbat-panel="2">
+            <div class="shabbat__image-container shabbat__image-container--1">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/shabbat-chatan/07.full.webp 1920w, /assets/images/shabbat-chatan/07.half.webp 960w" sizes="50vh">
+                <img src="/assets/images/shabbat-chatan/07.full.jpg" alt="" loading="lazy" decoding="async">
+              </picture>
+            </div>
+            <div class="shabbat__image-container shabbat__image-container--2">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/shabbat-chatan/08.full.webp 1920w, /assets/images/shabbat-chatan/08.half.webp 960w" sizes="30vh">
+                <img src="/assets/images/shabbat-chatan/08.full.jpg" alt="" loading="lazy" decoding="async">
+              </picture>
+            </div>
+            <div class="shabbat__image-container shabbat__image-container--3">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/shabbat-chatan/09.full.webp 1920w, /assets/images/shabbat-chatan/09.half.webp 960w" sizes="20vh">
+                <img src="/assets/images/shabbat-chatan/09.full.jpg" alt="" loading="lazy" decoding="async">
+              </picture>
+            </div>
+          </div>
+
+          <!-- Panel 4 — closing wide composition (img 10 fills slot 1). -->
+          <div class="shabbat__panel" data-shabbat-panel="3">
+            <div class="shabbat__image-container shabbat__image-container--1">
+              <picture>
+                <source type="image/webp" srcset="/assets/images/shabbat-chatan/10.full.webp 1920w, /assets/images/shabbat-chatan/10.half.webp 960w" sizes="50vh">
+                <img src="/assets/images/shabbat-chatan/10.full.jpg" alt="" loading="lazy" decoding="async">
+              </picture>
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </section>
 
