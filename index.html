@@ -218,128 +218,123 @@
     <!-- ====================================================================
          #lounge — teaser
     ==================================================================== -->
-    <section id="lounge" class="lounge" aria-labelledby="lounge-title" data-lounge-selector>
-      <div class="lounge__container">
-        <header class="section-header">
-          <p class="section-header__eyebrow" data-reveal="slide-right">לאונג'</p>
-          <h2 id="lounge-title" class="section-header__title texture-text texture-text--dark" data-reveal="slide-right">קבלת פנים שלא רוצים שתסתיים</h2>
-          <p class="section-header__lede" data-reveal="slide-right">
-            הבר של גאמוס. כל שעה בערב נראית קצת אחרת. בחרו תמונה כדי להציץ.
-          </p>
-        </header>
+    <section id="lounge" class="lounge" aria-labelledby="lounge-title">
+      <header class="lounge__header">
+        <p class="section-header__eyebrow"
+           data-reveal="slide-right" style="--reveal-delay: 0ms;">לאונג'</p>
+        <h2 id="lounge-title" class="section-header__title texture-text texture-text--dark"
+            data-reveal="slide-right" style="--reveal-delay: 80ms;">קבלת פנים שלא רוצים שתסתיים</h2>
+        <p class="section-header__lede"
+           data-reveal="slide-right" style="--reveal-delay: 160ms;">
+          הבר של גאמוס. כל שעה בערב נראית קצת אחרת.
+        </p>
+      </header>
 
-        <div class="lounge__rail" aria-label="גלריית הלאונג'">
-          <div class="lounge__track" role="tablist" aria-label="גלריית הלאונג'">
-          <button type="button" class="lounge__panel is-active" data-lounge-panel data-lounge-index="0" role="tab" aria-selected="true">
+      <div class="lounge__stage" data-lounge-stage role="region" aria-label="גלריית הלאונג'">
+        <div class="lounge__ring" data-lounge-ring>
+          <figure class="lounge__item" data-lounge-item data-index="0">
             <picture>
               <source type="image/webp" srcset="/assets/images/halls/lounge/01.full.webp">
-              <img class="lounge__img" src="/assets/images/halls/lounge/01.full.jpg" width="1600" height="1000" loading="eager" fetchpriority="high" decoding="async" alt="אורחים נהנים בלאונג' בשעת ערב, תאורה חמה ופינות ישיבה">
+              <img src="/assets/images/halls/lounge/01.full.jpg" width="900" height="1200"
+                   loading="eager" decoding="async"
+                   alt="קבלת הפנים, אורחים נכנסים בשעת ערב">
             </picture>
-            <div class="lounge__label">
-              <h3 class="lounge__title">קבלת הפנים</h3>
-              <p class="lounge__desc">כוסית ראשונה, האורחים מתחילים להגיע, השיחות מתחממות.</p>
-            </div>
-          </button>
+            <figcaption>
+              <h3>קבלת הפנים</h3>
+              <p>כוסית ראשונה, השיחות מתחממות.</p>
+            </figcaption>
+          </figure>
 
-          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="1" role="tab" aria-selected="false">
+          <figure class="lounge__item" data-lounge-item data-index="1">
             <picture>
-              <source type="image/webp" srcset="/assets/images/halls/lounge/02.half.webp">
-              <img class="lounge__img" src="/assets/images/halls/lounge/02.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="לאונג' בשעת לילה מאוחרת עם תאורת אווירה עמומה">
+              <source type="image/webp" srcset="/assets/images/halls/lounge/02.full.webp">
+              <img src="/assets/images/halls/lounge/02.full.jpg" width="900" height="1200"
+                   loading="lazy" decoding="async"
+                   alt="שעת הזהב, אור זהוב לפני שקיעה">
             </picture>
-            <div class="lounge__label">
-              <h3 class="lounge__title">אחרי חצות</h3>
-              <p class="lounge__desc">החתן והכלה כבר על הרחבה, מי שלא רוקד יושב כאן.</p>
-            </div>
-          </button>
+            <figcaption>
+              <h3>שעת הזהב</h3>
+              <p>חצי שעה לפני שקיעה, האור הכי טוב לתמונות.</p>
+            </figcaption>
+          </figure>
 
-          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="2" role="tab" aria-selected="false">
+          <figure class="lounge__item" data-lounge-item data-index="2">
             <picture>
-              <source type="image/webp" srcset="/assets/images/halls/lounge/03.half.webp">
-              <img class="lounge__img" src="/assets/images/halls/lounge/03.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="הלאונג' בין הערביים לפני קבלת האורחים">
+              <source type="image/webp" srcset="/assets/images/halls/lounge/03.full.webp">
+              <img src="/assets/images/halls/lounge/03.full.jpg" width="900" height="1200"
+                   loading="lazy" decoding="async"
+                   alt="שקיעה מעל הלאונג'">
             </picture>
-            <div class="lounge__label">
-              <h3 class="lounge__title">חצי שעה לפני</h3>
-              <p class="lounge__desc">הצוות סיים, הבר מוכן, השקט שלפני האורחים הראשונים.</p>
-            </div>
-          </button>
+            <figcaption>
+              <h3>שקיעה</h3>
+              <p>השמש יורדת מעל המדבר, הבר מתחיל לעבוד.</p>
+            </figcaption>
+          </figure>
 
-          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="3" role="tab" aria-selected="false">
+          <figure class="lounge__item" data-lounge-item data-index="3">
             <picture>
-              <source type="image/webp" srcset="/assets/images/halls/lounge/04.half.webp">
-              <img class="lounge__img" src="/assets/images/halls/lounge/04.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="פינת ישיבה חיצונית בלאונג' בשעת ערב">
+              <source type="image/webp" srcset="/assets/images/halls/lounge/04.full.webp">
+              <img src="/assets/images/halls/lounge/04.full.jpg" width="900" height="1200"
+                   loading="lazy" decoding="async"
+                   alt="לאונג' באווירת לילה עם תאורה רכה">
             </picture>
-            <div class="lounge__label">
-              <h3 class="lounge__title">בחוץ</h3>
-              <p class="lounge__desc">פינת ישיבה תחת כיפת השמיים, מקום לשקט באמצע הערב.</p>
-            </div>
-          </button>
+            <figcaption>
+              <h3>אווירת לילה</h3>
+              <p>האור יורד, השיחות מעמיקות, הצללים חמים.</p>
+            </figcaption>
+          </figure>
 
-          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="4" role="tab" aria-selected="false">
+          <figure class="lounge__item" data-lounge-item data-index="4">
             <picture>
-              <source type="image/webp" srcset="/assets/images/halls/lounge/05.half.webp">
-              <img class="lounge__img" src="/assets/images/halls/lounge/05.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="אווירת לילה בלאונג' עם תאורה דרמטית">
+              <source type="image/webp" srcset="/assets/images/halls/lounge/05.full.webp">
+              <img src="/assets/images/halls/lounge/05.full.jpg" width="900" height="1200"
+                   loading="lazy" decoding="async"
+                   alt="לאונג' בעיצומו של הערב, אורחים ושיחות">
             </picture>
-            <div class="lounge__label">
-              <h3 class="lounge__title">אווירת לילה</h3>
-              <p class="lounge__desc">האור יורד, השיחות מעמיקות, הצללים חמים.</p>
-            </div>
-          </button>
+            <figcaption>
+              <h3>בעיצומו של הערב</h3>
+              <p>האולם מלא, הצחוק חוזר מהקירות, אף אחד לא רוצה לעזוב.</p>
+            </figcaption>
+          </figure>
 
-          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="5" role="tab" aria-selected="false">
+          <figure class="lounge__item" data-lounge-item data-index="5">
             <picture>
-              <source type="image/webp" srcset="/assets/images/halls/lounge/06.half.webp">
-              <img class="lounge__img" src="/assets/images/halls/lounge/06.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="הלאונג' בשעת הזהב, אור זהוב רך">
+              <source type="image/webp" srcset="/assets/images/halls/lounge/06.full.webp">
+              <img src="/assets/images/halls/lounge/06.full.jpg" width="900" height="1200"
+                   loading="lazy" decoding="async"
+                   alt="לאונג' אחרי חצות, אווירה אינטימית">
             </picture>
-            <div class="lounge__label">
-              <h3 class="lounge__title">שעת הזהב</h3>
-              <p class="lounge__desc">חצי שעה לפני שקיעה, האור הכי טוב לתמונות.</p>
-            </div>
-          </button>
+            <figcaption>
+              <h3>אחרי חצות</h3>
+              <p>החתן והכלה כבר על הרחבה, מי שלא רוקד יושב כאן.</p>
+            </figcaption>
+          </figure>
 
-          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="6" role="tab" aria-selected="false">
+          <figure class="lounge__item" data-lounge-item data-index="6">
             <picture>
-              <source type="image/webp" srcset="/assets/images/halls/lounge/07.half.webp">
-              <img class="lounge__img" src="/assets/images/halls/lounge/07.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="שקיעה מעל הלאונג' בגוונים חמים">
+              <source type="image/webp" srcset="/assets/images/halls/lounge/07.full.webp">
+              <img src="/assets/images/halls/lounge/07.full.jpg" width="900" height="1200"
+                   loading="lazy" decoding="async"
+                   alt="פינת ישיבה חיצונית בלאונג'">
             </picture>
-            <div class="lounge__label">
-              <h3 class="lounge__title">שקיעה</h3>
-              <p class="lounge__desc">השמש יורדת מעל המדבר, הבר מתחיל לעבוד.</p>
-            </div>
-          </button>
+            <figcaption>
+              <h3>בחוץ</h3>
+              <p>פינת ישיבה תחת כיפת השמיים, מקום לשקט באמצע הערב.</p>
+            </figcaption>
+          </figure>
 
-          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="7" role="tab" aria-selected="false">
+          <figure class="lounge__item" data-lounge-item data-index="7">
             <picture>
-              <source type="image/webp" srcset="/assets/images/halls/lounge/08.half.webp">
-              <img class="lounge__img" src="/assets/images/halls/lounge/08.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="אירוע לילי בלאונג' עם אורחים ותאורה חגיגית">
+              <source type="image/webp" srcset="/assets/images/halls/lounge/08.full.webp">
+              <img src="/assets/images/halls/lounge/08.full.jpg" width="900" height="1200"
+                   loading="lazy" decoding="async"
+                   alt="ערב סתווי בלאונג', אווירה חמימה">
             </picture>
-            <div class="lounge__label">
-              <h3 class="lounge__title">בעיצומו של הערב</h3>
-              <p class="lounge__desc">האולם מלא, הצחוק חוזר מהקירות, אף אחד לא רוצה לעזוב.</p>
-            </div>
-          </button>
-
-          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="8" role="tab" aria-selected="false">
-            <picture>
-              <source type="image/webp" srcset="/assets/images/halls/lounge/09.half.webp">
-              <img class="lounge__img" src="/assets/images/halls/lounge/09.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="הלאונג' באור אחר הצהריים הרך">
-            </picture>
-            <div class="lounge__label">
-              <h3 class="lounge__title">אחר הצהריים</h3>
-              <p class="lounge__desc">אירועי יום, אור רך וטבעי, אווירה אחרת לגמרי.</p>
-            </div>
-          </button>
-
-          <button type="button" class="lounge__panel" data-lounge-panel data-lounge-index="9" role="tab" aria-selected="false">
-            <picture>
-              <source type="image/webp" srcset="/assets/images/halls/lounge/10.half.webp">
-              <img class="lounge__img" src="/assets/images/halls/lounge/10.half.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="ערב סתווי בלאונג' עם אווירה חמימה ועוטפת">
-            </picture>
-            <div class="lounge__label">
-              <h3 class="lounge__title">ערב סתיו</h3>
-              <p class="lounge__desc">קריר בחוץ, חמים בפנים, התקופה האהובה עלינו לאירועים.</p>
-            </div>
-          </button>
-          </div><!-- /.lounge__track -->
+            <figcaption>
+              <h3>ערב סתיו</h3>
+              <p>קריר בחוץ, חמים בפנים. התקופה האהובה עלינו לאירועים.</p>
+            </figcaption>
+          </figure>
         </div>
       </div>
     </section>
@@ -348,7 +343,10 @@
          #culinary — קולינריה (scroll-scene + dish gallery)
          Owner: Agent 17 — first live scroll-scene (orchestrator-driven).
          Spec : architecture/scroll-orchestrator.md §3 (DOM contract).
-         Spacer: 1100vh (long scrub feel over 180 frames).
+         Spacer: 320vh (shortened iteratively per user — 1100 → 825 → 413
+         → 320, scrub now reads tight + a touch faster: cinematic enough
+         to register the dish-flow but no longer dominates total scroll
+         length).
          2026-06-03: moved BEFORE #rooms per user — culinary now precedes
          the rooms gallery in the narrative.
     ==================================================================== -->
@@ -356,7 +354,7 @@
              class="culinary scroll-scene"
              data-scrub="culinary"
              data-scrub-mode="canvas-frames"
-             data-scrub-spacer-vh="1100"
+             data-scrub-spacer-vh="320"
              aria-labelledby="culinary-title">
 
       <div class="scroll-scene__sticky">
@@ -385,14 +383,14 @@
       </div>
 
       <div class="scroll-scene__spacer" aria-hidden="true"
-           style="--scene-spacer: 1100vh;"></div>
+           style="--scene-spacer: 320vh;"></div>
 
       <div class="scroll-scene__post culinary__post">
         <ul class="culinary__grid" role="list" aria-label="גלריית מנות">
           <li class="culinary__item">
             <picture>
-              <source type="image/webp" srcset="/assets/images/culinary/01.half.webp">
-              <img src="/assets/images/culinary/01.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנת פתיחה מעוטרת בעדינות">
+              <source type="image/webp" srcset="/assets/images/culinary/01.full.webp">
+              <img src="/assets/images/culinary/01.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנת פתיחה מעוטרת בעדינות">
             </picture>
             <figcaption class="culinary__item-caption">
               <span class="culinary__item-tag">פתיחה</span>
@@ -402,8 +400,8 @@
           </li>
           <li class="culinary__item">
             <picture>
-              <source type="image/webp" srcset="/assets/images/culinary/05.half.webp">
-              <img src="/assets/images/culinary/05.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנה ראשונה בהגשה אמנותית">
+              <source type="image/webp" srcset="/assets/images/culinary/05.full.webp">
+              <img src="/assets/images/culinary/05.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנה ראשונה בהגשה אמנותית">
             </picture>
             <figcaption class="culinary__item-caption">
               <span class="culinary__item-tag">ראשונה</span>
@@ -413,8 +411,8 @@
           </li>
           <li class="culinary__item">
             <picture>
-              <source type="image/webp" srcset="/assets/images/culinary/07.half.webp">
-              <img src="/assets/images/culinary/07.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנה עיקרית עשירה ומלאת טעם">
+              <source type="image/webp" srcset="/assets/images/culinary/07.full.webp">
+              <img src="/assets/images/culinary/07.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנה עיקרית עשירה ומלאת טעם">
             </picture>
             <figcaption class="culinary__item-caption">
               <span class="culinary__item-tag">עיקרית</span>
@@ -424,8 +422,8 @@
           </li>
           <li class="culinary__item">
             <picture>
-              <source type="image/webp" srcset="/assets/images/culinary/09.half.webp">
-              <img src="/assets/images/culinary/09.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="צלחת שף בעיצוב מודרני">
+              <source type="image/webp" srcset="/assets/images/culinary/09.full.webp">
+              <img src="/assets/images/culinary/09.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="צלחת שף בעיצוב מודרני">
             </picture>
             <figcaption class="culinary__item-caption">
               <span class="culinary__item-tag">שף</span>
@@ -435,8 +433,8 @@
           </li>
           <li class="culinary__item">
             <picture>
-              <source type="image/webp" srcset="/assets/images/culinary/12.half.webp">
-              <img src="/assets/images/culinary/12.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="קינוח מעודן בסיום הארוחה">
+              <source type="image/webp" srcset="/assets/images/culinary/12.full.webp">
+              <img src="/assets/images/culinary/12.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="קינוח מעודן בסיום הארוחה">
             </picture>
             <figcaption class="culinary__item-caption">
               <span class="culinary__item-tag">קינוח</span>
@@ -446,13 +444,46 @@
           </li>
           <li class="culinary__item">
             <picture>
-              <source type="image/webp" srcset="/assets/images/culinary/13.half.webp">
-              <img src="/assets/images/culinary/13.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מגש פירות ומתוקים חגיגי">
+              <source type="image/webp" srcset="/assets/images/culinary/13.full.webp">
+              <img src="/assets/images/culinary/13.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מגש פירות ומתוקים חגיגי">
             </picture>
             <figcaption class="culinary__item-caption">
               <span class="culinary__item-tag">מתוקים</span>
               <h3 class="culinary__item-name">פינת המתוקים</h3>
               <p class="culinary__item-desc">שפע צבעוני שחותם את החגיגה בנימה מתוקה.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/culinary/14.full.webp">
+              <img src="/assets/images/culinary/14.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנה חדשה בהגשה אישית של השף">
+            </picture>
+            <figcaption class="culinary__item-caption">
+              <span class="culinary__item-tag">חדש</span>
+              <h3 class="culinary__item-name">מנה עונתית</h3>
+              <p class="culinary__item-desc">מהמטבח של השבוע, בהשראת הטריות שעל השולחן.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/culinary/15.full.webp">
+              <img src="/assets/images/culinary/15.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנה חדשה בהגשה מעודנת">
+            </picture>
+            <figcaption class="culinary__item-caption">
+              <span class="culinary__item-tag">חדש</span>
+              <h3 class="culinary__item-name">מנת בית</h3>
+              <p class="culinary__item-desc">קלאסיקה של גאמוס, חדשה על השולחן.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
+            <picture>
+              <source type="image/webp" srcset="/assets/images/culinary/16.full.webp">
+              <img src="/assets/images/culinary/16.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מנה חדשה בהגשה אומנותית">
+            </picture>
+            <figcaption class="culinary__item-caption">
+              <span class="culinary__item-tag">חדש</span>
+              <h3 class="culinary__item-name">סיום ערב</h3>
+              <p class="culinary__item-desc">המנה האחרונה לפני שהאורחים מתחילים לחזור הביתה.</p>
             </figcaption>
           </li>
         </ul>

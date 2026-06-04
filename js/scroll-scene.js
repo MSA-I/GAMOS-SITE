@@ -123,14 +123,29 @@ function makeCustomProgress(scene, fn) {
   };
 }
 
-/** Canvas-frames onProgress: drawFrame(floor(p*(N-1))) — only on index change. */
+/** Canvas-frames onProgress: drawFrame(floor(p*(N-1))) — only on index change.
+ *  Optional rotation: data-scrub-frame-offset="0..1" rotates the frame
+ *  mapping so the scrub starts mid-clip and wraps around. (Used by
+ *  culinary so the clip opens on its money-shot, not the boring intro.)
+ *  Optional reverse: data-scrub-reverse on the section flips playback
+ *  direction (last frame first → first frame last). Composes with offset:
+ *  the offset is applied first, then the result is reversed. */
 function makeCanvasFramesProgress(scene) {
+  // Cache the offset as a normalized [0, 1) fraction.
+  const raw = parseFloat(scene.el.dataset.scrubFrameOffset || "0");
+  const offset = Number.isFinite(raw) ? ((raw % 1) + 1) % 1 : 0;
+  const reverse = scene.el.dataset.scrubReverse !== undefined
+               && scene.el.dataset.scrubReverse !== "false";
   return function canvasFramesProgress(p) {
     if (!scene.renderer || !scene.canvasFrameCount) return;
-    const idx = Math.max(
-      0,
-      Math.min(scene.canvasFrameCount - 1, Math.floor(p * (scene.canvasFrameCount - 1)))
-    );
+    const N = scene.canvasFrameCount;
+    let idx = Math.floor(p * (N - 1));
+    if (offset > 0) {
+      idx = (idx + Math.floor(offset * N)) % N;
+    }
+    if (reverse) idx = (N - 1) - idx;
+    if (idx < 0) idx = 0;
+    if (idx > N - 1) idx = N - 1;
     if (idx === scene.lastDrawnFrame) return;
     scene.lastDrawnFrame = idx;
     scene.renderer.drawFrame(idx);
@@ -222,8 +237,16 @@ export function init() {
           scene.renderer = createRenderer({ canvas: canvasEl, manifest });
           await scene.renderer.preload();
           canvasEl.classList.add("is-ready");
-          // Force first paint of frame 0 once Phase 1 is ready.
-          scene.renderer.drawFrame(0);
+          // Force first paint. If the scene rotates the scrub via
+          // data-scrub-frame-offset (e.g. culinary starts at 50%), paint
+          // the rotated frame index so the user doesn't see frame 0 flash
+          // before the first scroll tick.
+          const offsetRaw = parseFloat(scene.el.dataset.scrubFrameOffset || "0");
+          const offset = Number.isFinite(offsetRaw) ? ((offsetRaw % 1) + 1) % 1 : 0;
+          const firstFrame = offset > 0
+            ? Math.floor(offset * scene.canvasFrameCount) % scene.canvasFrameCount
+            : 0;
+          scene.renderer.drawFrame(firstFrame);
         } catch (e) {
           console.error(`[scroll-scene] canvas-frames "${id}" manifest/preload failed:`, e);
         }

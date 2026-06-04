@@ -1,13 +1,13 @@
 {
   "scene": "culinary",
-  "frameCount": 451,
+  "frameCount": 361,
   "frameUrl": "/assets/frames/culinary/frame_{NNNN}.webp",
-  "width": 1920,
-  "height": 1080,
+  "width": 3840,
+  "height": 2160,
   "sourceVideo": "culinary-1080.mp4",
-  "sourceMtime": "2026-06-03T13:20:23.992Z",
-  "encoded": "2026-06-03T13:23:16.073Z",
-  "fpsExtracted": 30,
-  "scaleWidthPx": 1920,
-  "webpQuality": 88
+  "sourceMtime": "2026-06-04T10:27:06.208Z",
+  "encoded": "2026-06-04T10:47:30.142Z",
+  "fpsExtracted": 24,
+  "scaleWidthPx": 3840,
+  "webpQuality": 92
 }

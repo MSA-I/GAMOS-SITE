@@ -1,236 +1,167 @@
-/* =============================================================================
-   Section: #lounge — expanding-panels horizontal selector
-   Owner  : Lounge Section Engineer (Wave 1)
-   --------------------------------------------------------------------------
-   Concept: A row of image panels side by side. The ACTIVE panel grows
-            (flex: 7) while the others stay narrow (flex: 1). The active panel
-            reveals a Hebrew title + description label that slides/fades in.
-            One active at a time (default first), driven by js/lounge-selector.js.
+/* ===========================================================================
+   lounge.css — 3D circular gallery (rewrite 2026-06-04)
+   ---------------------------------------------------------------------------
+   Replaces the previous expanding-carousel rules. The new visual is an
+   8-item ring rotating on the Y axis; lounge-selector.js writes
+   --lounge-rotation on .lounge__ring and per-item
+   --lounge-item-transform + --lounge-opacity on each .lounge__item.
 
-   Markup contract (panels are <button data-lounge-panel data-lounge-index="N">):
-     .lounge
-       .lounge__container
-         header.section-header  (eyebrow + title — site convention)
-         .lounge__rail                       — flex row, the expanding strip
-           button.lounge__panel[.is-active]  — each panel (1 of 10)
-             picture > img.lounge__img       — cover image
-             .lounge__label                  — overlay caption (active-only)
-               .lounge__title                — Hebrew title
-               .lounge__desc                 — Hebrew description
+   Below 768px AND when prefers-reduced-motion:reduce, the 3D layer is
+   killed and the items lay out as a 2-column grid. JS skips entirely in
+   reduced-motion (no listeners, no RAF) so the static grid is the only
+   thing the user sees.
 
-   Rules  : Logical properties only (§4). Every value via tokens.css (§10.2).
-            NO icons anywhere. prefers-reduced-motion honoured (§8).
-   ========================================================================== */
+   Token note: --lh-base does not exist in tokens.css; substituted with
+   --lh-normal (1.5), the closest body-line-height token.
+   ========================================================================= */
 
 .lounge {
-  position: relative;
-  background-color: var(--bg-alt);
-  color: var(--fg);
+  background: var(--bg);
   padding-block: var(--space-32);
-  padding-inline: var(--gutter);
-  isolation: isolate;
-  overflow: clip;
+  overflow: hidden;             /* contains 3D overflow when items rotate */
 }
 
-.lounge__container {
-  max-inline-size: var(--container-wide);
+.lounge__header {
+  max-inline-size: var(--container-max);
   margin-inline: auto;
-}
-
-/* The section header (.section-header) styling lives in section-header.css.
-   We only space it from the rail below. */
-.lounge .section-header {
+  padding-inline: var(--gutter);
+  text-align: center;
   margin-block-end: var(--space-12);
 }
 
-/* ---------------------------------------------------------------------------
-   2026-06-03: RAIL is now a CAROUSEL — single visible image at a time, slides
-   horizontally on activeIndex change. The previous expanding-flex layout left
-   "thumbnails" of inactive panels at the edges that the user found unhelpful.
-   Track sits inside a clipped wrapper; transform: translateX(...) drives the
-   slide. RTL: positive translate moves to the right (= "next" forward).
-   --------------------------------------------------------------------------- */
-.lounge__rail {
+.lounge__stage {
   position: relative;
-  display: block;
   inline-size: 100%;
-  block-size: clamp(360px, 56vh, 620px);
+  block-size: clamp(420px, 64vh, 720px);
+  perspective: 2000px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Drag-to-rotate: pointer becomes a grab cursor, becomes grabbing while
+     a drag is active. user-select:none stops text drag-selection from
+     hijacking the gesture. touch-action:pan-y keeps vertical page scroll
+     working on touch even while horizontal drags rotate the ring. */
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+}
+
+.lounge__stage[data-dragging] {
+  cursor: grabbing;
+}
+
+.lounge__ring {
+  position: relative;
+  inline-size: 100%;
+  block-size: 100%;
+  transform-style: preserve-3d;
+  transform: rotateY(var(--lounge-rotation, 0deg));
+  /* No transition — the JS RAF loop drives this every frame. A
+     transition would compound and produce drift. */
+}
+
+.lounge__item {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;        /* ring centre; offset via margin below */
+  inline-size: clamp(220px, 22vw, 320px);
+  aspect-ratio: 3 / 4;
+  margin-inline-start: clamp(-160px, -11vw, -110px);   /* half of inline-size, negated */
+  margin-block-start:  clamp(-213px, -14.66vw, -147px); /* half of computed block-size — see note */
+  transform: var(--lounge-item-transform, none);
+  opacity: var(--lounge-opacity, 1);
+  transition: opacity 0.3s linear;
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-strong);
-  /* The track expands to fit (panel-count × 100%); inner translate slides it. */
-  isolation: isolate;
+  background: var(--bg-cocoa);
 }
 
-.lounge__track {
-  display: flex;
-  flex-direction: row;
-  block-size: 100%;
-  inline-size: 100%;
-  /* JS sets --lounge-active to the index; CSS applies the slide. RTL: track
-     children sit right-to-left visually, so positive % translates "into" the
-     reading order (right). The sign flips at runtime via --lounge-sign so the
-     direction stays consistent with the user's mental model. */
-  transform: translate3d(calc(var(--lounge-active, 0) * var(--lounge-sign, 1) * 100%), 0, 0);
-  transition: transform 0.8s var(--ease-out-cinema);
-  will-change: transform;
-}
+/* NOTE on the negative margins: aspect-ratio 3/4 means block-size = inline-size × 4/3.
+   Inline-size clamp(220, 22vw, 320) → block-size clamp(293.3, 29.33vw, 426.6).
+   Half of that, negated, is what we need for centering — clamp(-213.3, -14.66vw, -146.6).
+   Rounded to integers above. If the math doesn't read clean to a future maintainer,
+   they can replace this whole pair with `translate(-50%, -50%)` AT THE COST of needing
+   to write the JS-side --lounge-item-transform with a leading `translate(-50%,-50%)`
+   prefix. We use the margin technique to keep the JS side clean (it just emits
+   `rotateY() translateZ()`). */
 
-/* ---------------------------------------------------------------------------
-   PANEL — each panel takes the full visible width of the rail.
-   --------------------------------------------------------------------------- */
-.lounge__panel {
-  /* button reset */
-  appearance: none;
-  border: 0;
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  font: inherit;
-  color: inherit;
-  cursor: default;
-  text-align: start;
-
-  position: relative;
-  display: block;
-  block-size: 100%;
-  flex: 0 0 100%;               /* full rail width per panel */
-  inline-size: 100%;
-  min-inline-size: 0;
-  overflow: hidden;
-  isolation: isolate;
-}
-
-/* Visible focus ring (§9) — only when the user reaches a panel via keyboard. */
-.lounge__panel:focus-visible {
-  outline: none;
-  box-shadow: inset 0 0 0 3px var(--brass);
-}
-
-/* ---------------------------------------------------------------------------
-   IMAGE — cover fill
-   --------------------------------------------------------------------------- */
-.lounge__img {
+.lounge__item picture,
+.lounge__item picture img {
   display: block;
   inline-size: 100%;
   block-size: 100%;
   object-fit: cover;
-  object-position: center;
-}
-
-/* ---------------------------------------------------------------------------
-   LABEL — caption overlay, visible only when the panel is active
-   --------------------------------------------------------------------------- */
-.lounge__label {
-  position: absolute;
-  inset-inline: 0;
-  inset-block-end: 0;
-  z-index: var(--z-content);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding-block: var(--space-12) var(--space-6);
-  padding-inline: var(--space-6);
-  color: var(--fg-on-dark);
-  background: linear-gradient(
-    to top,
-    rgba(26, 20, 16, 0.82) 0%,
-    rgba(26, 20, 16, 0.40) 55%,
-    rgba(26, 20, 16, 0) 100%
-  );
-  opacity: 1;
+  /* Stops native HTML5 image drag from hijacking the pointer mid-gesture
+     (the symptom: ring stuck after a fast drag because the browser flipped
+     into drag-and-drop of the <img>). The stage still receives the pointer
+     since pointer-events bubbles from elsewhere on .lounge__item. */
+  -webkit-user-drag: none;
+  user-drag: none;
   pointer-events: none;
 }
 
-.lounge__title {
-  margin: 0;
-  font-family: var(--font-display-he);
-  font-size: clamp(var(--text-md), 2.4vw, var(--text-xl));
-  font-weight: var(--fw-regular);
-  line-height: var(--lh-snug);
-  letter-spacing: var(--tracking-tight);
-  color: var(--fg-on-dark);
-  text-wrap: balance;
+.lounge__item figcaption {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  padding-block: var(--space-4);
+  padding-inline: var(--space-4);
+  background: linear-gradient(to top,
+    rgba(26, 20, 16, 0.85) 0%,
+    rgba(26, 20, 16, 0.6) 50%,
+    transparent 100%);
+  color: var(--ivory);
+  text-align: start;
+  pointer-events: none;
 }
 
-.lounge__desc {
-  margin: 0;
+.lounge__item figcaption h3 {
+  font-family: var(--font-display-he);
+  font-size: var(--text-lg);
+  font-weight: var(--fw-bold);
+  margin: 0 0 var(--space-1) 0;
+  color: var(--ivory);
+}
+
+.lounge__item figcaption p {
   font-family: var(--font-body);
   font-size: var(--text-sm);
-  line-height: var(--lh-normal);
-  color: var(--fg-on-dark);
-  opacity: 0.92;
-  max-inline-size: 42ch;
+  margin: 0;
+  color: color-mix(in srgb, var(--ivory) 88%, transparent);
+  line-height: var(--lh-normal);  /* substituted: --lh-base does not exist */
 }
 
 /* ---------------------------------------------------------------------------
-   DOTS — bottom row, one per panel. JS toggles .is-active on click;
-   tabindex roving + arrow keys handled by the same module.
+   Fallback layout: ≤ 768px AND prefers-reduced-motion:reduce
    --------------------------------------------------------------------------- */
-.lounge__dots {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  justify-content: center;
-  margin-block-start: var(--space-6);
-  padding: 0;
-  list-style: none;
-}
-
-.lounge__dot {
-  appearance: none;
-  border: 0;
-  background: transparent;
-  padding: var(--space-2);     /* large enough click target while staying visually small */
-  cursor: pointer;
-  line-height: 0;              /* tighten so the inner circle controls height */
-}
-
-.lounge__dot::before {
-  content: "";
-  display: block;
-  inline-size: 10px;
-  block-size: 10px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--cocoa) 30%, transparent);
-  transition: background var(--dur-base) var(--ease-out-cinema),
-              transform  var(--dur-base) var(--ease-out-cinema);
-}
-
-.lounge__dot:hover::before {
-  background: color-mix(in srgb, var(--brass) 60%, transparent);
-}
-
-.lounge__dot.is-active::before {
-  background: var(--brass);
-  transform: scale(1.4);
-}
-
-.lounge__dot:focus-visible {
-  outline: 3px solid var(--brass);
-  outline-offset: 2px;
-  border-radius: 50%;
-}
-
-/* ---------------------------------------------------------------------------
-   RESPONSIVE — mobile keeps the same carousel; rail aspect tightens.
-   --------------------------------------------------------------------------- */
-@media (max-width: 767px) {
-  .lounge__rail {
-    block-size: clamp(280px, 56vh, 480px);
+@media (max-width: 767.98px), (prefers-reduced-motion: reduce) {
+  .lounge__stage {
+    perspective: none;
+    block-size: auto;
+    display: block;
+    cursor: auto;                         /* no drag affordance in fallback */
+    touch-action: auto;
   }
-  .lounge__label {
-    padding-block: var(--space-8) var(--space-4);
+  .lounge__ring {
+    position: relative;
+    transform-style: flat;
+    transform: none !important;        /* override any inline JS write */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    max-inline-size: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
   }
-}
-
-/* ---------------------------------------------------------------------------
-   REDUCED MOTION — kill the slide animation; just snap.
-   --------------------------------------------------------------------------- */
-@media (prefers-reduced-motion: reduce) {
-  .lounge__track,
-  .lounge__dot::before {
-    transition: none;
+  .lounge__item {
+    position: relative;
+    inset-block-start: auto;
+    inset-inline-start: auto;
+    margin: 0 !important;
+    inline-size: auto;
+    transform: none !important;
+    opacity: 1 !important;
   }
 }

@@ -49,15 +49,18 @@ const SCENES = {
   },
   culinary: {
     src: "assets/video/culinary-1080.mp4",
-    fps: 30,
-    width: 1920,
-    quality: 88,
-    // 2026-06-03: ssStart removed. The source MP4 was previously a 6-second
-    // clip and -ss 00:00:03 left only 90 frames — the scrub appeared to freeze
-    // halfway through the user's scroll because it had already painted every
-    // frame. We re-encoded culinary-1080.mp4 directly from the 4K master
-    // (תמונות לאנימציית האתר/קולינריה 4/1.2.mp4) so it now carries the full
-    // 15s @ 30fps = ~450 frames covering the whole dish sequence.
+    // 2026-06-04: bumped to 4K-native settings per user request ("איכות
+    // גבוהה"). Source 1.4.mp4 is 3840×2160 @ 24fps; previously we extracted
+    // at 1920px / 30fps which threw away half the horizontal pixels and
+    // generated interpolated frames. Now we keep the source resolution and
+    // its native fps, and lift WebP quality 88 → 92 for less compression
+    // smear. Cost: per-frame size roughly doubles (~150 → ~300KB), total
+    // dir size approaches 100MB. Phase-1 preload (first 10 frames) still
+    // blocks paint; phase-2 streams async fetchpriority=low so LCP is
+    // unaffected. Above the §8 6MB per-scene budget — accepted exemption.
+    fps: 24,
+    width: 3840,
+    quality: 92,
   },
   // resort:   { src: "assets/video/resort-1080.mp4",   fps: 30, width: 1920, quality: 88 },
   // venue:    { src: "assets/video/venue-1080.mp4",    fps: 30, width: 1920, quality: 88 },
