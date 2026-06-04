@@ -121,6 +121,16 @@ const SINGLE_WEBP = [
     width: 2400,
     quality: 85,
   },
+  // 2026-06-04: "הטקסטורה הכהה המלאה" — the FULL-coverage dark texture used
+  // as fill for the canvas-rendered Events/Resort labels. User pointed at
+  // "פונט/טקסטורה מלאה כהה.png" specifically; this is distinct from the
+  // typo-on-dark.webp used for site-wide dark-bg headings.
+  {
+    src: "תמונות לאנימציית האתר/פונט/טקסטורה מלאה כהה.png",
+    out: "assets/images/brand/hero-text-fill.webp",
+    width: 1600,
+    quality: 90,
+  },
 ];
 
 async function loadSharp() {

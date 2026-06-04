@@ -281,10 +281,10 @@ const state = {
 // Helpers — text canvas + hit zones
 // ---------------------------------------------------------------------------
 
-// 2026-06-04: Brand "typo-on-dark" texture (cream + gold on dark) is loaded
-// once and used as the fill for the canvas-rendered labels. Same texture as
-// the rest of the site's dark-bg headings.
-const TEXTURE_FILL_URL = "/assets/images/brand/typo-on-dark.webp";
+// 2026-06-04: Hero label fill — "טקסטורה מלאה כהה" (the full-coverage dark
+// texture from פונט/, distinct from typo-on-dark which the rest of the site
+// uses on dark-bg headings). User pointed at this specific source file.
+const TEXTURE_FILL_URL = "/assets/images/brand/hero-text-fill.webp";
 let textureFillImg = null;
 let textureFillReady = false;
 const rebuildSubs = new Set();   // callbacks to fire when texture/font readies
@@ -327,9 +327,12 @@ function buildTextCanvas(width, height, dpr) {
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, width, height);
 
-  const baseSize  = Math.max(54, Math.min(width, height) * 0.095);
-  const lineGap   = baseSize * 0.45;
-  const HOVER_SCALE = 1.22;
+  // 2026-06-04 (user feedback): labels were too large. Smaller base size
+  // (≈ 5.5% of the smaller canvas edge, was 9.5%). Hover lift toned down
+  // from 1.22 → 1.08 — subtler reaction.
+  const baseSize  = Math.max(34, Math.min(width, height) * 0.055);
+  const lineGap   = baseSize * 0.5;
+  const HOVER_SCALE = 1.08;
 
   // User: position labels higher (was 0.78 → 0.66 → now 0.62 to sit
   // just under the GAMOS wordmark with breathing room).
