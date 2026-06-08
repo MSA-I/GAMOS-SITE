@@ -37,8 +37,14 @@ ACCENT_ROSE = "B8576F"
 MIST        = "E8DFD3"
 
 DESKTOP = Path(os.path.expanduser("~")) / "Desktop"
-XLSX_PATH = DESKTOP / "GAMOS-SITE-תוכן.xlsx"
-DOCX_PATH = DESKTOP / "GAMOS-SITE-תוכן.docx"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_OUT = REPO_ROOT / "exports" / "site-content"
+
+# Both locations get written each run: repo (versioned artefacts) +
+# Desktop (convenience for the current user).
+OUTPUT_DIRS = [REPO_OUT, DESKTOP]
+XLSX_NAME = "GAMOS-SITE-תוכן.xlsx"
+DOCX_NAME = "GAMOS-SITE-תוכן.docx"
 
 
 # ============================================================================
@@ -961,9 +967,11 @@ def build_xlsx():
     r = write_section_title(ws, r, "הצהרת נגישות · /legal/accessibility.html", span=2)
     r = write_table(ws, r, ["סעיף", "תוכן"], ACCESSIBILITY, col_widths=[28, 90])
 
-    DESKTOP.mkdir(parents=True, exist_ok=True)
-    wb.save(XLSX_PATH)
-    print(f"[xlsx] saved: {XLSX_PATH}")
+    for d in OUTPUT_DIRS:
+        d.mkdir(parents=True, exist_ok=True)
+        path = d / XLSX_NAME
+        wb.save(path)
+        print(f"[xlsx] saved: {path}")
 
 
 # ============================================================================
@@ -1386,9 +1394,11 @@ def build_docx():
                         add_para(doc, para.strip(), color_hex=INK_DEEP,
                                  size_pt=11)
 
-    DESKTOP.mkdir(parents=True, exist_ok=True)
-    doc.save(DOCX_PATH)
-    print(f"[docx] saved: {DOCX_PATH}")
+    for d in OUTPUT_DIRS:
+        d.mkdir(parents=True, exist_ok=True)
+        path = d / DOCX_NAME
+        doc.save(path)
+        print(f"[docx] saved: {path}")
 
 
 # ============================================================================
@@ -1398,6 +1408,7 @@ def build_docx():
 if __name__ == "__main__":
     build_xlsx()
     build_docx()
-    print("\nDone. Files on the Desktop:")
-    print(f"  {XLSX_PATH}")
-    print(f"  {DOCX_PATH}")
+    print("\nDone. Outputs (each file written to BOTH paths):")
+    for d in OUTPUT_DIRS:
+        print(f"  {d / XLSX_NAME}")
+        print(f"  {d / DOCX_NAME}")
