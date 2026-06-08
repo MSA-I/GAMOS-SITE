@@ -1,0 +1,74 @@
+/* =============================================================================
+   mobile/css/headings.css — Hebrew descender clearance on small viewports
+   ---------------------------------------------------------------------------
+   v3 (mobile pass 2026-06-08, after Playwright section sweep).
+
+   Root cause discovered during visual QA on iPhone 12 Pro:
+   ----------------------------------------------------------
+   Section headings using `.texture-text` + `background-clip: text` at
+   `line-height: 1.05` (Constitution --lh-tight) clip the top + bottom
+   descenders of Hebrew letters with vertical ink (ת ש ק ק ך ן ה).
+   On desktop the type sits at 3.75rem so the 5% leading gap = ~3px of
+   slack, enough to hide the issue. On mobile (clamp 2rem → 1rem ish at
+   the smallest device) 5% = 1.6px which is below the descender
+   thickness — letters get visibly chopped from above and below.
+
+   Plus: `--shabbat__heading` and other section-specific headings inherit
+   this, and `.shabbat__heading` had its own `clamp(2rem, 9vw, 2.75rem)`
+   override that locked line-height: 1.05 too.
+
+   Fix on mobile only: bump line-height to 1.18 on heading elements that
+   carry texture-fill, and reserve a small padding-block buffer so the
+   clip doesn't catch a stray descender pixel.
+   ========================================================================== */
+
+@media (max-width: 768px) {
+
+  .section-header__title,
+  .shabbat__heading,
+  .lounge__title,
+  .culinary__title,
+  .hall-venue h1,
+  .hall-venue h2,
+  .hall-resort h1,
+  .hall-resort h2 {
+    line-height: 1.18;
+    /* Tiny block padding inside the heading box so the texture-clip
+       doesn't catch a half-pixel of descender against the box edge. */
+    padding-block: 0.08em;
+  }
+
+  /* The hero composes its own type elsewhere — nothing to do for it.
+     Eyebrow + lede stay at their existing line-heights; they don't
+     use texture-fill. */
+}
+
+/* ---------------------------------------------------------------------------
+   Kosher section title — texture-fill correction (mobile pass v3 fix)
+   ---------------------------------------------------------------------------
+   The desktop CSS at /css/components/texture-text.css groups
+   `.kosher .section-header__title` with the LIGHT-bg titles
+   (`--typo-on-light` = dark texture). But the kosher section ships with
+   `background: var(--bg-cocoa)` — a DARK surface — so the dark texture
+   disappears into the background and the title becomes invisible.
+
+   Force the LIGHT (cream) texture for the kosher title at all viewports.
+   Wrapped in @supports so browsers without background-clip:text fall
+   back to the solid `var(--fg-on-dark)` color set in /css/sections/kosher.css.
+   --------------------------------------------------------------------------- */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .kosher .section-header__title {
+    background-image: var(--typo-on-dark) !important;
+  }
+}
+
+/* On the smallest viewports (iPhone SE 320), the same rule applies but
+   the type is small enough that 1.22 reads more comfortably. */
+@media (max-width: 380px) {
+  .section-header__title,
+  .shabbat__heading,
+  .lounge__title,
+  .culinary__title {
+    line-height: 1.22;
+  }
+}

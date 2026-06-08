@@ -1,0 +1,46 @@
+/* =============================================================================
+   mobile/css/culinary.css — dish gallery density on phones
+   ---------------------------------------------------------------------------
+   v3 (mobile pass 2026-06-08, after Playwright section sweep).
+
+   Discovered in QA:
+   - The .culinary__post grid stays 1-col below 560px. With 9 dishes at
+     aspect-ratio 4/5, that produces a ~3950px-tall column on a 390-wide
+     phone — the section becomes a tedious endless scroll.
+   - The actual brand intent for culinary post-gallery is "menu-card
+     density", not "single-photo per screen." A 2-col grid lands ~1900px
+     tall — half the height, twice the visual rhythm, and both adjacent
+     dishes live in peripheral vision while the user reads either one.
+
+   Fix: bump grid to 2-col starting at 360px (the smallest target). Keeps
+   1-col only on the very smallest viewports (≤359px, basically nothing
+   sold in the last 5 years).
+
+   The canvas-scrub above the gallery is unaffected; it's a separate
+   .scroll-scene__sticky element. The mobile manifest swap
+   (data-manifest-url-mobile + canvas-frames-mobile.js) handles that.
+   ========================================================================== */
+
+@media (min-width: 360px) and (max-width: 559.98px) {
+  .culinary__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  /* Captions inside each tile are a bit dense in 2-col @ 390 viewport.
+     Drop the description size one notch and let the tag / name carry. */
+  .culinary__item-desc {
+    font-size: var(--text-xs);
+  }
+  .culinary__item-name {
+    font-size: var(--text-sm);
+  }
+}
+
+/* On very narrow viewports the 2-col cards pinch the dish photos —
+   keep 1-col there. */
+@media (max-width: 359.98px) {
+  .culinary__grid {
+    grid-template-columns: 1fr;
+  }
+}

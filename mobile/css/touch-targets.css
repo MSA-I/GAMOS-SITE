@@ -1,0 +1,96 @@
+/* =============================================================================
+   mobile/css/touch-targets.css — WCAG 2.5.5 minimum tap-area enforcement v2
+   ---------------------------------------------------------------------------
+   Phase 3B (mobile pass 2026-06-08, rewritten v2 after design-taste audit).
+
+   v1 mistake: I used `background-clip: content-box` + `::before` proxy to
+   keep the visible dot at 10×10 while expanding hit area to 44×44. That
+   was clever but fragile — slider.js applies `.is-active` to the host
+   element, and the ::before swap meant any state class would need its
+   own ::before override. Brittle.
+
+   v2 approach: keep the visible dot exactly as the desktop CSS draws it,
+   just extend the hit area via `padding` outside the dot. The
+   `background-clip: content-box` trick keeps the visible fill INSIDE the
+   padded box — but we don't need that here because the dot is already
+   1px-bordered and only 10×10. We simply give it 17px padding all around
+   so the total tappable element is 44×44, and we don't touch the
+   visible dot's styling. State classes from slider.js (.is-active,
+   :hover) keep working because we never removed the original styling.
+   ========================================================================== */
+
+@media (max-width: 768px) {
+
+  /* ROOT-LEVEL FIX (mobile pass v3 — discovered via Playwright DOM probe
+     2026-06-08): on RTL pages, when ANY descendant exceeds the viewport
+     width even momentarily (testimonials track, lounge ring at certain
+     rotation angles, marquee mid-animation), the <html> element grows
+     `scrollWidth` past its `clientWidth`. Because base.css only sets
+     `overflow-x: hidden` on <body> (not <html>), the <html> still
+     develops horizontal overflow, and Chrome's RTL scroll model snaps
+     to the right edge — pushing the visible viewport ~21px to the left
+     of the document origin. The user sees the whole page shifted left,
+     hero CTAs appear in the "left half" of the screen, etc.
+
+     Fix: lock <html> to no horizontal overflow on phones too. Pinning
+     this only at ≤768px keeps desktop scroll behaviour pristine. */
+  html {
+    overflow-x: hidden;
+    /* Anchor links (#culinary, #shabbat-chatan, etc.) on mobile would
+       otherwise land sections directly under the sticky 64px-tall nav,
+       hiding the section heading. scroll-padding-top reserves a buffer
+       so the section heading is visible the moment the user lands. */
+    scroll-padding-block-start: 80px;
+  }
+
+  /* Submit + secondary CTAs in the contact form. The submit pill is
+     comfortably tall (~52px), but the transparent-outline waze/maps CTAs
+     can drop below 44 when copy is short. Min-size guarantees the floor. */
+  .contact__submit,
+  .contact__cta {
+    min-block-size: 44px;
+    min-inline-size: 44px;
+  }
+
+  /* Footer social pills — bumped from 36×36 → 44×44. The visible glyph
+     stays 16×16 (centered via flexbox). */
+  .site-footer__social-link {
+    inline-size: 44px;
+    block-size: 44px;
+  }
+
+  /* Slider dots — visible dot stays 10×10 with its border + active fill
+     intact. We expand the tappable bounding box via padding. The dots
+     are arranged in a flex row with `gap`, so adding padding shifts the
+     visible dots apart slightly — we compensate by shrinking the gap
+     to zero. The original gap was --space-2 (8px); after padding the
+     hit boxes are 44px wide each with the visible dots centered, so
+     gap:0 gives us 44px-wide hit zones with the visible dots ~17px
+     apart center-to-center (which still reads as a clean dot row). */
+  .testimonials__dots {
+    gap: 0;
+  }
+  .testimonials__dots [data-slider-dot] {
+    /* Visible dot stays 10×10; padding makes the box 44×44. */
+    inline-size: 10px;
+    block-size: 10px;
+    padding: 17px;
+    /* The padded area is transparent and outside the visible dot —
+       background-clip:content-box ensures the dot's background only
+       paints inside the 10px content box, not in the padded area.
+       This is the canonical pattern for "expanded hit area without
+       visible bloat." */
+    background-clip: content-box;
+    -webkit-background-clip: content-box;
+    box-sizing: content-box;
+  }
+
+  /* Mobile-overlay nav links — already padded but reaffirm a 44px floor
+     so a renamed font-size token can't regress this. */
+  .site-nav__mobile__links a {
+    min-block-size: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

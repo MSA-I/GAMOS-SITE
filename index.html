@@ -143,6 +143,13 @@
   <script defer src="/assets/vendor/gsap.min.js"></script>
   <script defer src="/assets/vendor/ScrollToPlugin.min.js"></script>
 
+  <!-- Mobile pass — single self-contained entry. The loader injects
+       /mobile/css/*.css link tags, picture half.webp sources, hero CTA
+       pill labels, and the culinary mobile-manifest swap. Runs BEFORE
+       main.js so its DOMContentLoaded listener queues first. Removing
+       this line + deleting /mobile/ disables the mobile pass entirely. -->
+  <script defer src="/mobile/loader.js"></script>
+
   <!-- Entry script: ESM, deferred — runs AFTER GSAP global is set up. -->
   <script type="module" defer src="/js/main.js"></script>
 </head>

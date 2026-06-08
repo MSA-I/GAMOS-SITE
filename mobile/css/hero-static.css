@@ -1,0 +1,166 @@
+/* =============================================================================
+   mobile/css/hero-static.css — hero CTAs as real pill buttons on phones
+   ---------------------------------------------------------------------------
+   Phase 3A (mobile pass 2026-06-08, rewritten 2026-06-08 v2 after
+   design-taste audit).
+
+   Design read
+   -----------
+   The desktop hero is a 5-PNG layered composition. The events.webp and
+   resort.webp PNGs are baked-in *typographic marks* — they communicate
+   "EVENTS" / "RESORT" as a brand artefact, not as a tappable button.
+   On a 360px viewport rendered as a 56vw image (~200px wide × 70px
+   tall) they read as decoration, not as a CTA. The :hover scale + glow
+   only fires on mouse — touch users get nothing back.
+
+   v2 fix
+   ------
+   On ≤768px we hide the bitmap PNG (decoration that doesn't translate)
+   and surface the <span class="hero-static__cta-label"> as a proper
+   pill button: brass-filled, ink-dark Hebrew label, 56dp tall,
+   active-state press-down, drop-shadow glow on focus. The base layer
+   + GAMOS mark + desert silhouette stay intact — the user still gets
+   the GAMOS atmosphere; the action is just clear now.
+
+   Why pills not text-only:
+   - Hebrew display type (Rubik 700) at text-2xl on the brass background
+     reads as a confident, premium CTA — same family as the desktop
+     headline, no font register break (per design-taste-frontend §4.1).
+   - Pill shape gives the eye a clear hit-target frame — Fitts' Law
+     (per mobile-design touch-psychology).
+   - Single accent color (--brass) means we don't violate the §5
+     palette discipline. No gradient, no AI-purple, no neon.
+   ========================================================================== */
+
+@media (max-width: 768px) {
+
+  /* GAMOS mark — keep it small + tighter to the corner so the CTAs
+     have breathing room. */
+  .hero-static__layer--gamos {
+    top: 5%;
+    left: 5%;
+    width: clamp(110px, 28vw, 170px);
+  }
+
+  /* Events / Resort: turn the <a> into a pill button. The PNG bitmap
+     gets hidden; the <span> becomes the visible label. */
+  .hero-static__layer--events,
+  .hero-static__layer--resort {
+    width: auto;                     /* shrink-wrap to label */
+    min-inline-size: 220px;          /* readable at 320px viewport */
+    inline-size: clamp(220px, 64vw, 320px);
+    /* Override the desktop transform that re-centers via translateX. */
+    transform: translateX(-50%);
+    /* Pill shell. */
+    background: var(--brass);
+    color: var(--ink-deep);
+    border-radius: var(--radius-pill);
+    padding: 0;                       /* label owns the padding */
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.35) inset,
+      0 12px 28px -10px rgba(83, 65, 51, 0.45),
+      0 2px 6px rgba(26, 20, 16, 0.18);
+    /* Active-state physical press confirmation. */
+    transition:
+      transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 220ms ease,
+      background 220ms ease;
+  }
+
+  /* Hide the bitmap PNG inside the CTA. The <span> now carries the
+     visible label. We set width:0 height:0 instead of display:none
+     so existing focus-ring + hover layouts that compute against the
+     <a>'s box don't break. */
+  .hero-static__layer--events > img,
+  .hero-static__layer--resort > img {
+    inline-size: 0;
+    block-size: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* The label becomes the visible pill content. Override the desktop
+     visually-hidden rules. */
+  .hero-static__cta-label {
+    position: static;
+    inline-size: auto;
+    block-size: auto;
+    padding-block: 1rem;             /* 16px → ~56dp total height with line-height */
+    padding-inline: 1.75rem;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: nowrap;
+    border: 0;
+    display: block;
+    text-align: center;
+    font-family: var(--font-display-he);
+    font-size: clamp(1.125rem, 4.6vw, 1.4rem);
+    font-weight: var(--fw-bold);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: var(--ink-deep);
+  }
+
+  /* Pin events vs resort vertically so they don't crowd. The desert
+     image hugs the bottom of the hero — keep CTAs above its top edge. */
+  .hero-static__layer--events { top: 30%; }
+  .hero-static__layer--resort { top: 46%; }
+
+  /* Touch press: the desktop :hover scale + glow doesn't fire on touch.
+     :active gives a real "I clicked" confirmation. */
+  .hero-static__layer--events:active,
+  .hero-static__layer--resort:active {
+    transform: translateX(-50%) scale(0.97);
+    background: var(--brass-deep);
+    color: var(--ivory);
+  }
+  .hero-static__layer--events:active .hero-static__cta-label,
+  .hero-static__layer--resort:active .hero-static__cta-label {
+    color: var(--ivory);
+  }
+
+  /* Focus ring still uses --brass on ivory. Make it ink-deep on the
+     pill so it reads against the brass fill. */
+  .hero-static__layer--events:focus-visible,
+  .hero-static__layer--resort:focus-visible {
+    outline: 3px solid var(--ink-deep);
+    outline-offset: 3px;
+  }
+
+  /* The :hover sibling-dim rule from desktop hero CSS still fires when
+     :focus-visible is active — undo it for the pill so a focused CTA
+     doesn't half-fade its sibling on touch (the sibling becomes a
+     legibility problem, not a benefit). */
+  .hero-static:has(.hero-static__cta:focus-visible) .hero-static__cta:not(:focus-visible) {
+    opacity: 1;
+    filter: none;
+  }
+}
+
+/* Smallest phones (320 viewport): tighten width + line height so the
+   label still reads at 1 line without orphan tail. */
+@media (max-width: 380px) {
+  .hero-static__layer--events,
+  .hero-static__layer--resort {
+    inline-size: 70vw;
+    min-inline-size: 0;
+  }
+  .hero-static__cta-label {
+    font-size: 1.05rem;
+  }
+  .hero-static__layer--events { top: 32%; }
+  .hero-static__layer--resort { top: 48%; }
+}
+
+/* Reduced motion: kill the press-down. Color swap on :active is fine. */
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .hero-static__layer--events,
+  .hero-static__layer--resort {
+    transition: background 0.01ms ease, color 0.01ms ease;
+  }
+  .hero-static__layer--events:active,
+  .hero-static__layer--resort:active {
+    transform: translateX(-50%);
+  }
+}

@@ -84,19 +84,35 @@ drawer + scroll/drag/keyboard/click interactions).
 
 ---
 
-## §3 Hero Concept (LOCKED 2026-06-08 v2, replaces 2026-05-28 multi-stage)
+## §3 Hero Concept (LOCKED 2026-06-08 v3, replaces v2 two-section overlap)
 
-ה-Hero הוא **חמש שכבות PNG מורכבות** ב-100vh (z-order מלמטה למעלה):
+ה-Hero הוא **סקציה אחת** של 200vh (`<section id="hero" class="hero-static">`)
+שבתוכה `<div class="hero-static__pin">` עם `position: sticky; top: 0; height: 100vh`.
+ה-pin מכיל **חמש שכבות PNG מורכבות** (z-order מלמטה למעלה):
 
 1. **base** (`שכבה 2.png`, 2048×1360) — full-viewport, רקע שמנת + קצה גלי תחתון.
 2. **gamos** (`GAMOS 1.png`, 426×161) — decorative, top-left. brand mark, לא ניווט.
-3. **events** (`EVENT 1.png`, 347×138) — `<a>` interactive → `/halls/dist/oasis/`.
-4. **resort** (`RESORT 2.png`, 336×94) — `<a>` interactive → `/halls/dist/lumina/`.
-5. **desert** (`מדבר.png`, 2048×646) — hill silhouettes anchored to bottom.
+3. **events** (`EVENT 1.png`, 347×138) — `<a>` interactive → `/halls/dist/oasis/` (z=5).
+4. **resort** (`RESORT 2.png`, 336×94) — `<a>` interactive → `/halls/dist/lumina/` (z=5).
+5. **desert** (`מדבר.png`, 2048×646) — hill silhouettes anchored to pin bottom (**z=10, מעל ה-CTAs**) — בעלייתה היא מכסה גם את ה-EVENTS / RESORT typography.
 
 כל שכבה מקודדת ל-WebP עם אלפא משומר (q=88 לתמונות הגדולות, q=92 לטקסטים).
 שכבה אחת (base) גם מקבלת JPG fallback (היא רקע אחיד ולכן "flatten" שלו ל-ivory
 לא פוגע בעיצוב). 4 השאר — WebP בלבד (אלפא חיוני).
+
+**Sticky-pin scroll behavior (Osmo-classic sticky-footer):**
+- הסקציה רשומה ל-orchestrator עם
+  `data-scrub="hero-rise" data-scrub-mode="poster-ken-burns" data-scrub-spacer-vh="200"`.
+  (השם `hero-rise` ולא `hero` כי `js/scroll-scene.js:184` מדלג על
+  `id === "hero"` כ-reserved name להירו ההיסטורי שניהל את ה-progress עצמו.)
+- `js/scroll-scene.js` כותב `--scene-progress` (0..1) על שורש הסקציה כל פריים,
+  לפי `scrolled / (height - 100vh) = scrolled / 100vh`.
+- **רק שכבת desert** קוראת את `--scene-progress`:
+  `transform: translateY(calc(var(--scene-progress) * -100vh))`. בנקודה progress=0
+  היא יושבת על תחתית ה-pin; בנקודה progress=1 היא יצאה לחלוטין מעל המסך.
+- ארבע השכבות האחרות (base, gamos, events, resort) **קפואות במקום** ב-pin
+  ונראות לאורך כל הגלילה דרך הסקציה.
+- `prefers-reduced-motion: reduce` מבטל את עליית ה-desert (היא נשארת ב-translateY(0)).
 
 **Hover / focus animation על EVENTS / RESORT (CSS-only, אין JS):**
 - ה-CTA הנוכחי: `transform: scale(1.06)` + `drop-shadow(0 0 28px brass-glow)` +
@@ -112,17 +128,12 @@ drawer + scroll/drag/keyboard/click interactions).
 2. `window.gamosLoading.show()` — overlay 200ms fade-in.
 3. `setTimeout(() => location.href = …, 350ms)` — נותן ל-overlay להופיע לפני הניווט.
 
-מיד אחרי ההירו: סקציית **`#hero-cover`** של **100vh** (Pure Olivier-Larose
-sticky-footer):
-- תמונת `מדבר.png` (העתק שני, ב-CSS background-clip לא רלוונטי כאן — `<picture>`
-  נפרד) עולה sticky-pin מלמטה (`translateY(100% → 0)`) לאורך כל 100vh.
-- בנקודת הסיום, הסקציה משוחררת מיד ו-**`#lounge`** מתחיל. אין hold ביניים.
-- מונע ע"י `--scene-progress` (0..1) ש-`gamosScroll` כותב על `<section
-  data-scrub-mode="poster-ken-burns" data-scrub-spacer-vh="100">` — אין JS
-  מותאם נדרש.
+**מיד אחרי ההירו:** `<div class="hero-gap" aria-hidden="true">` של **25vh** רקע
+שמנת — נשימה ויזואלית קצרה בין יציאת ההירו לכניסת `#lounge`. זו הפרדה ולא חזיון —
+אין בה תוכן או אנימציה.
 
-**Sections after `#hero-cover`:** lounge, culinary, shabbat-chatan, rooms, about,
-testimonials, gallery, events, kosher, contact. **הסקציות `#hall-venue` ו-
+**Sections after `#hero` + `.hero-gap`:** lounge, culinary, shabbat-chatan, rooms,
+about, testimonials, gallery, events, kosher, contact. **הסקציות `#hall-venue` ו-
 `#hall-resort` (corridor 3D) הוסרו מהדף הראשי** — חוויית corridor חיה אך ורק
 תחת `/halls/dist/oasis/` ו-`/halls/dist/lumina/` (sub-app React לפי §2.1).
 
@@ -322,6 +333,49 @@ testimonials, gallery, events, kosher, contact. **הסקציות `#hall-venue` �
 
 ---
 
+## §13 Mobile sub-tree convention (LOCKED 2026-06-08)
+
+כל קוד שנכתב מתוך מטרת **mobile-readiness** (תקנון הצגה, תיקוני touch-target,
+fallback-ים adaptive, encoders ייעודיים לרזולוציות מובייל) חי ב-`/mobile/`
+בשורש הפרויקט. ראה גם `/mobile/README.md` לפירוט מלא.
+
+**כללים:**
+
+1. `mobile/css/*.css` — רק `@media` overrides (`max-width: 768px` או
+   `max-width: 640px`, `max-width: 480px` לפינות). אסור rules כלליים.
+2. `mobile/js/*.js` — מודולי ESM `init()`/`destroy()` עם `matchMedia`
+   early-exit. אסור globals חדשים; תקשורת עם הליבה דרך DOM dataset או
+   hooks ייעודיים שהליבה חושפת.
+3. `mobile/scripts/*.mjs` — encoder/build helpers ייעודיים לנכסי מובייל
+   (לדוגמה: frame variants ברזולוציה נמוכה).
+4. ב-`index.html` — `mobile/css/*.css` נטענים בבלוק "Mobile-only overrides"
+   **אחרי** `css/sections/*.css` ו-`css/components/*.css`.
+5. ב-`js/main.js` MODULES — `canvas-frames-mobile` רשום **לפני**
+   `scroll-scene` (כדי לעדכן dataset לפני ש-renderer קורא אותו);
+   שאר ה-`*-mobile` רשומים אחרי המודול שלהם בליבה.
+6. **commits בלבד למובייל**: branch `feature/mobile-pass` (או
+   `feature/mobile-NN_<topic>`). כל commit נוגע רק ב:
+   - `mobile/**`
+   - `index.html` (preload / source / attribute additions)
+   - `js/main.js` (MODULES entries)
+   - `CLAUDE.md` (§12 Maintenance Log + §13 updates)
+   - הסרת clauses `(max-width: …)` מ-`css/sections/*.css` כשעוברים
+     ל-overrides ב-`mobile/css/`.
+   אסור לערבב refactor של ליבה.
+7. **אסור להוסיף `@media` למובייל ישירות לקבצים ב-`/css/sections/`** —
+   הקבצים האלה הם desktop-first; כל override מובייל הולך ל-`mobile/css/`.
+8. **שמירת חוויה (Constitution §1 — Luxury or nothing).** גרסת מובייל
+   לא רשאית להפיל אלמנט/חוויה שקיימת בדסקטופ. אם דסקטופ מציג חוויה X,
+   מובייל חייב להציג גרסה equivalent של X — לא fallback סטטי שטוח.
+   ה-`prefers-reduced-motion: reduce` הוא היוצא היחיד.
+
+**הוראה מפורשת לסוכנים עתידיים:** כל בקשת המשתמש שכוללת מילים כמו
+"מובייל", "mobile", "responsive", "iPhone", "Android", "טאצ'", "touch",
+"גודל מסך", "viewport" — קוראים את `/mobile/README.md` לפני הגעה לקוד.
+תיקון מובייל לא הולך ל-`/css/sections/` או `/js/`; הוא הולך ל-`/mobile/`.
+
+---
+
 ## §12 Maintenance Log
 
 | Date       | Change                                                       | Author      |
@@ -349,3 +403,5 @@ testimonials, gallery, events, kosher, contact. **הסקציות `#hall-venue` �
 | 2026-06-08 | **Hero v2 — layered 5-PNG composition + hover anims + Pure Olivier cover.** Per-user feedback ("התמונה שנקראת שכבה 2 היא התמונה הבסיסית, עליה יש את התמונות: של GAMOS EVENT ו RESORT ולבסוף המדבר; כל החמש באיכות מקסימלית; כשאני מרחף על הריזורט או איבנט זה צריכה להיות אנימציית תגובה; הסקציה הבאה מיד אחרי המדבר עולה — Olivier sticky-footer"), the v1 single-image hero (HERO-GAMOS.png) was reverted. New `#hero` markup composes **5 absolute-positioned PNG layers** (z-order bottom→top): `base` (שכבה 2 — viewport rect), `gamos` (top-left decorative), `events` + `resort` (interactive `<a>` CTAs centered horizontally, stacked vertically), `desert` (anchored to hero bottom). Each layer is an independent encoded WebP with alpha preserved (q=88 for the two big ones; q=92 for the three text layers); `base` also gets a JPG fallback flattened to ivory. **Hover anim is pure CSS:** focused CTA gets `transform: scale(1.06)` + `drop-shadow(0 0 28px brass-glow)` + `brightness(1.10)`; sibling dims to `opacity: 0.55` + `brightness: 0.92` via `:has(.hero-static__cta:hover)`. `prefers-reduced-motion: reduce` kills the scale but keeps the glow. **`#hero-cover` simplified** from v1 (200vh + 100vh hold) to **100vh single-spacer Pure Olivier**: desert rises from `translateY(100%)` to `translateY(0)` over the full section, then `#lounge` enters immediately on unstick — no hold. Encoder (`scripts/encode-images.mjs`) extended with `singleWidth`/`singleQuality` mode (one .webp file, alpha-preserved q=92) and `webpOnly: true` flag (skips JPG fallback) on top of the existing pair-mode. **Modified:** `index.html` (5-layer markup + 5 preloads + simplified cover), `css/sections/hero-static.css` (rewrite for layered structure + hover anims), `css/sections/hero-cover.css` (rewrite to 100vh pure-Olivier), `scripts/encode-images.mjs` (new NAMED_PAIRS for 5 sources, dual-mode encoder loop), `CLAUDE.md` §3 (rewrite). **Deleted:** `assets/images/hero/hero-gamos.{full,half}.{webp,jpg}` (v1 leftovers, 4 files), `desert.{full,half}.jpg` (no-longer-used JPG fallbacks for desert; WebP-only is mandatory because alpha is needed). **Files unchanged:** `js/hero-static.js` (selector + click logic still match), `js/main.js`, `js/site-nav-hover-reveal.js`. Total hero weight: ~265KB across 5 WebP files (base 5KB + gamos 22KB + events 15KB + resort 13KB + desert 209KB). | main |
 | 2026-06-08 | **Hero replaced + Three.js removed + halls dropped from homepage.** Per-user mandate, the Three.js shader hero (FBM noise + lens reveal + chromatic aberration) was swapped for a static `HERO-GAMOS.png` image (~137KB WebP) at 100vh with two transparent `<a>` hotspots over the baked-in EVENTS / RESORT words → `/halls/dist/oasis/` + `/halls/dist/lumina/`. New `#hero-cover` section (200vh, `data-scrub-mode="poster-ken-burns"`, `data-scrub-spacer-vh="200"`) implements Olivier-Larose sticky-footer pattern: `מדבר.png` (transparent PNG, encoded with alpha-preserved WebP) rises from `translateY(100%)` to `translateY(0)` over the first 100vh of the section (driven by `--scene-progress` of `gamosScroll`, compressed via `--rise = max(0, min(p*2, 1))`), then holds pinned for 100vh before `#lounge`. **Deleted:** `js/hero-shader.js`, `css/sections/hero-shader.css`, `assets/vendor/three.module.min.js`, `assets/vendor/three.core.min.js`, `js/hero-video-scrub.js`. **New:** `js/hero-static.js` (~115 lines: hotspot click handlers + `gamosHero` progress stub for side-dot-nav HERO_DOMINANCE compatibility), `css/sections/hero-static.css`, `css/sections/hero-cover.css`. Encoded `assets/images/hero/{hero-gamos,desert}.{full,half}.{webp,jpg}` via new `NAMED_PAIRS` block in `scripts/encode-images.mjs` (preserves alpha for desert WebP, flattens JPG fallbacks onto ivory). `index.html`: removed `<link>` tags for `hero-shader.css` + `hall-venue.css` + `hall-resort.css`; added `hero-static.css` + `hero-cover.css`. `js/main.js` MODULES: `'hero-shader' → 'hero-static'`; removed `'hero-video-scrub'`, `'corridor'`, `'project-drawer'`. `js/site-nav-hover-reveal.js`: `HERO_SELECTOR` updated `#hero.hero-shader` → `#hero.hero-static`. Sections `#hall-venue` + `#hall-resort` already removed from `index.html` previously; their CSS retained on disk but not linked. `js/corridor.js` retained as legacy fallback (was already a no-op against the static hero DOM). Hero LCP candidate is now the `<img>` (preload `<link rel="preload">` repointed). `§3` rewritten to describe the static-image hero + sticky-rise concept. | main |
 | 2026-06-04 | **Hero rebuild + corridor halls.** Port of `D:\משה פרוייקטים\arch-corridor-gallery` (React+Three.js prototype) into the live site. **§2 amendment:** Three.js core allowed self-hosted (`/assets/vendor/three.module.min.js`, ~365KB ESM, GSAP precedent — no CDN, no R3F/Drei). New `#hero` is a single 100vh `<section class="hero-shader">` whose `<canvas[data-hero-shader]>` is driven by `js/hero-shader.js` — verbatim GLSL port of the prototype's FBM noise distortion + spherical lens reveal + chromatic aberration. Two clickable Hebrew labels ("אולם" / "ריזורט") rendered via `CanvasTexture`; click → `playWhoosh` (Web Audio synth in new `js/audio.js`) → 1.1s `window.gamosLoading.show()` overlay → smooth-scroll to `#hall-venue` / `#hall-resort`. WebGL fallback: on `WebGLRenderer` constructor throw OR `?nogl=1` flag, replaces canvas with `<picture>` + two transparent `<a>` hotspots. DPR capped 1.75; battery-saver IntersectionObserver pauses RAF when hero is offscreen. Two new corridor scroll-scenes replace the deleted poster-Ken-Burns hall sections: `#hall-venue` (10 cards / 600vh spacer / archway columns / oasis amber orb) and `#hall-resort` (6 cards / 400vh spacer / mountain curves / lumina water-canal clip-path + amber bottom). Both opt into `data-scrub-mode="custom"` + `data-scrub-handler="gamosCorridor"`; `js/corridor.js` shares one RAF for both halls and writes per-card inline `transform` (`translate3d(altOffset, itemY, itemZ) rotateY rotateX`) + `opacity` per the prototype's math, with the LTR "even-card-on-left" wall conditional flipped to "even-card-on-right" for RTL. Mouse parallax tilts only the centered card (single window mousemove listener gated by `gamosScroll.getActive()`; skipped on coarse-pointer). HUD: prev/next + per-card jump pills, `gsap.scrollTo(section.offsetTop + (i/N)*spacerPx)`. Keyboard ArrowDown/Up step ±1 card while corridor is the active scene. Card click currently `playClick()` only; ProjectDetail drawer is post-MVP. New encoded image sets: `assets/images/corridor/venue/{02,04,05,06,07,7_1,09,11,13,14}.{full,half}.{webp,jpg}` (10 sources, encoder src `השראות/תמונות מרחפות/אולם`) and `assets/images/corridor/resort/{4_1,05,10,14,15,17}.{full,half}.{webp,jpg}` (6 sources, src `השראות/תמונות מרחפות/ריזורט`). NEW outDir `corridor/*` to avoid collision with legacy `halls/{venue,resort}` images still referenced by about + scrolling chrome. side-dot-nav `SECTIONS` re-mapped: 12 dots, dropped `section-2` placeholder, added `events`. Order now: hero / hall-venue / hall-resort / lounge / culinary / rooms / about / testimonials / gallery / events / kosher / contact (matches user's "dot1=hero, dot2=אולם, dot3=ריזורט" mandate). main.js MODULES re-ordered: `loading-overlay` and `hero-shader` move BEFORE `scroll-scene`/`side-dot-nav`/`portals` so `window.gamosLoading` + `window.gamosCorridor` + the `gamosHero` no-op stub (releases the dominance gate) are installed before consumers attach. `portals.js` and `hero-video-scrub.js` kept on disk (already bail safely when their DOM is missing); they no-op against the new hero. Card copy: short Hebrew placeholders, will be refined later by user. | main |
+| 2026-06-08 | **Hero v3 — sticky-pin freeze + desert-only rise + 50vh hero-gap.** Per-user mandate ("התמונה של המדבר תעלה כלפי מעלה, כל שאר האלמנטים בתמונת ההירו נשארים קפואים, מיד אחרי ההירו מרווח קצר"), the v2 two-section model (`#hero` 100vh + `#hero-cover` 200vh w/ `margin-top:-100vh` overlap) was collapsed into **one** `#hero` section of 200vh with a sticky-pinned 100vh interior (`.hero-static__pin`). All five layers now live inside the pin. The four upper layers (base, GAMOS, EVENTS, RESORT) remain pixel-frozen during the entire scroll; **only the desert layer** reads `--scene-progress` (written by `js/scroll-scene.js` for `data-scrub-mode="poster-ken-burns"`) and translates `Y(0 → -100vh)` to lift the silhouette off the top. After the section unsticks, a new `<div class="hero-gap" aria-hidden="true">` (50vh ivory band) gives the eye a brief breath before `#lounge` enters. Reference: Osmo CSS at `C:\Users\art1\Desktop\HERO-EXAMPLE.txt`. **Modified:** `index.html` (collapsed two sections into one, wrapped 5 layers in `.hero-static__pin`, added `data-scrub="hero"` + `data-scrub-mode="poster-ken-burns"` + `data-scrub-spacer-vh="200"` on the section, inserted `.hero-gap` div, deleted the old `#hero-cover` markup), `css/sections/hero-static.css` (rewrite: section becomes 200vh, new `.hero-static__pin` rule, desert gets `transform: translateY(calc(var(--scene-progress) * -100vh))` + `will-change: transform`, all `.hero-cover*` rules deleted, new `.hero-gap` rule added, `prefers-reduced-motion` killswitch on the desert), `CLAUDE.md` §3 (rewrite to v3). **Touched comments only:** `scripts/encode-images.mjs` (one comment line). **Files unchanged:** `js/scroll-scene.js` (already handled this mode), `js/hero-static.js` (hotspot bindings unaffected), `js/main.js`, `mobile/css/hero-static.css` (only references `.hero-static__layer--*` selectors, all preserved), `js/side-dot-nav.js` (only ever referenced `#hero`, never `#hero-cover`). | main |
+| 2026-06-08 | **Mobile-ready pass + §13 sub-tree convention.** Per-user mandate ("שיהיה נגיש גם למובייל תוך שמירה על כל האלמנטים והחוויה"), built a dedicated `/mobile/` sub-tree that holds every mobile-specific override. Branch `feature/mobile-pass`. New §13 in CLAUDE.md formalises the convention; new `mobile/README.md` mirrors it for onboarding. **Phase 1A — responsive `<picture>`:** scripted insertion of `<source media="(max-width: 768px)" srcset="…half.webp">` before each desktop `.full.webp` source across 37 pictures (lounge ×8, culinary ×9, shabbat ×9, rooms ×10, venue ×1) — halves mobile image payload. **Phase 1B — Heebo preload:** added `heebo-400.woff2` to the preload block (was loading after first paint, causing CLS). **Phase 2A — Lounge mobile ring:** removed the `(max-width: 767.98px)` flat-grid fallback from `css/sections/lounge.css` (kept the `prefers-reduced-motion` clause); new `mobile/css/lounge.css` shrinks perspective/stage/items; `js/lounge-selector.js` now exports `__setRadiusOverride()` + `__relayout()` hooks; new `mobile/js/lounge-mobile.js` installs `clamp(180, 50vw, 280)` radius for ≤768px so per-item translateZ math fits a 360px viewport without overflow — preserves the 3D ring instead of falling to a static grid. **Phase 2B — Shabbat snap carousel:** removed the `(max-width: 640px) flex-direction: column` fallback from `css/sections/shabbat-chatan.css`; new `mobile/css/shabbat-chatan.css` converts `.gallery__image__container` to a horizontal `scroll-snap-type: x mandatory` carousel (78%-wide cards, peek-of-next, RTL natural reading) — preserves the section's left-to-right narrative on phones. `shabbat-gallery.js` already short-circuits at `innerWidth ≤ 640`, so no JS change. **Phase 2C — Culinary mobile frames:** new `mobile/scripts/encode-frames-mobile.mjs` (encodes a 960px / q=80 / 24fps mirror of the desktop 4K culinary frame set, ~13MB total vs ~200MB desktop); new `data-manifest-url-mobile="…/culinary-mobile/manifest.json"` attribute on the canvas; new `mobile/js/canvas-frames-mobile.js` rewrites `data-manifest-url` to the mobile URL on `matchMedia("(max-width: 768px)").matches` BEFORE `scroll-scene` fetches the manifest. User must run `node mobile/scripts/encode-frames-mobile.mjs` once to populate `assets/frames/culinary-mobile/` (left intentionally outside the commit). **Phase 3A — Hero CTA spacing:** removed the (max-width: 768px) block from `css/sections/hero-static.css`; new `mobile/css/hero-static.css` re-positions events @ top:20% / resort @ top:44% (was 22%/32% which overlapped at 320×568) and adds a 480px refinement. **Phase 3B — Touch targets:** new `mobile/css/touch-targets.css` enforces ≥44×44 hit area on contact submit/CTAs, footer social pills (was 36×36), slider dots (visible 10×10 stays via ::before, hit area expanded to 44×44), and mobile-overlay nav links. **Wiring:** 6 `<link rel="stylesheet" href="/mobile/css/…">` lines added after the components block in `index.html`; 2 imports + 2 MODULES entries (`canvas-frames-mobile` BEFORE `scroll-scene`, `lounge-mobile` AFTER `lounge-selector`) in `js/main.js`. **Halls sub-app (`/halls/dist/oasis/`, `/halls/dist/lumina/`)**: scope-excluded from this pass per user — QA-only on physical iPhone 12 + Galaxy S22; if regressions surface, separate ticket. **Out of scope this pass:** halls bundle re-tune, frame variants for hero (already 5-PNG static), Lenis (still a stub). | main |

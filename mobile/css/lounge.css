@@ -1,0 +1,111 @@
+/* =============================================================================
+   mobile/css/lounge.css — coverflow on phones (v3 final)
+   ---------------------------------------------------------------------------
+   v1: shrunk the 3D ring with a tighter perspective + radius override.
+       Result: the ring rotated correctly but at any one moment showed
+       only 3 cards in a horizontal line — read as "row of 3 photos",
+       not "ring of 8". The 3D depth was technically there but visually
+       invisible without continuous motion. Confirmed via Playwright
+       still-frame verification.
+
+   v3: pivot to a horizontal scroll-snap COVERFLOW carousel — same
+       8 photos, same captions, same morning→midnight progression, but
+       a touch-native idiom that works in still frames AND under thumb.
+       Each card scaled 1.0 in the snap-aligned center, 0.86 + opacity
+       0.7 at the edges. The eye reads 3 cards at once with the focused
+       one a beat larger — that's coverflow's signature, native to iOS.
+
+       The ring JS (/js/lounge-selector.js) becomes a no-op visually:
+       its RAF still writes --lounge-rotation on the ring and per-item
+       --lounge-item-transform / --lounge-opacity, but the rules below
+       hard-override .lounge__ring transform to none and each item's
+       transform to scale() — so nothing the JS writes paints. No JS
+       changes to the core needed; this CSS owns the mobile experience
+       end-to-end. (The loader at /mobile/loader.js is a side-effect-
+       only shim that injects this stylesheet and does not touch the
+       lounge module.)
+
+   Reduced-motion still falls back to the flat grid in
+   /css/sections/lounge.css.
+   ========================================================================== */
+
+@media (max-width: 767.98px) and (prefers-reduced-motion: no-preference) {
+
+  /* Stage becomes a horizontal scroll-snap track. Drop perspective
+     entirely — coverflow's depth illusion comes from scale + opacity,
+     not perspective. */
+  .lounge__stage {
+    perspective: none;
+    block-size: auto;
+    cursor: auto;
+    touch-action: pan-y;
+    /* Reset flex from base CSS — we want a horizontal scroll container. */
+    display: block;
+  }
+
+  .lounge__ring {
+    /* The RAF loop still writes --lounge-rotation here, but transform
+       below is hard-locked to none so the rotation is a no-op. The ring
+       becomes a flex row of cards with horizontal scroll-snap. */
+    position: relative;
+    transform: none !important;
+    transform-style: flat;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    padding-block: 1rem;
+    padding-inline: calc(50% - 105px);     /* center first/last card on viewport */
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    scroll-snap-stop: always;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    block-size: auto;
+  }
+  .lounge__ring::-webkit-scrollbar { display: none; }
+
+  /* Each card: roughly 56vw wide, aspect 3/4 → ~75vw tall. Snap-aligned
+     to center so the focused card sits dead-center. Side cards scale
+     down + fade for the depth illusion. */
+  .lounge__item {
+    position: relative;
+    inset-block-start: auto;
+    inset-inline-start: auto;
+    margin: 0 !important;
+    flex: 0 0 auto;
+    inline-size: clamp(200px, 56vw, 280px);
+    aspect-ratio: 3 / 4;
+    transform: scale(0.86);
+    opacity: 0.7;
+    transition:
+      transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      opacity   420ms ease;
+    scroll-snap-align: center;
+    /* Defeat any inline transform/opacity the JS RAF wrote. */
+  }
+
+  /* :focus-within / :hover gives an interim "active" state. Real
+     coverflow needs IntersectionObserver to detect the centered card,
+     but as a CSS-only approximation this works for tap + keyboard
+     focus. */
+  .lounge__item:focus-within,
+  .lounge__item:hover {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  /* Captions sit at the bottom of each card with a soft gradient — the
+     desktop styling already handles this; we just bump the type down a
+     notch on phones. */
+  .lounge__item figcaption {
+    padding-block: var(--space-3);
+    padding-inline: var(--space-3);
+  }
+  .lounge__item figcaption h3 {
+    font-size: var(--text-md);
+  }
+  .lounge__item figcaption p {
+    font-size: var(--text-xs);
+  }
+}

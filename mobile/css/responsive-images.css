@@ -1,0 +1,16 @@
+/* =============================================================================
+   mobile/css/responsive-images.css — placeholder
+   ---------------------------------------------------------------------------
+   Phase 1A (mobile pass 2026-06-08).
+
+   The responsive image strategy is implemented at the markup layer in
+   /index.html via <picture> with a `<source media="(max-width: 768px)"
+   srcset="…half.webp">` row inserted before each desktop source. No CSS
+   is required for the swap itself.
+
+   This file ships so the <link rel="stylesheet"> in index.html doesn't
+   404, and is reserved for any future image-related mobile-only rules
+   (e.g. object-fit tweaks, art-direction crops via clip-path).
+   ========================================================================== */
+
+/* (no rules at present) */
