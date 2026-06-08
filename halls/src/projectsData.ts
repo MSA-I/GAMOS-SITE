@@ -12,7 +12,7 @@ export const projectsData: Project[] = [
     location: "מדבר יהודה, ישראל",
     year: "2026",
     color: "#E5D9C4",
-    image: "images/projects/oasis-01.jpg",
+    image: "images/projects/oasis-01.webp",
     description: "צילום ארכיטקטוני רחב ומרהיב של שולחנות עגולים רחבי ידיים תחת סככות פשתן מעוצבות, המשקיפים אל רכסי המדבר הזהובים. מרכזי שולחן עשירים של צמחייה פראית ונברשות קלועות המשרות אווירת יוקרה ראשונית.",
     details: [
       "הפרדה מושלמת בין גוני החול המוזהבים לגוני העץ הכהים.",
@@ -38,7 +38,7 @@ export const projectsData: Project[] = [
     location: "קדם נווה מדבר",
     year: "2026",
     color: "#DFD3C3",
-    image: "images/projects/oasis-02.jpg",
+    image: "images/projects/oasis-02.webp",
     description: "צילום סצנת הבריכה בסיפון עץ ארז הצף על גבי בריכת אינפיניטי צלולה, המשתקפת בגווני שמי השקיעה הכתומים. פינות רביצה מפוארות המאפשרות לאורחים להתנתק מהעולם ולהתחבר לשקט המוחלט של המדבר.",
     details: [
       "השתקפות סימטרית וחדה של הרי המדבר על פני המים השלווים.",
@@ -64,7 +64,7 @@ export const projectsData: Project[] = [
     location: "רחבת הבריכה המרכזית",
     year: "2026",
     color: "#F5EBE6",
-    image: "images/projects/oasis-03.jpg",
+    image: "images/projects/oasis-04.webp",
     description: "צילום המבנה והאדריכלות המקומית של חופה בעיצוב קשתות קלאסי ומרהיב הממוקם במרכז בריכת המים הגדולה. רשתות נחושת מעודנות ונברשות תלויות המשתלבות עם ההשתקפויות ליצירת רגעים בלתי נשכחים.",
     details: [
       "מיקוד בקשרים ובטקסטורות של המבנה המעוצב במרכז הבריכה.",
@@ -90,7 +90,7 @@ export const projectsData: Project[] = [
     location: "חוקות השמיים",
     year: "2026",
     color: "#F6F5F2",
-    image: "images/projects/oasis-04.jpg",
+    image: "images/projects/oasis-06.webp",
     description: "צילום אמנותי רחב של סידורי ישיבה יוקרתיים מול קו האופק המדברי המשתנה עם רדת החשיכה. אהילים קלועים המשתלשלים ממתכת שחורה ארכיטקטונית יוצרים ניגודיות עוצרת נשימה בין הטבע הפראי ליוקרה מתוחכמת.",
     details: [
       "טווח דינמי עשיר (HDR) השומר על פרטי השקיעה העדינים ועל פרטי הצל באזורי הישיבה הכהים.",
@@ -116,7 +116,7 @@ export const projectsData: Project[] = [
     location: "מתחם הקולונדה",
     year: "2026",
     color: "#EAE3D2",
-    image: "images/projects/oasis-05.jpg",
+    image: "images/projects/oasis-08.webp",
     description: "מיקוד תקריב אמנותי של שולחן אבירים ארוך ועשיר הפרוס מול הרי השממה, מעוטר בכלי חרס וקריסטלים ובדים טבעיים. שילוב הרמוני של גסטרונומיה יוקרתית מלווה ביינות מקומיים המיוצרים בכרמי הר הנגב.",
     details: [
       "הדגשת הטקסטורות הגסות של כלי החרס ועדינותם של גביעי הקריסטל המנצנצים.",
@@ -142,7 +142,7 @@ export const projectsData: Project[] = [
     location: "פנים וחוץ",
     year: "2026",
     color: "#F9F6F0",
-    image: "images/projects/oasis-06.jpg",
+    image: "images/projects/oasis-10.webp",
     description: "צילום מאקרו מרהיב של הפרטים הקטנים והמדויקים המגדירים את קדם: מפיות פשתן סרוגות ידנית, צלחות קרמיקה בעלות מרקם אורגני, כלי זכוכית מעוצבים וענפי דקל המעלים תחושת חמימות ויוקרה רוגעת.",
     details: [
       "צילום תקריב קיצוני החושף קפלים עדינים בפשתן המעומלן וסיבי החבל הדקים השזורים בו.",
@@ -171,7 +171,7 @@ export const projectsData: Project[] = [
     location: "ציר המים המרכזי",
     year: "2026",
     color: "#FBBD23",
-    image: "images/projects/lumina-01.jpg",
+    image: "images/projects/lumina-01.webp",
     description: "צילום אמנותי מהפנט הלוקח השראה ישירה מעיצוב אקוודוקט המים האינסופי החוצה את המדבר, שלאורכו מונחות ספירות אור ענקיות וזוהרות המשתקפות במים ברוגע לצד שמי שקיעה בגווני זהב וארגמן.",
     details: [
       "עומק פרספקטיבה מושלמת עם קו מוליך של אקוודוקט מים מרהיב.",
@@ -197,7 +197,7 @@ export const projectsData: Project[] = [
     location: "מתחם הספירות הזוהרות",
     year: "2026",
     color: "#E2A960",
-    image: "images/projects/lumina-02.jpg",
+    image: "images/projects/lumina-02.webp",
     description: "צילום תקריב החוקר את מופק האור של הספירות המדבריות, המונחות על חולות דקים וזהובים ומאירות את הצמחייה המדברית השברירית בטקסטורות עשירות המזכירות את גרמי השמיים.",
     details: [
       "פוקוס חד ביותר על מרקם הפני הדמוי גבס וחימר של כדור האור.",
@@ -223,7 +223,7 @@ export const projectsData: Project[] = [
     location: "הבריכה הדרומית",
     year: "2026",
     color: "#F6C592",
-    image: "images/projects/lumina-03.jpg",
+    image: "images/projects/lumina-03.webp",
     description: "סביבה מופשטת שבה חופת החול פוגשת השתקפות שמיים כחולים מעורבים בכתום שמימי. כדורי אור מעטרים את קצוות החלל וניצבים כמו מגדלורים מונחים בזעיר אנפין על פני המים.",
     details: [
       "הפרדת קו גבול מבריקה בין שמי המדבר למשקעי האגם.",
@@ -249,7 +249,7 @@ export const projectsData: Project[] = [
     location: "חמוקי הדיונה",
     year: "2026",
     color: "#E5CAB0",
-    image: "images/projects/lumina-04.jpg",
+    image: "images/projects/lumina-04.webp",
     description: "צילום ממרחק הלוכד מגוון כדורים מאירים הפזורים בקניון המרהיב המורכב מסלעי גיר זהובים, כשהמרחב נראה כחלום של נווה מדבר עתידני ועמוס מיסתורין מנחם.",
     details: [
       "חדות קצה מוחלטת מראש ועד תחתית הרי הגיר והמדרונות.",
@@ -275,7 +275,7 @@ export const projectsData: Project[] = [
     location: "מתחם האקוודוקט השקט",
     year: "2026",
     color: "#CFB092",
-    image: "images/projects/lumina-05.jpg",
+    image: "images/projects/lumina-05.webp",
     description: "צילום שולחנות משתה מהודרים הניצבים לצד שביל המים והכדורים הזוהרים. כלי קריסטל וחרס זהובים לוכדים את הניצוצות המשתקפים מהספירות ליצירת סביבה יוקרתית עוצרת נשימה.",
     details: [
       "משחקי אור אינסופיים בגזרת כלי הקריסטל והיוקרה התלויים והפרוסים.",
@@ -301,7 +301,7 @@ export const projectsData: Project[] = [
     location: "חלל פנים וחוץ בעיצוב ספירות",
     year: "2026",
     color: "#DFCEBE",
-    image: "images/projects/lumina-06.jpg",
+    image: "images/projects/lumina-06.webp",
     description: "צילום תקריב החושף את הפרטים של סידורי החלל הייחודיים להיכל השני: מנורות אמבר קטנות מונחות בקערות חרס, סיבי כותנה טבעיים ופיגמנטים של אדמת המדבר המוזהבת.",
     details: [
       "מאקרו מרהיב של פליטת חום ענברית מתוך אלמנטי זכוכית נושמת שנוצרו בעבודת יד.",

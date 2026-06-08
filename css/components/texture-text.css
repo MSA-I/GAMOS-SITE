@@ -71,11 +71,9 @@
      (corrected 2026-06-03 — they were previously forced to the light
      cream texture which disappears on ivory).
 
-     2026-06-04: filter:brightness/contrast lifts the new "טקסטורה מלאה כהה"
-     source so the gold flecks pop against ivory backgrounds (the raw source
-     reads too muddy at heading sizes). Filter applies after background-clip,
-     so it only brightens the painted glyphs — the surrounding box has
-     transparent fill and is unaffected. ---- */
+     2026-06-08: brightness/contrast/saturate lift removed. The current
+     typo-on-light source is calibrated for ivory backgrounds without a
+     filter; the lift was flattening the bronze ribbons into uniform gold. */
   .texture-text,
   .texture-text--dark,
   .section-header__title,
@@ -90,12 +88,7 @@
   .kosher .section-header__title,
   .about__stat dd {
     background-image: var(--typo-on-light);
-    filter: brightness(1.55) contrast(1.12) saturate(1.08);
   }
-
-  /* The dark-on-dark exceptions below (culinary/hero/lounge/.texture-text--light)
-     re-establish their own filter so they don't inherit the brightness lift
-     (the LIGHT texture already sits cleanly on cocoa). */
 
   /* ---- LIGHT texture override for content on dark surfaces ----
      Sections with cocoa/dark imagery, and the lounge panel titles

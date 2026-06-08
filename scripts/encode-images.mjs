@@ -133,6 +133,64 @@ const SINGLE_WEBP = [
   },
 ];
 
+// 2026-06-08 v2: Named-pair encodes for the layered static hero. Five PNG
+// layers compose into the hero (z-order bottom-to-top): שכבה 2 (base) → GAMOS
+// → EVENTS → RESORT → מדבר. Each layer needs alpha preservation; the small
+// text layers (GAMOS / EVENT / RESORT) get a single retina-2x WebP-only encode;
+// the big background + desert get the full pair (.full + .half) for srcset
+// responsiveness.
+const NAMED_PAIRS = [
+  // Base background (שכבה 2). Solid ivory + lower-edge wave; alpha preserved
+  // because it sits on the hero's --ivory background but the wave bottom is
+  // semi-transparent. Both sizes; jpg fallback only at full size.
+  {
+    src: "תמונות לאנימציית האתר/השראות/HERO/שכבה 2.png",
+    outDir: "assets/images/hero",
+    name: "base",
+    fullWidth: 2048, fullQuality: 88,
+    halfWidth: 1024, halfQuality: 84,
+    keepAlpha: true,
+    flatten: "#F5EFE6", // jpg falls back to flat ivory — the wave is decorative
+  },
+  // Desert hills — used twice (layer 5 of hero AND inside #hero-cover).
+  {
+    src: "תמונות לאנימציית האתר/השראות/HERO/מדבר.png",
+    outDir: "assets/images/hero",
+    name: "desert",
+    fullWidth: 2048, fullQuality: 88,
+    halfWidth: 1024, halfQuality: 84,
+    keepAlpha: true,
+    webpOnly: true, // desert MUST keep alpha; jpg fallback would show as a brown rectangle
+  },
+  // Text layers — single retina-2x size, WebP only (alpha preservation
+  // mandatory, jpg would flatten the transparent background to ivory and
+  // ruin the layered composition).
+  {
+    src: "תמונות לאנימציית האתר/השראות/HERO/GAMOS 1.png",
+    outDir: "assets/images/hero",
+    name: "gamos",
+    singleWidth: 852, singleQuality: 92, // 2x source (426)
+    keepAlpha: true,
+    webpOnly: true,
+  },
+  {
+    src: "תמונות לאנימציית האתר/השראות/HERO/EVENT 1.png",
+    outDir: "assets/images/hero",
+    name: "events",
+    singleWidth: 694, singleQuality: 92, // 2x source (347)
+    keepAlpha: true,
+    webpOnly: true,
+  },
+  {
+    src: "תמונות לאנימציית האתר/השראות/HERO/RESORT 2.png",
+    outDir: "assets/images/hero",
+    name: "resort",
+    singleWidth: 672, singleQuality: 92, // 2x source (336)
+    keepAlpha: true,
+    webpOnly: true,
+  },
+];
+
 async function loadSharp() {
   try {
     const sharp = (await import("sharp")).default;
@@ -236,6 +294,84 @@ async function main() {
       .webp({ quality, effort: 6 })
       .toFile(outPath);
     console.log(`[single] ${resolvedSrc.rel} → ${s.out}  (${width}px q${quality})`);
+    totalEncoded++;
+  }
+
+  // Named-pair encodes: explicit filename. Two modes:
+  //   - single-size: { singleWidth, singleQuality } → one .webp file (no .jpg)
+  //   - pair-size:   { fullWidth/Quality, halfWidth/Quality } → .full + .half
+  //                  in WebP, plus optional JPG fallback (skipped when webpOnly).
+  for (const np of NAMED_PAIRS) {
+    const srcAbs = join(ROOT, np.src);
+    if (!existsSync(srcAbs)) {
+      console.log(`[named] source missing, skipping: ${np.src}`);
+      continue;
+    }
+    const outDirAbs = join(ROOT, np.outDir);
+    mkdirSync(outDirAbs, { recursive: true });
+
+    // Single-size mode: write ONE .webp at np.name.webp.
+    if (np.singleWidth) {
+      const outWebp = join(outDirAbs, `${np.name}.webp`);
+      if (!FORCE && existsSync(outWebp)) {
+        console.log(`[named] exists, skipping: ${np.outDir}/${np.name}.webp`);
+        totalSkipped++;
+        continue;
+      }
+      await sharp(srcAbs, { failOn: "warning" })
+        .resize({ width: np.singleWidth, withoutEnlargement: true })
+        .webp({
+          quality: np.singleQuality,
+          effort: 6,
+          alphaQuality: np.keepAlpha ? 92 : undefined,
+        })
+        .toFile(outWebp);
+      console.log(`[named] ${np.src} → ${np.outDir}/${np.name}.webp (${np.singleWidth}px q${np.singleQuality})`);
+      totalEncoded++;
+      continue;
+    }
+
+    // Pair-size mode: .full + .half in WebP (and optionally JPG fallback).
+    const outFullWebp = join(outDirAbs, `${np.name}.full.webp`);
+    const outHalfWebp = join(outDirAbs, `${np.name}.half.webp`);
+    const outFullJpg  = join(outDirAbs, `${np.name}.full.jpg`);
+    const outHalfJpg  = join(outDirAbs, `${np.name}.half.jpg`);
+
+    const allExist = np.webpOnly
+      ? (existsSync(outFullWebp) && existsSync(outHalfWebp))
+      : (existsSync(outFullWebp) && existsSync(outHalfWebp) && existsSync(outFullJpg) && existsSync(outHalfJpg));
+
+    if (!FORCE && allExist) {
+      console.log(`[named] exists, skipping: ${np.outDir}/${np.name}.*`);
+      totalSkipped++;
+      continue;
+    }
+
+    const baseWebp = sharp(srcAbs, { failOn: "warning" });
+    await baseWebp.clone()
+      .resize({ width: np.fullWidth, withoutEnlargement: true })
+      .webp({ quality: np.fullQuality, effort: 6, alphaQuality: np.keepAlpha ? 90 : undefined })
+      .toFile(outFullWebp);
+    await baseWebp.clone()
+      .resize({ width: np.halfWidth, withoutEnlargement: true })
+      .webp({ quality: np.halfQuality, effort: 6, alphaQuality: np.keepAlpha ? 88 : undefined })
+      .toFile(outHalfWebp);
+
+    if (!np.webpOnly) {
+      // JPG fallback: flatten onto provided color (or ivory).
+      const baseJpg = sharp(srcAbs, { failOn: "warning" }).flatten({ background: np.flatten || "#F5EFE6" });
+      await baseJpg.clone()
+        .resize({ width: np.fullWidth, withoutEnlargement: true })
+        .jpeg({ quality: 86, mozjpeg: true })
+        .toFile(outFullJpg);
+      await baseJpg.clone()
+        .resize({ width: np.halfWidth, withoutEnlargement: true })
+        .jpeg({ quality: 82, mozjpeg: true })
+        .toFile(outHalfJpg);
+    }
+
+    const formats = np.webpOnly ? "{full,half}.webp" : "{full,half}.{webp,jpg}";
+    console.log(`[named] ${np.src} → ${np.outDir}/${np.name}.${formats}`);
     totalEncoded++;
   }
 

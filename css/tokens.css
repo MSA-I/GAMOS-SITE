@@ -175,8 +175,8 @@
                          culinary, footer).
      Legacy --typo-light/--typo-dark aliases removed; texture-text.css now
      references the new names directly. */
-  --typo-on-light:  url("/assets/images/brand/typo-on-light.webp");
-  --typo-on-dark:   url("/assets/images/brand/typo-on-dark.webp");
+  --typo-on-light:  url("/assets/images/brand/typo-on-light.webp?v=2026-06-08-2");
+  --typo-on-dark:   url("/assets/images/brand/typo-on-dark.webp?v=2026-06-08-2");
   --texture-light:  url("/assets/images/brand/texture-light.webp");
   --texture-dark:   url("/assets/images/brand/texture-dark.webp");
 

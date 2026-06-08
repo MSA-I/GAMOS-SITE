@@ -13,9 +13,8 @@
 
 // Section modules — placeholder shells. Each exposes `init()`.
 import * as scrollOrchestrator from "./scroll-orchestrator.js";
-import * as heroShader          from "./hero-shader.js";    // 2026-06-04 — Three.js WebGL hero
+import * as heroStatic          from "./hero-static.js";    // 2026-06-08 — static-image hero with hotspots
 import * as scrollScene         from "./scroll-scene.js";
-import * as heroVideoScrub      from "./hero-video-scrub.js";
 import * as portals             from "./portals.js";
 import * as reveals             from "./reveals.js";
 import * as accordions          from "./accordions.js";
@@ -30,11 +29,9 @@ import * as siteNav             from "./site-nav.js";       // Agent 23 — Phas
 import * as scrollytelling      from "./scrollytelling.js"; // 2026-06-01 — GSAP + parallax + loader pct
 import * as roomsGallery        from "./rooms-gallery.js";  // #rooms — חדרי נופש gallery
 import * as loungeSelector      from "./lounge-selector.js";// #lounge — lounge selector
-import * as corridor            from "./corridor.js";       // 2026-06-04 — corridor halls
-import * as projectDrawer       from "./project-drawer.js"; // 2026-06-04 — ProjectDetail side panel
 import * as siteNavHoverReveal  from "./site-nav-hover-reveal.js"; // 2026-06-04 — hide site-nav while in hero
 import * as scrollSpy           from "./scroll-spy.js";     // .site-nav — aria-current scroll-spy
-import * as shabbatParallax    from "./shabbat-parallax.js";// 2026-06-04 — #shabbat-chatan vertical parallax column
+import * as shabbatGallery     from "./shabbat-gallery.js";// 2026-06-08 — Faure horizontal parallax gallery (self-contained scroll-trap)
 
 // Order matters:
 // - scroll-orchestrator MUST init before any scene (hero or non-hero) that
@@ -51,13 +48,10 @@ import * as shabbatParallax    from "./shabbat-parallax.js";// 2026-06-04 — #s
 const MODULES = [
   ["lenis",               lenis],
   ["scroll-orchestrator", scrollOrchestrator],
-  ["loading-overlay",     loadingOverlay],   // moved earlier so window.gamosLoading is ready before hero-shader click handlers
-  ["hero-shader",         heroShader],       // 2026-06-04: must precede side-dot-nav so gamosHero stub releases the dominance gate
-  ["hero-video-scrub",    heroVideoScrub],   // legacy hero (no-op when #hero is the new shader hero)
-  ["corridor",            corridor],         // 2026-06-04: scroll-driven 3D corridor + window.gamosCorridor + window.gamosHeroToGallery
-  ["project-drawer",      projectDrawer],    // 2026-06-04: window.gamosProjectDrawer.open(id) — must follow corridor so card-click can call it
+  ["loading-overlay",     loadingOverlay],   // window.gamosLoading must be ready before hero hotspot clicks
+  ["hero-static",         heroStatic],       // 2026-06-08: static-image hero + gamosHero progress stub (releases side-dot-nav dominance gate)
   ["site-nav-hover-reveal", siteNavHoverReveal], // 2026-06-04: hide site-nav while in hero (revealed only on cursor in top band)
-  ["shabbat-parallax",    shabbatParallax],  // 2026-06-04: must precede scroll-scene so window.gamosShabbat is resolved at custom-mode binding time
+  ["shabbat-gallery",     shabbatGallery],   // 2026-06-08: Faure horizontal parallax gallery — self-contained scroll-trap, NOT a scroll-scene
   ["scroll-scene",        scrollScene],
   ["portals",             portals],
   ["side-dot-nav",        sideDotNav],

@@ -1,11 +1,83 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400&family=Heebo:wght@700&display=swap');
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/assets/fonts/rubik-hebrew.woff2") format("woff2");
+  unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/assets/fonts/rubik-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("/assets/fonts/rubik-hebrew.woff2") format("woff2");
+  unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("/assets/fonts/rubik-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Heebo";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/assets/fonts/heebo-400.woff2") format("woff2");
+  unicode-range: U+0020-007E, U+00A0-00FF, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: "Heebo";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/assets/fonts/heebo-500.woff2") format("woff2");
+  unicode-range: U+0020-007E, U+00A0-00FF, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: "Heebo";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/assets/fonts/heebo-600.woff2") format("woff2");
+  unicode-range: U+0020-007E, U+00A0-00FF, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: "Cinzel";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/assets/fonts/cinzel-700.woff2") format("woff2");
+  unicode-range: U+0020-007E, U+00A0-00FF;
+}
+
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Playfair Display", Georgia, serif;
-  --font-display: "Syne", sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
+  --font-sans: "Heebo", "Rubik", "Arial", sans-serif;
+  --font-serif: "Rubik", "Heebo", "Georgia", serif;
+  --font-display: "Rubik", "Heebo", "Cinzel", sans-serif;
+  --font-body: "Heebo", "Arial", sans-serif;
+  --font-mono: ui-monospace, "Menlo", "Consolas", monospace;
+  --color-brass: #CFAE83;
+  --color-brass-deep: #8B6F46;
+  --color-cocoa: #534133;
+  --color-ivory: #F5EFE6;
+  --color-ink-deep: #1A1410;
+  --color-accent-rose: #B8576F;
+  --color-mist: #E8DFD3;
 }
 
 /* Custom styles for gorgeous Unseen Studio effect */

@@ -28,9 +28,9 @@
 - HTML5 + CSS3 (custom properties, container queries, `@layer`) + ES2022 vanilla JS modules.
 - **GSAP + ScrollTrigger** — לקישור scroll progress ל-`video.currentTime` (טכניקת `video-to-website` skill).
 - **Lenis** — smooth scroll בדסקטופ בלבד (`smoothTouch: false`).
-- **Three.js core** — self-hosted ב-`/assets/vendor/three.module.min.js` (~365KB ESM). מותר אך ורק לצורך
-  ה-Hero shader (FBM noise distortion + lens reveal + chromatic aberration). אותה מתודה כמו GSAP — ESM
-  import מ-vendor, זרו CDN. **אין** R3F, Drei, postprocessing, או כל wrapper של Three.js.
+- ~~**Three.js core**~~ — **REMOVED 2026-06-08** (ראה §12). הסיבה: ההירו עבר לתמונה
+  סטטית ולא היה צרכן נוסף. אם בעתיד יידרש shader-based effect — להחזיר את ההגדרה
+  ולעדכן Maintenance Log.
 - **utility libs קטנות בלבד** — debounce, mitt-style emitter אם צריך.
 - **build-time tools:** ffmpeg (תפירת hero), sharp / cwebp / mozjpeg (אופטימיזציית תמונות).
 
@@ -84,34 +84,47 @@ drawer + scroll/drag/keyboard/click interactions).
 
 ---
 
-## §3 Hybrid Concept (LOCKED 2026-05-28, refined 2026-05-28 multi-stage)
+## §3 Hero Concept (LOCKED 2026-06-08 v2, replaces 2026-05-28 multi-stage)
 
-ה-Hero מורכב מ-3 שלבים שמופעלים לפי scroll progress (spacer = 7×100vh):
+ה-Hero הוא **חמש שכבות PNG מורכבות** ב-100vh (z-order מלמטה למעלה):
 
-1. **Stage `intro` [0% .. 14%]** — `hero-static.webp` (תמונת מדבר) ברקע + אנימציית
-   CSS (לא scroll-bound): GAMOS letter-by-letter (200ms-1100ms), ✦ EVENTS ✦
-   subtitle (1200ms-1700ms), לוגו זהוב GAMOS RESORT (2200ms), "גלול" pulse (3200ms).
+1. **base** (`שכבה 2.png`, 2048×1360) — full-viewport, רקע שמנת + קצה גלי תחתון.
+2. **gamos** (`GAMOS 1.png`, 426×161) — decorative, top-left. brand mark, לא ניווט.
+3. **events** (`EVENT 1.png`, 347×138) — `<a>` interactive → `/halls/dist/oasis/`.
+4. **resort** (`RESORT 2.png`, 336×94) — `<a>` interactive → `/halls/dist/lumina/`.
+5. **desert** (`מדבר.png`, 2048×646) — hill silhouettes anchored to bottom.
 
-2. **Stage `scrub` [14% .. 86%]** — `hero-master-1080.mp4` (סרטון תפור) שה-`currentTime`
-   שלו מקושר ל-scroll progress דרך **native scroll listener + requestAnimationFrame**
-   (NOT GSAP ScrollTrigger — זה הוסר ב-2026-05-28 לאחר fail בטעינה מ-CDN). hero הוא
-   `position: sticky` מעל spacer 700vh.
+כל שכבה מקודדת ל-WebP עם אלפא משומר (q=88 לתמונות הגדולות, q=92 לטקסטים).
+שכבה אחת (base) גם מקבלת JPG fallback (היא רקע אחיד ולכן "flatten" שלו ל-ivory
+לא פוגע בעיצוב). 4 השאר — WebP בלבד (אלפא חיוני).
 
-3. **Stage `outro` [86% .. 100%]** — scrub video fade-out, `1.5.mp4` autoplay loop
-   fade-in, שתי בועות-פורטל (אולם / ריזורט) reveal.
+**Hover / focus animation על EVENTS / RESORT (CSS-only, אין JS):**
+- ה-CTA הנוכחי: `transform: scale(1.06)` + `drop-shadow(0 0 28px brass-glow)` +
+  `filter: brightness(1.10)`.
+- ה-CTA האחר (sibling): `opacity: 0.55` + `brightness: 0.92`.
+- הסלקטור: `:has()` על `<section.hero-static>`. דפדפנים ללא `:has` (Chrome <105,
+  Safari <15.4, Firefox <121) פשוט לא ידעמיו את ה-sibling — ה-glow על ה-CTA
+  הנוכחי עובד תמיד.
+- `prefers-reduced-motion: reduce` מבטל את ה-scale (שומר על glow + brightness).
 
-**Stage transitions** מנוהלים ע"י `[data-stage="intro|scrub|outro"]` על
-`.hero__sticky`. CSS משתמש ב-attribute selectors כדי לשלוט על `opacity` של 4 ה-layers.
+**Click flow:**
+1. `playWhoosh(isResort)` — Web-Audio synth (`js/audio.js`).
+2. `window.gamosLoading.show()` — overlay 200ms fade-in.
+3. `setTimeout(() => location.href = …, 350ms)` — נותן ל-overlay להופיע לפני הניווט.
 
-4. **Portal Bubbles:** מימין = ריזורט, משמאל = אולם (ב-RTL סדר ה-source הוא resort first).
-   כל בועה: `clip-path: circle()`, `portal-loop.mp4` ברקע.
-5. **Click feedback (NEW 2026-05-28):** `[data-clicked]` attribute → ring 6px
-   brass-glow + drop-shadow 60px זהוב (לפני GSAP expand timeline) — visual confirmation
-   "selection registered".
-6. **Click flow:** GSAP timeline scale ×6 (1.0s, `power3.in`) + sibling fade out →
-   smooth-scroll לסקציית האולם → reset state.
-7. **Hall sections:** סקציות מלאות לאולם, ריזורט, lounge, חדרי נופש.
-8. **Static sections:** קולינריה (גלריית מנות, **לא** אולם), אודות, המלצות, צור קשר.
+מיד אחרי ההירו: סקציית **`#hero-cover`** של **100vh** (Pure Olivier-Larose
+sticky-footer):
+- תמונת `מדבר.png` (העתק שני, ב-CSS background-clip לא רלוונטי כאן — `<picture>`
+  נפרד) עולה sticky-pin מלמטה (`translateY(100% → 0)`) לאורך כל 100vh.
+- בנקודת הסיום, הסקציה משוחררת מיד ו-**`#lounge`** מתחיל. אין hold ביניים.
+- מונע ע"י `--scene-progress` (0..1) ש-`gamosScroll` כותב על `<section
+  data-scrub-mode="poster-ken-burns" data-scrub-spacer-vh="100">` — אין JS
+  מותאם נדרש.
+
+**Sections after `#hero-cover`:** lounge, culinary, shabbat-chatan, rooms, about,
+testimonials, gallery, events, kosher, contact. **הסקציות `#hall-venue` ו-
+`#hall-resort` (corridor 3D) הוסרו מהדף הראשי** — חוויית corridor חיה אך ורק
+תחת `/halls/dist/oasis/` ו-`/halls/dist/lumina/` (sub-app React לפי §2.1).
 
 ---
 
@@ -126,6 +139,42 @@ drawer + scroll/drag/keyboard/click interactions).
   - Hebrew body: **Heebo** (400/500/600)
   - Latin display: **Playfair Display** (400/700)
 - כולם self-hosted ב-`assets/fonts/` כ-WOFF2 עם subsetting + `font-display: swap`.
+
+### §4.1 Font + texture canonical reference (LOCKED 2026-06-08)
+
+**הוראה לכל סוכן עתידי שעובד על פונט / טיפוגרפיה / טקסטורת-טקסט:**
+
+לפני יצירה או שינוי של *כל* החלטה טיפוגרפית או טקסטורלית, **חובה** לפתוח קודם
+את התיקייה:
+
+> `D:\משה פרוייקטים\GAMOS-SITE\תמונות לאנימציית האתר\פונט\`
+
+זוהי הספרייה הקנונית של Mood Board לפונטים, אותיות, וטקסטורות של האתר. כוללת:
+- `A-B בהיר.png` / `A-B-כהה.png` — alphabet character set ברפרנסים בהירים וכהים.
+- `טיפוגרפיה בהירה.png` / `טיפוגרפיה כהה.png` — דוגמאות מילים בטקסטורה.
+- `טקסטורה בהירה.png` / `טקסטורה כהה.png` / `טקסטורה מלאה כהה.png` — קבצי
+  המקור של הטקסטורות (חול חום-בהיר לרקעים כהים; דמדומים-זהב כהה לרקעים בהירים).
+- `1.2.png` — סטיילינג כללי.
+
+**האותיות, הטקסטורות, וצורת הטקסטים באתר נלקחים אך ורק מתיקייה זו.** אסור להמציא
+טיפוגרפיה מקור אחר (Google Fonts, Adobe Fonts, וכו') — אם הסוכן צריך פונט שלא
+קיים בתיקייה, להציג את הסוואץ' למשתמש ולקבל אישור לפני אימוץ.
+
+הקבצים המקודדים-בפרויקט שנגזרו מהמקורות הללו:
+- `assets/images/brand/typo-on-light.webp` — טקסטורת אותיות **כהה** (לרקעים בהירים).
+- `assets/images/brand/typo-on-dark.webp` — טקסטורת אותיות **בהירה** (לרקעים כהים).
+- `assets/images/brand/texture-light.webp` / `texture-dark.webp` — טקסטורות
+  background כלליות (לא לטקסט).
+
+ה-classes ב-`css/components/texture-text.css`:
+- `.texture-text` או `.texture-text--dark` → טקסטורה כהה (typo-on-light) — לרקעים
+  בהירים (ivory). זה ה-default ברוב האתר.
+- `.texture-text--light` → טקסטורה בהירה (typo-on-dark) — לרקעים כהים (ink-deep,
+  cocoa, hero, culinary, lounge, shabbat-chatan).
+
+הפונט עצמו (Rubik / Heebo / Cinzel / Playfair) הוא *vehicle* לטקסטורה — הצורה
+בכל מקום באתר חייבת להיגזר ממה שמופיע ב-NOMAD typeface שבתיקייה. אם NOMAD
+ייוצר אי-פעם כקובץ woff2, הוא ינעל כ-`--font-display` של האתר.
 
 ---
 
@@ -297,4 +346,6 @@ drawer + scroll/drag/keyboard/click interactions).
 | 2026-06-04 | **Culinary: 3 new dishes + new scrub video (reversed) + display quality bump.** New source `1.4.mp4` (9.4MB, exceeds §8 6MB per-scene budget — accepted per user request for higher quality) copied to `assets/video/culinary-1080.mp4`. Frame extractor `scripts/encode-frames.mjs` culinary scene config bumped: 1920px / 30fps / q88 → **3840px / 24fps / q92** (matching source 4K + native fps; was downsampling half the horizontal pixels and interpolating 6 dup frames/sec). 361 frames @ 4K / WebP q92 = 132MB total (avg 375KB/frame). Two-phase preloader still gates LCP at 10 frames (~3.7MB); phase-2 streams `fetchpriority=low`. New `data-scrub-reverse` attribute supported in `js/scroll-scene.js` (composes with `data-scrub-frame-offset`); applied to `<section id="culinary">` so the new clip plays back-to-front; old `data-scrub-frame-offset="0.5"` dropped. Three new dish photos (`7/8/9.jpg` renamed to `14/15/16` to avoid encoder collision with existing 07/09) encoded into `assets/images/culinary/{14,15,16}.{full,half}.{webp,jpg}`; gallery grew 6 → 9 items. Display quality: all dish gallery `<picture>` elements switched from `.half.{webp,jpg}` (960px) to `.full.{webp,jpg}` (1920px) for retina-sharp rendering. New dish captions are placeholders ("מנה עונתית"/"מנת בית"/"סיום ערב") — user to refine copy. | main |
 | 2026-06-04 | **§2.1 amendment + halls/ React sub-app.** Per-user mandate ("תשנה את ה-Constitution שכן יתיר רק לשני הדפים הללו React/Vite/Tailwind בזמן ריצה"), §2.1 added allowing **React 19 + TypeScript + Vite 6 + Tailwind v4 + Motion + Lucide + Three.js** at runtime — but ONLY under `halls/` for the two URLs `/halls/oasis/` and `/halls/lumina/`. Direct port of `D:\משה פרוייקטים\arch-corridor-gallery` (LandingHero shader + ThreeDCorridor + ProjectDetail). Build → `halls/dist/` static, served by existing `npx serve`. `vite.config.ts` sets `base: "/halls/dist/"` and dual entrypoints (`index.html` = oasis, `lumina.html` = lumina); `halls/scripts/post-build.mjs` mirrors the two HTMLs into `dist/oasis/` + `dist/lumina/` so the URLs are clean. Each HTML carries `<html data-initial-hall="…">` which `main.tsx` reads to seed `<App initialHall=…>`. Hall switch + Home button navigate via `window.location` (no shared SPA router with the main site). 12 source images copied verbatim from `assets/images/corridor/{venue,resort}/*.full.jpg` into `halls/public/images/projects/oasis-{01..06}.jpg` + `lumina-{01..06}.jpg`; `projectsData.ts` rewritten to point local. Vanilla `corridor.html` + `js/corridor.js` retained as legacy fallback. Root `package.json` adds `dev:halls` + `build:halls`. `js/hero-shader.js` `gamosHeroToGallery.enter()` re-pointed from `/corridor.html?hall=…` → `/halls/{oasis,lumina}/`. | main + 3 sub-agents |
 | 2026-06-04 | **`#shabbat-chatan` extended to 4-panel sequence using all 10 images.** Per-user feedback ("צריך להשתמש בכל התמונות", "שלושת התמונות הראשונות צריכות להיות בתחילת הגלילה"), kept the repo's exact 3-image absolute layout (50vh×60vh / 30vh×40vh / 20vh×25vh; left 55vw / 27.5vw; top 15vh / 40vh; rates `-50/-150/-255px`) but stacked it across 4 panels (`data-shabbat-panel="0..3"`) inside the sticky 100vh viewport. Spacer bumped 200vh → 500vh. Panel 1 = imgs 01/02/03 (matches repo at p=0 — first thing visible after culinary), panel 2 = 04/05/06, panel 3 = 07/08/09, panel 4 = closing img 10. `js/shabbat-parallax.js` now writes `--shabbat-progress` (global), `--shabbat-stack-y` (vh, 0 → -(N-1)·100), and per-panel `--panel-progress` (each panel's local 0..1 band of length 1/N). Title body is absolutely positioned in the viewport (does not translate with the stack); title-1 still gets the `-50px` scrub and per-letter `--letter-y` still random `[-100..-25]px`. Mobile (≤640px) hides panels 2-4 via `display:none` and freezes the stack — shows only the repo composition with imgs 01-03. **Top nav reordered** to match user numbering: `אולם → ריזורט → קולינריה → שבתות חתן → חדרי נופש → גלריה → צור קשר` (primary). `data-secondary` items (`לאונג' / אודות / המלצות / אירועים / כשרות`) preserved for the mobile overlay only. side-dot-nav has the dot between culinary and rooms (11 dots total). | main |
+| 2026-06-08 | **Hero v2 — layered 5-PNG composition + hover anims + Pure Olivier cover.** Per-user feedback ("התמונה שנקראת שכבה 2 היא התמונה הבסיסית, עליה יש את התמונות: של GAMOS EVENT ו RESORT ולבסוף המדבר; כל החמש באיכות מקסימלית; כשאני מרחף על הריזורט או איבנט זה צריכה להיות אנימציית תגובה; הסקציה הבאה מיד אחרי המדבר עולה — Olivier sticky-footer"), the v1 single-image hero (HERO-GAMOS.png) was reverted. New `#hero` markup composes **5 absolute-positioned PNG layers** (z-order bottom→top): `base` (שכבה 2 — viewport rect), `gamos` (top-left decorative), `events` + `resort` (interactive `<a>` CTAs centered horizontally, stacked vertically), `desert` (anchored to hero bottom). Each layer is an independent encoded WebP with alpha preserved (q=88 for the two big ones; q=92 for the three text layers); `base` also gets a JPG fallback flattened to ivory. **Hover anim is pure CSS:** focused CTA gets `transform: scale(1.06)` + `drop-shadow(0 0 28px brass-glow)` + `brightness(1.10)`; sibling dims to `opacity: 0.55` + `brightness: 0.92` via `:has(.hero-static__cta:hover)`. `prefers-reduced-motion: reduce` kills the scale but keeps the glow. **`#hero-cover` simplified** from v1 (200vh + 100vh hold) to **100vh single-spacer Pure Olivier**: desert rises from `translateY(100%)` to `translateY(0)` over the full section, then `#lounge` enters immediately on unstick — no hold. Encoder (`scripts/encode-images.mjs`) extended with `singleWidth`/`singleQuality` mode (one .webp file, alpha-preserved q=92) and `webpOnly: true` flag (skips JPG fallback) on top of the existing pair-mode. **Modified:** `index.html` (5-layer markup + 5 preloads + simplified cover), `css/sections/hero-static.css` (rewrite for layered structure + hover anims), `css/sections/hero-cover.css` (rewrite to 100vh pure-Olivier), `scripts/encode-images.mjs` (new NAMED_PAIRS for 5 sources, dual-mode encoder loop), `CLAUDE.md` §3 (rewrite). **Deleted:** `assets/images/hero/hero-gamos.{full,half}.{webp,jpg}` (v1 leftovers, 4 files), `desert.{full,half}.jpg` (no-longer-used JPG fallbacks for desert; WebP-only is mandatory because alpha is needed). **Files unchanged:** `js/hero-static.js` (selector + click logic still match), `js/main.js`, `js/site-nav-hover-reveal.js`. Total hero weight: ~265KB across 5 WebP files (base 5KB + gamos 22KB + events 15KB + resort 13KB + desert 209KB). | main |
+| 2026-06-08 | **Hero replaced + Three.js removed + halls dropped from homepage.** Per-user mandate, the Three.js shader hero (FBM noise + lens reveal + chromatic aberration) was swapped for a static `HERO-GAMOS.png` image (~137KB WebP) at 100vh with two transparent `<a>` hotspots over the baked-in EVENTS / RESORT words → `/halls/dist/oasis/` + `/halls/dist/lumina/`. New `#hero-cover` section (200vh, `data-scrub-mode="poster-ken-burns"`, `data-scrub-spacer-vh="200"`) implements Olivier-Larose sticky-footer pattern: `מדבר.png` (transparent PNG, encoded with alpha-preserved WebP) rises from `translateY(100%)` to `translateY(0)` over the first 100vh of the section (driven by `--scene-progress` of `gamosScroll`, compressed via `--rise = max(0, min(p*2, 1))`), then holds pinned for 100vh before `#lounge`. **Deleted:** `js/hero-shader.js`, `css/sections/hero-shader.css`, `assets/vendor/three.module.min.js`, `assets/vendor/three.core.min.js`, `js/hero-video-scrub.js`. **New:** `js/hero-static.js` (~115 lines: hotspot click handlers + `gamosHero` progress stub for side-dot-nav HERO_DOMINANCE compatibility), `css/sections/hero-static.css`, `css/sections/hero-cover.css`. Encoded `assets/images/hero/{hero-gamos,desert}.{full,half}.{webp,jpg}` via new `NAMED_PAIRS` block in `scripts/encode-images.mjs` (preserves alpha for desert WebP, flattens JPG fallbacks onto ivory). `index.html`: removed `<link>` tags for `hero-shader.css` + `hall-venue.css` + `hall-resort.css`; added `hero-static.css` + `hero-cover.css`. `js/main.js` MODULES: `'hero-shader' → 'hero-static'`; removed `'hero-video-scrub'`, `'corridor'`, `'project-drawer'`. `js/site-nav-hover-reveal.js`: `HERO_SELECTOR` updated `#hero.hero-shader` → `#hero.hero-static`. Sections `#hall-venue` + `#hall-resort` already removed from `index.html` previously; their CSS retained on disk but not linked. `js/corridor.js` retained as legacy fallback (was already a no-op against the static hero DOM). Hero LCP candidate is now the `<img>` (preload `<link rel="preload">` repointed). `§3` rewritten to describe the static-image hero + sticky-rise concept. | main |
 | 2026-06-04 | **Hero rebuild + corridor halls.** Port of `D:\משה פרוייקטים\arch-corridor-gallery` (React+Three.js prototype) into the live site. **§2 amendment:** Three.js core allowed self-hosted (`/assets/vendor/three.module.min.js`, ~365KB ESM, GSAP precedent — no CDN, no R3F/Drei). New `#hero` is a single 100vh `<section class="hero-shader">` whose `<canvas[data-hero-shader]>` is driven by `js/hero-shader.js` — verbatim GLSL port of the prototype's FBM noise distortion + spherical lens reveal + chromatic aberration. Two clickable Hebrew labels ("אולם" / "ריזורט") rendered via `CanvasTexture`; click → `playWhoosh` (Web Audio synth in new `js/audio.js`) → 1.1s `window.gamosLoading.show()` overlay → smooth-scroll to `#hall-venue` / `#hall-resort`. WebGL fallback: on `WebGLRenderer` constructor throw OR `?nogl=1` flag, replaces canvas with `<picture>` + two transparent `<a>` hotspots. DPR capped 1.75; battery-saver IntersectionObserver pauses RAF when hero is offscreen. Two new corridor scroll-scenes replace the deleted poster-Ken-Burns hall sections: `#hall-venue` (10 cards / 600vh spacer / archway columns / oasis amber orb) and `#hall-resort` (6 cards / 400vh spacer / mountain curves / lumina water-canal clip-path + amber bottom). Both opt into `data-scrub-mode="custom"` + `data-scrub-handler="gamosCorridor"`; `js/corridor.js` shares one RAF for both halls and writes per-card inline `transform` (`translate3d(altOffset, itemY, itemZ) rotateY rotateX`) + `opacity` per the prototype's math, with the LTR "even-card-on-left" wall conditional flipped to "even-card-on-right" for RTL. Mouse parallax tilts only the centered card (single window mousemove listener gated by `gamosScroll.getActive()`; skipped on coarse-pointer). HUD: prev/next + per-card jump pills, `gsap.scrollTo(section.offsetTop + (i/N)*spacerPx)`. Keyboard ArrowDown/Up step ±1 card while corridor is the active scene. Card click currently `playClick()` only; ProjectDetail drawer is post-MVP. New encoded image sets: `assets/images/corridor/venue/{02,04,05,06,07,7_1,09,11,13,14}.{full,half}.{webp,jpg}` (10 sources, encoder src `השראות/תמונות מרחפות/אולם`) and `assets/images/corridor/resort/{4_1,05,10,14,15,17}.{full,half}.{webp,jpg}` (6 sources, src `השראות/תמונות מרחפות/ריזורט`). NEW outDir `corridor/*` to avoid collision with legacy `halls/{venue,resort}` images still referenced by about + scrolling chrome. side-dot-nav `SECTIONS` re-mapped: 12 dots, dropped `section-2` placeholder, added `events`. Order now: hero / hall-venue / hall-resort / lounge / culinary / rooms / about / testimonials / gallery / events / kosher / contact (matches user's "dot1=hero, dot2=אולם, dot3=ריזורט" mandate). main.js MODULES re-ordered: `loading-overlay` and `hero-shader` move BEFORE `scroll-scene`/`side-dot-nav`/`portals` so `window.gamosLoading` + `window.gamosCorridor` + the `gamosHero` no-op stub (releases the dominance gate) are installed before consumers attach. `portals.js` and `hero-video-scrub.js` kept on disk (already bail safely when their DOM is missing); they no-op against the new hero. Card copy: short Hebrew placeholders, will be refined later by user. | main |

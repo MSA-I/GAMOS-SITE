@@ -38,6 +38,7 @@
 const FADE_IN_MS        = 200;   // Time to reach full opacity.
 const FADE_OUT_MS       = 200;   // Time to fade back to invisible.
 const HOLD_MS_REDUCED   = 400;   // Reduced-motion hold (registers the moment).
+const MIN_VISIBLE_HOLD_MS = 1500;
 
 const LOGO_WEBP = "/assets/images/brand/logo-central.webp";
 const LOGO_PNG  = "/assets/images/brand/logo-central.webp";
@@ -53,6 +54,7 @@ const state = {
   reducedMQ:          null,
   reducedMotion:      false,
   hideTimer:          null,
+  shownAt:            0,
   pendingShowResolve: null,
   pendingHideResolve: null,
   bound: {
@@ -132,6 +134,7 @@ function show(/* opts */) {
   }
 
   clearHideTimer();
+  state.shownAt = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
   state.visibilityState = "showing";
   state.el.setAttribute("aria-hidden", "false");
 
@@ -179,9 +182,18 @@ function hide(opts) {
     return Promise.resolve();
   }
 
-  const delay = (opts && typeof opts.delay === "number" && opts.delay >= 0)
+  let delay = (opts && typeof opts.delay === "number" && opts.delay >= 0)
     ? opts.delay
     : 0;
+
+  if (!state.reducedMotion && state.shownAt > 0) {
+    const now = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+    const elapsed = now - state.shownAt;
+    if (elapsed < MIN_VISIBLE_HOLD_MS) {
+      const floorDelay = MIN_VISIBLE_HOLD_MS - elapsed;
+      if (floorDelay > delay) delay = floorDelay;
+    }
+  }
 
   clearHideTimer();
 
@@ -206,6 +218,7 @@ function hide(opts) {
           state.el.setAttribute("aria-hidden", "true");
         }
         state.visibilityState = "hidden";
+        state.shownAt = 0;
 
         // Fire hide event AFTER the overlay is fully gone, so suppressed
         // observers re-engage when the user is already at the destination.

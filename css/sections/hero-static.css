@@ -1,0 +1,235 @@
+/* ===========================================================================
+   hero-static.css — Static hero + Olivier classic rising-desert (v6)
+   ---------------------------------------------------------------------------
+   Two SIBLING sections in normal flow:
+     #hero        (.hero-static, 100vh)  — five static layers, no scroll motion.
+     #hero-cover  (.hero-cover,  200vh)  — sticky-pinned, contains ONE rising
+                                            <picture> of the desert.
+
+   #hero-cover sits IN FLOW directly after #hero. Its desert <picture> at
+   progress=0 sits at natural bottom-anchored position. Visually it overlaps
+   the #hero static desert layer at the section boundary — they look
+   continuous. As the user scrolls past, --scene-progress rises 0→1 and the
+   <picture> translates from translateY(0) to translateY(-100vh), sweeping
+   the desert up and OFF the viewport — revealing #lounge below (which sits
+   directly after #hero-cover in normal flow).
+
+   #hero layers (z-order bottom→top):
+     1. base   (שכבה 2.png)   ivory + bottom wave
+     2. gamos  (GAMOS 1.png)  brand mark, top-LEFT (physical)
+     3. events (EVENT 1.png)  CTA → /halls/dist/oasis/  (z=5)
+     4. resort (RESORT 2.png) CTA → /halls/dist/lumina/ (z=5)
+     5. desert (מדבר.png)     hill silhouettes anchored to bottom (z=3)
+
+   RTL note: physical `left:` and `right:` instead of `inset-inline-start:`
+   because the reference has GAMOS at top-LEFT (physical) and EVENTS/RESORT
+   centered. Logical properties would mirror them.
+   ========================================================================= */
+
+.hero-static {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  margin-block-start: 0;
+  overflow: hidden;
+  background: var(--ivory, #F5EFE6);
+  z-index: 110;
+  isolation: isolate;
+}
+
+.hero-static__layer {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Layer 1: base — fills the viewport */
+.hero-static__layer--base,
+.hero-static__layer--base img {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+.hero-static__layer--base img {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Layer 2: GAMOS — top-LEFT (physical), decorative */
+.hero-static__layer--gamos {
+  top: 4%;
+  left: 4%;
+  width: clamp(160px, 14vw, 280px);
+  height: auto;
+  z-index: 2;
+}
+img.hero-static__layer--gamos {
+  display: block;
+}
+
+/* Layer 3 (visual): static desert hills — anchored to hero bottom */
+.hero-static__layer--desert {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: auto;
+  z-index: 3;
+}
+.hero-static__layer--desert img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Layers 4 + 5: EVENTS / RESORT — centered horizontally, stacked vertically.
+   z-index: 5 so they sit ABOVE the static desert hills (z=3). */
+.hero-static__layer--events,
+.hero-static__layer--resort {
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(220px, 22vw, 360px);
+  height: auto;
+  pointer-events: auto;
+  cursor: pointer;
+  text-decoration: none;
+  z-index: 5;
+  transition: transform 320ms cubic-bezier(.2,.7,.2,1),
+              filter 280ms ease,
+              opacity 280ms ease;
+  outline: 0 solid transparent;
+}
+.hero-static__layer--events { top: 26%; }
+.hero-static__layer--resort { top: 37%; }
+
+.hero-static__layer--events img,
+.hero-static__layer--resort img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: filter 280ms ease;
+}
+
+/* Hover / focus: lift this CTA, glow it, brighten it */
+.hero-static__cta:hover,
+.hero-static__cta:focus-visible {
+  transform: translateX(-50%) scale(1.06);
+  filter: brightness(1.10);
+}
+.hero-static__cta:hover img,
+.hero-static__cta:focus-visible img {
+  filter: drop-shadow(0 0 28px rgba(207, 174, 131, 0.55));
+}
+
+.hero-static__cta:focus-visible {
+  outline: 3px solid var(--brass, #CFAE83);
+  outline-offset: 6px;
+  border-radius: 4px;
+}
+
+/* When EITHER CTA is hovered/focused, dim the OTHER. */
+.hero-static:has(.hero-static__cta:hover) .hero-static__cta:not(:hover),
+.hero-static:has(.hero-static__cta:focus-visible) .hero-static__cta:not(:focus-visible) {
+  opacity: 0.55;
+  filter: brightness(0.92);
+}
+
+/* Mobile (≤768px) */
+@media (max-width: 768px) {
+  .hero-static__layer--gamos {
+    top: 5%;
+    left: 5%;
+    width: clamp(110px, 30vw, 180px);
+  }
+  .hero-static__layer--events,
+  .hero-static__layer--resort {
+    width: clamp(180px, 56vw, 260px);
+  }
+  .hero-static__layer--events { top: 22%; }
+  .hero-static__layer--resort { top: 32%; }
+}
+
+/* Reduced motion: kill the hover scale */
+@media (prefers-reduced-motion: reduce) {
+  .hero-static__cta,
+  .hero-static__cta img {
+    transition: none;
+  }
+  .hero-static__cta:hover,
+  .hero-static__cta:focus-visible {
+    transform: translateX(-50%);
+  }
+}
+
+/* ===========================================================================
+   #hero-cover — Olivier classic rising desert
+   200vh section, sticky-pinned 100vh interior. Pulled UP by margin-top:-100vh
+   so it overlaps the bottom of #hero. Default --scene-progress = 0 keeps
+   the desert in place (matching the static desert layer in #hero); on scroll
+   the desert rises off the top.
+   ========================================================================= */
+
+.hero-cover {
+  position: relative;
+  width: 100%;
+  /* 200vh so the orchestrator computes 100vh of scroll travel
+     (computeProgressForScene = scrolled / (rect.height - vh)). */
+  height: 200vh;
+  /* Pull this section UP so it overlaps with the bottom of #hero.
+     The pinned interior thus aligns with the hero's static desert at the
+     start of scroll, then rises away. */
+  margin-top: -100vh;
+  background: transparent;
+  pointer-events: none;
+  z-index: 120;
+  isolation: isolate;
+  --scene-progress: 0;
+}
+
+.hero-cover__pin {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.hero-cover__desert {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: auto;
+  /* progress=0 → translateY(0)        — sits at natural bottom-anchored position
+     progress=1 → translateY(-100vh)   — fully off-top, hero behind is revealed
+     ...but wait: the #hero is BELOW #hero-cover in DOM order! As progress
+     advances the desert rises off-top. The next section (#lounge) sits below
+     #hero-cover (after it in flow, with no negative margin), so as the cover
+     unsticks (progress reaches 1 and we keep scrolling), #lounge enters from
+     below.
+
+     The visual continuity: at progress=0 the cover's desert is at the same
+     y-position as the hero's static desert (margin-top:-100vh aligns them).
+     As you scroll, the cover's desert leaves; the hero's static desert is
+     STILL VISIBLE because the hero sits in normal flow above the cover.
+     So you see: hero with its static desert → desert rises off → hero scrolls
+     up under sticky pin → #lounge enters. */
+  transform: translateY(calc(var(--scene-progress, 0) * -100vh));
+  will-change: transform;
+}
+
+.hero-cover__desert img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-cover__desert {
+    transform: translateY(0);
+  }
+}

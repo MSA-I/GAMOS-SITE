@@ -5,34 +5,30 @@ import {
   ChevronRight,
   ArrowRight,
   Home,
-  Volume2,
-  VolumeX,
-  Sun,
-  Moon,
-  Compass
 } from "lucide-react";
 import { Project } from "../types";
 import { projectsData } from "../projectsData";
 import { ProjectDetail } from "./ProjectDetail";
 import { playClick, playWhoosh } from "../utils/audio";
+import DesertDunes from "./DesertDunes";
+import HallEndLogo from "./HallEndLogo";
 
 interface ThreeDCorridorProps {
   onBackToHome: () => void;
-  isLightMode: boolean;
-  onToggleLightMode: () => void;
-  isSoundOn: boolean;
-  onToggleSound: () => void;
+  isLightMode?: boolean;
+  onToggleLightMode?: () => void;
+  isSoundOn?: boolean;
+  onToggleSound?: () => void;
   initialHall?: "oasis" | "lumina";
 }
 
 export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
   onBackToHome,
-  isLightMode,
-  onToggleLightMode,
-  isSoundOn,
-  onToggleSound,
   initialHall = "oasis",
 }) => {
+  // Light mode is the only supported palette; the prop is kept for
+  // backward-compatibility but its value is ignored downstream.
+  const isLightMode = true;
   // Navigation states
   const [activeHall, setActiveHall] = useState<"oasis" | "lumina">(initialHall);
   const [slideDirection, setSlideDirection] = useState<number>(initialHall === "lumina" ? 1 : -1);
@@ -77,6 +73,14 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
 
   // Mouse hover parallax tilt coordinates
   const [mouseTilt, setMouseTilt] = useState({ x: 0, y: 0 });
+
+  // End-of-hall brand logo reveal — only fires once scroll settles past
+  // the last card threshold, so quick drag-throughs don't flash it.
+  const [showEndLogo, setShowEndLogo] = useState<boolean>(false);
+
+  // Per-card image-loaded flag — drives image-before-frame reveal so the
+  // border/shadow only animates in once its photo has actually painted.
+  const [imageLoaded, setImageLoaded] = useState<Record<string, boolean>>({});
 
   // Animation frame reference
   const requestRef = useRef<number | null>(null);
@@ -170,6 +174,23 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
     return () => window.removeEventListener("mousemove", trackMouse);
   }, []);
 
+  // End-of-corridor logo: arm only when we're within 0.85 of the final
+  // card AND scroll has been idle for 400ms (avoids flicker during drag).
+  useEffect(() => {
+    const total = filteredProjects.length;
+    if (total === 0) {
+      setShowEndLogo(false);
+      return;
+    }
+    const threshold = total - 1 - 0.15;
+    if (currentProgress < threshold) {
+      setShowEndLogo(false);
+      return;
+    }
+    const timer = window.setTimeout(() => setShowEndLogo(true), 400);
+    return () => window.clearTimeout(timer);
+  }, [currentProgress, filteredProjects.length]);
+
   const navigateStep = (direction: number) => {
     playWhoosh(direction < 0);
     setTargetProgress((prev) => clamp(prev + direction, 0, filteredProjects.length - 1));
@@ -216,17 +237,13 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
       onTouchStart={handleDragStart}
       onTouchMove={handleDragMove}
       onTouchEnd={handleDragEnd}
-      className={`relative w-full h-screen overflow-hidden select-none transition-colors duration-1000 ${
-        isLightMode
-          ? "bg-[#F7F7F7]"
-          : "bg-[#0D0D0D] text-stone-100"
-      }`}
+      className="relative w-full h-screen overflow-hidden select-none bg-ivory text-cocoa transition-colors duration-1000"
       style={{ cursor: isDragging ? "grabbing" : "grab" }}
     >
       {/* --- UPPER NAVIGATION BAR (HUD) --- */}
       <header
         id="corridor-header-hud"
-        className="absolute top-0 inset-x-0 z-30 px-6 md:px-12 py-6 flex items-center justify-between pointer-events-auto bg-gradient-to-b from-stone-950/20 to-transparent"
+        className="absolute top-0 inset-x-0 z-30 px-6 md:px-12 py-6 flex items-center justify-between pointer-events-auto bg-gradient-to-b from-ink-deep/15 to-transparent"
       >
         <button
           id="home-btn"
@@ -234,48 +251,11 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
             playClick();
             onBackToHome();
           }}
-          className={`flex items-center gap-2 px-4 py-2 text-xs font-mono tracking-widest uppercase rounded-full border transition-all ${
-            isLightMode
-              ? "bg-white/80 border-stone-200 text-stone-800 hover:bg-stone-100"
-              : "bg-black/40 border-stone-800 text-stone-300 hover:bg-white/15"
-          }`}
+          className="flex items-center gap-2 px-5 py-3 rounded-md bg-brass border border-brass-deep text-ink-deep font-display font-bold text-sm tracking-[0.2em] uppercase shadow-md hover:bg-brass-deep hover:text-ivory hover:shadow-lg transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-rose focus-visible:outline-offset-2"
         >
-          <Home size={13} />
-          <span className="hidden sm:inline">Home</span>
+          <Home size={16} />
+          <span className="hidden sm:inline">HOME</span>
         </button>
-
-        {/* Global Sound & Light Controls */}
-        <div className="flex items-center gap-3">
-          <button
-            id="sound-opt-toggle"
-            onClick={() => {
-              onToggleSound();
-              playClick();
-            }}
-            className={`p-2.5 rounded-full border transition-all ${
-              isLightMode
-                ? "bg-white/80 border-stone-200 text-stone-800 hover:bg-stone-100"
-                : "bg-black/40 border-stone-800 text-stone-300 hover:bg-white/15"
-            }`}
-          >
-            {isSoundOn ? <Volume2 size={14} /> : <VolumeX size={14} />}
-          </button>
-
-          <button
-            id="mood-opt-toggle"
-            onClick={() => {
-              onToggleLightMode();
-              playClick();
-            }}
-            className={`p-2.5 rounded-full border transition-all ${
-              isLightMode
-                ? "bg-white/80 border-stone-200 text-stone-800 hover:bg-stone-100"
-                : "bg-black/40 border-stone-800 text-stone-300 hover:bg-white/15"
-            }`}
-          >
-            {isLightMode ? <Moon size={14} /> : <Sun size={14} />}
-          </button>
-        </div>
       </header>
 
       {/* --- SIDE NAVIGATION ARROWS (DELICATE ANIMATED SIDE SWITCHERS) --- */}
@@ -288,11 +268,7 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
           <motion.div
             animate={{ x: [0, 8, 0] }}
             transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-            className={`p-3 rounded-full border shadow-md backdrop-blur-md transition-all ${
-              isLightMode
-                ? "bg-white/90 border-[#E5D9C4] text-[#C4934C] group-hover:bg-stone-50"
-                : "bg-black/60 border-amber-500/20 text-amber-500 group-hover:bg-neutral-900"
-            }`}
+            className="p-3 rounded-full border shadow-md backdrop-blur-md bg-ivory/90 border-brass/40 text-brass-deep group-hover:bg-mist transition-all"
           >
             <ChevronRight size={20} />
           </motion.div>
@@ -308,11 +284,7 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
           <motion.div
             animate={{ x: [0, -8, 0] }}
             transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-            className={`p-3 rounded-full border shadow-md backdrop-blur-md transition-all ${
-              isLightMode
-                ? "bg-white/90 border-[#E5D9C4] text-[#C4934C] group-hover:bg-stone-50"
-                : "bg-black/60 border-amber-500/20 text-amber-500 group-hover:bg-neutral-900"
-            }`}
+            className="p-3 rounded-full border shadow-md backdrop-blur-md bg-ivory/90 border-brass/40 text-brass-deep group-hover:bg-mist transition-all"
           >
             <ChevronLeft size={20} />
           </motion.div>
@@ -336,21 +308,19 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
           className="absolute inset-0 w-full h-full"
         >
           {/* Background Corridor Effect (Visual Perspective Lines) */}
-          <div className={`absolute inset-0 flex items-center justify-center pointer-events-none z-0 transition-opacity duration-1000 ${isLightMode ? "opacity-35" : "opacity-15"}`}>
-            <div className={`absolute inset-0 border-[1px] ${isLightMode ? "border-[#D1D1D1]" : "border-stone-800"}`} style={{ clipPath: "polygon(0% 0%, 100% 0%, 60% 40%, 40% 40%)" }}></div>
-            <div className={`absolute inset-0 border-[1px] ${isLightMode ? "border-[#D1D1D1]" : "border-stone-800"}`} style={{ clipPath: "polygon(0% 100%, 100% 100%, 60% 60%, 40% 60%)" }}></div>
-            <div className={`absolute inset-0 border-[1px] ${isLightMode ? "border-[#D1D1D1]" : "border-stone-800"}`} style={{ clipPath: "polygon(0% 0%, 0% 100%, 40% 60%, 40% 40%)" }}></div>
-            <div className={`absolute inset-0 border-[1px] ${isLightMode ? "border-[#D1D1D1]" : "border-[#1A1A1A]"}`} style={{ clipPath: "polygon(100% 0%, 100% 100%, 60% 60%, 60% 40%)" }}></div>
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-35 transition-opacity duration-1000">
+            <div className="absolute inset-0 border-[1px] border-mist" style={{ clipPath: "polygon(0% 0%, 100% 0%, 60% 40%, 40% 40%)" }}></div>
+            <div className="absolute inset-0 border-[1px] border-mist" style={{ clipPath: "polygon(0% 100%, 100% 100%, 60% 60%, 40% 60%)" }}></div>
+            <div className="absolute inset-0 border-[1px] border-mist" style={{ clipPath: "polygon(0% 0%, 0% 100%, 40% 60%, 40% 40%)" }}></div>
+            <div className="absolute inset-0 border-[1px] border-mist" style={{ clipPath: "polygon(100% 0%, 100% 100%, 60% 60%, 60% 40%)" }}></div>
           </div>
 
           {/* Brand Vanishing Logo (GAMOS RESORT & GAMOS EVENTS) - High-contrast crystal clear in background */}
           <div
             id="vanishing-brand-logo"
-            className={`absolute top-[42%] left-1/2 -translate-x-1/2 -translate-y-1/2 select-none pointer-events-none z-10 text-center transition-all duration-1000 flex flex-col items-center justify-center`}
+            className="absolute top-[42%] left-1/2 -translate-x-1/2 -translate-y-1/2 select-none pointer-events-none z-10 text-center transition-all duration-1000 flex flex-col items-center justify-center"
             style={{
-              filter: isLightMode 
-                ? "drop-shadow(0 4px 14px rgba(74, 59, 50, 0.12))" 
-                : "drop-shadow(0 4px 24px rgba(245, 158, 11, 0.35))"
+              filter: "drop-shadow(0 4px 14px rgba(83, 65, 51, 0.18))",
             }}
           >
             <svg
@@ -361,17 +331,6 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
               xmlns="http://www.w3.org/2000/svg"
               className="w-[200px] sm:w-[295px] h-auto transition-all duration-1000"
             >
-              <defs>
-                <linearGradient id="goldLuxuryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#DFB06C" stopOpacity="0.95" />
-                  <stop offset="50%" stopColor="#FFF2D4" stopOpacity="1.00" />
-                  <stop offset="100%" stopColor="#C4934C" stopOpacity="0.90" />
-                </linearGradient>
-                <linearGradient id="goldLuxuryGradSub" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#DFB06C" stopOpacity="0.85" />
-                  <stop offset="100%" stopColor="#C4934C" stopOpacity="0.80" />
-                </linearGradient>
-              </defs>
               <text
                 x="50%"
                 y="56"
@@ -380,11 +339,7 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
                 fontSize="54"
                 fontWeight="700"
                 letterSpacing="0.28em"
-                fill={
-                  activeHall === "oasis"
-                    ? isLightMode ? "#C4934C" : "url(#goldLuxuryGrad)"
-                    : isLightMode ? "#4A3B32" : "url(#goldLuxuryGrad)"
-                }
+                fill={activeHall === "oasis" ? "#8B6F46" : "#534133"}
               >
                 GAMOS
               </text>
@@ -396,11 +351,7 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
                 fontSize="10"
                 fontWeight="600"
                 letterSpacing="0.45em"
-                fill={
-                  activeHall === "oasis"
-                    ? isLightMode ? "#A87C39" : "url(#goldLuxuryGradSub)"
-                    : isLightMode ? "#A87C39" : "url(#goldLuxuryGradSub)"
-                }
+                fill="#8B6F46"
               >
                 {activeHall === "oasis" ? "✦  EVENTS  ✦" : "✦  RESORT  ✦"}
               </text>
@@ -414,27 +365,26 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
               className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[38vw] min-w-[280px] h-[30vh] z-0 pointer-events-none transition-opacity duration-1000 opacity-60"
               style={{
                 clipPath: "polygon(48% 0%, 52% 0%, 100% 100%, 0% 100%)",
-                background: isLightMode
-                  ? "linear-gradient(to top, rgba(235, 175, 110, 0.45) 0%, rgba(245, 158, 11, 0.1) 80%, rgba(245, 158, 11, 0) 100%)"
-                  : "linear-gradient(to top, rgba(245, 158, 11, 0.15) 0%, rgba(220, 140, 60, 0.05) 80%, rgba(0,0,0,0) 100%)",
-                borderLeft: "1px solid rgba(245, 158, 11, 0.25)",
-                borderRight: "1px solid rgba(245, 158, 11, 0.25)",
+                background:
+                  "linear-gradient(to top, rgba(207, 174, 131, 0.45) 0%, rgba(207, 174, 131, 0.1) 80%, rgba(207, 174, 131, 0) 100%)",
+                borderLeft: "1px solid rgba(139, 111, 70, 0.25)",
+                borderRight: "1px solid rgba(139, 111, 70, 0.25)",
                 backdropFilter: "blur(2px)",
               }}
             />
           )}
 
-          {/* Light glow or dark cosmic background dust */}
+          {/* Light glow ambient layer */}
           <div id="corridor-ambient-fog" className="absolute inset-0 pointer-events-none z-0">
             <div
-              className={`absolute inset-0 transition-opacity duration-1000 ${
-                isLightMode
-                  ? "bg-[radial-gradient(circle_at_50%_45%,rgba(247,247,247,0.4)_0%,rgba(214,211,209,0.15)_100%)] opacity-100"
-                  : "bg-[radial-gradient(circle_at_50%_45%,rgba(251,191,36,0.04)_0%,rgba(12,10,9,0.95)_100%)] opacity-100"
-              }`}
+              className="absolute inset-0 transition-opacity duration-1000 opacity-100"
+              style={{
+                background:
+                  "radial-gradient(circle at 50% 45%, rgba(245, 239, 230, 0.5) 0%, rgba(232, 223, 211, 0.18) 100%)",
+              }}
             />
             {/* Repeating soft lighting source */}
-            <div className="absolute top-[35%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-amber-400/5 rounded-full blur-[140px] mix-blend-screen opacity-20 animate-pulse" />
+            <div className="absolute top-[35%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brass/10 rounded-full blur-[140px] mix-blend-screen opacity-25 animate-pulse" />
           </div>
 
           {/* --- THE 3D PERSPECTIVE SCENE TRACK --- */}
@@ -459,9 +409,8 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
                 const rightX = 380 + (currentProgress * 15);
                 const leftX = -380 - (currentProgress * 15);
 
-                const archBorderStyle = isLightMode
-                  ? "border-[#E5D9C4] bg-gradient-to-tr from-[#F5EBE6]/30 via-white/5 to-[#DFD3C3]/40"
-                  : "border-amber-500/20 bg-gradient-to-tr from-stone-900/40 via-[#1A110B]/5 to-amber-950/20 shadow-[0_0_40px_rgba(245,158,11,0.02)]";
+                const archBorderStyle =
+                  "border-mist bg-gradient-to-tr from-mist/30 via-ivory/10 to-mist/40";
 
                 return (
                   <React.Fragment key={index}>
@@ -486,13 +435,13 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
                 );
               })}
 
-              {/* 1.5 SIDE MOUNTAIN CURVES (For Lumina Sanctuary, styled exactly like the arches on the left and right sides) */}
+              {/* 1.5 SIDE DESERT DUNES (For Lumina Sanctuary; replaces the old mountain-curve divs) */}
               {activeHall === "lumina" && Array.from({ length: 6 }).map((_, mtnIdx) => {
                 const mtnSpacing = 360;
                 const initialZ = (mtnIdx - 1) * mtnSpacing;
                 let z = initialZ + (currentProgress * 420);
                 const totalDepth = 6 * mtnSpacing;
-                z = (z + totalDepth * 10) % totalDepth - 700;
+                z = (z + totalDepth * 10) % totalDepth - 450;
 
                 let opacity = 1;
                 if (z < -400) {
@@ -501,42 +450,35 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
                   opacity = clamp((700 - z) / 250, 0, 1);
                 }
 
-                const scale = clamp((850 / (850 - z)), 0.25, 3.2);
-
-                const sideMtnBorderStyle = isLightMode
-                  ? "border-[#E5D9C4] bg-gradient-to-tr from-[#F5EBE6]/18 via-white/5 to-[#DFD3C3]/24 shadow-[0_15px_30px_rgba(196,147,76,0.03)]"
-                  : "border-amber-500/20 bg-gradient-to-tr from-stone-900/40 via-[#1A110B]/5 to-amber-950/20 shadow-[0_0_50px_rgba(245,158,11,0.015)]";
-
-                const leftX = -460 - (mtnIdx * 50);
-                const rightX = 460 + (mtnIdx * 50);
-
-                const heights = [45, 58, 38, 62, 42, 54];
-                const currentHeight = heights[mtnIdx % heights.length];
+                const leftX = -260 - (mtnIdx * 45);
+                const rightX = 260 + (mtnIdx * 45);
                 const yOffset = 180 + (z * 0.11);
 
-                return (
-                  <React.Fragment key={`lumina-side-mtn-${mtnIdx}`}>
-                    {/* Left-Side Mountain Curve */}
-                    <div
-                      className={`absolute bottom-0 w-[42vw] max-w-[620px] rounded-tr-[100%] border-t border-r transition-opacity duration-300 pointer-events-none ${sideMtnBorderStyle}`}
-                      style={{
-                        height: `${currentHeight}vh`,
-                        opacity: opacity * 0.95,
-                        transform: `translate3d(${leftX}px, ${yOffset}px, ${z}px) rotateY(15deg) scale(${scale})`,
-                        transformOrigin: "bottom left",
-                      }}
-                    />
+                // Wrapper owns the per-frame scroll motion; DesertDunes
+                // owns its own rotateY ± 15deg and depth-driven scale.
+                const isDuneActive = opacity > 0.7;
 
-                    {/* Right-Side Mountain Curve */}
+                return (
+                  <React.Fragment key={`lumina-side-dunes-${mtnIdx}`}>
                     <div
-                      className={`absolute bottom-0 w-[42vw] max-w-[620px] rounded-tl-[100%] border-t border-l transition-opacity duration-300 pointer-events-none ${sideMtnBorderStyle}`}
+                      className="absolute bottom-0 left-0 w-[42vw] max-w-[620px] pointer-events-none transition-opacity duration-300"
                       style={{
-                        height: `${currentHeight - 2}vh`,
                         opacity: opacity * 0.95,
-                        transform: `translate3d(${rightX}px, ${yOffset}px, ${z}px) rotateY(-15deg) scale(${scale})`,
-                        transformOrigin: "bottom right",
+                        transform: `translate3d(${leftX}px, ${yOffset}px, ${z}px) scale(1.6)`,
                       }}
-                    />
+                    >
+                      <DesertDunes index={mtnIdx} side="left" isActive={isDuneActive} depth={mtnIdx} />
+                    </div>
+
+                    <div
+                      className="absolute bottom-0 right-0 w-[42vw] max-w-[620px] pointer-events-none transition-opacity duration-300"
+                      style={{
+                        opacity: opacity * 0.95,
+                        transform: `translate3d(${rightX}px, ${yOffset}px, ${z}px) scale(1.6)`,
+                      }}
+                    >
+                      <DesertDunes index={mtnIdx} side="right" isActive={isDuneActive} depth={mtnIdx} />
+                    </div>
                   </React.Fragment>
                 );
               })}
@@ -592,48 +534,53 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
                   >
                     <div
                       id={`project-frame-${project.id}`}
-                      className={`w-full h-full p-4 rounded-none flex flex-col justify-between shadow-lg relative border transition-all duration-700 hover:scale-[1.02] ${
-                        isLightMode
-                          ? "bg-white border-[#E5D9C4] text-[#1A1A1A] hover:shadow-2xl"
-                          : "bg-[#0F0A07]/90 border-amber-900/30 text-stone-100 hover:shadow-[0_0_50px_rgba(245,158,11,0.06)]"
-                      } ${isTarget ? (isLightMode ? "ring-2 ring-amber-600/20 shadow-2xl" : "ring-2 ring-amber-500/20 shadow-2xl") : ""}`}
+                      className={`w-full h-full p-4 rounded-none flex flex-col justify-between shadow-lg relative border bg-ivory border-brass/30 text-ink-deep hover:shadow-2xl hover:scale-[1.02] transition-opacity duration-700 delay-200 ${
+                        imageLoaded[project.id] ? "opacity-100" : "opacity-0"
+                      } ${isTarget ? "ring-2 ring-accent-rose/40 shadow-2xl" : ""}`}
                     >
-                      <div className="relative w-full h-[58%] rounded-none overflow-hidden group bg-stone-150 dark:bg-stone-900 border border-transparent dark:border-amber-950/20">
+                      <div className="relative w-full h-[58%] rounded-none overflow-hidden group bg-mist border border-transparent">
                         <img
                           id={`project-img-${project.id}`}
                           src={import.meta.env.BASE_URL + project.image}
                           alt={project.title}
                           referrerPolicy="no-referrer"
-                          className="w-full h-full object-cover select-none transition-transform duration-[2000ms]"
+                          onLoad={() =>
+                            setImageLoaded((prev) =>
+                              prev[project.id] ? prev : { ...prev, [project.id]: true },
+                            )
+                          }
+                          className={`w-full h-full object-cover select-none transition-opacity duration-700 ${
+                            imageLoaded[project.id] ? "opacity-100" : "opacity-0"
+                          }`}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-                        <span className="absolute bottom-3 left-4 text-[9px] font-sans tracking-wider text-amber-100 px-2.5 py-1 bg-black/75 backdrop-blur-md rounded-none border border-amber-500/20 uppercase font-bold">
+                        <div className="absolute inset-0 bg-gradient-to-t from-ink-deep/60 via-transparent to-transparent pointer-events-none" />
+                        <span className="absolute bottom-3 left-4 text-[9px] font-sans tracking-wider text-ivory px-2.5 py-1 bg-ink-deep/75 backdrop-blur-md rounded-none border border-brass/30 uppercase font-bold">
                           {project.category}
                         </span>
                       </div>
 
                       <div className="flex-1 flex flex-col justify-between pt-4 pb-1 dir-rtl text-right">
                         <div className="space-y-1">
-                          <div className="flex items-center justify-between border-b pb-1.5 border-[#F5EBE6] dark:border-amber-900/10">
-                            <p className="text-[9px] font-sans tracking-wide text-stone-400 dark:text-neutral-400">
+                          <div className="flex items-center justify-between border-b pb-1.5 border-mist">
+                            <p className="text-[9px] font-sans tracking-wide text-cocoa/70">
                               {project.location} · {project.year}
                             </p>
-                            <span className="text-xs font-mono font-bold text-amber-700 dark:text-amber-500">
+                            <span className="text-xs font-mono font-bold text-brass-deep">
                               {project.number}
                             </span>
                           </div>
 
-                          <h3 className="text-base sm:text-lg font-sans font-extrabold tracking-tight pt-1.5 text-[#1A1A1A] dark:text-amber-100 leading-snug">
+                          <h3 className="text-base sm:text-lg font-display font-bold tracking-tight pt-1.5 text-ink-deep leading-snug">
                             {project.title}
                           </h3>
-                          
-                          <p className="text-xs text-stone-500 dark:text-neutral-400 leading-relaxed font-light line-clamp-1">
+
+                          <p className="text-xs text-cocoa/70 leading-relaxed font-light line-clamp-1">
                             {project.description}
                           </p>
                         </div>
 
-                        <div className="pt-2 flex items-center justify-between border-t border-[#F5EBE6] dark:border-amber-900/10">
-                          <span className="text-[9px] font-sans text-stone-400 dark:text-neutral-500 font-bold uppercase tracking-wider">
+                        <div className="pt-2 flex items-center justify-between border-t border-mist">
+                          <span className="text-[9px] font-sans text-cocoa/60 font-bold uppercase tracking-wider">
                             QEDEM • קדם
                           </span>
 
@@ -644,11 +591,7 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
                               playClick();
                               setSelectedProject(project);
                             }}
-                            className={`flex items-center gap-1.5 px-3.5 py-1.5 text-[9px] font-sans tracking-wide font-bold uppercase rounded-none transition-all ${
-                              isLightMode
-                                ? "bg-[#1A1A1A] text-white hover:bg-stone-800 border border-[#1A1A1A]"
-                                : "bg-amber-500 text-stone-950 hover:bg-amber-400"
-                            } shadow-sm active:scale-95`}
+                            className="flex items-center gap-1.5 px-3.5 py-1.5 text-[9px] font-sans tracking-wide font-bold uppercase rounded-none bg-ink-deep text-ivory border border-ink-deep hover:bg-brass-deep hover:border-brass-deep transition-all shadow-sm active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brass focus-visible:outline-offset-2"
                           >
                             <span>פרטים נוספים</span>
                             <ArrowRight size={10} className="scale-x-[-1]" />
@@ -669,39 +612,39 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
                 <div
                   className="absolute left-[8%] bottom-[12%] w-[12vw] h-[12vw] rounded-full animated-orb opacity-10"
                   style={{
-                    background: "radial-gradient(circle, #ecd0ba 0%, rgba(0,0,0,0) 80%)",
+                    background: "radial-gradient(circle, #CFAE83 0%, rgba(207,174,131,0) 80%)",
                     filter: "blur(20px)",
                   }}
                 />
                 <div
                   className="absolute right-[10%] top-[12%] w-[15vw] h-[15vw] rounded-full animated-orb opacity-10"
                   style={{
-                    background: "radial-gradient(circle, #ecd0ba 0%, rgba(0,0,0,0) 80%)",
+                    background: "radial-gradient(circle, #CFAE83 0%, rgba(207,174,131,0) 80%)",
                     filter: "blur(30px)",
                   }}
                 />
               </>
             ) : (
-              <>
-                <div
-                  className="absolute bottom-0 inset-x-0 h-[38vh] opacity-[0.24] pointer-events-none"
-                  style={{
-                    background: isLightMode 
-                      ? "linear-gradient(to top, rgba(245,158,11,0.2) 0%, rgba(217,119,6,0.06) 55%, rgba(0,0,0,0) 100%)"
-                      : "linear-gradient(to top, rgba(245,158,11,0.18) 0%, rgba(120,53,15,0.04) 55%, rgba(0,0,0,0) 100%)",
-                    filter: "blur(30px)",
-                  }}
-                />
-              </>
+              <div
+                className="absolute bottom-0 inset-x-0 h-[38vh] opacity-[0.24] pointer-events-none"
+                style={{
+                  background:
+                    "linear-gradient(to top, rgba(207,174,131,0.25) 0%, rgba(139,111,70,0.08) 55%, rgba(207,174,131,0) 100%)",
+                  filter: "blur(30px)",
+                }}
+              />
             )}
           </div>
         </motion.div>
       </AnimatePresence>
 
+      {/* End-of-corridor brand logo overlay */}
+      <HallEndLogo hall={activeHall} visible={showEndLogo} />
+
       {/* --- BOTTOM TIMELINE & ACTIONS HUD BAR (Static) --- */}
       <footer
         id="corridor-footer-hud"
-        className="absolute bottom-0 inset-x-0 z-30 px-6 md:px-12 py-8 flex flex-col md:flex-row items-center justify-between gap-6 pointer-events-auto bg-gradient-to-t from-stone-950/60 via-stone-950/15 to-transparent border-t border-white/5"
+        className="absolute bottom-0 inset-x-0 z-30 px-6 md:px-12 py-8 flex flex-col md:flex-row items-center justify-between gap-6 pointer-events-auto bg-gradient-to-t from-ivory/95 via-ivory/60 to-transparent border-t border-brass/15"
       >
         {/* Navigation Step Arrows */}
         <div className="flex items-center gap-2">
@@ -709,18 +652,16 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
             id="prev-slide-btn"
             disabled={targetProgress <= 0}
             onClick={() => navigateStep(-1)}
-            className={`p-2.5 rounded-full border transition-all ${
+            className={`p-2.5 rounded-full border transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-brass focus-visible:outline-offset-2 ${
               targetProgress <= 0
-                ? "opacity-30 cursor-not-allowed border-stone-800"
-                : isLightMode
-                ? "bg-white border-stone-200 text-stone-800 hover:bg-stone-100"
-                : "bg-black/40 border-stone-800 text-stone-300 hover:bg-white/10"
+                ? "opacity-30 cursor-not-allowed border-mist text-cocoa/50"
+                : "bg-ivory border-brass/30 text-cocoa hover:bg-mist"
             }`}
           >
             <ChevronLeft size={16} />
           </button>
 
-          <span className="text-xs font-mono font-bold min-w-[50px] text-center">
+          <span className="text-xs font-mono font-bold min-w-[50px] text-center text-cocoa">
             {String(Math.round(currentProgress) + 1).padStart(2, "0")} / {String(filteredProjects.length).padStart(2, "0")}
           </span>
 
@@ -728,12 +669,10 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
             id="next-slide-btn"
             disabled={targetProgress >= filteredProjects.length - 1}
             onClick={() => navigateStep(1)}
-            className={`p-2.5 rounded-full border transition-all ${
+            className={`p-2.5 rounded-full border transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-brass focus-visible:outline-offset-2 ${
               targetProgress >= filteredProjects.length - 1
-                ? "opacity-30 cursor-not-allowed border-stone-800"
-                : isLightMode
-                ? "bg-white border-stone-200 text-stone-800 hover:bg-stone-100"
-                : "bg-black/40 border-stone-800 text-stone-300 hover:bg-white/10"
+                ? "opacity-30 cursor-not-allowed border-mist text-cocoa/50"
+                : "bg-ivory border-brass/30 text-cocoa hover:bg-mist"
             }`}
           >
             <ChevronRight size={16} />
@@ -748,26 +687,16 @@ export const ThreeDCorridor: React.FC<ThreeDCorridorProps> = ({
               <button
                 key={project.id}
                 onClick={() => jumpToProject(idx)}
-                className={`px-3 py-1.5 rounded-md text-[10px] font-mono tracking-wider transition-all border ${
+                className={`px-3 py-1.5 rounded-md text-[10px] font-display tracking-wider transition-all border focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-rose focus-visible:outline-offset-2 ${
                   isActive
-                    ? isLightMode
-                      ? "bg-stone-900 border-stone-800 text-white"
-                      : "bg-amber-500 border-amber-400 text-stone-950 font-bold"
-                    : isLightMode
-                    ? "bg-white border-stone-200 text-stone-600 hover:bg-stone-100 hover:text-stone-900"
-                    : "bg-black/35 border-stone-900 text-stone-400 hover:bg-white/5 hover:text-white"
+                    ? "bg-brass border-brass text-ink-deep shadow-md font-bold"
+                    : "bg-ivory border-brass/60 text-cocoa hover:bg-mist hover:border-brass hover:text-ink-deep"
                 }`}
               >
-                {project.number} {project.title.split("•")[0].trim()}
+                <span className="font-mono">{project.number}</span> {project.title.split("•")[0].trim()}
               </button>
             );
           })}
-        </div>
-
-        {/* Immersive HUD indicators */}
-        <div className="hidden lg:flex items-center gap-1.5 text-[10px] font-mono tracking-widest text-stone-400">
-          <Compass size={12} className="animate-spin-slow text-amber-500" />
-          <span className="uppercase text-stone-500 font-bold">GAMOS EXHIBITION</span>
         </div>
       </footer>
 

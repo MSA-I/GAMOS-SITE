@@ -21,7 +21,7 @@
  *   §10.3 module-scoped state, init/destroy contract.
  */
 
-const HERO_SELECTOR    = "#hero.hero-shader";
+const HERO_SELECTOR    = "#hero.hero-static";
 const REVEAL_BAND_VH   = 14;           // top 14% of viewport reveals the bar
 const HIDE_GRACE_MS    = 220;          // small grace period before re-hiding
 
