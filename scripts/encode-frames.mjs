@@ -49,18 +49,20 @@ const SCENES = {
   },
   culinary: {
     src: "assets/video/culinary-1080.mp4",
-    // 2026-06-04: bumped to 4K-native settings per user request ("איכות
-    // גבוהה"). Source 1.4.mp4 is 3840×2160 @ 24fps; previously we extracted
-    // at 1920px / 30fps which threw away half the horizontal pixels and
-    // generated interpolated frames. Now we keep the source resolution and
-    // its native fps, and lift WebP quality 88 → 92 for less compression
-    // smear. Cost: per-frame size roughly doubles (~150 → ~300KB), total
-    // dir size approaches 100MB. Phase-1 preload (first 10 frames) still
-    // blocks paint; phase-2 streams async fetchpriority=low so LCP is
-    // unaffected. Above the §8 6MB per-scene budget — accepted exemption.
+    // 2026-06-04 (second bump): user asked for MAX quality on the displayed
+    // scrub clip. Source 1.4_reversed.mp4 is 3840×2160 @ 24fps HEVC. We keep
+    // native resolution + native fps, and now push WebP to q100 with
+    // smartSubsample (disables 4:2:0 chroma subsampling — preserves color
+    // edges in plate textures, sauce drizzles, herb microgreens). Effort 6
+    // already maxed in encoder body. Per-frame size grows roughly q92 → q100
+    // (~300 → ~550KB), total dir size lands around 180–200MB across 361
+    // frames. Two-phase preloader (canvas-frame-renderer.js) still gates
+    // LCP at the first 10 frames; phase-2 streams fetchpriority=low. Above
+    // §8 6MB-per-scene budget — accepted exemption per user direction.
     fps: 24,
     width: 3840,
-    quality: 92,
+    quality: 100,
+    smartSubsample: true,
   },
   // resort:   { src: "assets/video/resort-1080.mp4",   fps: 30, width: 1920, quality: 88 },
   // venue:    { src: "assets/video/venue-1080.mp4",    fps: 30, width: 1920, quality: 88 },
@@ -146,8 +148,10 @@ async function encodeScene(name, cfg, ffmpeg, sharp) {
   for (const png of pngs) {
     const srcPng = join(tmpDir, png);
     const dstWebp = join(outDir, png.replace(/\.png$/, ".webp"));
+    const webpOpts = { quality: cfg.quality, effort: 6 };
+    if (cfg.smartSubsample) webpOpts.smartSubsample = true;
     const info = await sharp(srcPng)
-      .webp({ quality: cfg.quality, effort: 6 })
+      .webp(webpOpts)
       .toFile(dstWebp);
     totalBytes += info.size;
     if (firstW === 0) { firstW = info.width; firstH = info.height; }

@@ -45,6 +45,10 @@ remotion/node_modules/
 # `assets/frames/<scene>/` instead. Re-encode locally with `npm run encode:*`.
 assets/video/
 
+# Source asset workbench (originals + superseded sets). Encoder reads from
+# here and writes to assets/images/ — only the encoded outputs ship.
+assets/_src/
+
 # IMPORTANT — the following directories ARE tracked in git (do NOT ignore):
 #   assets/images/   brand mark, hero static, halls, lounge, gallery, maps
 #   assets/img/      additional section graphics + icons

@@ -39,23 +39,11 @@ let totalTotal = 0;
 // ----------------------------------------------------------------------------
 
 function ensureLoader() {
-  if (loaderEl) return loaderEl;
-  loaderEl = document.createElement("div");
-  loaderEl.className = "scrollytelling-loader";
-  loaderEl.setAttribute("role", "status");
-  loaderEl.setAttribute("aria-live", "polite");
-  loaderEl.innerHTML = `
-    <div class="scrollytelling-loader__inner">
-      <div class="scrollytelling-loader__brand">גאמוס</div>
-      <div class="scrollytelling-loader__bar" aria-hidden="true">
-        <div class="scrollytelling-loader__fill"></div>
-      </div>
-      <div class="scrollytelling-loader__pct">0%</div>
-      <div class="scrollytelling-loader__caption">טוען חוויה</div>
-    </div>
-  `;
-  document.body.appendChild(loaderEl);
-  return loaderEl;
+  // 2026-06-04: loader overlay disabled per user request — frame preloads
+  // still run in the background, but no full-screen "טוען חוויה" chrome
+  // appears on refresh. Returning null here makes updateLoaderPct/hideLoader
+  // no-ops without changing the rest of the scene-registration flow.
+  return null;
 }
 
 function updateLoaderPct() {

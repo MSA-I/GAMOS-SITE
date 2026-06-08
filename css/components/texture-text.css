@@ -69,7 +69,13 @@
      and hall resort features sit on ivory too; they share the default.
      Gallery + kosher titles also live on ivory and want the dark fill
      (corrected 2026-06-03 — they were previously forced to the light
-     cream texture which disappears on ivory). ---- */
+     cream texture which disappears on ivory).
+
+     2026-06-04: filter:brightness/contrast lifts the new "טקסטורה מלאה כהה"
+     source so the gold flecks pop against ivory backgrounds (the raw source
+     reads too muddy at heading sizes). Filter applies after background-clip,
+     so it only brightens the painted glyphs — the surrounding box has
+     transparent fill and is unaffected. ---- */
   .texture-text,
   .texture-text--dark,
   .section-header__title,
@@ -84,7 +90,12 @@
   .kosher .section-header__title,
   .about__stat dd {
     background-image: var(--typo-on-light);
+    filter: brightness(1.55) contrast(1.12) saturate(1.08);
   }
+
+  /* The dark-on-dark exceptions below (culinary/hero/lounge/.texture-text--light)
+     re-establish their own filter so they don't inherit the brightness lift
+     (the LIGHT texture already sits cleanly on cocoa). */
 
   /* ---- LIGHT texture override for content on dark surfaces ----
      Sections with cocoa/dark imagery, and the lounge panel titles
@@ -112,6 +123,17 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
+  }
+
+  /* Dark-bg consumers don't get the brightness lift — the LIGHT texture
+     fills are already calibrated for cocoa surfaces. */
+  [data-bg="dark"] .section-header__title,
+  .bg-dark .section-header__title,
+  .culinary .section-header__title,
+  .hero .section-header__title,
+  .lounge__title,
+  .texture-text--light {
+    filter: none;
   }
 
   /* ---- Per-element overrides: legacy `.texture-text--dark/--light`

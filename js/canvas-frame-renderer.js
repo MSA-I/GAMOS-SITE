@@ -268,7 +268,11 @@ export function createRenderer({ canvas, manifest, host, options }) {
 
   function resize() {
     if (state.destroyed) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // 2026-06-04: DPR clamp lifted from 2 → 3 for retina/4K display sharpness.
+    // Source frames are 3840px wide so we have headroom to feed dense
+    // backbuffers without upscaling. Cap at 3 to keep GPU memory sane on
+    // pixel-dense external displays.
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
     const cw = canvas.clientWidth;
     const ch = canvas.clientHeight;
     if (cw === 0 || ch === 0) return;
@@ -276,6 +280,11 @@ export function createRenderer({ canvas, manifest, host, options }) {
     canvas.height = ch * dpr;
     ctx.setTransform(1, 0, 0, 1, 0, 0); // reset prior scale
     ctx.scale(dpr, dpr);
+    // Better resampling for the frame paints — default 'low' on canvas
+    // visibly smears at our zoom factor.
+    if ("imageSmoothingQuality" in ctx) {
+      ctx.imageSmoothingQuality = "high";
+    }
     drawFrame(state.currentFrame);
   }
 
