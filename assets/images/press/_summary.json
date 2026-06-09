@@ -1,0 +1,46 @@
+[
+  {
+    "id": "01",
+    "imagePath": "/assets/images/press/01",
+    "caption": "מתחם גאמוס במעלה אדומים",
+    "credit": "וואלה בית ועיצוב"
+  },
+  {
+    "id": "02",
+    "imagePath": null,
+    "caption": "",
+    "credit": "",
+    "error": "fetch failed"
+  },
+  {
+    "id": "03",
+    "imagePath": "/assets/images/press/03",
+    "caption": "החגיגה של משפחת בוזגלו במתחם גאמוס",
+    "credit": "מעריב Sport1"
+  },
+  {
+    "id": "04",
+    "imagePath": null,
+    "caption": "",
+    "credit": "",
+    "error": "HTTP 404 on https://ahs.co.il/resize/?width=1600&height=900&url=/uploads/2025/10/6P1A8029.jpg"
+  },
+  {
+    "id": "05",
+    "imagePath": "/assets/images/press/05",
+    "caption": "השף אבי ביטון",
+    "credit": "ynet"
+  },
+  {
+    "id": "06",
+    "imagePath": "/assets/images/press/06",
+    "caption": "מתחם מעוצב בהשראת דובאי לחתונות ואירועים של פעם בחיים",
+    "credit": "וואלה מקומי"
+  },
+  {
+    "id": "07",
+    "imagePath": "/assets/images/press/07",
+    "caption": "מתחם גאמוס",
+    "credit": "ICE"
+  }
+]

@@ -138,10 +138,12 @@
   <link rel="stylesheet" href="/css/components/site-nav-hover.css">
   <link rel="stylesheet" href="/css/components/project-drawer.css">
 
-  <!-- GSAP + ScrollToPlugin (self-hosted; powers cinematic scroll +
-       parallax in js/scrollytelling.js per video-to-website spec). -->
+  <!-- GSAP + ScrollToPlugin + ScrollTrigger (self-hosted; powers cinematic
+       scroll + parallax in js/scrollytelling.js per video-to-website spec
+       AND the pinned mask-reveal in js/shabbat-gallery.js). -->
   <script defer src="/assets/vendor/gsap.min.js"></script>
   <script defer src="/assets/vendor/ScrollToPlugin.min.js"></script>
+  <script defer src="/assets/vendor/ScrollTrigger.min.js"></script>
 
   <!-- Mobile pass — single self-contained entry. The loader injects
        /mobile/css/*.css link tags, picture half.webp sources, hero CTA
@@ -184,6 +186,7 @@
         <li><a href="#gallery">גלריה</a></li>
         <li><a href="#events" data-secondary>אירועים</a></li>
         <li><a href="#kosher" data-secondary>כשרות</a></li>
+        <li><a href="/press/">מן העיתונות</a></li>
         <li><a href="#contact">צור קשר</a></li>
       </ul>
 
@@ -558,82 +561,78 @@
 
     <!-- ====================================================================
          #shabbat-chatan — שבתות חתן
-         Faure horizontal parallax gallery (Codrops, MIT) driven by the site
-         scroll orchestrator: spacer 250vh + sticky 100vh. js/shabbat-gallery
-         exposes window.gamosShabbat(p) for data-scrub-mode="custom".
-         No wheel hijack — page scrolls naturally.
+         GSAP pinned mask-reveal (port of CodePen WbQPRwv by gridmorphic,
+         "GSAP pinned image mask reveal on scroll"). 5 panels of headline
+         text scroll naturally; the image stack is pinned and each image
+         wipes upward via clip-path: inset(0 0 100%) to reveal the next
+         image stacked beneath. Body tint cycles per panel. RTL-safe (only
+         object-position Y axis is animated). Section drops out of the
+         site scroll-orchestrator — ScrollTrigger owns timing.
     ==================================================================== -->
-    <section id="shabbat-chatan"
-             class="shabbat scroll-scene"
-             data-scrub="shabbat"
-             data-scrub-mode="custom"
-             data-scrub-handler="gamosShabbat"
-             data-scrub-spacer-vh="250"
-             aria-labelledby="shabbat-title">
+    <section id="shabbat-chatan" class="shabbat" aria-labelledby="shabbat-title">
+      <div class="shabbat__container">
 
-      <div class="scroll-scene__sticky shabbat__sticky">
+        <div class="shabbat__panels">
+          <article class="shabbat__panel">
+            <h2 id="shabbat-title" class="shabbat__heading texture-text texture-text--dark">צאו מהקצב היומיומי</h2>
+          </article>
+          <article class="shabbat__panel">
+            <h2 class="shabbat__heading texture-text texture-text--dark">שולחנות ערוכים בכבוד</h2>
+          </article>
+          <article class="shabbat__panel">
+            <h2 class="shabbat__heading texture-text texture-text--dark">שירה שעולה מן הלב</h2>
+          </article>
+          <article class="shabbat__panel">
+            <h2 class="shabbat__heading texture-text texture-text--dark">סעודות שלוש על נפלאות העונה</h2>
+          </article>
+          <article class="shabbat__panel">
+            <h2 class="shabbat__heading texture-text texture-text--dark">שבת של נשמה, ביחד</h2>
+          </article>
+        </div>
 
-        <header class="shabbat__title">
-          <p class="shabbat__eyebrow">העונה</p>
-          <h2 id="shabbat-title" class="shabbat__heading texture-text texture-text--light">שבתות חתן</h2>
-          <p class="shabbat__sub">צאו מהקצב היומיומי. הריזורט שלנו עוטף את החתן והכלה במעטפת של ניחוח חוץ-לארץ, ללא צורך לטוס.</p>
-        </header>
-
-        <div class="gallery__wrapper">
-          <div class="gallery__image__container">
-
-            <picture class="gallery__media">
+        <!-- Stack order: data-index sets z-index. Last figure in DOM has the
+             LOWEST z-index, so the FIRST panel pairs with the visually-topmost
+             image (data-index=5, last in DOM). The mask wipe reveals deeper
+             images stacked beneath, in panel order. -->
+        <div class="shabbat__stage">
+          <figure class="shabbat__media" data-index="5">
+            <picture>
+              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/01.half.webp">
               <source type="image/webp" srcset="/assets/images/shabbat-chatan/01.full.webp">
-              <img class="gallery__media__image" src="/assets/images/shabbat-chatan/01.full.jpg" alt="" loading="lazy" decoding="async" draggable="false">
+              <img src="/assets/images/shabbat-chatan/01.full.jpg" alt="שולחן שבת ערוך לכבוד שבת חתן ברחבה הירוקה" loading="lazy" decoding="async" draggable="false">
             </picture>
-
-            <picture class="gallery__media">
-              <source type="image/webp" srcset="/assets/images/shabbat-chatan/02.full.webp">
-              <img class="gallery__media__image" src="/assets/images/shabbat-chatan/02.full.jpg" alt="" loading="lazy" decoding="async" draggable="false">
-            </picture>
-
-            <picture class="gallery__media">
+          </figure>
+          <figure class="shabbat__media" data-index="4">
+            <picture>
+              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/03.half.webp">
               <source type="image/webp" srcset="/assets/images/shabbat-chatan/03.full.webp">
-              <img class="gallery__media__image" src="/assets/images/shabbat-chatan/03.full.jpg" alt="" loading="lazy" decoding="async" draggable="false">
+              <img src="/assets/images/shabbat-chatan/03.full.jpg" alt="חתן וכלה משתתפים בסעודת שבת חגיגית" loading="lazy" decoding="async" draggable="false">
             </picture>
-
-            <picture class="gallery__media">
-              <source type="image/webp" srcset="/assets/images/shabbat-chatan/04.full.webp">
-              <img class="gallery__media__image" src="/assets/images/shabbat-chatan/04.full.jpg" alt="" loading="lazy" decoding="async" draggable="false">
-            </picture>
-
-            <picture class="gallery__media">
+          </figure>
+          <figure class="shabbat__media" data-index="3">
+            <picture>
+              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/05.half.webp">
               <source type="image/webp" srcset="/assets/images/shabbat-chatan/05.full.webp">
-              <img class="gallery__media__image" src="/assets/images/shabbat-chatan/05.full.jpg" alt="" loading="lazy" decoding="async" draggable="false">
+              <img src="/assets/images/shabbat-chatan/05.full.jpg" alt="שירה ושמחה בשבת החתן בריזורט" loading="lazy" decoding="async" draggable="false">
             </picture>
-
-            <picture class="gallery__media">
-              <source type="image/webp" srcset="/assets/images/shabbat-chatan/06.full.webp">
-              <img class="gallery__media__image" src="/assets/images/shabbat-chatan/06.full.jpg" alt="" loading="lazy" decoding="async" draggable="false">
-            </picture>
-
-            <picture class="gallery__media">
+          </figure>
+          <figure class="shabbat__media" data-index="2">
+            <picture>
+              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/07.half.webp">
               <source type="image/webp" srcset="/assets/images/shabbat-chatan/07.full.webp">
-              <img class="gallery__media__image" src="/assets/images/shabbat-chatan/07.full.jpg" alt="" loading="lazy" decoding="async" draggable="false">
+              <img src="/assets/images/shabbat-chatan/07.full.jpg" alt="סעודה שלישית בעונת הקיץ עם נוף הגנים" loading="lazy" decoding="async" draggable="false">
             </picture>
-
-            <picture class="gallery__media">
-              <source type="image/webp" srcset="/assets/images/shabbat-chatan/08.full.webp">
-              <img class="gallery__media__image" src="/assets/images/shabbat-chatan/08.full.jpg" alt="" loading="lazy" decoding="async" draggable="false">
-            </picture>
-
-            <picture class="gallery__media">
+          </figure>
+          <figure class="shabbat__media" data-index="1">
+            <picture>
+              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/09.half.webp">
               <source type="image/webp" srcset="/assets/images/shabbat-chatan/09.full.webp">
-              <img class="gallery__media__image" src="/assets/images/shabbat-chatan/09.full.jpg" alt="" loading="lazy" decoding="async" draggable="false">
+              <img src="/assets/images/shabbat-chatan/09.full.jpg" alt="קרובי המשפחה מתאחדים סביב שולחן השבת" loading="lazy" decoding="async" draggable="false">
             </picture>
-
-          </div>
+          </figure>
         </div>
 
       </div>
-
-      <div class="scroll-scene__spacer" aria-hidden="true" style="--scene-spacer: 250vh;"></div>
-
     </section>
 
     <!-- ====================================================================
@@ -1133,25 +1132,51 @@
     </section>
 
     <!-- ====================================================================
-         #kosher — כשרות / רבנות
-         Agent 20 choreography: rotate-in entrance for the seal + heading +
-         body — calm "stamp" effect to mark certification authority.
-         Centered alignment (different rhythm from rail-aligned sections).
+         #kosher — כשרות / רבנות (2026-06-09 revised)
+         Static centered logo row, transparent background. Original Hebrew
+         copy (eyebrow + title + body) restored; the 5 kashrut-authority
+         logos sit between the title and the body paragraph. No marquee,
+         no animation beyond the standard fade-up reveal.
     ==================================================================== -->
     <section id="kosher" class="kosher" aria-labelledby="kosher-title">
       <div class="kosher__container" data-stagger>
-        <img class="kosher__seal" aria-hidden="true"
-             src="/assets/img/icons/kashrut-seal.svg"
-             width="180" height="180" loading="lazy" decoding="async"
-             alt=""
-             data-reveal="fade-up" style="--reveal-delay: 0ms;">
-
         <header class="section-header section-header--center">
           <p class="section-header__eyebrow"
-             data-reveal="fade-up" style="--reveal-delay: 120ms;">כשרות</p>
-          <h2 id="kosher-title" class="section-header__title"
-              data-reveal="fade-up" style="--reveal-delay: 240ms;">כשרות ורבנות</h2>
+             data-reveal="fade-up" style="--reveal-delay: 0ms;">כשרות</p>
+          <h2 id="kosher-title"
+              class="section-header__title texture-text texture-text--dark"
+              data-reveal="fade-up" style="--reveal-delay: 120ms;">כשרות ורבנות</h2>
         </header>
+
+        <ul class="kosher__logos" role="list"
+            data-reveal="fade-up" style="--reveal-delay: 240ms;"
+            aria-label="חברות הכשרות שמשגיחות על המתחם">
+          <li>
+            <img src="/assets/images/kosher/rabbanut.webp"
+                 alt="הרבנות הראשית לישראל"
+                 loading="lazy" decoding="async">
+          </li>
+          <li>
+            <img src="/assets/images/kosher/tzohar.webp"
+                 alt="צוהר — דתי לאומי"
+                 loading="lazy" decoding="async">
+          </li>
+          <li>
+            <img src="/assets/images/kosher/eda-charedit.webp"
+                 alt='בד"ץ העדה החרדית — אשכנזי חרדי'
+                 loading="lazy" decoding="async">
+          </li>
+          <li>
+            <img src="/assets/images/kosher/beit-yosef.webp"
+                 alt='בד"ץ בית יוסף — ספרדי'
+                 loading="lazy" decoding="async">
+          </li>
+          <li>
+            <img src="/assets/images/kosher/agudat-israel.webp"
+                 alt='בד"ץ אגודת ישראל'
+                 loading="lazy" decoding="async">
+          </li>
+        </ul>
 
         <p class="kosher__body"
            data-reveal="fade-up" style="--reveal-delay: 360ms;">

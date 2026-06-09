@@ -1,0 +1,102 @@
+{
+  "items": [
+    {
+      "id": "01",
+      "url": "https://home.walla.co.il/item/3769677",
+      "outlet": "וואלה בית ועיצוב",
+      "dateISO": "2025-07-31",
+      "dateHe": "31 ביולי 2025",
+      "pill": "עיצוב",
+      "imagePath": "/assets/images/press/01",
+      "imageUrl": "https://images.wcdn.co.il/f_auto,q_auto,w_1200,t_54/3/9/3/1/3931502-46.jpg",
+      "imageCaption": "מתחם גאמוס במעלה אדומים",
+      "imageCredit": "וואלה בית ועיצוב",
+      "title": "מתחם האירועים בפארק ישראל: דובאי פוגשת את המדבר",
+      "excerpt": "קומפלקס אירועים יוקרתי חדש במעלה אדומים עם עיצוב בינלאומי, טכנולוגיה מתקדמת וריזורט פרטי."
+    },
+    {
+      "id": "02",
+      "url": "https://jerusalem.mynet.co.il/yediothjerusalem/article/sy9h1ysua",
+      "outlet": "mynet ירושלים",
+      "dateISO": null,
+      "dateHe": "ידיעות ירושלים",
+      "pill": "מהדורה מקומית",
+      "imagePath": "/assets/images/press/02",
+      "imageUrl": "https://pic1.yitweb.co.il/picserver/mynet/crop_images/2024/06/27/r1MGaxkoUC/r1MGaxkoUC_0_0_2048_1152_0_large.jpg",
+      "imageCaption": "מתחם גאמוס – ידיעות ירושלים",
+      "imageCredit": "mynet ירושלים",
+      "title": "מתחם גאמוס בידיעות ירושלים",
+      "excerpt": "כתבה במהדורת mynet ירושלים על מתחם האירועים החדש במעלה אדומים."
+    },
+    {
+      "id": "03",
+      "url": "https://sport1.maariv.co.il/square/article/1608237/",
+      "outlet": "מעריב Sport1",
+      "dateISO": "2025-08-05",
+      "dateHe": "5 באוגוסט 2025",
+      "pill": "בר מצווה",
+      "imagePath": "/assets/images/press/03",
+      "imageUrl": "https://sport1images.maariv.co.il/image/upload/f_auto,fl_lossy/1238780",
+      "imageCaption": "החגיגה של משפחת בוזגלו במתחם גאמוס",
+      "imageCredit": "מעריב Sport1",
+      "title": "כולל מסיבה מטורפת עד שעות הבוקר: החגיגה הענקית של משפחת בוזגלו",
+      "excerpt": "משפחת בוזגלו חגגה בר מצווה בגאמוס במישור אדומים עם שישה דיג'יים וסשן זריחה עד הבוקר."
+    },
+    {
+      "id": "04",
+      "url": "https://www.emess.co.il/radio/1770827",
+      "outlet": "EMESS רדיו",
+      "dateISO": "2025-10-16",
+      "dateHe": "16 באוקטובר 2025",
+      "pill": "חתונה",
+      "imagePath": "/assets/images/press/04",
+      "imageUrl": "https://www.emess.co.il/resize/?width=800&height=450&url=/uploads/2025/10/6P1A8029.jpg",
+      "imageCaption": "חתונת בתו של מנחם טוקר",
+      "imageCredit": "צילום: שלומי כהן",
+      "title": "טוקר חיתן בת; כולם הגיעו להשתתף בשמחתו",
+      "excerpt": "חתונת בתו של מנחם טוקר התקיימה באולמי גאמוס במישור אדומים בהשתתפות רבנים ובכירי תעשיית המוזיקה."
+    },
+    {
+      "id": "05",
+      "url": "https://www.ynet.co.il/yedioth/article/yokra14158336",
+      "outlet": "ynet",
+      "dateISO": "2024-11-21",
+      "dateHe": "21 בנובמבר 2024",
+      "pill": "אורח VIP",
+      "imagePath": "/assets/images/press/05",
+      "imageUrl": "https://ynet-pic1.yit.co.il/picserver6/crop_images/2024/11/21/yk14158466/yk14158466_0_0_268_232_0_x-large.jpg",
+      "imageCaption": "השף אבי ביטון",
+      "imageCredit": "ynet",
+      "title": "סודות הכסף",
+      "excerpt": "השף אבי ביטון חגג יום הולדת 40 לחברתו בריזורט פרטי במתחם האירועים היוקרתי גאמוס במעלה אדומים."
+    },
+    {
+      "id": "06",
+      "url": "https://mekomi.walla.co.il/item/3673958",
+      "outlet": "וואלה מקומי",
+      "dateISO": "2024-06-28",
+      "dateHe": "28 ביוני 2024",
+      "pill": "פתיחה",
+      "imagePath": "/assets/images/press/06",
+      "imageUrl": "https://images.wcdn.co.il/f_auto,q_auto,w_1200,t_54/3/7/3/3/3733554-46.jpg",
+      "imageCaption": "מתחם מעוצב בהשראת דובאי לחתונות ואירועים של פעם בחיים",
+      "imageCredit": "וואלה מקומי",
+      "title": "חולמים על חתונה בסגנון דובאי: הכירו את GAMOS במישור אדומים",
+      "excerpt": "נפתח קומפלקס אירועים בגודל 11 דונם בהשקעה של כ־100 מיליון ש\"ח המכיל אולם, גן אירועים וריזורט עם 33 חדרים."
+    },
+    {
+      "id": "07",
+      "url": "https://www.ice.co.il/tourism/news/article/1015983",
+      "outlet": "ICE",
+      "dateISO": "2024-06-09",
+      "dateHe": "9 ביוני 2024",
+      "pill": "פתיחה",
+      "imagePath": "/assets/images/press/07",
+      "imageUrl": "https://img.ice.co.il/giflib/news/rsPhoto/sz_464/rsz_615_346_35b10f35-0748-4511-b3fd-274846856acb.jpeg",
+      "imageCaption": "מתחם גאמוס",
+      "imageCredit": "ICE",
+      "title": "בהשקעת 100 מיליון שקל: גן אירועים ומלון חדש נפתחו בישראל",
+      "excerpt": "קומפלקס גאמוס שנפתח במישור אדומים כולל אולם אירועים, גן מעוצב וריזורט עם 33 סוויטות."
+    }
+  ]
+}

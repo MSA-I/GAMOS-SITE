@@ -1,0 +1,902 @@
+/* ===========================================================================
+   press.css — Page-scoped styles for /press/ (מן העיתונות)
+   ---------------------------------------------------------------------------
+   Page-only sheet. Eleos.la-faithful editorial: full-bleed photography
+   carries the design; text floats over each image with a dark overlay.
+   Tokens consumed from css/tokens.css. Animation grammar reused from
+   js/reveals.js + css/sections/motion-reveals.css.
+
+   Per user mandate (2026-06-09 v3): NO site-nav on this page. Hero covers
+   the viewport from y=0. A small floating "חזרה לאתר" chip in the top-inline-
+   end corner replaces the nav.
+
+   Texture-text system: titles use the site-wide brand texture-fill —
+   .texture-text--light (cream + gold) over dark hero/cards/closer images,
+   .texture-text--dark (dark gold flecks) over the ivory intro section.
+   Browsers without `background-clip: text` fall back gracefully (the
+   @supports block in texture-text.css is the only place the transparent
+   color trick fires).
+
+   Constitution refs:
+     §1 Luxury or nothing  — full-bleed imagery + restraint
+     §4 RTL                — logical properties only; arrows kept LTR-isolated
+     §5 Palette            — no new tokens, no hard-coded hex outside overlays
+     §8/§9 Reduced motion  — every transition has a reduce override
+   ========================================================================= */
+
+
+/* ---------------------------------------------------------------------------
+   1. Page shell — body class .press-page lives only on /press/index.html
+   --------------------------------------------------------------------------- */
+
+.press-page {
+  background: var(--ink-deep);
+  color: var(--ivory);
+}
+
+/* This page intentionally has no .site-nav, no .site-nav__inner, no header.
+   The hero's <picture> covers the viewport from the very top. */
+
+
+/* ---------------------------------------------------------------------------
+   2. Floating home link — replaces the nav.
+      Sits in the top-inline-end corner (RTL = top-left in screen-space).
+      Adapts to the surface beneath: ivory-on-transparent over the hero,
+      ivory pill once the user is over the editorial intro on ivory.
+   --------------------------------------------------------------------------- */
+
+.press-home-link {
+  position: fixed;
+  inset-block-start: clamp(20px, 3vh, 36px);
+  inset-inline-end: clamp(20px, 3vw, 40px);
+  z-index: 200;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-block: 0.7em;
+  padding-inline: 1.4em;
+  border: 1px solid rgba(245, 239, 230, 0.5);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ivory);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background     var(--dur-base) var(--ease-out-cinema),
+              border-color   var(--dur-base) var(--ease-out-cinema),
+              color          var(--dur-base) var(--ease-out-cinema),
+              transform      var(--dur-base) var(--ease-out-cinema);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.press-home-link:hover,
+.press-home-link:focus-visible {
+  background: var(--ivory);
+  border-color: var(--ivory);
+  color: var(--ink-deep);
+  transform: translateY(-1px);
+}
+
+.press-home-link:focus-visible {
+  outline: 3px solid var(--brass-glow);
+  outline-offset: 4px;
+}
+
+/* RTL flip the arrow direction — the glyph "→" is rendered LTR-isolated so it
+   keeps its visual orientation, but in RTL we want it pointing OUT of the page
+   (= leftward, since "back to home" means leaving). We use "→" (LTR isolated)
+   and rely on its native left-pointing form when the inline-end edge is on
+   the left side of the screen. The arrow is purely decorative. */
+.press-home-link__arrow {
+  display: inline-block;
+  font-size: 1.1em;
+  line-height: 1;
+  unicode-bidi: isolate;
+  direction: ltr;
+  transform: scaleX(-1); /* mirror so it points out of the page in RTL context */
+  transition: transform var(--dur-base) var(--ease-out-cinema);
+}
+
+.press-home-link:hover .press-home-link__arrow,
+.press-home-link:focus-visible .press-home-link__arrow {
+  transform: scaleX(-1) translateX(4px);
+}
+
+/* When scrolled past the hero, the chip flips to a solid ivory pill so it
+   reads on the ivory editorial intro section. */
+html:not([data-press-hero="true"]) .press-home-link {
+  background: var(--ink-deep);
+  border-color: var(--ink-deep);
+  color: var(--ivory);
+}
+
+html:not([data-press-hero="true"]) .press-home-link:hover,
+html:not([data-press-hero="true"]) .press-home-link:focus-visible {
+  background: var(--brass-deep);
+  border-color: var(--brass-deep);
+}
+
+
+/* ---------------------------------------------------------------------------
+   3. HERO — full-bleed photograph + meta strip + display headline + scroll cue
+      Covers the viewport edge-to-edge from y=0 (no nav above).
+   --------------------------------------------------------------------------- */
+
+.press-hero {
+  position: relative;
+  block-size: 100vh;
+  min-block-size: 640px;
+  inline-size: 100%;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.press-hero__picture,
+.press-hero__picture img {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  z-index: -2;
+}
+.press-hero__picture img {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Layered overlay: top-darken + bottom-darken with breathing room in the
+   middle so the centered headline stays punchy. */
+.press-hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg,
+      rgba(26, 20, 16, 0.55) 0%,
+      rgba(26, 20, 16, 0.10) 22%,
+      rgba(26, 20, 16, 0.00) 40%,
+      rgba(26, 20, 16, 0.10) 60%,
+      rgba(26, 20, 16, 0.70) 100%);
+}
+
+.press-hero__content {
+  position: relative;
+  z-index: 1;
+  block-size: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  align-items: stretch;
+  padding-block: clamp(96px, 14vh, 180px) clamp(96px, 14vh, 160px);
+  padding-inline: clamp(24px, 5vw, 64px);
+  max-inline-size: 1400px;
+  margin-inline: auto;
+}
+
+.press-hero__meta {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(245, 239, 230, 0.88);
+}
+.press-hero__meta-sep {
+  color: var(--brass);
+  opacity: 0.7;
+}
+
+/* HEADLINE — sit at viewport center, two lines, sentence-case Hebrew.
+   .texture-text + .texture-text--light is applied in markup; texture-text.css
+   paints --typo-on-dark (cream + gold flecks). For browsers without
+   background-clip:text the @supports block is skipped and they keep their
+   inherited ivory color. We add a sizing-only block that does NOT override
+   color (so the texture fill is honored where supported). */
+.press-hero__title {
+  align-self: center;
+  margin: 0;
+  font-family: var(--font-display-he);
+  font-size: clamp(3.5rem, 9vw, 7.5rem);
+  line-height: 0.96;
+  letter-spacing: -0.025em;
+  font-weight: var(--fw-bold);
+  max-inline-size: 14ch;
+  /* Color falls back to ivory if @supports(background-clip:text) skips. */
+  color: var(--ivory);
+}
+
+.press-hero__title-line {
+  display: block;
+}
+
+.press-hero__lede {
+  align-self: end;
+  margin: 0;
+  max-inline-size: 32ch;
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
+  line-height: 1.5;
+  color: rgba(245, 239, 230, 0.9);
+}
+
+/* Scroll cue — vertical track with a falling brass-glow dot. */
+.press-hero__cue {
+  position: absolute;
+  inset-block-end: clamp(20px, 4vh, 40px);
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 24px;
+  block-size: 56px;
+  border: 1px solid rgba(245, 239, 230, 0.55);
+  border-radius: 999px;
+  text-decoration: none;
+  transition: border-color var(--dur-base) var(--ease-out-cinema),
+              transform     var(--dur-base) var(--ease-out-cinema);
+}
+
+.press-hero__cue:hover,
+.press-hero__cue:focus-visible {
+  border-color: var(--brass-glow);
+  transform: translateX(-50%) translateY(2px);
+}
+
+.press-hero__cue-track {
+  position: relative;
+  display: block;
+  inline-size: 1px;
+  block-size: 32px;
+  background: rgba(245, 239, 230, 0.30);
+}
+
+.press-hero__cue-dot {
+  position: absolute;
+  inset-inline-start: -2px;
+  inset-block-start: 0;
+  inline-size: 5px;
+  block-size: 5px;
+  background: var(--brass-glow);
+  border-radius: 50%;
+  animation: press-cue-fall 1.6s cubic-bezier(0.55, 0, 0.55, 1) infinite;
+}
+
+@keyframes press-cue-fall {
+  0%   { transform: translateY(-4px);  opacity: 0; }
+  20%  {                                opacity: 1; }
+  80%  {                                opacity: 1; }
+  100% { transform: translateY(34px);  opacity: 0; }
+}
+
+
+/* ---------------------------------------------------------------------------
+   4. EDITORIAL INTRO — single oversized sentence on ivory + dark texture-text
+   --------------------------------------------------------------------------- */
+
+.press-intro {
+  background: var(--ivory);
+  color: var(--ink-deep);
+  min-block-size: 70vh;
+  display: flex;
+  align-items: center;
+  padding-block: clamp(96px, 14vh, 200px);
+  padding-inline: clamp(24px, 6vw, 96px);
+}
+
+.press-intro__container {
+  max-inline-size: clamp(720px, 78vw, 1100px);
+  margin-inline: auto;
+  inline-size: 100%;
+}
+
+.press-intro__counter {
+  margin: 0 0 var(--space-10) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brass-deep);
+}
+
+.press-intro__counter-sep {
+  display: inline-block;
+  inline-size: 32px;
+  block-size: 1px;
+  background: var(--brass);
+  opacity: 0.7;
+}
+
+/* Sentence — .texture-text + .texture-text--dark in markup → --typo-on-light
+   (dark gold flecks on near-black). Sizing-only block here so the texture
+   fill from texture-text.css wins. Color fallback for unsupported browsers
+   is the inherited --ink-deep. */
+.press-intro__sentence {
+  margin: 0;
+  font-family: var(--font-display-he);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  font-weight: var(--fw-bold);
+  max-inline-size: 24ch;
+}
+
+
+/* ---------------------------------------------------------------------------
+   5. PRESS CARDS — 7 image-led full-bleed cards, each 100vh
+   --------------------------------------------------------------------------- */
+
+.press-list {
+  display: block;
+  background: var(--ink-deep);
+}
+
+.press-card {
+  display: block;
+  position: relative;
+  inline-size: 100%;
+  block-size: 100vh;
+  min-block-size: 640px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.press-card__link {
+  display: block;
+  position: relative;
+  inline-size: 100%;
+  block-size: 100%;
+  text-decoration: none;
+  color: var(--ivory);
+}
+
+.press-card__link:focus-visible {
+  outline: 3px solid var(--brass-glow);
+  outline-offset: -8px;
+  border-radius: 4px;
+}
+
+/* Picture / image — fill, slow Ken-Burns on hover. */
+.press-card__picture,
+.press-card__picture img {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  z-index: -2;
+}
+
+.press-card__picture img {
+  object-fit: cover;
+  object-position: center;
+  transition: transform 1400ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
+}
+
+.press-card__link:hover .press-card__picture img,
+.press-card__link:focus-visible .press-card__picture img {
+  transform: scale(1.04);
+}
+
+/* Shade — bottom-anchored gradient. */
+.press-card__shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg,
+      rgba(26, 20, 16, 0.32) 0%,
+      rgba(26, 20, 16, 0.00) 28%,
+      rgba(26, 20, 16, 0.00) 38%,
+      rgba(26, 20, 16, 0.55) 70%,
+      rgba(26, 20, 16, 0.88) 100%);
+  transition: opacity var(--dur-base) var(--ease-out-cinema);
+}
+
+/* Topline — absolute row at top: index left (RTL = right) + pill right (RTL = left). */
+.press-card__topline {
+  position: absolute;
+  inset-block-start: clamp(28px, 5vh, 56px);
+  inset-inline: clamp(24px, 5vw, 64px);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.press-card__index {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(245, 239, 230, 0.85);
+  font-variant-numeric: tabular-nums;
+}
+
+.press-card__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-block: 0.45em;
+  padding-inline: var(--space-4);
+  border: 1px solid rgba(212, 185, 138, 0.7);
+  border-radius: 999px;
+  background: rgba(26, 20, 16, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brass-glow);
+  transition: background var(--dur-base) var(--ease-out-cinema),
+              border-color var(--dur-base) var(--ease-out-cinema),
+              color        var(--dur-base) var(--ease-out-cinema);
+}
+
+.press-card__link:hover .press-card__pill,
+.press-card__link:focus-visible .press-card__pill {
+  background: rgba(212, 185, 138, 0.92);
+  border-color: var(--brass-glow);
+  color: var(--ink-deep);
+}
+
+/* Content — bottom-anchored block, max-width column. */
+.press-card__content {
+  position: absolute;
+  inset-block-end: clamp(60px, 9vh, 110px);
+  inset-inline-start: clamp(24px, 5vw, 64px);
+  inset-inline-end: clamp(24px, 5vw, 64px);
+  z-index: 1;
+  max-inline-size: 64ch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.press-card__meta {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-3);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(245, 239, 230, 0.88);
+}
+
+.press-card__outlet {
+  font-weight: var(--fw-semibold);
+  color: var(--brass-glow);
+}
+
+.press-card__sep {
+  color: var(--ivory);
+  opacity: 0.5;
+}
+
+/* Title — .texture-text + .texture-text--light in markup → --typo-on-dark
+   (cream + gold) painted via background-clip:text. Sizing only here. */
+.press-card__title {
+  margin: 0;
+  font-family: var(--font-display-he);
+  font-size: clamp(1.85rem, 4.4vw, 3.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.018em;
+  font-weight: var(--fw-bold);
+  /* Color fallback for browsers without background-clip:text */
+  color: var(--ivory);
+}
+
+.press-card__excerpt {
+  margin: 0;
+  max-inline-size: 56ch;
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.3vw, 1.18rem);
+  line-height: 1.55;
+  color: rgba(245, 239, 230, 0.82);
+}
+
+/* Photo credit — small italic line under the excerpt naming the source.
+   Required because the image is the journalist's, not GAMOS's. */
+.press-card__credit {
+  display: block;
+  margin-block-start: var(--space-2);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-style: italic;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(212, 185, 138, 0.85);
+}
+
+.press-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-block-start: var(--space-2);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brass-glow);
+  position: relative;
+}
+
+/* Underline grows from RTL right edge — mirrors site-nav underline pattern. */
+.press-card__cta-text {
+  position: relative;
+}
+.press-card__cta-text::after {
+  content: "";
+  position: absolute;
+  inset-block-end: -6px;
+  inset-inline: 0;
+  block-size: 1px;
+  background: var(--brass-glow);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform var(--dur-base) var(--ease-out-cinema);
+}
+
+.press-card__link:hover .press-card__cta-text::after,
+.press-card__link:focus-visible .press-card__cta-text::after {
+  transform: scaleX(1);
+}
+
+/* Arrow — keep LTR-isolated so the glyph orientation stays "←". */
+.press-card__cta-arrow {
+  display: inline-block;
+  font-size: 1.3em;
+  line-height: 1;
+  unicode-bidi: isolate;
+  direction: ltr;
+  transition: transform var(--dur-base) var(--ease-out-cinema);
+}
+
+.press-card__link:hover .press-card__cta-arrow,
+.press-card__link:focus-visible .press-card__cta-arrow {
+  transform: translateX(-8px);
+}
+
+/* ---- Defensive: .press-card--no-image variant ----
+   Used when an article's image scrape fails. We DO NOT silently fall back
+   to a generic GAMOS photo (per user mandate "only article images"). Instead
+   the card renders a typographic-only treatment: cocoa background, the outlet
+   name set huge in texture-text--light, no <picture>. Currently unused since
+   all 7 scrapes succeeded, but kept for resilience if a future re-scrape
+   loses an image. */
+.press-card--no-image {
+  background: var(--cocoa);
+}
+.press-card--no-image .press-card__picture,
+.press-card--no-image .press-card__shade {
+  display: none;
+}
+.press-card--no-image .press-card__content {
+  inset-block-end: auto;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  text-align: start;
+}
+.press-card--no-image .press-card__outlet-mega {
+  font-family: var(--font-display-he);
+  font-size: clamp(3rem, 9vw, 7rem);
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  font-weight: var(--fw-bold);
+  color: var(--ivory);
+  margin-block-end: var(--space-6);
+  display: block;
+}
+
+
+/* ---------------------------------------------------------------------------
+   6. CTA CLOSER — full-bleed photo + headline + buttons
+   --------------------------------------------------------------------------- */
+
+.press-closer {
+  position: relative;
+  block-size: 80vh;
+  min-block-size: 560px;
+  inline-size: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-inline: clamp(24px, 5vw, 64px);
+}
+
+.press-closer__picture,
+.press-closer__picture img {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  z-index: -2;
+}
+.press-closer__picture img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.press-closer__shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg,
+      rgba(26, 20, 16, 0.45) 0%,
+      rgba(26, 20, 16, 0.20) 35%,
+      rgba(26, 20, 16, 0.55) 100%);
+}
+
+.press-closer__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+  max-inline-size: 38ch;
+}
+
+.press-closer__eyebrow {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--brass-glow);
+}
+
+/* Closer title — texture-text--light in markup. Sizing only here. */
+.press-closer__title {
+  margin: 0;
+  font-family: var(--font-display-he);
+  font-size: clamp(2.75rem, 7vw, 6rem);
+  line-height: 1.0;
+  letter-spacing: -0.022em;
+  font-weight: var(--fw-bold);
+  color: var(--ivory); /* fallback */
+}
+
+.press-closer__actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  justify-content: center;
+}
+
+.press-closer__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.08em;
+  color: var(--ink-deep);
+  background: var(--brass-glow);
+  padding-block: 0.95em;
+  padding-inline: 2.5em;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background var(--dur-base) var(--ease-out-cinema),
+              color      var(--dur-base) var(--ease-out-cinema),
+              transform  var(--dur-base) var(--ease-out-cinema);
+}
+
+.press-closer__btn:hover,
+.press-closer__btn:focus-visible {
+  background: var(--ivory);
+  transform: translateY(-2px);
+}
+
+.press-closer__btn:focus-visible {
+  outline: 3px solid var(--brass-glow);
+  outline-offset: 4px;
+}
+
+.press-closer__btn--ghost {
+  color: var(--ivory);
+  background: transparent;
+  border: 1px solid rgba(245, 239, 230, 0.6);
+}
+
+.press-closer__btn--ghost:hover,
+.press-closer__btn--ghost:focus-visible {
+  background: var(--ivory);
+  color: var(--ink-deep);
+  border-color: var(--ivory);
+}
+
+
+/* ---------------------------------------------------------------------------
+   7. TINY META FOOTER
+   --------------------------------------------------------------------------- */
+
+.press-foot {
+  background: var(--ink-deep);
+  color: rgba(245, 239, 230, 0.7);
+  padding-block: var(--space-8);
+  padding-inline: clamp(24px, 5vw, 64px);
+  border-block-start: 1px solid rgba(245, 239, 230, 0.08);
+}
+
+.press-foot__container {
+  max-inline-size: 1400px;
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.press-foot__sep {
+  color: var(--brass);
+  opacity: 0.6;
+}
+
+.press-foot__sep--gap {
+  flex: 1;
+}
+
+.press-foot__home {
+  color: var(--brass-glow);
+  text-decoration: none;
+  transition: color var(--dur-base) var(--ease-out-cinema);
+}
+
+.press-foot__home:hover,
+.press-foot__home:focus-visible {
+  color: var(--ivory);
+}
+
+
+/* ---------------------------------------------------------------------------
+   8. Responsive — tablet ≤ 900px, mobile ≤ 640px
+   --------------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .press-hero {
+    block-size: 90vh;
+    min-block-size: 560px;
+  }
+  .press-card {
+    block-size: 78vh;
+    min-block-size: 520px;
+  }
+  .press-card__topline {
+    inset-block-start: clamp(20px, 4vh, 40px);
+  }
+  .press-card__content {
+    inset-block-end: clamp(40px, 7vh, 80px);
+  }
+  .press-home-link {
+    font-size: 0.7rem;
+    padding-block: 0.55em;
+    padding-inline: 1.1em;
+  }
+}
+
+@media (max-width: 640px) {
+  .press-hero__content {
+    padding-inline: var(--space-6);
+  }
+  .press-hero__title {
+    max-inline-size: 100%;
+  }
+  .press-hero__lede {
+    max-inline-size: 100%;
+  }
+  .press-intro {
+    padding-inline: var(--space-6);
+  }
+  .press-card__topline {
+    inset-inline: var(--space-6);
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .press-card__content {
+    inset-inline: var(--space-6);
+    inset-block-end: var(--space-10);
+  }
+  .press-card__title {
+    font-size: clamp(1.5rem, 6vw, 2rem);
+  }
+  .press-card__excerpt {
+    display: none; /* On phones, the headline carries the weight; excerpt is noise. */
+  }
+  .press-card__credit {
+    /* Keep the credit visible on mobile — attribution is required even when
+       we drop the excerpt. Just trim the size. */
+    font-size: 0.65rem;
+  }
+  .press-closer__content {
+    padding-inline: var(--space-6);
+  }
+  .press-foot__container {
+    font-size: 0.7rem;
+  }
+  .press-foot__sep--gap {
+    inline-size: 100%;
+    flex: none;
+  }
+  .press-home-link__text {
+    /* Compact: drop label on tiny phones, keep the arrow chip as a back affordance. */
+    display: none;
+  }
+  .press-home-link {
+    inline-size: 44px;
+    block-size: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   9. Reduced motion — kill every transition introduced by this stylesheet.
+   --------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .press-hero__cue,
+  .press-hero__cue-dot,
+  .press-card__picture img,
+  .press-card__shade,
+  .press-card__pill,
+  .press-card__cta-text::after,
+  .press-card__cta-arrow,
+  .press-closer__btn,
+  .press-home-link,
+  .press-home-link__arrow {
+    transition: none !important;
+    animation: none !important;
+  }
+  .press-card__link:hover .press-card__picture img,
+  .press-card__link:focus-visible .press-card__picture img {
+    transform: none;
+  }
+  .press-card__link:hover .press-card__cta-arrow,
+  .press-card__link:focus-visible .press-card__cta-arrow {
+    transform: none;
+  }
+  .press-card__link:hover .press-card__cta-text::after,
+  .press-card__link:focus-visible .press-card__cta-text::after {
+    transform: scaleX(1);
+  }
+  .press-home-link:hover .press-home-link__arrow,
+  .press-home-link:focus-visible .press-home-link__arrow {
+    transform: scaleX(-1);
+  }
+}
