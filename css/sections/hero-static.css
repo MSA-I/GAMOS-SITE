@@ -1,40 +1,59 @@
 /* ===========================================================================
-   hero-static.css — Static hero + Olivier classic rising-desert (v6)
+   hero-static.css — v7 single-section sticky-pin + two-phase rise (2026-06-09)
    ---------------------------------------------------------------------------
-   Two SIBLING sections in normal flow:
-     #hero        (.hero-static, 100vh)  — five static layers, no scroll motion.
-     #hero-cover  (.hero-cover,  200vh)  — sticky-pinned, contains ONE rising
-                                            <picture> of the desert.
+   ONE section: <section id="hero" class="hero-static" data-scrub="hero-rise"
+   data-scrub-mode="poster-ken-burns" data-scrub-spacer-vh="150">.
+   Inside: a sticky-pinned 100vh interior `.hero-static__pin` containing all
+   five composed PNG layers.
 
-   #hero-cover sits IN FLOW directly after #hero. Its desert <picture> at
-   progress=0 sits at natural bottom-anchored position. Visually it overlaps
-   the #hero static desert layer at the section boundary — they look
-   continuous. As the user scrolls past, --scene-progress rises 0→1 and the
-   <picture> translates from translateY(0) to translateY(-100vh), sweeping
-   the desert up and OFF the viewport — revealing #lounge below (which sits
-   directly after #hero-cover in normal flow).
+   Section height = 150vh; pin = 100vh. Scroll travel = 50vh; the orchestrator
+   writes --scene-progress (0..1) on the section root via the poster-ken-burns
+   handler in js/scroll-scene.js.
 
-   #hero layers (z-order bottom→top):
-     1. base   (שכבה 2.png)   ivory + bottom wave
-     2. gamos  (GAMOS 1.png)  brand mark, top-LEFT (physical)
-     3. events (EVENT 1.png)  CTA → /halls/dist/oasis/  (z=5)
-     4. resort (RESORT 2.png) CTA → /halls/dist/lumina/ (z=5)
-     5. desert (מדבר.png)     hill silhouettes anchored to bottom (z=3)
+   Two-phase choreography (driven entirely by CSS calc on --scene-progress):
 
-   RTL note: physical `left:` and `right:` instead of `inset-inline-start:`
-   because the reference has GAMOS at top-LEFT (physical) and EVENTS/RESORT
-   centered. Logical properties would mirror them.
+     --p1 = min(1, 2*progress)         → 0→1 across progress 0→0.5  (Phase A)
+     --p2 = max(0, 2*progress - 1)     → 0→1 across progress 0.5→1  (Phase B)
+
+     Desert  : translateY( progress * -100vh )       — full travel, both phases
+     Others  : translateY( --p2     * -100vh )       — frozen until 0.5, then exit
+
+   At progress=0.5 the desert is at -50vh while the rest are at 0. From 0.5→1
+   the entire composition lifts together; #lounge takes over at the same speed
+   the rise completes — the trailing 50vh of the section IS the hero/lounge gap.
+
+   Layer z-order (bottom → top):
+     1. base    (שכבה 2.png)   z=1   ivory + bottom wave (full-viewport)
+     2. gamos   (GAMOS 1.png)  z=2   brand mark, top-left
+     3. events  (EVENT 1.png)  z=3   CTA → /halls/dist/oasis/  (covered)
+     4. resort  (RESORT 2.png) z=4   CTA → /halls/dist/lumina/ (covered)
+     5. desert  (מדבר.png)     z=10  TOPMOST — visually obscures EVENTS/RESORT
+
+   RTL note: physical `left:` / `right:` instead of inset-inline-* because the
+   reference has GAMOS at the top-LEFT (physical) and EVENTS/RESORT centered.
    ========================================================================= */
 
 .hero-static {
   position: relative;
   width: 100%;
-  height: 100vh;
+  /* 150vh → 100vh pin + 50vh scroll travel.
+     orchestrator: progress = scrolled / (rect.height - vh) = scrolled / 50vh */
+  height: 150vh;
   margin-block-start: 0;
-  overflow: hidden;
   background: var(--ivory, #F5EFE6);
   z-index: 110;
   isolation: isolate;
+  --scene-progress: 0;
+  --p1: min(1, calc(var(--scene-progress) * 2));
+  --p2: max(0, calc(var(--scene-progress) * 2 - 1));
+}
+
+.hero-static__pin {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .hero-static__layer {
@@ -43,9 +62,21 @@
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
+  will-change: transform;
 }
 
-/* Layer 1: base — fills the viewport */
+/* ---------------------------------------------------------------------------
+   Phase B rise (base, gamos, events, resort) — frozen until progress=0.5,
+   then translate from 0 → -100vh as progress goes 0.5 → 1.
+   --------------------------------------------------------------------------- */
+.hero-static__layer--base,
+.hero-static__layer--gamos,
+.hero-static__layer--events,
+.hero-static__layer--resort {
+  transform: translateY(calc(var(--p2) * -100vh));
+}
+
+/* Layer 1: base — fills the pin */
 .hero-static__layer--base,
 .hero-static__layer--base img {
   inset: 0;
@@ -70,58 +101,41 @@ img.hero-static__layer--gamos {
   display: block;
 }
 
-/* Layer 3 (visual): static desert hills — anchored to hero bottom */
-.hero-static__layer--desert {
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: auto;
-  z-index: 3;
-}
-.hero-static__layer--desert img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* Layers 4 + 5: EVENTS / RESORT — centered horizontally, stacked vertically.
-   z-index: 5 so they sit ABOVE the static desert hills (z=3). */
+/* Layers 3 + 4: EVENTS / RESORT — centered horizontally, stacked vertically.
+   Lowered from z=5 → z=3/4 so the desert (z=10) covers them per user spec.
+   The CTA hover/focus rules combine the Phase B rise with translateX(-50%)
+   centering — see :hover / :focus-visible blocks below. */
 .hero-static__layer--events,
 .hero-static__layer--resort {
   left: 50%;
-  transform: translateX(-50%);
+  /* Base transform: center horizontally + Phase B rise. */
+  transform: translateX(-50%) translateY(calc(var(--p2) * -100vh));
   width: clamp(220px, 22vw, 360px);
   height: auto;
   pointer-events: auto;
   cursor: pointer;
   text-decoration: none;
-  z-index: 5;
-  transition: transform 320ms cubic-bezier(.2,.7,.2,1),
-              filter 280ms ease,
-              opacity 280ms ease;
+  transition: filter 280ms ease, opacity 280ms ease;
   outline: 0 solid transparent;
 }
-.hero-static__layer--events { top: 26%; }
-.hero-static__layer--resort { top: 37%; }
+.hero-static__layer--events { top: 26%; z-index: 3; }
+.hero-static__layer--resort { top: 37%; z-index: 4; }
 
 .hero-static__layer--events img,
 .hero-static__layer--resort img {
   display: block;
   width: 100%;
   height: auto;
-  transition: filter 280ms ease;
+  transition: filter 280ms ease, transform 320ms cubic-bezier(.2,.7,.2,1);
 }
 
-/* Hover / focus: lift this CTA, glow it, brighten it */
-.hero-static__cta:hover,
-.hero-static__cta:focus-visible {
-  transform: translateX(-50%) scale(1.06);
-  filter: brightness(1.10);
-}
+/* Hover / focus glow. We can't compose `scale(1.06)` onto the parent's
+   transform without overriding the rise — so push the visual lift onto the
+   inner <img> via its own transform. */
 .hero-static__cta:hover img,
 .hero-static__cta:focus-visible img {
-  filter: drop-shadow(0 0 28px rgba(207, 174, 131, 0.55));
+  transform: scale(1.06);
+  filter: brightness(1.10) drop-shadow(0 0 28px rgba(207, 174, 131, 0.55));
 }
 
 .hero-static__cta:focus-visible {
@@ -130,14 +144,37 @@ img.hero-static__layer--gamos {
   border-radius: 4px;
 }
 
-/* When EITHER CTA is hovered/focused, dim the OTHER. */
+/* Dim the OTHER CTA when one is hovered/focused. */
 .hero-static:has(.hero-static__cta:hover) .hero-static__cta:not(:hover),
 .hero-static:has(.hero-static__cta:focus-visible) .hero-static__cta:not(:focus-visible) {
   opacity: 0.55;
   filter: brightness(0.92);
 }
 
-/* Mobile (≤768px) */
+/* ---------------------------------------------------------------------------
+   Layer 5: desert (TOPMOST). Rises across BOTH phases, full -100vh travel.
+   --------------------------------------------------------------------------- */
+.hero-static__layer--desert {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: auto;
+  z-index: 10;
+  /* Linear travel: progress 0 → translateY(0); progress 1 → translateY(-100vh). */
+  transform: translateY(calc(var(--scene-progress, 0) * -100vh));
+}
+.hero-static__layer--desert img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---------------------------------------------------------------------------
+   Mobile (≤768px) — preserve existing CTA repositioning. The Phase B rise
+   still applies. The .hero-static__cta transform must keep translateX(-50%)
+   so the centering survives at narrow widths.
+   --------------------------------------------------------------------------- */
 @media (max-width: 768px) {
   .hero-static__layer--gamos {
     top: 5%;
@@ -152,84 +189,26 @@ img.hero-static__layer--gamos {
   .hero-static__layer--resort { top: 32%; }
 }
 
-/* Reduced motion: kill the hover scale */
+/* ---------------------------------------------------------------------------
+   Reduced motion: freeze ALL rises (desert + Phase B layers).
+   Hover/focus glow stays — only the scale + transition are killed.
+   --------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
-  .hero-static__cta,
-  .hero-static__cta img {
-    transition: none;
+  .hero-static__layer--base,
+  .hero-static__layer--gamos,
+  .hero-static__layer--desert {
+    transform: none;
   }
-  .hero-static__cta:hover,
-  .hero-static__cta:focus-visible {
+  .hero-static__layer--events,
+  .hero-static__layer--resort {
     transform: translateX(-50%);
   }
-}
-
-/* ===========================================================================
-   #hero-cover — Olivier classic rising desert
-   200vh section, sticky-pinned 100vh interior. Pulled UP by margin-top:-100vh
-   so it overlaps the bottom of #hero. Default --scene-progress = 0 keeps
-   the desert in place (matching the static desert layer in #hero); on scroll
-   the desert rises off the top.
-   ========================================================================= */
-
-.hero-cover {
-  position: relative;
-  width: 100%;
-  /* 200vh so the orchestrator computes 100vh of scroll travel
-     (computeProgressForScene = scrolled / (rect.height - vh)). */
-  height: 200vh;
-  /* Pull this section UP so it overlaps with the bottom of #hero.
-     The pinned interior thus aligns with the hero's static desert at the
-     start of scroll, then rises away. */
-  margin-top: -100vh;
-  background: transparent;
-  pointer-events: none;
-  z-index: 120;
-  isolation: isolate;
-  --scene-progress: 0;
-}
-
-.hero-cover__pin {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.hero-cover__desert {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: auto;
-  /* progress=0 → translateY(0)        — sits at natural bottom-anchored position
-     progress=1 → translateY(-100vh)   — fully off-top, hero behind is revealed
-     ...but wait: the #hero is BELOW #hero-cover in DOM order! As progress
-     advances the desert rises off-top. The next section (#lounge) sits below
-     #hero-cover (after it in flow, with no negative margin), so as the cover
-     unsticks (progress reaches 1 and we keep scrolling), #lounge enters from
-     below.
-
-     The visual continuity: at progress=0 the cover's desert is at the same
-     y-position as the hero's static desert (margin-top:-100vh aligns them).
-     As you scroll, the cover's desert leaves; the hero's static desert is
-     STILL VISIBLE because the hero sits in normal flow above the cover.
-     So you see: hero with its static desert → desert rises off → hero scrolls
-     up under sticky pin → #lounge enters. */
-  transform: translateY(calc(var(--scene-progress, 0) * -100vh));
-  will-change: transform;
-}
-
-.hero-cover__desert img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-cover__desert {
-    transform: translateY(0);
+  .hero-static__cta img,
+  .hero-static__cta {
+    transition: none;
+  }
+  .hero-static__cta:hover img,
+  .hero-static__cta:focus-visible img {
+    transform: none;
   }
 }

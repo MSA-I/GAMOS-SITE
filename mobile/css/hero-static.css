@@ -49,8 +49,10 @@
     width: auto;                     /* shrink-wrap to label */
     min-inline-size: 220px;          /* readable at 320px viewport */
     inline-size: clamp(220px, 64vw, 320px);
-    /* Override the desktop transform that re-centers via translateX. */
-    transform: translateX(-50%);
+    /* Re-center via translateX AND keep Phase B rise (translateY) from the
+       desktop hero v7. The hero section writes --p2 (0..1 across progress
+       0.5→1) on its root; the rise = --p2 * -100vh. */
+    transform: translateX(-50%) translateY(calc(var(--p2, 0) * -100vh));
     /* Pill shell. */
     background: var(--brass);
     color: var(--ink-deep);
@@ -111,7 +113,8 @@
      :active gives a real "I clicked" confirmation. */
   .hero-static__layer--events:active,
   .hero-static__layer--resort:active {
-    transform: translateX(-50%) scale(0.97);
+    /* Compose: re-center + Phase B rise + press-down scale. */
+    transform: translateX(-50%) translateY(calc(var(--p2, 0) * -100vh)) scale(0.97);
     background: var(--brass-deep);
     color: var(--ivory);
   }
@@ -161,6 +164,6 @@
   }
   .hero-static__layer--events:active,
   .hero-static__layer--resort:active {
-    transform: translateX(-50%);
+    transform: translateX(-50%);  /* freeze the rise + press-down */
   }
 }

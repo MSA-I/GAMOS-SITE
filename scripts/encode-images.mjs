@@ -144,7 +144,7 @@ const NAMED_PAIRS = [
   // because it sits on the hero's --ivory background but the wave bottom is
   // semi-transparent. Both sizes; jpg fallback only at full size.
   {
-    src: "תמונות לאנימציית האתר/השראות/HERO/שכבה 2.png",
+    src: "תמונות לאנימציית האתר/HERO/שכבה 2.png",
     outDir: "assets/images/hero",
     name: "base",
     fullWidth: 2048, fullQuality: 88,
@@ -154,7 +154,7 @@ const NAMED_PAIRS = [
   },
   // Desert hills — used twice (layer 5 of hero AND inside #hero-cover).
   {
-    src: "תמונות לאנימציית האתר/השראות/HERO/מדבר.png",
+    src: "תמונות לאנימציית האתר/HERO/מדבר.png",
     outDir: "assets/images/hero",
     name: "desert",
     fullWidth: 2048, fullQuality: 88,
@@ -166,7 +166,7 @@ const NAMED_PAIRS = [
   // mandatory, jpg would flatten the transparent background to ivory and
   // ruin the layered composition).
   {
-    src: "תמונות לאנימציית האתר/השראות/HERO/GAMOS 1.png",
+    src: "תמונות לאנימציית האתר/HERO/GAMOS 1.png",
     outDir: "assets/images/hero",
     name: "gamos",
     singleWidth: 852, singleQuality: 92, // 2x source (426)
@@ -174,7 +174,7 @@ const NAMED_PAIRS = [
     webpOnly: true,
   },
   {
-    src: "תמונות לאנימציית האתר/השראות/HERO/EVENT 1.png",
+    src: "תמונות לאנימציית האתר/HERO/EVENT 1.png",
     outDir: "assets/images/hero",
     name: "events",
     singleWidth: 694, singleQuality: 92, // 2x source (347)
@@ -182,7 +182,7 @@ const NAMED_PAIRS = [
     webpOnly: true,
   },
   {
-    src: "תמונות לאנימציית האתר/השראות/HERO/RESORT 2.png",
+    src: "תמונות לאנימציית האתר/HERO/RESORT 2.png",
     outDir: "assets/images/hero",
     name: "resort",
     singleWidth: 672, singleQuality: 92, // 2x source (336)

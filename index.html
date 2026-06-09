@@ -204,100 +204,77 @@
   <main id="main-content">
 
     <!-- ====================================================================
-         #hero-shell — Layered static hero with rising-desert cover (2026-06-08 v3)
-         Module: js/hero-static.js  |  Spec: plans/unified-inventing-locket.md
-         The shell is a 200vh spacer; the inner `.hero-static` is sticky and
-         pinned to the viewport for the entire scroll range. As the user
-         scrolls through the shell:
-           - Layers 1-5 (base, gamos, events, resort, desert) stay PUT.
-           - Layer 6 (rising-desert) rises from off-bottom (translateY 100%)
-             to fully cover the hero (translateY 0%), driven by --scene-progress.
-         When the shell ends, the page continues to #lounge (which sits below).
+         #hero — Single-section sticky-pin hero (v7, 2026-06-09)
+         150vh section with a 100vh sticky pin → 50vh of scroll travel drives
+         --scene-progress 0→1 (poster-ken-burns mode in js/scroll-scene.js).
+         data-scrub="hero-rise" (NOT "hero" — id "hero" is reserved/skipped at
+         scroll-scene.js:184; the scene id lives on data-scrub).
 
-         Layers (z-order bottom→top):
-           1. base          (שכבה 2.png)   full-viewport ivory + bottom wave
-           2. gamos         (GAMOS 1.png)  decorative, top-left
-           3. desert        (מדבר.png)     hill silhouettes anchored to bottom
-           4. events        (EVENT 1.png)  interactive CTA → /halls/dist/oasis/
-           5. resort        (RESORT 2.png) interactive CTA → /halls/dist/lumina/
-           6. rising-desert (מדבר.png)     scroll-driven cover overlay (z=6)
+         Layers (z-order bottom→top, see hero-static.css):
+           1. base   (שכבה 2.png)   z=1   ivory + bottom wave
+           2. gamos  (GAMOS 1.png)  z=2   decorative, top-left
+           3. events (EVENT 1.png)  z=3   CTA → /halls/dist/oasis/  (covered by desert)
+           4. resort (RESORT 2.png) z=4   CTA → /halls/dist/lumina/ (covered by desert)
+           5. desert (מדבר.png)     z=10  TOPMOST — covers EVENTS / RESORT typography
+
+         Two-phase scroll (CSS calc on --scene-progress):
+           Phase A (progress 0 → 0.5): ONLY desert rises from translateY(0)
+                                       toward translateY(-50vh).
+           Phase B (progress 0.5 → 1): desert keeps rising (-50vh → -100vh)
+                                       AND base+gamos+events+resort rise together
+                                       (0 → -100vh) — entire composition exits
+                                       upward, simultaneously revealing #lounge.
+
+         The trailing 50vh of the section IS the gap between hero and lounge.
     ==================================================================== -->
-    <!-- ====================================================================
-         #hero — Static layered hero (v6 — Olivier classic)
-         Plain 100vh section with 5 layers (base, gamos, events, resort,
-         desert). NO sticky, NO scroll-driven motion inside. As the user
-         scrolls, the next section (#hero-cover) sticky-rises and covers the
-         hero, then #lounge takes over.
-    ==================================================================== -->
-    <section id="hero" class="hero-static" aria-label="פתיחה">
-
-      <picture class="hero-static__layer hero-static__layer--base">
-        <source type="image/webp"
-                srcset="/assets/images/hero/base.half.webp 1024w,
-                        /assets/images/hero/base.full.webp 2048w"
-                sizes="100vw">
-        <img src="/assets/images/hero/base.full.jpg"
-             alt="" fetchpriority="high" decoding="async">
-      </picture>
-
-      <img class="hero-static__layer hero-static__layer--gamos"
-           src="/assets/images/hero/gamos.webp"
-           alt="GAMOS"
-           decoding="async" fetchpriority="high">
-
-      <a class="hero-static__layer hero-static__layer--events hero-static__cta"
-         href="/halls/dist/oasis/"
-         data-hero-link="venue"
-         aria-label="כניסה לאולם האירועים">
-        <img src="/assets/images/hero/events.webp"
-             alt="EVENTS"
-             decoding="async" fetchpriority="high">
-      </a>
-
-      <a class="hero-static__layer hero-static__layer--resort hero-static__cta"
-         href="/halls/dist/lumina/"
-         data-hero-link="resort"
-         aria-label="כניסה לריזורט">
-        <img src="/assets/images/hero/resort.webp"
-             alt="RESORT"
-             decoding="async" fetchpriority="high">
-      </a>
-
-      <picture class="hero-static__layer hero-static__layer--desert">
-        <source type="image/webp"
-                srcset="/assets/images/hero/desert.half.webp 1024w,
-                        /assets/images/hero/desert.full.webp 2048w"
-                sizes="100vw">
-        <img src="/assets/images/hero/desert.full.webp"
-             alt="" decoding="async" loading="eager">
-      </picture>
-    </section>
-
-    <!-- ====================================================================
-         #hero-cover — Rising desert (Olivier-Larose sticky-footer, v6)
-         200vh section. Inside, .hero-cover__pin is sticky-pinned 100vh
-         containing ONLY the desert <picture>. As the user scrolls, the
-         desert translates up from its natural bottom-anchored position
-         (translateY 0 at progress=0) toward off-top (translateY -100vh at
-         progress=1). margin-top: -100vh pulls this section up so it OVERLAPS
-         the bottom 100vh of #hero — the desert at progress=0 perfectly
-         aligns with the static desert in #hero, and as it rises it sweeps
-         OVER the hero and reveals #lounge (which sits below in normal flow).
-    ==================================================================== -->
-    <section id="hero-cover" class="hero-cover"
-             data-scrub="hero-cover"
+    <section id="hero" class="hero-static"
+             data-scrub="hero-rise"
              data-scrub-mode="poster-ken-burns"
-             data-scrub-spacer-vh="200"
-             aria-hidden="true">
-      <div class="hero-cover__pin">
-        <picture class="hero-cover__desert">
+             data-scrub-spacer-vh="150"
+             aria-label="פתיחה">
+      <div class="hero-static__pin">
+
+        <picture class="hero-static__layer hero-static__layer--base">
+          <source type="image/webp"
+                  srcset="/assets/images/hero/base.half.webp 1024w,
+                          /assets/images/hero/base.full.webp 2048w"
+                  sizes="100vw">
+          <img src="/assets/images/hero/base.full.jpg"
+               alt="" fetchpriority="high" decoding="async">
+        </picture>
+
+        <img class="hero-static__layer hero-static__layer--gamos"
+             src="/assets/images/hero/gamos.webp"
+             alt="GAMOS"
+             decoding="async" fetchpriority="high">
+
+        <a class="hero-static__layer hero-static__layer--events hero-static__cta"
+           href="/halls/dist/oasis/"
+           data-hero-link="venue"
+           aria-label="כניסה לאולם האירועים">
+          <img src="/assets/images/hero/events.webp"
+               alt="EVENTS"
+               decoding="async" fetchpriority="high">
+        </a>
+
+        <a class="hero-static__layer hero-static__layer--resort hero-static__cta"
+           href="/halls/dist/lumina/"
+           data-hero-link="resort"
+           aria-label="כניסה לריזורט">
+          <img src="/assets/images/hero/resort.webp"
+               alt="RESORT"
+               decoding="async" fetchpriority="high">
+        </a>
+
+        <picture class="hero-static__layer hero-static__layer--desert">
           <source type="image/webp"
                   srcset="/assets/images/hero/desert.half.webp 1024w,
                           /assets/images/hero/desert.full.webp 2048w"
                   sizes="100vw">
           <img src="/assets/images/hero/desert.full.webp"
-               alt="" decoding="async" loading="lazy">
+               alt="" decoding="async" loading="eager">
         </picture>
+
       </div>
     </section>
 
