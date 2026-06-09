@@ -62,6 +62,7 @@
     "/mobile/css/responsive-images.css",
     "/mobile/css/touch-targets.css",
     "/mobile/css/headings.css",
+    "/mobile/css/kosher.css",
   ];
 
   function injectStylesheets () {

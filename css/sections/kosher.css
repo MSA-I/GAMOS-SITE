@@ -1,71 +1,102 @@
 /* ===========================================================================
-   kosher.css — kashrut / certification badge section
-   Agent 20 (2026-06-01): now uses [data-reveal="rotate-in"] for a calm
-   "stamp" effect. The whole block is centered (different rhythm from the
-   rail-aligned about/contact/events sections — provides visual variety).
+   kosher.css — kashrut authorities section
+   2026-06-09 (v3): an organic cocoa-brown oval outline frames the entire
+   block (eyebrow, title, logo row, body). Background stays transparent
+   (no visible "band"). The 5 monochrome certification logos sit in a
+   single row between the title and the body. No animation beyond the
+   standard fade-up reveal.
    ========================================================================= */
 
 
 .kosher {
-  padding-block: var(--space-32);
+  padding-block: var(--space-24);
   padding-inline: var(--gutter);
-  background: var(--bg-cocoa);
-  color: var(--fg-on-dark);
+  background: transparent;
+  color: var(--ink-deep);
   text-align: center;
 }
 
 .kosher__container {
-  max-width: var(--container-narrow);
+  max-inline-size: min(80rem, 94%);
   margin-inline: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-6);
+  gap: var(--space-8);
+  /* Filled cocoa oval — radii 50%/50% relative to container WxH produce an
+     auto-ellipse that hugs whatever height the content lands at. The
+     background is the original brown the section had before this redesign.
+     The HEAVY inline padding (≈14% of the container width on each side) is
+     deliberate: an oval's left/right edges curve INWARD, so any child that
+     touches the box's left/right edge ends up clipped behind the curve.
+     Pushing the inner-content rectangle ~14% inward keeps the oval tangent
+     well outside the logo row at every breakpoint. */
+  background: var(--cocoa);
+  color: var(--fg-on-dark);
+  border-radius: 50% / 50%;
+  padding-block: clamp(4rem, 9vw, 7rem);
+  padding-inline: clamp(4.5rem, 14%, 11rem);
 }
 
 .kosher .section-header {
-  max-width: 100%;
+  max-inline-size: 100%;
   margin-block-end: 0;
   text-align: center;
+}
+
+.kosher .section-header__eyebrow {
+  color: var(--accent);
 }
 
 .kosher .section-header__title {
   color: var(--fg-on-dark);
 }
 
-/* Real kashrut seal SVG (assets/img/icons/kashrut-seal.svg) — 2026-06-02
-   replacement for the previous text-only "כשר" disc, which the user noted
-   "doesn't look credible". The SVG carries Star of David + brass rim +
-   "כשר למהדרין" + "בהשגחת רבנות מוסמכת". */
-.kosher__seal {
-  inline-size: clamp(140px, 16vw, 200px);
-  block-size: clamp(140px, 16vw, 200px);
-  display: block;
-  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.35));
+.kosher__logos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  inline-size: 100%;
 }
 
-.kosher__badge {
-  /* Legacy — fallback if seal isn't used; same shape, no fill */
-  inline-size: 120px;
-  block-size: 120px;
-  border-radius: var(--radius-circle);
-  border: 2px solid var(--accent);
+.kosher__logos li {
   display: grid;
   place-items: center;
-  font-family: var(--font-display-he);
-  font-size: var(--text-md);
-  font-weight: var(--fw-bold);
-  color: var(--accent);
+  flex: 1 1 0;
+  min-inline-size: 0;
+  block-size: clamp(64px, 7.5vw, 110px);
+}
+
+/* Each logo's source aspect varies wildly (tzohar 1:1, eda 2.16:1, etc.).
+   Without per-img sizing the squareish ones look tiny next to the wide
+   ones. We let each <img> fill the cell entirely (both axes) and rely on
+   object-fit: contain to preserve aspect — so every logo lands at the
+   largest size that fits its individual cell, no logo "disappears". */
+.kosher__logos img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+  filter: brightness(0) invert(1); /* black-on-transparent → ivory-on-transparent */
+  opacity: 0.92;
+  transition: opacity var(--dur-base, 240ms) ease;
+}
+
+.kosher__logos li:hover img,
+.kosher__logos li:focus-within img {
+  opacity: 1;
 }
 
 .kosher__body {
   font-family: var(--font-body);
-  font-size: clamp(1.125rem, 1.5vw, 1.4rem);
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
   line-height: var(--lh-loose);
   color: rgba(245, 239, 230, 0.85);
-  max-width: 56ch;
+  max-inline-size: 56ch;
   margin: 0;
   margin-inline: auto;
 }
-
-

@@ -572,7 +572,7 @@
     <section id="shabbat-chatan" class="shabbat" aria-labelledby="shabbat-title">
       <div class="shabbat__container">
 
-        <div class="shabbat__panels">
+        <div class="shabbat__panels" role="presentation">
           <article class="shabbat__panel">
             <h2 id="shabbat-title" class="shabbat__heading texture-text texture-text--dark">צאו מהקצב היומיומי</h2>
           </article>
@@ -594,7 +594,7 @@
              LOWEST z-index, so the FIRST panel pairs with the visually-topmost
              image (data-index=5, last in DOM). The mask wipe reveals deeper
              images stacked beneath, in panel order. -->
-        <div class="shabbat__stage">
+        <div class="shabbat__stage" role="presentation">
           <figure class="shabbat__media" data-index="5">
             <picture>
               <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/01.half.webp">

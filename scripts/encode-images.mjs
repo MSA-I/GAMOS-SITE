@@ -133,6 +133,37 @@ const SINGLE_WEBP = [
     width: 1600,
     quality: 90,
   },
+  // 2026-06-09: 5 kashrut certification logos for the redesigned #kosher
+  // marquee. Sources are normalized PNGs (black on transparent) produced by
+  // mobile/scripts/normalize-kosher-logos.mjs from raw PNGs sourced from
+  // each org's public site. WebP-only (alpha mandatory). Width 600 keeps
+  // the logos crisp at the marquee's clamp(48px,6vw,80px) height under 2x
+  // pixel density without bloating payload.
+  {
+    src: "תמונות לאנימציית האתר/כשרות/rabbanut-bw.png",
+    out: "assets/images/kosher/rabbanut.webp",
+    width: 600, quality: 92,
+  },
+  {
+    src: "תמונות לאנימציית האתר/כשרות/tzohar-bw.png",
+    out: "assets/images/kosher/tzohar.webp",
+    width: 600, quality: 92,
+  },
+  {
+    src: "תמונות לאנימציית האתר/כשרות/eda-charedit-bw.png",
+    out: "assets/images/kosher/eda-charedit.webp",
+    width: 600, quality: 92,
+  },
+  {
+    src: "תמונות לאנימציית האתר/כשרות/beit-yosef-bw.png",
+    out: "assets/images/kosher/beit-yosef.webp",
+    width: 600, quality: 92,
+  },
+  {
+    src: "תמונות לאנימציית האתר/כשרות/agudat-israel-bw.png",
+    out: "assets/images/kosher/agudat-israel.webp",
+    width: 600, quality: 92,
+  },
 ];
 
 // 2026-06-08 v2: Named-pair encodes for the layered static hero. Five PNG
