@@ -48,7 +48,7 @@
 GAMOS-SITE/
 ├─ remotion/                          ← קיים, NOT TO TOUCH
 ├─ node_modules/                      ← קיים מ-remotion, אל תיגע
-├─ תמונות לאנימציית האתר/             ← קיים, READ-ONLY מקור
+├─ (תמונות לאנימציית האתר/  הועברה 2026-06-09 → ../GAMOS-DOCS/)
 ├─ איך להפעיל.txt                     ← קיים
 │
 ├─ CLAUDE.md                          ← Constitution (חוק)
@@ -127,7 +127,7 @@ GAMOS-SITE/
 4. **§4 RTL + עברית** — `<html dir="rtl" lang="he">`. logical properties (`margin-inline-start`) לא physical. פונט עברי תצוגה: Frank Ruhl Libre. גוף: Heebo. Latin display: Playfair Display.
 5. **§5 פלטה** — תיגזר מ-scrape של gamos.co.il (Phase 1). שלד ראשוני: deep ink `#0E0E0C`, ivory `#F5EFE6`, brass `#B89766`, sage accent. נעילה אחרי scrape.
 6. **§6 B.L.A.S.T. Discipline** — כל סוכן כותב תוכנית ב-`agent-plans/` לפני קוד. כל שינוי תקבץ נושאי הולך ל-`PLANS/<category>/`. `findings.md` מתעדכן בכל גילוי. `progress.md` מסומן בכל phase gate.
-7. **§7 Asset Rules** — `תמונות לאנימציית האתר/` ו-`remotion/` הם READ-ONLY. כל הפלט הולך ל-`assets/`.
+7. **§7 Asset Rules** — `../GAMOS-DOCS/תמונות לאנימציית האתר/` (הועברה 2026-06-09 מ-GAMOS-SITE) ו-`remotion/` הם READ-ONLY. כל הפלט הולך ל-`assets/`.
 8. **§8 Performance Budget** — LCP ≤ 2.5s 4G, CLS ≤ 0.05, INP ≤ 200ms. Hero MP4 1080p ≤ 12MB. Mobile fallback: poster + reduced-motion (אין scrub).
 9. **§9 Accessibility** — WCAG 2.2 AA. visible focus 3px brass, skip-link, alt עברית, `prefers-reduced-motion` מבטל scrub + reveals.
 10. **§10 Done Criteria** — Lighthouse mobile ≥ 90 בכל הצירים, RTL keyboard pass, שתי בועות עובדות, 60fps scrub בדסקטופ class-M1, mobile fallback verified.
@@ -186,14 +186,15 @@ Phase 5: QA pass + fixes                     → release candidate
 
 ## Existing Reference Files (לא לערוך, לשאוב מהם רק)
 
-- `D:\משה פרוייקטים\GAMOS-SITE\תמונות לאנימציית האתר\ריזורט 1\סרטוני אנימציה\1_V1.mp4 ... 13_V1.mp4` — מקור ל-hero
-- `D:\משה פרוייקטים\GAMOS-SITE\תמונות לאנימציית האתר\ריזורט 1\1.5.mp4` — רפרנס לבועות-פורטל
-- `D:\משה פרוייקטים\GAMOS-SITE\תמונות לאנימציית האתר\ריזורט 1\לייטרום\*.png` — תמונות ערוכות resort
-- `D:\משה פרוייקטים\GAMOS-SITE\תמונות לאנימציית האתר\אולם 3\*.png` — תמונות אולם
-- `D:\משה פרוייקטים\GAMOS-SITE\תמונות לאנימציית האתר\LAUNGE\*.jpg`
-- `D:\משה פרוייקטים\GAMOS-SITE\תמונות לאנימציית האתר\חדרי נופש 2\*.jpg`
-- `D:\משה פרוייקטים\GAMOS-SITE\תמונות לאנימציית האתר\קולינריה 4\*` (תמונות + 84MB MP4)
-- `D:\משה פרוייקטים\GAMOS-SITE\תמונות לאנימציית האתר\פונט\1.2.png` — רפרנס לסגנון פונט
+*(הספרייה `תמונות לאנימציית האתר/` הועברה 2026-06-09 מ-GAMOS-SITE ל-GAMOS-DOCS — ראה Constitution §7)*
+- `D:\משה פרוייקטים\GAMOS-DOCS\תמונות לאנימציית האתר\ריזורט 1\סרטוני אנימציה\1_V1.mp4 ... 13_V1.mp4` — מקור ל-hero
+- `D:\משה פרוייקטים\GAMOS-DOCS\תמונות לאנימציית האתר\ריזורט 1\1.5.mp4` — רפרנס לבועות-פורטל
+- `D:\משה פרוייקטים\GAMOS-DOCS\תמונות לאנימציית האתר\ריזורט 1\לייטרום\*.png` — תמונות ערוכות resort
+- `D:\משה פרוייקטים\GAMOS-DOCS\תמונות לאנימציית האתר\אולם 3\*.png` — תמונות אולם
+- `D:\משה פרוייקטים\GAMOS-DOCS\תמונות לאנימציית האתר\LAUNGE\*.jpg`
+- `D:\משה פרוייקטים\GAMOS-DOCS\תמונות לאנימציית האתר\חדרי נופש 2\*.jpg`
+- `D:\משה פרוייקטים\GAMOS-DOCS\תמונות לאנימציית האתר\קולינריה 4\*` (תמונות + 84MB MP4)
+- `D:\משה פרוייקטים\GAMOS-DOCS\תמונות לאנימציית האתר\פונט\1.2.png` — רפרנס לסגנון פונט
 - `D:\משה פרוייקטים\AI\persepolis-reimagined-mirror\` — לרפרנס דפוסים (לא להעתיק קוד)
 - `D:\משה פרוייקטים\B.L.A.S.T. Master System Prompt.docx` — מסמך אב למבנה
 - `D:\משה פרוייקטים\עיצוב אתר מחודש\PLANS\README.md` — תבנית `PLANS/README.md` לחקות

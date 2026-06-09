@@ -44,7 +44,8 @@ npm run encode:culinary     # ~180 frames @ 960px  → ~5MB
 npm run encode:images
 ```
 
-Source masters live in `תמונות לאנימציית האתר/` (READ-ONLY per Constitution §7).
+Source masters live in `../GAMOS-DOCS/תמונות לאנימציית האתר/` (READ-ONLY per
+Constitution §7; moved out of GAMOS-SITE on 2026-06-09 to keep the repo lean).
 Output goes to `assets/frames/` and `assets/images/`.
 
 ## Project structure

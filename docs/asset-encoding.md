@@ -27,7 +27,8 @@ Re-runnable from a clean checkout. Source files are READ-ONLY (Constitution §7)
 
 ## Posters — resort + venue (Agent 18, scaffold scene phase)
 
-**Sources:**
+**Sources** (paths below are relative to `../GAMOS-DOCS/` — the source library
+moved out of GAMOS-SITE on 2026-06-09; see Constitution §7):
 - Resort: `תמונות לאנימציית האתר/ריזורט 1/1.png` (3840×2160, 10.4 MB PNG)
 - Venue : `תמונות לאנימציית האתר/אולם 3/2.png` (3840×2160, 19 MB PNG)
 
@@ -51,13 +52,14 @@ python << 'PY'
 from PIL import Image, ImageOps
 import os
 ROOT = r"D:\\משה פרוייקטים\\GAMOS-SITE"
+DOCS = r"D:\\משה פרוייקטים\\GAMOS-DOCS"  # source library lives here since 2026-06-09
 OUT  = os.path.join(ROOT, "assets", "img")
 os.makedirs(OUT, exist_ok=True)
 W, H = 1920, 1080
 
 JOBS = [
-    {"name": "resort", "src": os.path.join(ROOT, "תמונות לאנימציית האתר", "ריזורט 1", "1.png"), "wq": 60, "jq": 65},
-    {"name": "venue",  "src": os.path.join(ROOT, "תמונות לאנימציית האתר", "אולם 3", "2.png"), "wq": 55, "jq": 60},
+    {"name": "resort", "src": os.path.join(DOCS, "תמונות לאנימציית האתר", "ריזורט 1", "1.png"), "wq": 60, "jq": 65},
+    {"name": "venue",  "src": os.path.join(DOCS, "תמונות לאנימציית האתר", "אולם 3", "2.png"), "wq": 55, "jq": 60},
 ]
 
 for job in JOBS:
@@ -82,13 +84,13 @@ PY
 **Equivalent `cwebp`/`ffmpeg` form** (for when those tools come back):
 
 ```bash
-# WebP (resort)
+# WebP (resort) — paths are relative to ../GAMOS-DOCS/ (source library)
 cwebp -q 60 -m 6 -resize 1920 1080 \
-  "תמונות לאנימציית האתר/ריזורט 1/1.png" \
+  "../GAMOS-DOCS/תמונות לאנימציית האתר/ריזורט 1/1.png" \
   -o assets/img/resort-poster.webp
 
 # JPG (resort)
-ffmpeg -y -i "תמונות לאנימציית האתר/ריזורט 1/1.png" \
+ffmpeg -y -i "../GAMOS-DOCS/תמונות לאנימציית האתר/ריזורט 1/1.png" \
        -vf "scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080" \
        -q:v 4 -progressive 1 \
        assets/img/resort-poster.jpg
@@ -125,7 +127,7 @@ Per Constitution §8: 1080p ≤ 12 MB, 720p ≤ 6 MB, poster JPG ≤ 80 KB.
 
 ## Culinary scrub clip (Agent 17 — 2026-06-01)
 
-**Source:** `תמונות לאנימציית האתר/קולינריה 4/1.2.mp4`
+**Source:** `../GAMOS-DOCS/תמונות לאנימציית האתר/קולינריה 4/1.2.mp4`
 (3840×2160, HEVC, 60 fps, 15.02 s, ~88 MB).
 
 **Final length:** trimmed to **6 s** (`-t 6`) to match the section's 250 vh

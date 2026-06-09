@@ -38,6 +38,8 @@ remotion/node_modules/
 # Source asset library — READ-ONLY, multi-GB, lives outside repo history.
 # NEVER commit. The user produces videos / images here; the repo only ever
 # carries the encoded outputs under `assets/`.
+# 2026-06-09: relocated to ../GAMOS-DOCS/ — entry left here as belt-and-braces
+# in case the folder is ever recreated inside the repo by mistake.
 תמונות לאנימציית האתר/
 
 # Heavy MP4 sources — stay LOCAL ONLY. The site never loads MP4 directly;

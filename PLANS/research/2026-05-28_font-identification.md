@@ -2,7 +2,8 @@
 
 **Agent:** 01 — Research & Content Lead
 **Date:** 2026-05-28
-**Source image:** `D:\משה פרוייקטים\GAMOS-SITE\תמונות לאנימציית האתר\פונט\1.2.png`
+**Source image:** `D:\משה פרוייקטים\GAMOS-DOCS\תמונות לאנימציית האתר\פונט\1.2.png`
+*(הועברה 2026-06-09 מ-GAMOS-SITE ל-GAMOS-DOCS — ראה Constitution §7)*
 **Image content:** Brand-design moodboard with the wordmark **"NOMAD"** + supporting type at multiple sizes, a full alphabet sheet (uppercase + numbers + punctuation), and lifestyle photography of a coastal/mountain landscape with brown/cream packaging.
 
 ---

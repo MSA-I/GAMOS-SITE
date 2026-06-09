@@ -265,7 +265,7 @@ GAMOS-SITE/
 ├── agent-plans/
 │   └── README.md (אין plans פעילים — כולם בוצעו ונמחקו)
 │
-└── תמונות לאנימציית האתר/ (READ-ONLY source library)
+└── (source library moved 2026-06-09 → ../GAMOS-DOCS/תמונות לאנימציית האתר/)
 ```
 
 ---

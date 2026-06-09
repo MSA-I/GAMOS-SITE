@@ -2,10 +2,10 @@
 /**
  * scripts/encode-images.mjs
  *
- * Bulk-encode brand & section images from `תמונות לאנימציית האתר/` (READ-ONLY
- * source) to `assets/images/` (production output). Generates `.full.webp` +
- * `.half.webp` + `.full.jpg` + `.half.jpg` per source for <picture>
- * with srcset support.
+ * Bulk-encode brand & section images from `../GAMOS-DOCS/תמונות לאנימציית האתר/`
+ * (READ-ONLY source — moved out of GAMOS-SITE on 2026-06-09) to `assets/images/`
+ * (production output). Generates `.full.webp` + `.half.webp` + `.full.jpg` +
+ * `.half.jpg` per source for <picture> with srcset support.
  *
  * Usage:
  *   npm run encode:images
@@ -16,7 +16,7 @@
  *   - .full.jpg :  max-width 1920px, q80 (fallback)
  *   - .half.jpg :  max-width 960px,  q78 (fallback)
  *
- * Source layout (already on disk):
+ * Source layout (sibling repo: ../GAMOS-DOCS/):
  *   תמונות לאנימציית האתר/אולם 3/*.png    → assets/images/halls/venue/NN.{full,half}.{webp,jpg}
  *   תמונות לאנימציית האתר/ריזורט 1/*.png  → assets/images/halls/resort/NN.{full,half}.{webp,jpg}
  *   תמונות לאנימציית האתר/קולינריה 4/*.jpg → assets/images/culinary/NN.{full,half}.{webp,jpg}
@@ -31,7 +31,9 @@ import { fileURLToPath } from "node:url";
 import { dirname, join, resolve, basename, extname } from "node:path";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const SRC_ROOT = join(ROOT, "תמונות לאנימציית האתר");
+// 2026-06-09: source library was moved out of GAMOS-SITE into the sibling
+// GAMOS-DOCS folder to keep the repo lean (4.7GB → 0). Resolve via parent.
+const SRC_ROOT = resolve(ROOT, "..", "GAMOS-DOCS", "תמונות לאנימציית האתר");
 
 const FORCE = process.argv.includes("--force");
 
@@ -270,7 +272,11 @@ async function main() {
     const candidates = s.srcCandidates ?? [s.src];
     let resolvedSrc = null;
     for (const candidate of candidates) {
-      const candidateAbs = join(ROOT, candidate);
+      // 2026-06-09: paths starting with the moved source-library prefix resolve
+      // against SRC_ROOT (GAMOS-DOCS) instead of ROOT (GAMOS-SITE).
+      const candidateAbs = candidate.startsWith("תמונות לאנימציית האתר/")
+        ? join(SRC_ROOT, candidate.slice("תמונות לאנימציית האתר/".length))
+        : join(ROOT, candidate);
       if (existsSync(candidateAbs)) {
         resolvedSrc = { rel: candidate, abs: candidateAbs };
         break;
@@ -302,7 +308,10 @@ async function main() {
   //   - pair-size:   { fullWidth/Quality, halfWidth/Quality } → .full + .half
   //                  in WebP, plus optional JPG fallback (skipped when webpOnly).
   for (const np of NAMED_PAIRS) {
-    const srcAbs = join(ROOT, np.src);
+    // 2026-06-09: see SRC_ROOT comment — the source library moved to GAMOS-DOCS.
+    const srcAbs = np.src.startsWith("תמונות לאנימציית האתר/")
+      ? join(SRC_ROOT, np.src.slice("תמונות לאנימציית האתר/".length))
+      : join(ROOT, np.src);
     if (!existsSync(srcAbs)) {
       console.log(`[named] source missing, skipping: ${np.src}`);
       continue;
