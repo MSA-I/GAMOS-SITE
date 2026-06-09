@@ -58,6 +58,23 @@
   min-block-size: 68px;
 }
 
+/* Hover-grow (2026-06-09) — when the user moves the cursor over the nav, the
+   bar expands downward so it fully covers the GAMOS brand mark in the hero
+   (which sits at top:4% of the 100vh pin, ~38–45px from viewport top, with
+   ~75–95px image height → bottom ~113–140px). 160px gives margin of error
+   across viewport heights. Non-scrolled state only — once .is-scrolled the
+   bar is condensed and the GAMOS mark has scrolled past anyway. */
+.site-nav:not(.is-scrolled):hover .site-nav__inner,
+.site-nav:not(.is-scrolled):focus-within .site-nav__inner {
+  padding-block: var(--space-10);
+  min-block-size: 160px;
+}
+.site-nav:not(.is-scrolled):hover,
+.site-nav:not(.is-scrolled):focus-within {
+  background: rgba(245, 239, 230, 0.97);
+  box-shadow: var(--shadow-soft);
+}
+
 /* Brand -------------------------------------------------------------------- */
 .site-nav__brand {
   display: inline-flex;

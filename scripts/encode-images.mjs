@@ -154,7 +154,7 @@ const NAMED_PAIRS = [
   },
   // Desert hills — used twice (layer 5 of hero AND inside #hero-cover).
   {
-    src: "תמונות לאנימציית האתר/HERO/מדבר.png",
+    src: "תמונות לאנימציית האתר/HERO/מדבר-2.png",
     outDir: "assets/images/hero",
     name: "desert",
     fullWidth: 2048, fullQuality: 88,
