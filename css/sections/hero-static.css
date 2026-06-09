@@ -36,9 +36,27 @@
 .hero-static {
   position: relative;
   width: 100%;
-  /* 150vh → 100vh pin + 50vh scroll travel.
-     orchestrator: progress = scrolled / (rect.height - vh) = scrolled / 50vh */
-  height: 150vh;
+  /* v8.4 (2026-06-09) — Playwright revealed the user's "empty white band"
+     was the pin showing background ivory AFTER progress=1 but BEFORE the
+     pin un-stuck. With section=135vh, scroll-travel=35vh, layers exited
+     to -100vh by progress=1 (scrollY≈315), but the pin stayed sticky for
+     another 100vh (=section.height - pin.height + already-pinned-travel)
+     producing a long ivory dwell. The natural fix: cap section.height so
+     pin un-sticks the moment progress=1.
+     section.height = 100vh + scroll-travel.
+     With 35vh travel → section = 135vh (current). Pin un-sticks at
+     scrollY = section.height - pin.height = 35vh = end of rise. Aligned. */
+  height: 135vh;
+  /* v8.4: layers translate UP only as much as the section is taller than
+     the viewport (= 35vh). They DON'T jump fully off-screen at progress=1
+     — instead they exit *naturally* with the pin un-sticking. This kills
+     the "empty ivory pin" the user reported (Playwright probe confirmed:
+     the pin held 100vh of background-only ivory after rise completed
+     because layers were already at -100vh and the pin still had 100vh of
+     trailing scroll). With -35vh, at progress=1 the layers are at -35vh
+     yet still 65vh of content is visible; the rest of the exit happens
+     as the section itself scrolls past. */
+  --rise-end: -35vh;
   margin-block-start: 0;
   background: var(--ivory, #F5EFE6);
   z-index: 110;
@@ -73,7 +91,11 @@
 .hero-static__layer--gamos,
 .hero-static__layer--events,
 .hero-static__layer--resort {
-  transform: translateY(calc(var(--p2) * -100vh));
+  /* v8.4: rise capped at --rise-end (= -(section.height - 100vh)) so the
+     layers exit exactly together with the pin un-sticking. Remaining
+     viewport-clear distance is then handled by the section's natural
+     scroll-out, not by an empty pin showing background ivory. */
+  transform: translateY(calc(var(--p2) * var(--rise-end)));
 }
 
 /* Layer 1: base — fills the pin */
@@ -108,8 +130,8 @@ img.hero-static__layer--gamos {
 .hero-static__layer--events,
 .hero-static__layer--resort {
   left: 50%;
-  /* Base transform: center horizontally + Phase B rise. */
-  transform: translateX(-50%) translateY(calc(var(--p2) * -100vh));
+  /* Base transform: center horizontally + Phase B rise (capped, see v8.4). */
+  transform: translateX(-50%) translateY(calc(var(--p2) * var(--rise-end)));
   width: clamp(220px, 22vw, 360px);
   height: auto;
   pointer-events: auto;
@@ -161,8 +183,8 @@ img.hero-static__layer--gamos {
   width: 100%;
   height: auto;
   z-index: 10;
-  /* Linear travel: progress 0 → translateY(0); progress 1 → translateY(-100vh). */
-  transform: translateY(calc(var(--scene-progress, 0) * -100vh));
+  /* v8.4: linear travel from 0 to --rise-end (capped at section scroll-travel). */
+  transform: translateY(calc(var(--scene-progress, 0) * var(--rise-end)));
 }
 .hero-static__layer--desert img {
   display: block;

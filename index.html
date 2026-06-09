@@ -205,7 +205,7 @@
 
     <!-- ====================================================================
          #hero — Single-section sticky-pin hero (v7, 2026-06-09)
-         150vh section with a 100vh sticky pin → 50vh of scroll travel drives
+         135vh section with a 100vh sticky pin → 35vh of scroll travel drives
          --scene-progress 0→1 (poster-ken-burns mode in js/scroll-scene.js).
          data-scrub="hero-rise" (NOT "hero" — id "hero" is reserved/skipped at
          scroll-scene.js:184; the scene id lives on data-scrub).
@@ -225,12 +225,13 @@
                                        (0 → -100vh) — entire composition exits
                                        upward, simultaneously revealing #lounge.
 
-         The trailing 50vh of the section IS the gap between hero and lounge.
+         v8 (2026-06-09): the rise spans 10vh of scroll; #lounge enters
+         immediately after progress=1 — no visual gap between hero and lounge.
     ==================================================================== -->
     <section id="hero" class="hero-static"
              data-scrub="hero-rise"
              data-scrub-mode="poster-ken-burns"
-             data-scrub-spacer-vh="150"
+             data-scrub-spacer-vh="135"
              aria-label="פתיחה">
       <div class="hero-static__pin">
 

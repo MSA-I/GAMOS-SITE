@@ -58,21 +58,17 @@
   min-block-size: 68px;
 }
 
-/* Hover-grow (2026-06-09) — when the user moves the cursor over the nav, the
-   bar expands downward so it fully covers the GAMOS brand mark in the hero
-   (which sits at top:4% of the 100vh pin, ~38–45px from viewport top, with
-   ~75–95px image height → bottom ~113–140px). 160px gives margin of error
-   across viewport heights. Non-scrolled state only — once .is-scrolled the
-   bar is condensed and the GAMOS mark has scrolled past anyway. */
-.site-nav:not(.is-scrolled):hover .site-nav__inner,
-.site-nav:not(.is-scrolled):focus-within .site-nav__inner {
+/* Reveal-grow (2026-06-09 v8) — driven by the JS-toggled
+   [data-hero-mode][data-nav-revealed] attributes (NOT CSS :hover). The bar
+   arrives at 160px in the SAME transition as the slide-in, so the user sees
+   one motion instead of the v7 double-jump (88px slide-in followed by an
+   88→160px snap when :hover later fired). 160px guarantees the bar fully
+   covers the GAMOS brand mark (top:4%, ~95px tall → ~140px from top).
+   The opaque-ivory + box-shadow treatment lives in
+   css/components/site-nav-hover.css under the same selector. */
+html[data-hero-mode="true"][data-nav-revealed="true"] .site-nav__inner {
   padding-block: var(--space-10);
   min-block-size: 160px;
-}
-.site-nav:not(.is-scrolled):hover,
-.site-nav:not(.is-scrolled):focus-within {
-  background: rgba(245, 239, 230, 0.97);
-  box-shadow: var(--shadow-soft);
 }
 
 /* Brand -------------------------------------------------------------------- */
@@ -87,14 +83,14 @@
 
 .site-nav__brand-logo {
   display: block;
-  height: 56px;
+  height: 76px;
   width: auto;
-  max-inline-size: 260px;
+  max-inline-size: 340px;
   object-fit: contain;
   transition: opacity var(--dur-base) var(--ease-out-cinema),
               height  var(--dur-base) var(--ease-out-cinema);
 }
-.site-nav.is-scrolled .site-nav__brand-logo { height: 44px; }
+.site-nav.is-scrolled .site-nav__brand-logo { height: 56px; }
 
 .site-nav__brand:hover .site-nav__brand-logo { opacity: 0.85; }
 .site-nav__brand:focus-visible {
@@ -117,7 +113,7 @@
 
 .site-nav__links a {
   font-family: var(--font-body);
-  font-size: clamp(1.05rem, 1.2vw, 1.2rem);
+  font-size: clamp(1.25rem, 1.5vw, 1.5rem);
   font-weight: var(--fw-medium);
   letter-spacing: var(--tracking-normal);
   color: var(--fg);

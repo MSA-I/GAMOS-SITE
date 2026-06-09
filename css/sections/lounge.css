@@ -17,7 +17,11 @@
 
 .lounge {
   background: var(--bg);
-  padding-block: var(--space-32);
+  /* Asymmetric padding (2026-06-09 v8.3) — flush to the hero. The hero
+     exits with all 5 layers off-screen; this section's eyebrow lands on
+     the very next pixel below the hero's last visible frame. Bottom keeps
+     full breathing room before #culinary. */
+  padding-block: 0 var(--space-32);
   overflow: hidden;             /* contains 3D overflow when items rotate */
 }
 
