@@ -19,7 +19,17 @@
 
 
 .site-nav {
-  position: sticky;
+  /* position: fixed (was sticky) — 2026-06-10 bounce fix. A sticky nav
+     reserves an 81px box at its document origin (above #hero). The hero
+     hover-reveal mode switches the nav to `fixed` (no reserve, hero flush at
+     y=0); when the user scrolled ~80% past the hero, hero-mode dropped and the
+     nav reverted to `sticky`, RE-INSERTING that 81px reserve above the hero —
+     shoving the whole page down 81px mid-scroll (the "bounce" the user saw;
+     Playwright confirmed docHeight 21411→21492 + hero.top 0→81 at that exact
+     point). Keeping it `fixed` always removes the swap → no reserve ever →
+     no bounce. The hero is full-bleed at y=0 (correct), and post-hero the
+     fixed bar pins to top:0 exactly as the sticky one did when stuck. */
+  position: fixed;
   inset-block-start: 0;
   inset-inline: 0;
   z-index: var(--z-sticky);

@@ -73,7 +73,13 @@
     text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    scroll-behavior: smooth;
+    /* NO `scroll-behavior: smooth` (2026-06-10). All in-page anchor scrolls
+       run through GSAP ScrollToPlugin (js/scrollytelling.js global handler +
+       side-dot-nav). Native smooth-scroll re-animates every per-frame
+       window.scrollTo() the plugin makes — the two fight, and `autoKill`
+       reads the conflict as a user scroll and kills the tween early (this is
+       why the hero cue click never reached #lounge). The reduced-motion block
+       below already forces `auto`; default (no declaration) is also `auto`. */
     /* RTL is set on <html dir="rtl" lang="he"> in HTML; CSS uses logical props. */
   }
 
