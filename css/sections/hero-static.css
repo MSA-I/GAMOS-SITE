@@ -1,26 +1,16 @@
 /* ===========================================================================
-   hero-static.css — v7 single-section sticky-pin + two-phase rise (2026-06-09)
+   hero-static.css — v9 static composition (2026-06-10)
    ---------------------------------------------------------------------------
-   ONE section: <section id="hero" class="hero-static" data-scrub="hero-rise"
-   data-scrub-mode="poster-ken-burns" data-scrub-spacer-vh="150">.
-   Inside: a sticky-pinned 100vh interior `.hero-static__pin` containing all
-   five composed PNG layers.
+   ONE section: <section id="hero" class="hero-static" aria-label="פתיחה">.
+   Inside: a 100vh interior `.hero-static__pin` containing all five composed
+   PNG layers.
 
-   Section height = 150vh; pin = 100vh. Scroll travel = 50vh; the orchestrator
-   writes --scene-progress (0..1) on the section root via the poster-ken-burns
-   handler in js/scroll-scene.js.
-
-   Two-phase choreography (driven entirely by CSS calc on --scene-progress):
-
-     --p1 = min(1, 2*progress)         → 0→1 across progress 0→0.5  (Phase A)
-     --p2 = max(0, 2*progress - 1)     → 0→1 across progress 0.5→1  (Phase B)
-
-     Desert  : translateY( progress * -100vh )       — full travel, both phases
-     Others  : translateY( --p2     * -100vh )       — frozen until 0.5, then exit
-
-   At progress=0.5 the desert is at -50vh while the rest are at 0. From 0.5→1
-   the entire composition lifts together; #lounge takes over at the same speed
-   the rise completes — the trailing 50vh of the section IS the hero/lounge gap.
+   NO scroll-driven motion. The previous v8 two-phase rise (desert rises first
+   via --scene-progress, then every layer lifts together) was removed per user
+   request — it was buggy and did not deliver the intended effect. The hero is
+   now a frozen composition: nothing translates relative to anything else. The
+   whole section scrolls out of the viewport as a single unit in normal
+   document flow, and #lounge follows beneath it.
 
    Layer z-order (bottom → top):
      1. base    (שכבה 2.png)   z=1   ivory + bottom wave (full-viewport)
@@ -36,41 +26,17 @@
 .hero-static {
   position: relative;
   width: 100%;
-  /* v8.4 (2026-06-09) — Playwright revealed the user's "empty white band"
-     was the pin showing background ivory AFTER progress=1 but BEFORE the
-     pin un-stuck. With section=135vh, scroll-travel=35vh, layers exited
-     to -100vh by progress=1 (scrollY≈315), but the pin stayed sticky for
-     another 100vh (=section.height - pin.height + already-pinned-travel)
-     producing a long ivory dwell. The natural fix: cap section.height so
-     pin un-sticks the moment progress=1.
-     section.height = 100vh + scroll-travel.
-     With 35vh travel → section = 135vh (current). Pin un-sticks at
-     scrollY = section.height - pin.height = 35vh = end of rise. Aligned. */
-  height: 135vh;
-  /* v8.4: layers translate UP only as much as the section is taller than
-     the viewport (= 35vh). They DON'T jump fully off-screen at progress=1
-     — instead they exit *naturally* with the pin un-sticking. This kills
-     the "empty ivory pin" the user reported (Playwright probe confirmed:
-     the pin held 100vh of background-only ivory after rise completed
-     because layers were already at -100vh and the pin still had 100vh of
-     trailing scroll). With -35vh, at progress=1 the layers are at -35vh
-     yet still 65vh of content is visible; the rest of the exit happens
-     as the section itself scrolls past. */
-  --rise-end: -35vh;
+  height: 100vh;
   margin-block-start: 0;
   background: var(--ivory, #F5EFE6);
   z-index: 110;
   isolation: isolate;
-  --scene-progress: 0;
-  --p1: min(1, calc(var(--scene-progress) * 2));
-  --p2: max(0, calc(var(--scene-progress) * 2 - 1));
 }
 
 .hero-static__pin {
-  position: sticky;
-  top: 0;
+  position: relative;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -80,22 +46,6 @@
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
-  will-change: transform;
-}
-
-/* ---------------------------------------------------------------------------
-   Phase B rise (base, gamos, events, resort) — frozen until progress=0.5,
-   then translate from 0 → -100vh as progress goes 0.5 → 1.
-   --------------------------------------------------------------------------- */
-.hero-static__layer--base,
-.hero-static__layer--gamos,
-.hero-static__layer--events,
-.hero-static__layer--resort {
-  /* v8.4: rise capped at --rise-end (= -(section.height - 100vh)) so the
-     layers exit exactly together with the pin un-sticking. Remaining
-     viewport-clear distance is then handled by the section's natural
-     scroll-out, not by an empty pin showing background ivory. */
-  transform: translateY(calc(var(--p2) * var(--rise-end)));
 }
 
 /* Layer 1: base — fills the pin */
@@ -124,14 +74,11 @@ img.hero-static__layer--gamos {
 }
 
 /* Layers 3 + 4: EVENTS / RESORT — centered horizontally, stacked vertically.
-   Lowered from z=5 → z=3/4 so the desert (z=10) covers them per user spec.
-   The CTA hover/focus rules combine the Phase B rise with translateX(-50%)
-   centering — see :hover / :focus-visible blocks below. */
+   z=3/4 so the desert (z=10) covers them per the composition spec. */
 .hero-static__layer--events,
 .hero-static__layer--resort {
   left: 50%;
-  /* Base transform: center horizontally + Phase B rise (capped, see v8.4). */
-  transform: translateX(-50%) translateY(calc(var(--p2) * var(--rise-end)));
+  transform: translateX(-50%);
   width: clamp(220px, 22vw, 360px);
   height: auto;
   pointer-events: auto;
@@ -151,9 +98,8 @@ img.hero-static__layer--gamos {
   transition: filter 280ms ease, transform 320ms cubic-bezier(.2,.7,.2,1);
 }
 
-/* Hover / focus glow. We can't compose `scale(1.06)` onto the parent's
-   transform without overriding the rise — so push the visual lift onto the
-   inner <img> via its own transform. */
+/* Hover / focus glow. The visual lift rides on the inner <img> so it never
+   fights the parent's translateX(-50%) centering. */
 .hero-static__cta:hover img,
 .hero-static__cta:focus-visible img {
   transform: scale(1.06);
@@ -174,7 +120,7 @@ img.hero-static__layer--gamos {
 }
 
 /* ---------------------------------------------------------------------------
-   Layer 5: desert (TOPMOST). Rises across BOTH phases, full -100vh travel.
+   Layer 5: desert (TOPMOST). Static — anchored to the bottom of the pin.
    --------------------------------------------------------------------------- */
 .hero-static__layer--desert {
   left: 0;
@@ -183,8 +129,6 @@ img.hero-static__layer--gamos {
   width: 100%;
   height: auto;
   z-index: 10;
-  /* v8.4: linear travel from 0 to --rise-end (capped at section scroll-travel). */
-  transform: translateY(calc(var(--scene-progress, 0) * var(--rise-end)));
 }
 .hero-static__layer--desert img {
   display: block;
@@ -195,8 +139,8 @@ img.hero-static__layer--gamos {
 /* ---------------------------------------------------------------------------
    Scroll cue — pill outline with a falling brass dot. Ported from the /press/
    hero (.press-hero__cue) so the two pages match. Anchored to the bottom of
-   the pinned 100vh viewport, ABOVE the desert (z=10). It is a "scroll down"
-   hint, so it fades out as the rise begins (--p1: 0→1 across progress 0→0.5).
+   the 100vh viewport, ABOVE the desert (z=10). Always visible "scroll down"
+   hint; the falling-dot loop is an idle animation, unrelated to scroll.
    --------------------------------------------------------------------------- */
 .hero-static__cue {
   position: absolute;
@@ -213,8 +157,7 @@ img.hero-static__layer--gamos {
   border-radius: 999px;
   text-decoration: none;
   pointer-events: auto;
-  /* Fade out as the user starts scrolling (the rise consumes --p1 first). */
-  opacity: calc(1 - var(--p1));
+  opacity: 1;
   transition: border-color var(--dur-base) var(--ease-out-cinema);
 }
 .hero-static__cue:hover,
@@ -253,9 +196,8 @@ img.hero-static__layer--gamos {
 }
 
 /* ---------------------------------------------------------------------------
-   Mobile (≤768px) — preserve existing CTA repositioning. The Phase B rise
-   still applies. The .hero-static__cta transform must keep translateX(-50%)
-   so the centering survives at narrow widths.
+   Mobile (≤768px) — CTA repositioning. The translateX(-50%) centering is kept
+   so EVENTS/RESORT stay centered at narrow widths.
    --------------------------------------------------------------------------- */
 @media (max-width: 768px) {
   .hero-static__layer--gamos {
@@ -272,19 +214,10 @@ img.hero-static__layer--gamos {
 }
 
 /* ---------------------------------------------------------------------------
-   Reduced motion: freeze ALL rises (desert + Phase B layers).
-   Hover/focus glow stays — only the scale + transition are killed.
+   Reduced motion: only the idle falling-dot loop is animation. Freeze it.
+   The hover/focus glow stays — only the scale + transition are killed.
    --------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
-  .hero-static__layer--base,
-  .hero-static__layer--gamos,
-  .hero-static__layer--desert {
-    transform: none;
-  }
-  .hero-static__layer--events,
-  .hero-static__layer--resort {
-    transform: translateX(-50%);
-  }
   .hero-static__cta img,
   .hero-static__cta {
     transition: none;
@@ -293,7 +226,6 @@ img.hero-static__layer--gamos {
   .hero-static__cta:focus-visible img {
     transform: none;
   }
-  /* Freeze the falling-dot loop; keep the cue visible at the start. */
   .hero-static__cue-dot {
     animation: none;
     opacity: 1;

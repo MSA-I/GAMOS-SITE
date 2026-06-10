@@ -222,11 +222,14 @@
   <main id="main-content">
 
     <!-- ====================================================================
-         #hero — Single-section sticky-pin hero (v7, 2026-06-09)
-         135vh section with a 100vh sticky pin → 35vh of scroll travel drives
-         --scene-progress 0→1 (poster-ken-burns mode in js/scroll-scene.js).
-         data-scrub="hero-rise" (NOT "hero" — id "hero" is reserved/skipped at
-         scroll-scene.js:184; the scene id lives on data-scrub).
+         #hero — Static composition hero (v9, 2026-06-10)
+         100vh section. NO scroll-driven motion: the previous two-phase rise
+         (desert-rises-first then everything lifts together, driven by
+         --scene-progress) was removed per user request — it was buggy and
+         didn't deliver the intended effect. The hero is now ONE frozen
+         composition that simply scrolls out of the viewport as a single unit
+         in normal document flow; #lounge follows beneath it. The 5-layer
+         z-order / composition is preserved exactly.
 
          Layers (z-order bottom→top, see hero-static.css):
            1. base   (שכבה 2.png)   z=1   ivory + bottom wave
@@ -235,21 +238,12 @@
            4. resort (RESORT 2.png) z=4   CTA → /halls/dist/lumina/ (covered by desert)
            5. desert (מדבר.png)     z=10  TOPMOST — covers EVENTS / RESORT typography
 
-         Two-phase scroll (CSS calc on --scene-progress):
-           Phase A (progress 0 → 0.5): ONLY desert rises from translateY(0)
-                                       toward translateY(-50vh).
-           Phase B (progress 0.5 → 1): desert keeps rising (-50vh → -100vh)
-                                       AND base+gamos+events+resort rise together
-                                       (0 → -100vh) — entire composition exits
-                                       upward, simultaneously revealing #lounge.
-
-         v8 (2026-06-09): the rise spans 10vh of scroll; #lounge enters
-         immediately after progress=1 — no visual gap between hero and lounge.
+         No data-scrub attributes → js/scroll-scene.js does not register the
+         section, so --scene-progress is never written. The window.gamosHero
+         stub (js/hero-static.js) still reports scroll position to side-dot-nav
+         and portals via its own getBoundingClientRect math.
     ==================================================================== -->
     <section id="hero" class="hero-static"
-             data-scrub="hero-rise"
-             data-scrub-mode="poster-ken-burns"
-             data-scrub-spacer-vh="135"
              aria-label="פתיחה">
       <div class="hero-static__pin">
 
@@ -295,9 +289,9 @@
         </picture>
 
         <!-- Scroll cue (matches /press/ hero): pill outline + falling brass
-             dot. Sits at the bottom of the pinned viewport, fades out as the
-             rise begins. -->
-        <a class="hero-static__cue" href="#lounge" aria-label="גלול לתוכן">
+             dot. Sits at the bottom of the hero. Clicking it smooth-scrolls
+             to the next section (#lounge) via its href + scroll-behavior. -->
+        <a class="hero-static__cue" href="#lounge" aria-label="גלול לסקציה הבאה">
           <span class="hero-static__cue-track" aria-hidden="true">
             <span class="hero-static__cue-dot"></span>
           </span>
@@ -846,7 +840,7 @@
             <p class="about__lede"
                data-reveal="slide-right"
                style="--reveal-delay: 300ms;">
-              גאמוס אינו רק אולם אירועים, אלא מתחם אירוח שלם: אולם מרשים המותאם לאירועים בכל גודל, גן אירועים פתוח וריזורט יוקרתי הפונה לנוף המדבר. אנחנו מאמינים שאין שני אירועים זהים, ולכן כל אירוע נבנה בהתאמה אישית מלאה, מהקונספט והעיצוב ועד הפרטים הקטנים ביותר.
+              גאמוס אינו רק אולם אירועים, אלא מתחם אירוח שלם: אולם מרשים המותאם לאירועים בכל גודל, גן אירועים פתוח וריזורט יוקרתי ומקורה הכולל <bdi>33</bdi> סוויטות אירוח מעוצבות, בריכה מחוממת, ספא מפנק ובית כנסת. אנחנו מאמינים שאין שני אירועים זהים, ולכן כל אירוע נבנה בהתאמה אישית מלאה, מהקונספט והעיצוב ועד הפרטים הקטנים ביותר.
             </p>
             <p class="about__lede"
                data-reveal="slide-right"
@@ -872,7 +866,7 @@
               </div>
               <div class="about__stat">
                 <dt>שנות מצוינות</dt>
-                <dd><bdi><span class="stat-number" data-value="8" data-decimals="0">0</span></bdi></dd>
+                <dd><bdi><span class="stat-number" data-value="30" data-decimals="0">0</span>+</bdi></dd>
               </div>
               <div class="about__stat">
                 <dt>אירועים מדי שנה</dt>

@@ -665,6 +665,17 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
   display: block;
   background: var(--ink-deep);
 }
+/* ShaderMount (Paper Shaders) injects its own <canvas> children into the host
+   div and into each stacked layer; make them fill so the gradient is full-bleed. */
+.press-closer__layer {
+  position: absolute;
+  inset: 0;
+}
+.press-closer__canvas canvas {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
 
 /* Lighter shade than the old photo needed — just enough vignette so the
    cream title + buttons stay legible over the brighter aurora tones. */
@@ -674,9 +685,9 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
   z-index: -1;
   background:
     radial-gradient(120% 90% at 50% 50%,
-      rgba(26, 20, 16, 0.00) 0%,
-      rgba(26, 20, 16, 0.18) 55%,
-      rgba(26, 20, 16, 0.42) 100%);
+      rgba(18, 13, 10, 0.35) 0%,
+      rgba(18, 13, 10, 0.50) 55%,
+      rgba(18, 13, 10, 0.66) 100%);
 }
 
 .press-closer__content {

@@ -377,10 +377,11 @@
        CTA CLOSER — full-bleed photograph + headline + buttons
   ======================================================================== -->
   <section class="press-closer" aria-label="קריאה לפעולה">
-    <!-- 2026-06-10: static photo replaced by an interactive raw-WebGL aurora-
-         hills shader (js/press-shader.js). Reacts to the mouse; auto-flows on
-         touch / reduced-motion. -->
-    <canvas class="press-closer__canvas" data-press-shader aria-hidden="true"></canvas>
+    <!-- 2026-06-10: animated Paper Shaders MeshGradient background (brand
+         palette), mounted by js/press-shader.js. ShaderMount injects its own
+         <canvas> children into this host div. Static under reduced-motion;
+         pauses offscreen. -->
+    <div class="press-closer__canvas" data-press-shader aria-hidden="true"></div>
     <div class="press-closer__shade" aria-hidden="true"></div>
 
     <div class="press-closer__content">
