@@ -66,3 +66,10 @@ assets/_src/
 ruvector.db
 .claude-cache/
 .claude/
+
+# Agent-tooling scratch state — local only, never part of the site payload.
+# .swarm/ + claude-flow.config.json: claude-flow / ruflo orchestration state.
+# index.html.artifact.json: Open Design artifact sidecar.
+.swarm/
+claude-flow.config.json
+*.artifact.json
