@@ -195,11 +195,17 @@ export default class TrailHeadParticles {
 
   public dispose(): void {
     this.clear();
+    // Unparent the meshes from the scene graph BEFORE releasing their GPU
+    // resources, so the renderer holds no stale reference between the two
+    // steps (Three.js best practice, plan risk #3 — mirrors Trail.dispose()).
+    this.group.clear();
     for (const particle of this.particles) {
       particle.mesh.material.dispose();
     }
+    // The shared SphereGeometry is owned here (one instance for the whole
+    // pool) — dispose it so it does not leak in the WebGL context across
+    // StrictMode mount→unmount→mount cycles.
     this.sharedGeometry.dispose();
-    this.group.clear();
     this.particles.length = 0;
   }
 

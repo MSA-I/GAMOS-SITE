@@ -110,6 +110,27 @@ export default class Trail {
   private readonly _radialOffset = new THREE.Vector3();
   private readonly _vertex = new THREE.Vector3();
 
+  // Pooled curve reused every rebuildTube() call. The reference allocated a
+  // fresh CatmullRomCurve3 per frame (transient object → GC pressure, plan
+  // risk #1). We keep ONE instance and re-feed `this.points` + re-set tension
+  // on each call (CatmullRomCurve3.points/curveType/tension are public mutable
+  // fields). The curve holds no GPU resources, only a points ref + scalars.
+  private readonly _curve = new THREE.CatmullRomCurve3(
+    [],
+    false,
+    "centripetal",
+    0.5,
+  );
+
+  // Pooled scratch vectors for recomputeNormals() (reused per frame, see
+  // accumulateFaceNormal). Previously these were five `new THREE.Vector3()`
+  // allocations per rebuild (plan risk #1).
+  private readonly _faceA = new THREE.Vector3();
+  private readonly _faceB = new THREE.Vector3();
+  private readonly _faceC = new THREE.Vector3();
+  private readonly _faceCB = new THREE.Vector3();
+  private readonly _faceAB = new THREE.Vector3();
+
   public readonly material: TrailMaterial;
 
   constructor(opts: TrailOptions = {}) {
@@ -120,6 +141,12 @@ export default class Trail {
       3,
       Math.round(opts.radialSegments ?? DEFAULT_RADIAL_SEGMENTS),
     );
+    // MIN 24 is a SAFETY FLOOR for a bare `new Trail()` only — it guarantees a
+    // usable tube even if no cap is supplied. The quality.ts downscale ladder
+    // (the sole caller) always supplies maxPathPointCap >= 80 (mobile) / 220
+    // (desktop), both well above 24, so this floor NEVER silently overrides the
+    // intended downscale. (If a future caller passed < 24 it would be upgraded
+    // to 24 — acceptable, since a tube needs a minimum segment count to read.)
     this.maxCurveSegments = Math.max(
       24,
       Math.round(opts.maxPathPointCap ?? DEFAULT_MAX_PATH_POINT_CAP),
@@ -256,12 +283,13 @@ export default class Trail {
    */
   private rebuildTube(): void {
     // Curve through the current points (reference: centripetal Catmull-Rom).
-    const curve = new THREE.CatmullRomCurve3(
-      this.points,
-      false,
-      "centripetal",
-      this.curveTension,
-    );
+    // Reuse the pooled curve: re-feed the points array + tension instead of
+    // allocating a new CatmullRomCurve3 every frame (plan risk #1).
+    const curve = this._curve;
+    curve.points = this.points;
+    curve.curveType = "centripetal";
+    curve.closed = false;
+    curve.tension = this.curveTension;
     const segments = Math.max(
       24,
       Math.min(this.maxCurveSegments, this.points.length * 4),
@@ -340,11 +368,12 @@ export default class Trail {
     // Zero the active normals.
     for (let v = 0; v < activeVertices * 3; v += 1) normals[v] = 0;
 
-    const pA = new THREE.Vector3();
-    const pB = new THREE.Vector3();
-    const pC = new THREE.Vector3();
-    const cb = new THREE.Vector3();
-    const ab = new THREE.Vector3();
+    // Reuse the pooled scratch vectors (no per-frame allocation — plan risk #1).
+    const pA = this._faceA;
+    const pB = this._faceB;
+    const pC = this._faceC;
+    const cb = this._faceCB;
+    const ab = this._faceAB;
 
     // Accumulate face normals across each quad (two triangles) in the active
     // span — same winding as buildFullIndex.
@@ -425,13 +454,19 @@ export default class Trail {
     this.material.opacity = opacity;
   }
 
-  /** Free GPU resources (called by TrailController.dispose → Experience). */
+  /**
+   * Free GPU resources (called by TrailController.dispose → Experience).
+   * Order: unparent the mesh from the scene graph FIRST, then release its GPU
+   * resources — so the renderer holds no stale reference to a disposed
+   * geometry/material between the two steps (Three.js best practice, plan
+   * risk #3).
+   */
   public dispose(): void {
     this.points = [];
-    this.geometry.dispose();
-    this.material.dispose();
     this.group.remove(this.mesh);
     this.group.clear();
+    this.geometry.dispose();
+    this.material.dispose();
   }
 }
 

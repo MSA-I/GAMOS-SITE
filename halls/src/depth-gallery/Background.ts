@@ -266,10 +266,13 @@ export default class Background {
   public dispose(): void {
     if (this.disposed) return;
     this.disposed = true;
+    // Unparent the mesh FIRST, then release its GPU resources (Three.js best
+    // practice, plan risk #3). No scene.clear() — the scene is private to
+    // Background and holds only this one mesh; clear() would be both redundant
+    // and a foot-gun if Background is ever extended to add more objects.
+    this.scene.remove(this.mesh);
     this.mesh.geometry.dispose();
     this.material.dispose();
-    this.scene.remove(this.mesh);
-    this.scene.clear();
   }
 
   // --- private ---

@@ -46,6 +46,15 @@
  * in-session OS toggle is worth the listener. With velocity pinned to 0 under
  * reduce, the breath / drift / blob response downstream all read 0 too, so the
  * whole atmosphere stays static — one coherent switch, sourced once.
+ *
+ * LIFECYCLE CONTRACT: `dispose()` MUST be called for every Scroll instance
+ * (it removes the wheel/touch/keydown listeners AND the live matchMedia
+ * change-listener). If a new Scroll is constructed without disposing the prior
+ * one, BOTH matchMedia listeners accumulate in the media-query list. The owner
+ * (Engine) guards this: `Engine.dispose()` always calls `scroll?.dispose()`
+ * before dropping the reference, and DepthGallery never constructs a second
+ * Scroll without first disposing the Engine that holds the first. Any future
+ * caller that constructs Scroll directly inherits the same obligation.
  */
 
 import { lerp, clamp } from "./utils";

@@ -1,6 +1,7 @@
 # Halls Depth Gallery — Full-Fidelity Rebuild (warm-luxury Gamos skin)
 
-**Status:** approved
+**Status:** done
+**Completed:** 2026-06-10 (17-agent background Workflow; build green, tsc clean, no bleed. Pending: live-browser visual/perf QA + user's real copy. See CLAUDE.md §12 row 2026-06-10 Halls rebuild.)
 **Category:** features
 **Created:** 2026-06-10
 **Author agent:** main (Plan-mode research + 3 Explore + 1 Plan sub-agents)
