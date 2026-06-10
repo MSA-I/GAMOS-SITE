@@ -51,8 +51,6 @@ export interface PlaneBlendData {
 }
 
 const PLANE_GAP = 5;
-const FIRST_VIEW_OFFSET = 5;
-const LAST_VIEW_OFFSET = 5;
 const PLANE_FADE_SMOOTHING = 0.14;
 // Reference uses a square PlaneGeometry(3,3) and scales by texture aspect.
 const PLANE_GEOMETRY_SIZE = 3;
@@ -89,15 +87,16 @@ const PLANE_INWARD_YAW = 0.20; // radians (~11.5°)
 // approaching (reference planeFadeSampleOffset = moodSampleOffset = 1).
 const SAMPLE_OFFSET = 1;
 
-// Passing-cull window (world units of z AHEAD of the camera). A plane fully
-// fades out over this window as the camera closes on it, hitting 0 by
-// PASS_CULL_NEAR so it's gone before the camera is level with it (where a
-// side-mounted plane would otherwise smear across the channel). Tuned so the
-// cull starts well after the plane has had its on-axis "hero" moment: the gap
-// is 5, so a plane is the focused/nearest one around zAhead≈5..2; culling from
-// 2.2 down to 0.6 removes only the awkward fly-alongside tail.
-const PASS_CULL_RANGE = 2.2; // start culling when this close (in front)
-const PASS_CULL_NEAR = 0.6; // fully culled by here
+// Focus-window opacity model (see updatePlaneVisibility). A plane is brightest
+// when the camera is FOCUS_AHEAD world-units in front of it (its "hero" depth),
+// and fades to 0 over FOCUS_FALLOFF on either side. With FOCUS_AHEAD = 2.5 and
+// FOCUS_FALLOFF = 2.5 the plane hits 0 exactly when the camera is level with it
+// (zAhead = 0) — so a side-mounted plane is gone before it can smear across the
+// channel — and is also invisible until ~5 units ahead, keeping only ~1–2
+// planes on screen at once (the focused read the user asked for). PLANE_GAP is
+// 5, so consecutive planes' focus windows just touch: a clean hand-off.
+const FOCUS_AHEAD = 2.5; // world units ahead of a plane where it peaks
+const FOCUS_FALLOFF = 2.5; // half-width of the triangular opacity window
 
 // Default texture anisotropy when the renderer's max-anisotropy is not
 // available to us (Gallery doesn't hold a renderer reference). 4 is a safe
@@ -354,50 +353,42 @@ export default class Gallery {
   }
 
   /**
-   * Pure-opacity crossfade (reference updatePlaneVisibility). The plane the
-   * camera is leaving fades to `1 - blend`, the one it's approaching rises to
-   * `blend`; everything else fades to 0. Lerp-smoothed (0.14) so the transition
-   * is gentle. NO desaturation — receding planes simply fade out.
+   * Distance-to-focus opacity model (adapted from the reference crossfade for
+   * our WIDE landscape planes on alternating sides).
+   *
+   * The reference samples a FULL gap ahead and cross-dissolves the two nearest
+   * planes. With its narrow PORTRAIT planes that's fine, but our ~3-unit-wide
+   * LANDSCAPE planes, sitting at x=±1.55 while the camera runs down the channel
+   * at x=0, smear faintly across half the frame whenever they're partially
+   * opaque AND far from their focal depth (the "bloom"/dizziness the user saw:
+   * a plane ~6 units ahead was already at 0.75 opacity).
+   *
+   * Instead we give every plane a FOCAL DEPTH — the point where the camera is
+   * `FOCUS_AHEAD` in front of it — and drive opacity purely by how close the
+   * camera's "ahead distance" is to that focus, via a triangular falloff of
+   * half-width `FOCUS_FALLOFF`. So a plane is invisible until it nears its hero
+   * position, peaks once, and fades before the camera draws alongside it (where
+   * a side plane would smear). Only ~1–2 planes are ever visible — the focused
+   * one and a brief neighbour — which is the calmer, focused read the user
+   * asked for. Lerp-smoothed (0.14) as before.
    */
   private updatePlaneVisibility(cameraZ: number): void {
-    const blendData = this.getPlaneBlendData(cameraZ);
-    if (!blendData) return;
-    const { currentPlaneIndex, nextPlaneIndex, blend } = blendData;
-
     for (let i = 0; i < this.planes.length; i++) {
-      let target = 0;
-      if (i === currentPlaneIndex) target = 1 - blend;
-      if (i === nextPlaneIndex) target = Math.max(target, blend);
-
-      // PASSING CULL (anti-"bloom"): because planes sit on alternating SIDES at
-      // x=±1.55 with the camera travelling straight down the channel at x=0, a
-      // plane the camera draws ALONGSIDE (its z ≈ cameraZ) is only ~1.55 units
-      // off-axis — at that range a 3-unit-wide plane balloons across half the
-      // opposite side of the frame. The pure blend crossfade alone still has it
-      // at partial opacity there. So we additionally fade a plane out as the
-      // camera closes within PASS_CULL_RANGE in front of it, reaching 0 by the
-      // time the camera is level — the leaving image is gone before it can
-      // smear across the channel. (Planes deeper than the camera are unaffected;
-      // only the one being passed is culled.)
-      // Camera starts at z≈+5 and scrolls toward −z, looking down −z. A plane
-      // at planeZ is IN FRONT while planeZ < cameraZ, so the in-front distance
-      // is cameraZ − planeZ (positive ahead, 0 when level, negative once passed).
-      const planeZ = this.getPlaneZ(i);
-      const zAhead = cameraZ - planeZ;
-      if (zAhead < PASS_CULL_RANGE) {
-        const cull = clamp(
-          (zAhead - PASS_CULL_NEAR) / (PASS_CULL_RANGE - PASS_CULL_NEAR),
-          0,
-          1,
-        );
-        target *= cull;
-      }
+      // zAhead > 0 while plane i is still in front of the camera; it equals
+      // FOCUS_AHEAD at the plane's hero moment, 0 when the camera is level, and
+      // goes negative once passed. (Camera starts at z≈+5, scrolls toward −z.)
+      const zAhead = cameraZ - this.getPlaneZ(i);
+      // Triangular focus window centred on FOCUS_AHEAD, half-width FOCUS_FALLOFF.
+      const distFromFocus = Math.abs(zAhead - FOCUS_AHEAD);
+      let target = clamp(1 - distFromFocus / FOCUS_FALLOFF, 0, 1);
+      // Ease so the shoulders are soft and the peak holds briefly (smoothstep).
+      target = target * target * (3 - 2 * target);
 
       // Failed-load planes stay invisible — see `failed` field doc.
       if (this.failed[i]) target = 0;
       // Not-yet-decoded planes stay invisible until their texture lands, so we
       // never paint an untextured / square plane (finding #20). Once decoded
-      // the normal crossfade target applies and the plane lerps in.
+      // the normal focus target applies and the plane lerps in.
       if (!this.decoded[i]) target = 0;
 
       const prev = Number.isFinite(this.currentOpacities[i])
@@ -594,17 +585,18 @@ export default class Gallery {
   }
 
   public getCameraStartZ(): number {
-    return FIRST_VIEW_OFFSET; // nearestZ (0) + FIRST_VIEW_OFFSET
+    // Start with plane 0 AT its focal depth (camera FOCUS_AHEAD in front of
+    // z=0) so the first plane is already in focus on first paint — not blank.
+    return FOCUS_AHEAD;
   }
 
   public getCameraMinZ(): number {
-    // deepestZ + LAST_VIEW_OFFSET (reference minCameraZ).
-    return this.getPlaneZ(Math.max(this.projects.length - 1, 0)) +
-      LAST_VIEW_OFFSET;
+    // End with the LAST plane at its focal depth: camera = deepestZ + FOCUS_AHEAD.
+    return this.getPlaneZ(Math.max(this.projects.length - 1, 0)) + FOCUS_AHEAD;
   }
 
   public getCameraMaxZ(): number {
-    return FIRST_VIEW_OFFSET; // = cameraStartZ
+    return FOCUS_AHEAD; // = cameraStartZ (plane 0 in focus)
   }
 
   public dispose(): void {

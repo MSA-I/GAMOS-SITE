@@ -146,21 +146,23 @@ body {
     color: transparent;
   }
 
-  /* Default: DARK texture (gold flecks on near-black) for titles on the
-     light/ivory label chip — the dominant case. */
-  .texture-text,
+  /* DARK texture (gold flecks on near-black) for titles on light surfaces. */
   .texture-text--dark {
     background-image: var(--typo-on-light);
   }
 
-  /* LIGHT texture (cream + gold) for titles over dark surfaces. */
+  /* LIGHT texture (cream + gold) for titles over dark surfaces. The hall
+     labels now ALWAYS use this (the gallery sits on a dim warm ground, and the
+     user asked for light text in both halls), so `.texture-text--light` is the
+     authoritative variant and wins regardless of the frame-dark flag below. */
+  .texture-text,
   .texture-text--light {
     background-image: var(--typo-on-dark);
   }
 
-  /* frame-dark: nearest plane is a bright photo → flip the label title to
-     the LIGHT cream fill so it reads against the photo through the chip. */
-  [data-frame-dark="true"] .texture-text,
+  /* frame-dark legacy flip: kept for any non-light caller, but it must NOT
+     override an explicit `--light` request (the hall label). Scoped to the
+     bare/`--dark` variants only. */
   [data-frame-dark="true"] .texture-text--dark {
     background-image: var(--typo-on-dark);
   }
@@ -184,10 +186,14 @@ body {
   line-height: 1.1;
   letter-spacing: 0.01em;
   font-size: clamp(1.35rem, 2.6vw, 2.25rem);
+  /* Light fallback (non-clip engines) + a soft drop so the cream texture-fill
+     title stays legible if the camera ever passes a bright photo region. */
   color: var(--color-ivory);
+  filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.45));
 }
 
-/* Index — "NN / TT" engraved monospace-ish counter. */
+/* Index — "NN / TT" engraved monospace-ish counter. Light, with a soft drop
+   so it reads over any frame. */
 .hall-label__index {
   margin: 0;
   font-family: var(--font-display);
@@ -195,7 +201,8 @@ body {
   font-size: clamp(0.72rem, 0.9vw, 0.85rem);
   letter-spacing: 0.32em;
   font-variant-numeric: tabular-nums;
-  color: color-mix(in srgb, var(--color-ivory) 78%, transparent);
+  color: color-mix(in srgb, var(--color-ivory) 92%, transparent);
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.45);
 }
 
 /* Spec block — location / year rows (replaces CMYK/RGB/HEX/PMS). */
@@ -212,7 +219,10 @@ body {
   font-size: clamp(0.6rem, 0.72vw, 0.72rem);
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-brass) 92%, transparent);
+  /* Brass-tinted but lightened (mixed toward ivory, not toward transparent) so
+     the key reads bright like the rest of the label. */
+  color: color-mix(in srgb, var(--color-brass) 70%, var(--color-ivory));
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
 }
 
 .hall-label__spec-val {
@@ -220,5 +230,6 @@ body {
   font-weight: 500;
   font-size: clamp(0.78rem, 0.95vw, 0.95rem);
   letter-spacing: 0.01em;
-  color: color-mix(in srgb, var(--color-ivory) 90%, transparent);
+  color: var(--color-ivory);
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.45);
 }
