@@ -40,6 +40,14 @@
   <link rel="preload" as="image" type="image/webp"
         href="/assets/images/hero/resort.webp">
 
+  <!-- Performance: preload shabbat-chatan panel-1 image (visible at section enter) -->
+  <link rel="preload" as="image" type="image/webp"
+        href="/assets/images/shabbat-chatan/01.full.webp"
+        media="(min-width: 769px)">
+  <link rel="preload" as="image" type="image/webp"
+        href="/assets/images/shabbat-chatan/01.half.webp"
+        media="(max-width: 768px)">
+
   <!-- Performance: preload critical fonts (Rubik display, Hebrew + Latin) -->
   <link rel="preload" as="font" type="font/woff2" crossorigin
         href="/assets/fonts/rubik-hebrew.woff2">
@@ -572,9 +580,11 @@
     <section id="shabbat-chatan" class="shabbat" aria-labelledby="shabbat-title">
       <div class="shabbat__container">
 
+        <h2 id="shabbat-title" class="visually-hidden">שבתות חתן</h2>
+
         <div class="shabbat__panels" role="presentation">
           <article class="shabbat__panel">
-            <h2 id="shabbat-title" class="shabbat__heading texture-text texture-text--dark">צאו מהקצב היומיומי</h2>
+            <h2 class="shabbat__heading texture-text texture-text--dark">צאו מהקצב היומיומי</h2>
           </article>
           <article class="shabbat__panel">
             <h2 class="shabbat__heading texture-text texture-text--dark">שולחנות ערוכים בכבוד</h2>
@@ -599,7 +609,7 @@
             <picture>
               <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/01.half.webp">
               <source type="image/webp" srcset="/assets/images/shabbat-chatan/01.full.webp">
-              <img src="/assets/images/shabbat-chatan/01.full.jpg" alt="שולחן שבת ערוך לכבוד שבת חתן ברחבה הירוקה" loading="lazy" decoding="async" draggable="false">
+              <img src="/assets/images/shabbat-chatan/01.full.jpg" alt="שולחן שבת ערוך לכבוד שבת חתן ברחבה הירוקה" loading="eager" fetchpriority="high" decoding="async" draggable="false">
             </picture>
           </figure>
           <figure class="shabbat__media" data-index="4">

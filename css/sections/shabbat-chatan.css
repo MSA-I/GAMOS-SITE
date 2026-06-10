@@ -1,165 +1,180 @@
 /* =============================================================================
    Section: #shabbat-chatan — שבתות חתן
    ---------------------------------------------------------------------------
-   DOM port of David Faure's horizontal parallax gallery (Codrops, MIT,
-   https://github.com/davidfaure/horizontal-parallax-gallery-codrops). The
-   section is a self-contained 100vh scroll-trap — no orchestrator binding,
-   no spacer. JS engages a wheel/touch hijack when the section is ≥95% in
-   view and releases at the gallery's edges.
+   GSAP pinned mask-reveal pattern, port of CodePen WbQPRwv
+   ("GSAP pinned image mask reveal on scroll" by gridmorphic).
 
-   Image dims, overshoot %, and aspect-ratio are verbatim from Faure's
-   src/gallery/gallery.css. Mobile + reduced-motion fall back to a vertical
-   column with no transforms.
+   Layout: two columns inside .shabbat__container. .shabbat__panels is a
+   vertical flex column of 5 × .shabbat__panel, each min-block-size 100vh
+   so the parent is 500vh tall. .shabbat__stage is sibling, block-size:
+   100vh, position: relative; it gets pinned by ScrollTrigger across the
+   container's scroll. Inside the stage, 5 × .shabbat__media are stacked
+   absolutely (inset-block-start: 50%, transform: translateY(-50%)) and
+   z-index ordered from data-index. The JS animates each image's clip-path
+   and object-position to wipe upward + Ken-Burns down, revealing the
+   image stacked beneath.
 
-   Constitution §2 (vanilla), §4 (RTL logical props), §5 (palette tokens),
-   §8 (perf), §10.2 (tokens single-source).
+   Background: section paints var(--shabbat-tint, --shabbat-tint-1) — the
+   GSAP timeline writes --shabbat-tint per panel for the cross-fade.
+
+   RTL safety: only block-axis animation (clip-path top→bottom, object-
+   position Y). No left/right semantics — both LTR and RTL render the
+   stage on the inline-end side via flex order.
+
+   Constitution §2 (vanilla), §4 (RTL logical props), §5 user-authorised
+   pastel exception (tokens at css/tokens.css), §8 (perf — compositor-only),
+   §10 (module-scoped, tokens single-source).
    ========================================================================== */
 
 .shabbat {
   position: relative;
   inline-size: 100%;
   isolation: isolate;
-  /* Deep warm-brown ground (per user reference: a near-ink chocolate, not
-     pure ink-deep). Matches the lower-luma anchor of the typo-on-dark
-     texture wash. */
-  background-color: #1B1410;
-  color: var(--ivory);
+  background-color: var(--shabbat-tint, var(--shabbat-tint-1, #EDF9FF));
+  color: var(--ink-deep);
 }
 
-/* The pinned 100vh stage — owns the visual layout (title above, gallery
-   below). The orchestrator drives horizontal scroll via gamosShabbat(p). */
-.shabbat__sticky.scroll-scene__sticky,
-.shabbat .scroll-scene__sticky {
-  background-color: #1B1410;
+.shabbat__container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: clamp(1.5rem, 4vw, 60px);
+  max-inline-size: var(--container-wide, 1100px);
+  margin-inline: auto;
+  padding-inline: var(--gutter, clamp(1rem, 4vw, 2rem));
+  /* The container's block-size IS the scroll range. 5 panels × 100vh. */
+}
+
+/* Left column — natural scrolling text panels. */
+.shabbat__panels {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 4vh;
-  padding-block: 6vh 4vh;
-  overflow: hidden;
+  flex: 0 1 auto;
+  min-inline-size: clamp(240px, 30vw, 360px);
 }
 
-.shabbat__title {
-  position: relative;
-  inset: auto;
-  z-index: 6;
-  pointer-events: none;
-  inline-size: 100%;
-  max-inline-size: min(64rem, 88vw);
-  padding-inline: 8vw;
-  margin-inline: 0;
-  text-align: start;
-  flex: 0 0 auto;
-}
-
-.shabbat__eyebrow {
-  margin: 0;
-  font-weight: 500;
-  font-size: clamp(0.875rem, 1.1vw, 1rem);
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: var(--brass);
-  opacity: 0.92;
+.shabbat__panel {
+  min-block-size: 100vh;
+  display: grid;
+  place-items: center;
+  padding-block: var(--space-8, 2rem);
 }
 
 .shabbat__heading {
-  /* Match .section-header__title sizing so it reads at the same hierarchy
-     as the heading of #rooms (the section right after this one). */
+  margin: 0;
   font-family: var(--font-display-he);
-  margin: 0;
-  margin-block-start: var(--space-4, 0.75rem);
-  font-weight: var(--fw-bold);
-  font-size: clamp(2rem, 4vw, 3.75rem);
-  line-height: var(--lh-tight);
-  letter-spacing: var(--tracking-tight);
+  font-size: clamp(var(--text-2xl, 1.75rem), 4.4vw, var(--text-4xl, 3.25rem));
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-tight, 1.1);
+  letter-spacing: var(--tracking-tight, -0.02em);
+  text-align: start;
+  max-inline-size: 16ch;
 }
 
-
-.shabbat__sub {
-  margin: 0;
-  margin-block-start: 1rem;
-  max-inline-size: min(36rem, 60vw);
-  font-weight: 400;
-  font-size: clamp(1rem, 1.25vw, 1.125rem);
-  line-height: 1.55;
-  color: var(--ivory);
-  opacity: 0.78;
-}
-
-.gallery__wrapper {
+/* Right column — pinned image stage. */
+.shabbat__stage {
   position: relative;
+  flex: 1 1 auto;
   inline-size: 100%;
-  block-size: auto;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.gallery__image__container {
+  max-inline-size: clamp(320px, 45vw, 540px);
+  block-size: 100vh;
   display: flex;
-  align-items: center;
-  gap: 1.5vw;
-  padding-inline: 0 8vw;
-  flex: 0 0 auto;
-  will-change: transform;
+  flex-direction: column;
 }
 
-.gallery__media {
-  position: relative;
-  flex-shrink: 0;
-  aspect-ratio: 4 / 3;
-  block-size: 60vh;
-  max-block-size: 60vh;
-  overflow: hidden;
-  border-radius: 6px;
-  box-shadow: 0 30px 80px -40px rgba(0, 0, 0, 0.55);
-  display: block;
-}
-
-.gallery__media__image {
+.shabbat__media {
   position: absolute;
-  inset-block-start: 0;
-  inset-inline-start: -12.5%;
-  inline-size: 125%;
-  block-size: 100%;
-  object-fit: cover;
-  object-position: center;
-  will-change: transform;
+  inset-block-start: 50%;
+  inset-inline-start: 0;
+  inline-size: 100%;
+  block-size: clamp(280px, 50vh, 480px);
+  margin: 0;
+  padding: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  transform: translateY(-50%);
+  /* Each image starts fully visible. The JS animates clip-path on the
+     N-1 frontmost images to wipe them away in panel order. */
+  clip-path: inset(0px 0px 0px 0px);
+  box-shadow: 0 30px 80px -40px rgba(0, 0, 0, 0.45);
+  will-change: clip-path;
 }
 
-@media (max-width: 640px), (prefers-reduced-motion: reduce) {
-  .shabbat {
-    block-size: auto;
-    padding-block: 4rem 6rem;
-    display: block;
-  }
-  .shabbat__title {
-    position: relative;
-    inset: auto;
-    padding: 0 1rem 2rem;
-    max-inline-size: 100%;
-  }
-  .shabbat__heading {
-    font-size: clamp(2.25rem, 12vw, 3.5rem);
-  }
-  .gallery__wrapper {
-    padding-block-start: 2rem;
-  }
-  .gallery__image__container {
+.shabbat__media picture,
+.shabbat__media img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.shabbat__media img {
+  object-fit: cover;
+  object-position: 0% 0%;
+  will-change: object-position;
+}
+
+/* Z-index from data-index — pen pattern. data-index="5" is topmost. */
+/* Static z-index ladder — JS in js/shabbat-gallery.js also writes inline
+   z-index based on imgs.length so the stack stays correct if the markup
+   grows beyond 5 panels. The CSS here is the no-JS fallback. */
+.shabbat__media[data-index="1"] { z-index: 1; }
+.shabbat__media[data-index="2"] { z-index: 2; }
+.shabbat__media[data-index="3"] { z-index: 3; }
+.shabbat__media[data-index="4"] { z-index: 4; }
+.shabbat__media[data-index="5"] { z-index: 5; }
+
+/* ---------------------------------------------------------------------------
+   Reduced-motion fallback (desktop). The GSAP module also bails on
+   prefers-reduced-motion, so this CSS provides a clean static read.
+   ----------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .shabbat__container {
     flex-direction: column;
-    gap: 1.25rem;
-    padding-inline: 1rem;
-    transform: none !important;
+    gap: var(--space-6, 1.5rem);
+    padding-block: var(--space-12, 3rem);
   }
-  .gallery__media {
-    inline-size: 100%;
+
+  /* display: contents promotes the two column wrappers' children into the
+     parent's flex flow. The figures (data-index="5..1") arrive AFTER the
+     panels in DOM order, so use their data-index to weave them between
+     panels — image data-index="5" sits right after panel 1, "4" after
+     panel 2, etc. nth-of-type ordinals sequence the panels themselves. */
+  .shabbat__panels,
+  .shabbat__stage {
+    display: contents;
+  }
+
+  .shabbat__panel {
+    min-block-size: auto;
     block-size: auto;
-    aspect-ratio: 4 / 5;
+    padding-block: var(--space-6, 1.5rem) var(--space-3, 0.75rem);
+    place-items: center start;
   }
-  .gallery__media__image {
+  .shabbat__panel:nth-of-type(1) { order: 0; }
+  .shabbat__panel:nth-of-type(2) { order: 2; }
+  .shabbat__panel:nth-of-type(3) { order: 4; }
+  .shabbat__panel:nth-of-type(4) { order: 6; }
+  .shabbat__panel:nth-of-type(5) { order: 8; }
+
+  .shabbat__media {
     position: relative;
-    inset: auto;
+    inset-block: auto;
+    inset-inline: auto;
     inline-size: 100%;
-    block-size: 100%;
-    transform: none !important;
+    max-inline-size: 100%;
+    block-size: clamp(280px, 60vw, 420px);
+    border-radius: 12px;
+    transform: none;
+    clip-path: none;
+  }
+  .shabbat__media[data-index="5"] { order: 1; }
+  .shabbat__media[data-index="4"] { order: 3; }
+  .shabbat__media[data-index="3"] { order: 5; }
+  .shabbat__media[data-index="2"] { order: 7; }
+  .shabbat__media[data-index="1"] { order: 9; }
+
+  .shabbat__media img {
+    object-position: 0% 50%;
   }
 }

@@ -1,182 +1,77 @@
 /* =============================================================================
-   mobile/css/shabbat-chatan.css — Faure carousel, touch-native v2
+   mobile/css/shabbat-chatan.css — pinned mask-reveal mobile fallback
    ---------------------------------------------------------------------------
-   Phase 2B (mobile pass 2026-06-08, rewritten v2 after design-taste audit).
+   Mirror of CodePen WbQPRwv's mobile branch (≤768px): the desktop pin is
+   dropped; panels and images interleave in one flex column. The mobile JS
+   (mobile/js/shabbat-chatan-mobile.js) sets CSS `order` on each panel and
+   media to enforce the panel-image-panel-image cadence.
 
-   Design intent
-   -------------
-   The desktop section is David Faure's horizontal parallax gallery:
-   row of 9 images, the inner <img> is oversized (125%) and inset
-   negatively (-12.5%) so a parallax counter-motion plays as the row
-   pans. The visual signature is "the image breathes inside its frame."
+   Only one tap-target per image; each ScrollTrigger pans object-position
+   on its own — no horizontal-scroll, no snap-carousel.
 
-   v1 mistake: I converted to a flat snap-carousel and zeroed the inner
-   image overshoot. The result was a generic mobile gallery — readable
-   but soulless. The Faure "breath" was gone.
-
-   v2 fix
-   ------
-   Keep the snap-scroll mechanic (it's the right native pattern for
-   touch — no JS hijack, no scroll trap). But:
-   - Restore inner-image overshoot at 115% with -7.5% inset, so the
-     image still has somewhere to "go" inside its frame as scroll-snap
-     decelerates onto a card. The deceleration physics give a soft
-     parallax-feel even without scroll-driven JS.
-   - Active card is scale(1) full opacity; cards at the snap-edges
-     fade slightly (CSS `:has()` + sibling proximity is hard to do
-     reliably across browsers, so we lean on a global card style and
-     let scroll-snap-stop:always provide the focus moment).
-   - Card aspect 4/5 → 3/4 (slightly less tall) so on a 390×844 phone
-     the title above and the section padding below both breathe.
-   - Hide scrollbar, but add a horizontal hint stripe at section
-     bottom that fades after first interaction.
-
-   Reduced-motion still falls back to a vertical column.
+   Constitution §13: this file holds ALL mobile-only rules; nothing else
+   in css/sections/shabbat-chatan.css should @media-gate to ≤768px.
    ========================================================================== */
 
-@media (max-width: 640px) {
-
-  .shabbat {
-    block-size: auto;
-    padding-block: 4rem 5rem;
-    display: block;
-    /* The desktop section uses a deep warm-brown ground; carry it
-       through so the carousel reads as a section, not as a generic
-       photo strip. */
-    background-color: #1B1410;
-  }
-  .shabbat .scroll-scene__spacer {
-    display: none;
-  }
-  .shabbat__sticky.scroll-scene__sticky,
-  .shabbat .scroll-scene__sticky {
-    position: relative;
-    block-size: auto;
-    padding-block: 0 1rem;
-    gap: 1.25rem;
-    background-color: transparent;   /* parent already paints */
+@media (max-width: 768px) {
+  .shabbat__container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-6, 1.5rem);
+    padding-inline: var(--gutter, 1.25rem);
+    padding-block: var(--space-6, 1.5rem);
   }
 
-  /* Title — natural in-flow above the carousel. Tighter than desktop
-     so the carousel sits within first viewport on a 390×844 phone. */
-  .shabbat__title {
-    position: relative;
-    inset: auto;
-    padding-inline: 1.25rem;
-    padding-block-end: 1rem;
-    max-inline-size: 100%;
-    text-align: start;
+  /* Both columns become contents — their children flow into the parent.
+     Combined with `order` on each panel/media (set by the mobile JS), the
+     visual cadence is panel-image-panel-image-panel-image-… */
+  .shabbat__panels,
+  .shabbat__stage {
+    display: contents;
   }
-  .shabbat__eyebrow {
-    font-size: 0.75rem;
-    letter-spacing: 0.28em;
+
+  .shabbat__panel {
+    min-block-size: auto;
+    block-size: auto;
+    padding-block: var(--space-6, 1.5rem) var(--space-3, 0.75rem);
+    place-items: center start;
   }
+
   .shabbat__heading {
-    font-size: clamp(1.85rem, 8vw, 2.5rem);
+    font-size: clamp(1.6rem, 7.5vw, 2.25rem);
     line-height: 1.05;
-  }
-  .shabbat__sub {
+    text-align: start;
     max-inline-size: 100%;
-    font-size: 0.95rem;
-    margin-block-start: 0.75rem;
   }
 
-  /* Carousel wrapper — strip default padding so the row can run edge-to-
-     edge with internal scroll-padding for snap alignment. */
-  .gallery__wrapper {
-    padding-block-start: 0.5rem;
+  /* Each image becomes an in-flow card. */
+  .shabbat__media {
+    position: relative;
+    inset-block: auto;
+    inset-inline: auto;
     inline-size: 100%;
-    overflow: hidden;
+    max-inline-size: 100%;
+    block-size: clamp(280px, 60vw, 360px);
+    margin-block-end: var(--space-3, 0.75rem);
+    border-radius: 10px;
+    transform: none;
+    /* Mobile pen branch: each image is fully visible; only object-position
+       is animated. Drop clip-path to avoid an empty frame on first paint. */
+    clip-path: none;
+    box-shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.35);
   }
 
-  /* The horizontal scroll-snap track. */
-  .gallery__image__container {
-    flex-direction: row;
-    gap: 0.875rem;
-    padding-inline: 1.25rem;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    scroll-snap-stop: always;        /* one card per swipe */
-    scroll-padding-inline: 1.25rem;
-    -webkit-overflow-scrolling: touch;
-    /* Defeat any inline transform the desktop JS may have written if
-       a resize-down happened mid-session. */
-    transform: none !important;
-    /* Tighter scrollbar UX on mobile. */
-    scrollbar-width: none;
-  }
-  .gallery__image__container::-webkit-scrollbar { display: none; }
-
-  /* Each card. The body of the card sits at 78% viewport width so the
-     next card peeks ~22% to the side — that peek is what tells the
-     user "swipe me." */
-  .gallery__media {
-    flex: 0 0 78%;
-    inline-size: 78%;
-    block-size: auto;
-    max-block-size: none;
-    aspect-ratio: 3 / 4;
-    scroll-snap-align: center;
-    overflow: hidden;
-    border-radius: 6px;
-    box-shadow: 0 30px 80px -40px rgba(0, 0, 0, 0.55);
-    /* Subtle scale pull so the side cards read as "behind" the
-       focused one. The active card cancels this via :hover/focus-
-       within OR scroll-snap-aligned (no reliable selector for the
-       latter; the side scale gives enough depth without it). */
-    transform: scale(0.96);
-    transition: transform 480ms cubic-bezier(0.2, 0.8, 0.2, 1),
-                opacity 480ms ease;
-    opacity: 0.88;
-  }
-  /* When the card is most-of-the-way visible (≥80% intersection), the
-     IntersectionObserver hint script (if added later) flips this — for
-     now, a CSS-only approximation: the card under the pointer reads
-     as active (mouse + touch both fire focus-within when interacted). */
-  .gallery__media:focus-within,
-  .gallery__media:hover {
-    transform: scale(1);
-    opacity: 1;
-  }
-
-  /* Restore Faure's parallax overshoot — 115% width + -7.5% inset means
-     the image has slack inside the frame, and scroll-snap decel gives
-     a perceived "breath" without any JS. */
-  .gallery__media__image {
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline-start: -7.5%;
-    inline-size: 115%;
-    block-size: 100%;
-    object-fit: cover;
-    object-position: center;
-    /* Defeat any inline transform from the desktop JS. */
-    transform: none !important;
+  .shabbat__media img {
+    object-position: 0% 60%;
   }
 }
 
-/* Reduced-motion + small viewport: vertical column. Honors user
-   preference exactly — no parallax, no snap, just a clean stack. */
-@media (max-width: 640px) and (prefers-reduced-motion: reduce) {
-  .gallery__image__container {
-    flex-direction: column;
-    overflow-x: visible;
-    scroll-snap-type: none;
-    gap: 1rem;
-  }
-  .gallery__media {
-    flex: 0 0 auto;
-    inline-size: 100%;
-    aspect-ratio: 4 / 5;
-    transform: none;
-    opacity: 1;
+/* Reduced-motion override (mobile): leave the static stack — no transforms,
+   no ScrollTrigger pan. The desktop CSS reduced-motion fallback already
+   covers ≥769px; this mirrors the behaviour for ≤768px. */
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .shabbat__media img {
+    object-position: 0% 50%;
     transition: none;
-  }
-  .gallery__media__image {
-    position: relative;
-    inset: auto;
-    inline-size: 100%;
-    block-size: 100%;
   }
 }

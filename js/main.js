@@ -31,7 +31,8 @@ import * as roomsGallery        from "./rooms-gallery.js";  // #rooms — חדר
 import * as loungeSelector      from "./lounge-selector.js";// #lounge — lounge selector
 import * as siteNavHoverReveal  from "./site-nav-hover-reveal.js"; // 2026-06-04 — hide site-nav while in hero
 import * as scrollSpy           from "./scroll-spy.js";     // .site-nav — aria-current scroll-spy
-import * as shabbatGallery     from "./shabbat-gallery.js";// 2026-06-08 — Faure horizontal parallax gallery (self-contained scroll-trap)
+import * as shabbatGallery     from "./shabbat-gallery.js";// 2026-06-09 — GSAP pinned mask-reveal (CodePen WbQPRwv port)
+import * as shabbatMobile      from "../mobile/js/shabbat-chatan-mobile.js"; // 2026-06-09 — mobile interleave (display: contents + order)
 
 // Order matters:
 // - scroll-orchestrator MUST init before any scene (hero or non-hero) that
@@ -51,7 +52,8 @@ const MODULES = [
   ["loading-overlay",     loadingOverlay],   // window.gamosLoading must be ready before hero hotspot clicks
   ["hero-static",         heroStatic],       // 2026-06-08: static-image hero + gamosHero progress stub (releases side-dot-nav dominance gate)
   ["site-nav-hover-reveal", siteNavHoverReveal], // 2026-06-04: hide site-nav while in hero (revealed only on cursor in top band)
-  ["shabbat-gallery",     shabbatGallery],   // 2026-06-08: Faure horizontal parallax gallery — self-contained scroll-trap, NOT a scroll-scene
+  ["shabbat-gallery",     shabbatGallery],   // 2026-06-09: GSAP pinned mask-reveal (CodePen WbQPRwv port)
+  ["shabbat-chatan-mobile", shabbatMobile],  // 2026-06-09: mobile interleave (panels + media into one column)
   ["scroll-scene",        scrollScene],
   ["portals",             portals],
   ["side-dot-nav",        sideDotNav],

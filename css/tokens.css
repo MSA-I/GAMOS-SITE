@@ -304,3 +304,17 @@ body {
     --dur-cinema:  0.01ms;
   }
 }
+
+/* Shabbat-chatan pastel tint cycle — exact mimicry of CodePen WbQPRwv
+   ("GSAP pinned image mask reveal on scroll"). User-authorised §5 exception
+   for this one section: the previous monochrome ink-deep ground was traded
+   for a pen-faithful pastel cycle. JS writes --shabbat-tint per panel via
+   the master ScrollTrigger timeline. Logged in §12 Maintenance Log 2026-06-09. */
+:root {
+  --shabbat-tint-1: #EDF9FF; /* light blue   — panel 1 */
+  --shabbat-tint-2: #FFECF2; /* soft pink    — panel 2 */
+  --shabbat-tint-3: #FFE8DB; /* warm peach   — panel 3 */
+  --shabbat-tint-4: #EAFFE2; /* mint pastel  — panel 4 */
+  --shabbat-tint-5: #F4ECFF; /* lilac        — panel 5 */
+  --shabbat-tint:   var(--shabbat-tint-1);
+}
