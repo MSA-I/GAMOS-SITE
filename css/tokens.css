@@ -243,6 +243,9 @@
   --radius-pill:   9999px;
   --radius-circle: 50%;
 
+  /* ===== 2.9b Component tokens ===== */
+  --card-zoom:    1.04;   /* unified media-card hover zoom — single source of truth */
+
   /* ===== 2.10 Layout ===== */
   --container-max:    1320px;
   --container-narrow: 880px;
@@ -258,8 +261,7 @@
 
   /* ===== 2.12 Easings ===== */
   --ease-out-cinema: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --ease-in-cinema:  cubic-bezier(0.7, 0, 0.84, 0);
-  --ease-out-back:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-cue:        cubic-bezier(0.55, 0, 0.55, 1);  /* symmetric scroll-cue curve (hero + press cue-fall) */
   --ease-linear:     linear;
 
   /* ===== 2.13 Z-index scale ===== */

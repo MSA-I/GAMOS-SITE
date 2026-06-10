@@ -101,12 +101,18 @@
   display: grid;
   place-items: center;
   transition: background var(--dur-base) var(--ease-out-cinema),
-              border-color var(--dur-base) var(--ease-out-cinema);
+              border-color var(--dur-base) var(--ease-out-cinema),
+              transform var(--dur-base) var(--ease-out-cinema);
 }
 
 .testimonials__btn:hover {
   background: var(--accent);
   border-color: var(--accent);
+}
+
+/* Press feedback — consistency with the site's pressable grammar. */
+.testimonials__btn:active {
+  transform: scale(0.97);
 }
 
 /* Slider dots (rendered programmatically by js/slider.js) ---------------- */
@@ -142,4 +148,11 @@
 
 @media (max-width: 600px) {
   .testimonial { padding: var(--space-8); }
+}
+
+/* Honor reduced-motion: null the press/scale transforms on slider controls. */
+@media (prefers-reduced-motion: reduce) {
+  .testimonials__btn:active { transform: none; }
+  .testimonials__dots [data-slider-dot] { transition: none; }
+  .testimonials__dots [data-slider-dot].is-active { transform: none; }
 }

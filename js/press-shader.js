@@ -11,7 +11,9 @@
  * the GSAP/Leaflet precedent).
  *
  * Two stacked MeshGradient layers mirror the source file's two <MeshGradient>
- * elements: a solid base + a fainter overlay at ~0.55 opacity for depth.
+ * elements: a solid base + a faint overlay for depth. Toned down 2026-06-10
+ * (UI-unification): slow ambient drift + a quieter overlay so the closer reads
+ * as a calm backdrop, not an eye-catching effect (see BASE_SPEED/OVERLAY_*).
  *
  * Contract: ES2022 module. Exports init() / destroy(). Idempotent.
  *   - Reduced motion → speed 0 (one static frame, no RAF).
@@ -38,9 +40,14 @@ const HOST_SELECTOR = "[data-press-shader]";
 // brightest accent (no ivory, no full-bright brass spot — those washed it out).
 const BASE_COLORS = ["#120D0A", "#1A1410", "#3A2C20", "#534133", "#8B6F46"];
 const OVERLAY_COLORS = ["#120D0A", "#534133", "#8B6F46", "#CFAE83"];
-const BASE_SPEED = 0.3;
-const OVERLAY_SPEED = 0.2;
-const OVERLAY_OPACITY = 0.4;
+// toned down 2026-06-10: calmer ambient drift per UI-unification pass.
+// Speeds roughly halved (0.3→0.13, 0.2→0.09) so the motion reads as a slow,
+// barely-perceptible drift rather than active flowing; overlay contribution
+// dropped (0.4→0.22) so the composite is softer and far less busy. Palette
+// (§5 brand hues) is intentionally unchanged — only motion + busyness calmed.
+const BASE_SPEED = 0.13;
+const OVERLAY_SPEED = 0.09;
+const OVERLAY_OPACITY = 0.22;
 
 let host = null;
 let baseLayer = null;   // { el, mount }

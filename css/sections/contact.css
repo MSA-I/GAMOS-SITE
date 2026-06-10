@@ -89,6 +89,11 @@
   flex-wrap: wrap;
 }
 
+/* Primary submit CTA. Aligned to the canonical .btn--filled (css/utilities.css):
+   brass fill, --radius-pill, --ease-out-cinema, hover → --accent-hover / --ivory,
+   :active press + brass :focus-visible. The deliberate divergence is the LARGER
+   padding (--space-4 --space-12) + --text-md size — intentional primary-CTA
+   emphasis, kept rather than reduced to the .btn base. */
 .contact__submit {
   font-family: var(--font-body);
   font-size: var(--text-md);
@@ -100,10 +105,18 @@
   border-radius: var(--radius-pill);
   cursor: pointer;
   transition: background var(--dur-base) var(--ease-out-cinema),
-              color var(--dur-base) var(--ease-out-cinema);
+              color var(--dur-base) var(--ease-out-cinema),
+              transform var(--dur-base) var(--ease-out-cinema);
 }
 
 .contact__submit:hover { background: var(--accent-hover); color: var(--ivory); }
+
+.contact__submit:active { transform: scale(0.98); }
+
+.contact__submit:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 
 .contact__feedback {
   font-size: var(--text-sm);
@@ -316,6 +329,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .contact__scroll-cue-arrow { animation: none; }
+  .contact__submit:active { transform: none; }
 }
 
 /* NOTE: the generic Google Maps iframe (.contact__map) was removed 2026-06-10

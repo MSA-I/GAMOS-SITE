@@ -17,7 +17,7 @@ html[data-hero-mode="true"] .site-nav {
   inset-inline: 0;
   z-index: 120;            /* above the hero canvas (z-index: 110) */
   transform: translateY(-100%);
-  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+  transition: transform var(--dur-base) var(--ease-out-cinema),
               background  0.4s ease;
   pointer-events: none;
   background: rgba(245, 239, 230, 0.0);   /* fully transparent on first reveal */

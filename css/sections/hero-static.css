@@ -95,7 +95,7 @@ img.hero-static__layer--gamos {
   display: block;
   width: 100%;
   height: auto;
-  transition: filter 280ms ease, transform 320ms cubic-bezier(.2,.7,.2,1);
+  transition: filter 280ms ease, transform 320ms var(--ease-out-cinema);
 }
 
 /* Hover / focus glow. The visual lift rides on the inner <img> so it never
@@ -109,7 +109,7 @@ img.hero-static__layer--gamos {
 .hero-static__cta:focus-visible {
   outline: 3px solid var(--brass, #CFAE83);
   outline-offset: 6px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 /* Dim the OTHER CTA when one is hovered/focused. */
@@ -154,7 +154,7 @@ img.hero-static__layer--gamos {
   inline-size: 24px;
   block-size: 56px;
   border: 1px solid rgba(245, 239, 230, 0.55);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   text-decoration: none;
   pointer-events: auto;
   opacity: 1;
@@ -185,7 +185,7 @@ img.hero-static__layer--gamos {
   block-size: 5px;
   background: var(--brass-glow);
   border-radius: 50%;
-  animation: hero-cue-fall 1.6s cubic-bezier(0.55, 0, 0.55, 1) infinite;
+  animation: hero-cue-fall 1.6s var(--ease-cue) infinite;
 }
 
 @keyframes hero-cue-fall {

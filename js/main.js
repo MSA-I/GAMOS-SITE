@@ -19,7 +19,6 @@ import * as portals             from "./portals.js";
 import * as reveals             from "./reveals.js";
 import * as accordions          from "./accordions.js";
 import * as slider              from "./slider.js";
-import * as lenis               from "./lenis.js";
 import * as loadingOverlay      from "./loading-overlay.js";
 import * as sideDotNav          from "./side-dot-nav.js";
 import * as marquee             from "./marquee.js";
@@ -48,7 +47,6 @@ import * as directionsMap      from "./directions-map.js";  // 2026-06-10 — #r
 //    early also prevents a missed event window).
 // - side-dot-nav inits AFTER hero so its hero progress hook attaches cleanly.
 const MODULES = [
-  ["lenis",               lenis],
   ["scroll-orchestrator", scrollOrchestrator],
   ["loading-overlay",     loadingOverlay],   // window.gamosLoading must be ready before hero hotspot clicks
   ["hero-static",         heroStatic],       // 2026-06-08: static-image hero + gamosHero progress stub (releases side-dot-nav dominance gate)

@@ -13,7 +13,7 @@
   place-items: center;
   opacity: 1;
   pointer-events: auto;
-  transition: opacity 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: opacity var(--dur-slow) var(--ease-out-cinema);
 }
 
 .scrollytelling-loader.is-done {
@@ -42,7 +42,7 @@
   inline-size: clamp(180px, 30vw, 320px);
   block-size: 2px;
   background: color-mix(in srgb, var(--ivory, #F5EFE6) 15%, transparent);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   overflow: hidden;
   margin-block-end: var(--space-3, 12px);
 }
@@ -53,7 +53,7 @@
   background: var(--brass, #CFAE83);
   transform-origin: left center;
   transform: scaleX(0);
-  transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform var(--dur-base) var(--ease-out-cinema);
 }
 
 [dir="rtl"] .scrollytelling-loader__fill {

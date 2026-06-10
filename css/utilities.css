@@ -367,4 +367,182 @@
   .h-full { block-size: 100% !important; height: 100% !important; }
   .min-h-screen { min-block-size: 100vh !important; min-block-size: 100dvh !important; }
 
+  /* ============================================================
+     CANONICAL BUTTON & CARD COMPONENTS — single source of truth
+     (Constitution §10.2 — tokens are single-source; no forks).
+
+     Sources this generalizes:
+       .btn   ← .directions__cta   (css/sections/directions.css)
+       .card  ← .directions__card  (css/sections/directions.css)
+
+     These two base classes + their variants align the ~7 hand-rolled
+     CTAs (contact submit, press closer/ghost, home-link pill, press
+     card pill, testimonials arrows) and the ~6 card species (directions
+     card, testimonial quote, gallery + culinary media tiles, press
+     article card) across the site. DO NOT FORK — if you need a new
+     look, EXTEND with a `.btn--*` / `.card--*` variant here, never a
+     bespoke rule in a section file.
+
+     NOTE — section concerns stay in section CSS: positioning
+     (position / inset / z-index / max-inline-size) is deliberately
+     omitted so .card is position-agnostic and any section can drop it
+     in (e.g. directions.css keeps its own absolute/inset/z-index).
+
+     Tokens consumed (all from css/tokens.css — single-source):
+       sizing/space:  --space-1..6, --text-base, --text-xs
+       type:          --font-body, --fw-semibold
+       color:         --accent, --accent-hover, --cocoa, --ink-deep,
+                      --ivory, --bg, --brass, --border-strong
+       radius:        --radius-pill, --radius-md, --radius-lg, --radius-circle
+       elevation:     --shadow-strong, --shadow-soft, --focus-ring
+       motion:        --dur-base, --dur-cinema, --ease-out-cinema
+       media zoom:    --card-zoom  (--ease-cue is the shared scroll-cue
+                      curve, also in tokens.css; referenced elsewhere)
+     ============================================================ */
+
+  /* ---- Button base (from .directions__cta) ---------------------- */
+  .btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: var(--space-2) !important;
+    font-family: var(--font-body) !important;
+    font-size: var(--text-base) !important;
+    font-weight: var(--fw-semibold) !important;
+    padding: var(--space-3) var(--space-6) !important;
+    background: transparent !important;
+    color: var(--cocoa) !important;
+    border: 1px solid var(--accent) !important;
+    border-radius: var(--radius-pill) !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+    transition: background var(--dur-base) var(--ease-out-cinema),
+                color var(--dur-base) var(--ease-out-cinema),
+                border-color var(--dur-base) var(--ease-out-cinema),
+                transform var(--dur-base) var(--ease-out-cinema) !important;
+  }
+  .btn:hover { background: var(--accent) !important; color: var(--ink-deep) !important; }
+  .btn:active { transform: scale(0.98) !important; }
+  .btn:focus-visible { outline: none !important; box-shadow: var(--focus-ring) !important; }
+
+  /* ---- Button variants ----------------------------------------- */
+
+  /* Solid brass fill at rest. Generalizes contact submit + press closer. */
+  .btn--filled {
+    background: var(--accent) !important;
+    color: var(--ink-deep) !important;
+    border-color: var(--accent) !important;
+  }
+  .btn--filled:hover {
+    background: var(--accent-hover) !important;
+    color: var(--ivory) !important;
+    border-color: var(--accent-hover) !important;
+  }
+
+  /* For dark backgrounds. Generalizes press ghost CTA + home-link pill.
+     Border mirrors the legacy press pattern (~ivory @ 60%), but kept
+     token-derived via color-mix instead of a raw rgba(). */
+  .btn--ghost {
+    background: transparent !important;
+    color: var(--ivory) !important;
+    border-color: color-mix(in srgb, var(--ivory) 60%, transparent) !important;
+  }
+  .btn--ghost:hover {
+    background: var(--ivory) !important;
+    color: var(--ink-deep) !important;
+    border-color: var(--ivory) !important;
+  }
+
+  /* Small uppercase tag. Generalizes press card pill. */
+  .btn--chip {
+    padding: var(--space-1) var(--space-4) !important;
+    font-size: var(--text-xs) !important;   /* 0.78rem-class small label */
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    border: 1px solid color-mix(in srgb, var(--brass) 60%, transparent) !important;
+  }
+
+  /* Square/circular icon button. Generalizes testimonials arrows. */
+  .btn--icon {
+    inline-size: 44px !important;
+    block-size: 44px !important;
+    padding: 0 !important;
+    border-radius: var(--radius-circle) !important;
+    border: 1px solid var(--border-strong) !important;
+    display: grid !important;
+    place-items: center !important;
+    white-space: normal !important;
+  }
+  .btn--icon:hover {
+    background: var(--accent) !important;
+    border-color: var(--accent) !important;
+  }
+
+  /* ---- Card base (from .directions__card) ----------------------- *
+   * Position-agnostic: NO position / inset / z-index / max-inline-size. */
+  .card {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--space-3) !important;
+    padding: var(--space-6) !important;
+    background: color-mix(in srgb, var(--ivory) 88%, transparent) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid var(--brass) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-strong) !important;
+  }
+
+  /* ---- Card variants ------------------------------------------- */
+
+  /* Opaque ivory testimonial card. Generalizes .testimonial. */
+  .card--quote {
+    background: var(--bg) !important;
+    border: 0 !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow-soft) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* Image tile w/ hover-zoom contract. Generalizes gallery + culinary
+     dish tiles. The child <img> owns the transform; the tile clips it. */
+  .card--media {
+    padding: 0 !important;
+    overflow: hidden !important;
+    border-radius: var(--radius-md) !important;
+    position: relative !important;
+    isolation: isolate !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .card--media img {
+    transition: transform var(--dur-cinema) var(--ease-out-cinema) !important;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .card--media:hover img { transform: scale(var(--card-zoom)) !important; }
+  }
+
+  /* Full-bleed image-led editorial card. Generalizes press article card. */
+  .card--editorial {
+    padding: 0 !important;
+    position: relative !important;
+    overflow: hidden !important;
+    isolation: isolate !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* Reduced-motion: silence the .btn press feedback + media zoom. */
+  @media (prefers-reduced-motion: reduce) {
+    .btn:active { transform: none !important; }
+    .card--media:hover img { transform: none !important; }
+  }
+
 }

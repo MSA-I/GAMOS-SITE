@@ -51,4 +51,11 @@
   transition: transform var(--dur-cinema) var(--ease-out-cinema);
 }
 
-.gallery__item:hover img { transform: scale(1.06); }
+@media (hover: hover) and (pointer: fine) {
+  .gallery__item:hover img { transform: scale(var(--card-zoom)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery__item img { transition: none; }
+  .gallery__item:hover img { transform: none; }
+}
