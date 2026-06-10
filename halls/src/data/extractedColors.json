@@ -1,0 +1,82 @@
+{
+  "images/projects/lumina-01.webp": {
+    "background": "#2e5762",
+    "blob1": "#9f7959",
+    "blob2": "#5f421e"
+  },
+  "images/projects/lumina-02.webp": {
+    "background": "#533b28",
+    "blob1": "#97785b",
+    "blob2": "#694319"
+  },
+  "images/projects/lumina-03.webp": {
+    "background": "#5c4c3e",
+    "blob1": "#9e785a",
+    "blob2": "#6b4420"
+  },
+  "images/projects/lumina-04.webp": {
+    "background": "#644b34",
+    "blob1": "#a48162",
+    "blob2": "#743c1c"
+  },
+  "images/projects/lumina-05.webp": {
+    "background": "#553d2d",
+    "blob1": "#9f7657",
+    "blob2": "#58361a"
+  },
+  "images/projects/lumina-06.webp": {
+    "background": "#5c432c",
+    "blob1": "#a77f5e",
+    "blob2": "#56371b"
+  },
+  "images/projects/oasis-01.webp": {
+    "background": "#544c26",
+    "blob1": "#a19464",
+    "blob2": "#7c4f10"
+  },
+  "images/projects/oasis-02.webp": {
+    "background": "#483d2f",
+    "blob1": "#a97451",
+    "blob2": "#8a500b"
+  },
+  "images/projects/oasis-03.webp": {
+    "background": "#4d4328",
+    "blob1": "#b0855a",
+    "blob2": "#6c4e0b"
+  },
+  "images/projects/oasis-04.webp": {
+    "background": "#685031",
+    "blob1": "#a47c52",
+    "blob2": "#734c17"
+  },
+  "images/projects/oasis-05.webp": {
+    "background": "#675432",
+    "blob1": "#9f7954",
+    "blob2": "#573e1f"
+  },
+  "images/projects/oasis-06.webp": {
+    "background": "#336643",
+    "blob1": "#9e7e64",
+    "blob2": "#833915"
+  },
+  "images/projects/oasis-07.webp": {
+    "background": "#574d37",
+    "blob1": "#947c69",
+    "blob2": "#642c0e"
+  },
+  "images/projects/oasis-08.webp": {
+    "background": "#604e3e",
+    "blob1": "#ab8669",
+    "blob2": "#673a20"
+  },
+  "images/projects/oasis-09.webp": {
+    "background": "#2b2015",
+    "blob1": "#987a56",
+    "blob2": "#5f4323"
+  },
+  "images/projects/oasis-10.webp": {
+    "background": "#444c24",
+    "blob1": "#947969",
+    "blob2": "#614d1f"
+  }
+}

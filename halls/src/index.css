@@ -80,7 +80,9 @@
   --color-mist: #E8DFD3;
 }
 
-/* Custom styles for gorgeous Unseen Studio effect */
+/* Body baseline — applies to both /halls/oasis/ and /halls/lumina/ entry pages.
+   Background-color is intentionally dark; Background.ts replaces this with
+   the active mood color via a fixed sibling div. */
 body {
   margin: 0;
   padding: 0;
@@ -92,67 +94,7 @@ body {
   -webkit-user-select: none;
 }
 
-/* Hide scrollbar for clean custom navigation look */
+/* Hide native scrollbar — wheel/touch input is captured by Scroll.ts. */
 ::-webkit-scrollbar {
   display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* Glassmorphism utility */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.glass-panel-light {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.dark-glass-panel {
-  background: rgba(10, 10, 10, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-}
-
-/* 3D Scene adjustments */
-.three-d-scene {
-  perspective: 1200px;
-  perspective-origin: 50% 45%;
-}
-
-.three-d-layer {
-  transform-style: preserve-3d;
-}
-
-/* Liquid fluid distortion effects under images */
-.liquid-glow {
-  filter: blur(80px);
-  opacity: 0.15;
-  mix-blend-mode: screen;
-}
-
-/* Shimmer animations */
-@keyframes pulseGlow {
-  0%, 100% {
-    transform: scale(1) translateY(0px);
-    opacity: 0.12;
-  }
-  50% {
-    transform: scale(1.05) translateY(-15px);
-    opacity: 0.18;
-  }
-}
-
-.animated-orb {
-  animation: pulseGlow 8s ease-in-out infinite;
 }
