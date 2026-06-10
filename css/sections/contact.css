@@ -232,6 +232,33 @@
 
 .contact__channel-value:hover { color: var(--accent); }
 
+/* ----- Accessibility note (2026-06-10, Maron copy). A short "100% נגיש"
+   block under the contact channels. A brass start-border sets it apart from
+   the channel list without adding a heavy card. ----- */
+.contact__access {
+  border-inline-start: 2px solid var(--brass);
+  padding-inline-start: var(--space-4);
+}
+
+.contact__access-title {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.contact__access-text {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: var(--lh-normal);
+  color: var(--fg-muted);
+  margin: 0;
+  max-inline-size: 48ch;
+}
+
 /* ----- Scroll cue → the branded #routes map below (replaces the old Waze /
    Google CTA buttons, removed 2026-06-10). Animated down-arrow. ----- */
 .contact__scroll-cue {

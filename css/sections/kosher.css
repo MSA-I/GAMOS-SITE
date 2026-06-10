@@ -1,10 +1,9 @@
 /* ===========================================================================
-   kosher.css — kashrut authorities section
-   2026-06-09 (v3): an organic cocoa-brown oval outline frames the entire
-   block (eyebrow, title, logo row, body). Background stays transparent
-   (no visible "band"). The 5 monochrome certification logos sit in a
-   single row between the title and the body. No animation beyond the
-   standard fade-up reveal.
+   kosher.css — kashrut / rabbanut section
+   2026-06-09 (v3): a filled cocoa-brown oval frames the block (eyebrow,
+   title, body). 2026-06-10 (v4): the 5 certification logos were removed
+   per user request — the oval now holds just the eyebrow + title + body
+   paragraph. No animation beyond the standard fade-up reveal.
    ========================================================================= */
 
 
@@ -17,25 +16,24 @@
 }
 
 .kosher__container {
-  max-inline-size: min(80rem, 94%);
+  /* 2026-06-10 (v5): true CIRCLE (was an auto-ellipse) with a TRANSLUCENT
+     cocoa veil so the ivory page color shows through (user request). A 1:1
+     box + border-radius:50% = perfect circle; flex centering keeps the text
+     block in the middle. Generous inline padding keeps the text clear of the
+     circle's curved left/right edges (they curve inward much harder than an
+     ellipse's). color-mix keeps the §5 cocoa token as the single source. */
+  inline-size: min(44rem, 92vw);
+  aspect-ratio: 1;
   margin-inline: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-8);
-  /* Filled cocoa oval — radii 50%/50% relative to container WxH produce an
-     auto-ellipse that hugs whatever height the content lands at. The
-     background is the original brown the section had before this redesign.
-     The HEAVY inline padding (≈14% of the container width on each side) is
-     deliberate: an oval's left/right edges curve INWARD, so any child that
-     touches the box's left/right edge ends up clipped behind the curve.
-     Pushing the inner-content rectangle ~14% inward keeps the oval tangent
-     well outside the logo row at every breakpoint. */
-  background: var(--cocoa);
+  justify-content: center;
+  gap: var(--space-6);
+  background: color-mix(in srgb, var(--cocoa) 82%, transparent);
   color: var(--fg-on-dark);
-  border-radius: 50% / 50%;
-  padding-block: clamp(4rem, 9vw, 7rem);
-  padding-inline: clamp(4.5rem, 14%, 11rem);
+  border-radius: 50%;
+  padding-inline: clamp(2.5rem, 11%, 5.5rem);
 }
 
 .kosher .section-header {
@@ -50,45 +48,6 @@
 
 .kosher .section-header__title {
   color: var(--fg-on-dark);
-}
-
-.kosher__logos {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: clamp(1rem, 2.5vw, 2rem);
-  inline-size: 100%;
-}
-
-.kosher__logos li {
-  display: grid;
-  place-items: center;
-  flex: 1 1 0;
-  min-inline-size: 0;
-  block-size: clamp(64px, 7.5vw, 110px);
-}
-
-/* Each logo's source aspect varies wildly (tzohar 1:1, eda 2.16:1, etc.).
-   Without per-img sizing the squareish ones look tiny next to the wide
-   ones. We let each <img> fill the cell entirely (both axes) and rely on
-   object-fit: contain to preserve aspect — so every logo lands at the
-   largest size that fits its individual cell, no logo "disappears". */
-.kosher__logos img {
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: contain;
-  filter: brightness(0) invert(1); /* black-on-transparent → ivory-on-transparent */
-  opacity: 0.92;
-  transition: opacity var(--dur-base, 240ms) ease;
-}
-
-.kosher__logos li:hover img,
-.kosher__logos li:focus-within img {
-  opacity: 1;
 }
 
 .kosher__body {
