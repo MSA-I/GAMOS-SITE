@@ -26,7 +26,7 @@
 
 .marquee--cocoa {
   background: var(--cocoa);
-  border-color: rgba(207, 174, 131, 0.2);
+  border-color: color-mix(in srgb, var(--brass) 20%, transparent);
 }
 
 .marquee--ivory-warm {

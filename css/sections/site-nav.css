@@ -33,7 +33,7 @@
   inset-block-start: 0;
   inset-inline: 0;
   z-index: var(--z-sticky);
-  background: rgba(245, 239, 230, 0.86); /* ivory @ 86% */
+  background: color-mix(in srgb, var(--ivory) 86%, transparent); /* ivory @ 86% */
   backdrop-filter: saturate(140%) blur(12px);
   -webkit-backdrop-filter: saturate(140%) blur(12px);
   border-block-end: 1px solid var(--border);
@@ -44,7 +44,7 @@
 
 /* Scroll state — condensed, opaque, lifted ------------------------------- */
 .site-nav.is-scrolled {
-  background: rgba(245, 239, 230, 0.97); /* ivory @ 97% — near-solid */
+  background: color-mix(in srgb, var(--ivory) 97%, transparent); /* ivory @ 97% — near-solid */
   box-shadow: var(--shadow-soft);
   border-block-end-color: transparent;
 }
@@ -256,7 +256,7 @@ html[data-hero-mode="true"][data-nav-revealed="true"] .site-nav__inner {
   position: fixed;
   inset: 0;
   z-index: var(--z-overlay);
-  background: rgba(245, 239, 230, 0.97); /* ivory @ 97% — token-mapped */
+  background: color-mix(in srgb, var(--ivory) 97%, transparent); /* ivory @ 97% — token-mapped */
   backdrop-filter: saturate(140%) blur(16px);
   -webkit-backdrop-filter: saturate(140%) blur(16px);
   opacity: 0;

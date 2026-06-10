@@ -286,7 +286,7 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
   inline-size: 5px;
   block-size: 5px;
   background: var(--brass-glow);
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   animation: press-cue-fall 1.6s var(--ease-cue) infinite;
 }
 
@@ -387,7 +387,7 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
 .press-card__link:focus-visible {
   outline: 3px solid var(--brass-glow);
   outline-offset: -8px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 /* Picture / image — fill, slow Ken-Burns on hover. */

@@ -68,7 +68,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(245, 239, 230, 0.85); /* var(--ivory) at 85% */
+  background: color-mix(in srgb, var(--ivory) 85%, transparent); /* var(--ivory) at 85% */
   color: var(--ink-deep, #0e0e0c);
   border: 1px solid var(--border, rgba(14, 14, 12, 0.12));
   border-radius: var(--radius-pill, 9999px);
@@ -125,7 +125,7 @@
   padding: 0;
   border: 0;
   border-radius: var(--radius-pill, 9999px);
-  background: rgba(245, 239, 230, 0.5);
+  background: color-mix(in srgb, var(--ivory) 50%, transparent);
   cursor: pointer;
   transition: inline-size var(--dur-base, 240ms) var(--ease-out-cinema, cubic-bezier(0.2, 0.8, 0.2, 1)),
               background var(--dur-base, 240ms) var(--ease-out-cinema, cubic-bezier(0.2, 0.8, 0.2, 1));

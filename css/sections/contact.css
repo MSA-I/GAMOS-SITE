@@ -58,7 +58,9 @@
   font-weight: var(--fw-regular);
   color: var(--fg-muted);
   margin-inline-start: var(--space-1);
-  opacity: 0.7;
+  /* No extra opacity: the smaller size + regular weight + --fg-muted already
+     de-emphasize this "(optional)" hint; a 0.7 layer on muted gray pushed it
+     under the AA legibility floor. (polish 2026-06-10) */
 }
 
 .contact__field input,

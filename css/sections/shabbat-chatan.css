@@ -103,13 +103,14 @@
   block-size: clamp(280px, 50vh, 480px);
   margin: 0;
   padding: 0;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   transform: translateY(-50%);
   /* Each image starts fully visible. The JS animates clip-path on the
      N-1 frontmost images to wipe them away in panel order. */
   clip-path: inset(0px 0px 0px 0px);
-  box-shadow: 0 30px 80px -40px rgba(0, 0, 0, 0.45);
+  /* Warm ink-deep shadow, not pure black (§5 — warm near-black palette). */
+  box-shadow: 0 30px 80px -40px rgba(26, 20, 16, 0.45);
   will-change: clip-path;
 }
 

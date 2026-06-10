@@ -31,7 +31,7 @@
   place-items: center;
 
   /* Surface */
-  background: rgba(26, 20, 16, 0.96);  /* --ink-deep at 0.96 */
+  background: color-mix(in srgb, var(--ink-deep) 96%, transparent);  /* --ink-deep at 0.96 */
   backdrop-filter: blur(8px) saturate(0.9);
   -webkit-backdrop-filter: blur(8px) saturate(0.9);
 

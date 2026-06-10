@@ -87,7 +87,7 @@
 
 .side-dot-nav__dot:hover {
   transform: scale(1.3);
-  background-color: rgba(207, 174, 131, 0.3);  /* --brass at 30% */
+  background-color: color-mix(in srgb, var(--brass) 30%, transparent);  /* --brass at 30% */
 }
 
 /* Placeholder dots — target section not yet in DOM. Muted, non-interactive,
