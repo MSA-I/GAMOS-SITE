@@ -32,10 +32,13 @@ const tokensFile = resolve(root, "css", "tokens.css");
 const IMAGES = ["01", "03", "05", "07", "09"];
 const FALLBACK_TINT = "#F2ECE2"; // warm ivory pastel — if extraction is unavailable.
 
-// Pastel targets: keep the image's hue, force a high lightness + tempered
-// saturation so the background is a soft, airy tint (not the saturated source).
-const PASTEL_LIGHTNESS = 0.90; // 0-1 — final L in HSL (≈ very light).
-const PASTEL_SATURATION = 0.42; // 0-1 — final S in HSL (gentle, not washed grey).
+// Tint targets: keep only a HINT of the image's hue over a warm, brand-aligned
+// cream base (§5 palette is warm ivory/brass/cocoa — "Luxury or nothing", not
+// candy pastels). Low saturation + high lightness → muted, barely-tinted
+// surfaces in the ivory-warm / mist family; the image hue just nudges each
+// panel slightly. Stays light (luma > 140) so the heading texture stays dark.
+const PASTEL_LIGHTNESS = 0.88; // 0-1 — final L in HSL (very light, cream-level).
+const PASTEL_SATURATION = 0.20; // 0-1 — final S in HSL (muted — just a tint of hue).
 
 function luma({ r, g, b }) {
   return 0.299 * r + 0.587 * g + 0.114 * b; // rec601, 0-255
