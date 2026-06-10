@@ -72,15 +72,18 @@ const SINGLE_WEBP = [
     width: 1200,
     quality: 92,
   },
-  // Texture fills for headings (background-clip: text). The user has 4 source
-  // textures under תמונות/פונט/. Naming below describes the SURFACE the fill
-  // sits on (not the texture's own brightness — the source filenames are
-  // confusingly inverse to that). Verified empirically 2026-06-03:
-  //   "טיפוגרפיה בהירה.png" — luma 38 (DARK gold-flecked) → for LIGHT surfaces
-  //   "טיפוגרפיה כהה.png"   — luma 193 (LIGHT gold-flecked) → for DARK surfaces
+  // Texture fills for headings (background-clip: text). Sourced ONLY from the
+  // canonical font folder תמונות/פונט/ (CLAUDE.md §4.1). Token names below
+  // describe the SURFACE the fill sits on — NOT the texture's own brightness.
+  // WARNING: the source filenames are inverse to actual brightness. Re-sourced
+  // 2026-06-10 from the big full-texture files (2688×1520) per user request,
+  // mapping verified empirically by sharp stats() luma:
+  //   "טקסטורה בהירה.png" — luma 44  (DARK texture)  → typo-on-light → LIGHT surfaces
+  //   "טקסטורה כהה.png"   — luma 217 (LIGHT texture) → typo-on-dark  → DARK surfaces
+  // (Old typography-sample files kept as fallbacks so the encoder never skips.)
   {
     srcCandidates: [
-      "תמונות לאנימציית האתר/פונט/טקסטורה מלאה כהה.png",
+      "תמונות לאנימציית האתר/פונט/טקסטורה בהירה.png",
       "תמונות לאנימציית האתר/פונט/טיפוגרפיה בהירה.png",
       "תמונות לאנימציית האתר/פונט/טקסטורה לטיפוגרפיה בהירה.png",
     ],
@@ -90,6 +93,7 @@ const SINGLE_WEBP = [
   },
   {
     srcCandidates: [
+      "תמונות לאנימציית האתר/פונט/טקסטורה כהה.png",
       "תמונות לאנימציית האתר/פונט/טיפוגרפיה כהה.png",
       "תמונות לאנימציית האתר/פונט/טקסטורה לטיפוגרפיה כהה.png",
     ],
