@@ -22,12 +22,19 @@
     padding-block: var(--space-6, 1.5rem);
   }
 
-  /* Both columns become contents — their children flow into the parent.
-     Combined with `order` on each panel/media (set by the mobile JS), the
-     visual cadence is panel-image-panel-image-panel-image-… */
+  /* The layout wrapper + both columns become contents — their children flow
+     into the container. Combined with `order` on each panel/media (set by the
+     mobile JS), the visual cadence is panel-image-panel-image-… The header is
+     the container's first child but gets order:-1 so it always stays on top. */
+  .shabbat__layout,
   .shabbat__panels,
   .shabbat__stage {
     display: contents;
+  }
+
+  .shabbat__header {
+    order: -1;
+    margin-block: var(--space-6, 1.5rem) var(--space-4, 1rem);
   }
 
   .shabbat__panel {

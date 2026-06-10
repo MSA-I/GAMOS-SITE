@@ -1,24 +1,40 @@
 import { useEffect, useRef } from "react";
 import Engine from "./Engine";
-import Gallery from "./Gallery";
 import Scroll from "./Scroll";
-import Background from "./Background";
 import { getProjectsByHall } from "../projectsData";
 import type { ProjectWithColors } from "../types";
 
 interface Props {
   hallId: "oasis" | "lumina";
+  /** Fired with the blend-aware active project (or null) when it changes. */
   onActiveChange?: (project: ProjectWithColors | null) => void;
+  /**
+   * Fired when the frame-dark flag flips (nearest plane index < 2). HallChrome
+   * (Wave 4) uses it to swap the label's texture-text variant for readability
+   * over bright images. Optional so App can opt in without breaking.
+   */
+  onFrameDarkChange?: (isDark: boolean) => void;
 }
 
-export default function DepthGallery({ hallId, onActiveChange }: Props) {
+export default function DepthGallery({
+  hallId,
+  onActiveChange,
+  onFrameDarkChange,
+}: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Keep the latest callbacks in refs so the engine effect (keyed on hallId)
+  // doesn't tear down + rebuild WebGL when a parent passes a fresh inline
+  // callback identity on re-render.
   const onActiveChangeRef = useRef(onActiveChange);
+  const onFrameDarkChangeRef = useRef(onFrameDarkChange);
   useEffect(() => {
     onActiveChangeRef.current = onActiveChange;
-  }, [onActiveChange]);
+    onFrameDarkChangeRef.current = onFrameDarkChange;
+  }, [onActiveChange, onFrameDarkChange]);
 
+  // Focus the gallery wrapper on mount so keyboard scroll works immediately.
   useEffect(() => {
     wrapperRef.current?.focus();
   }, []);
@@ -26,14 +42,16 @@ export default function DepthGallery({ hallId, onActiveChange }: Props) {
   useEffect(() => {
     if (!canvasRef.current || !wrapperRef.current) return;
     const projects = getProjectsByHall(hallId);
-    const engine = new Engine(canvasRef.current, { hallId });
 
-    // Gallery uses default anisotropy (4) per its constructor — Engine does
-    // not currently expose its renderer's max-anisotropy. If higher quality
-    // is needed later, add Engine.getMaxAnisotropy() and pass it through.
-    const gallery = new Gallery(engine.getScene(), projects);
-    engine.setGallery(gallery);
+    // Engine constructs the per-instance Experience (gallery + background +
+    // trailController) internally from `projects`. Survives StrictMode
+    // mount → cleanup → mount because every Engine is a fresh instance and
+    // dispose() fully releases the previous one's GPU resources.
+    const engine = new Engine(canvasRef.current, { hallId, projects });
 
+    // Scroll is the input layer (owns the camera Z). It needs the gallery's
+    // depth bounds, so build it after the Engine and inject it.
+    const gallery = engine.getGallery();
     const scroll = new Scroll(wrapperRef.current, {
       cameraStartZ: gallery.getCameraStartZ(),
       cameraMinZ: gallery.getCameraMinZ(),
@@ -43,23 +61,23 @@ export default function DepthGallery({ hallId, onActiveChange }: Props) {
     });
     engine.setScroll(scroll);
 
-    const background = new Background(wrapperRef.current, gallery);
-    engine.setBackground(background);
-
-    engine.start();
-
-    // Force an initial resize after the renderer + scene are wired but before
-    // the active-plane callback fires. Catches the case where the canvas had
-    // a 0×0 bounding rect during Engine construction (layout not yet flushed).
-    engine.forceResize();
-
-    // Active-plane notifier: Engine fires this from its RAF loop when the
-    // closest plane changes — one source of truth, paused automatically
-    // when Engine is offscreen. The ref keeps the callback identity stable
-    // so this effect doesn't tear down on parent re-renders.
+    // Active-plane + frame-dark notifiers (fired from Experience via Engine's
+    // RAF loop; paused automatically when offscreen). Refs keep identities
+    // stable so this effect doesn't re-run on parent re-renders.
     engine.setActivePlaneCallback((i) =>
       onActiveChangeRef.current?.(projects[i] ?? null),
     );
+    engine.setFrameDarkCallback((isDark) =>
+      onFrameDarkChangeRef.current?.(isDark),
+    );
+
+    // Seed the Experience (trail + first label/frame-dark feed), then start.
+    engine.init();
+    engine.start();
+
+    // Force an initial resize after wiring but before the first callback fires.
+    // Catches the case where the canvas had a 0×0 rect during construction.
+    engine.forceResize();
 
     return () => {
       engine.dispose();

@@ -13,9 +13,11 @@
  */
 
 import * as reveals from "./reveals.js";
+import * as pressShader from "./press-shader.js";
 
 const MODULES = [
   ["reveals", reveals],
+  ["press-shader", pressShader],
 ];
 
 function safeInit(name, mod) {

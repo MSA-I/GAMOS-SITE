@@ -1,11 +1,19 @@
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { Home, ArrowLeft, ArrowRight } from "lucide-react";
+import { getProjectsByHall } from "../projectsData";
 import type { ProjectWithColors } from "../types";
 
 interface Props {
   hallId: "oasis" | "lumina";
+  /** Blend-aware active project (Engine flips it at the crossfade midpoint). */
   activeProject: ProjectWithColors | null;
+  /**
+   * Wave-1 frame-dark flag: true when the nearest plane index < 2 (bright
+   * photos). Drives `data-frame-dark` on the label so the texture-text title
+   * swaps to the LIGHT (cream) fill and stays legible over bright imagery.
+   */
+  frameDark?: boolean;
 }
 
 const HALL_LABEL_HE: Record<"oasis" | "lumina", string> = {
@@ -13,7 +21,7 @@ const HALL_LABEL_HE: Record<"oasis" | "lumina", string> = {
   lumina: "ריזורט",
 };
 
-export default function HallChrome({ hallId, activeProject }: Props) {
+export default function HallChrome({ hallId, activeProject, frameDark = false }: Props) {
   const reducedMotion = useReducedMotion();
   const lastKnownProjectRef = useRef<ProjectWithColors | null>(activeProject);
   if (activeProject) lastKnownProjectRef.current = activeProject;
@@ -22,6 +30,10 @@ export default function HallChrome({ hallId, activeProject }: Props) {
   const otherHallId = hallId === "oasis" ? "lumina" : "oasis";
   const otherHallLabel = HALL_LABEL_HE[otherHallId];
   const currentHallLabel = HALL_LABEL_HE[hallId];
+
+  // Total plane count for this hall → the denominator of the "NN / TT" index.
+  const planeCount = useMemo(() => getProjectsByHall(hallId).length, [hallId]);
+  const totalLabel = String(planeCount).padStart(2, "0");
 
   const transition = reducedMotion
     ? { duration: 0 }
@@ -84,29 +96,61 @@ export default function HallChrome({ hallId, activeProject }: Props) {
         </a>
       </motion.div>
 
-      {/* PerImageLabel — bottom-center, fades on activeProject change */}
-      <div
+      {/* ── Editorial color-chip label (folds reference Label.js into chrome) ──
+          A bottom-anchored bar spanning the viewport (logical insets). Two
+          groups: a spec block (location / year — replaces the reference
+          CMYK/RGB/HEX/PMS rows) toward the inline-START, and the index +
+          texture-text TITLE toward the inline-END. DOM order is [spec, title]
+          so under dir=rtl + justify-between the spec lands inline-start (right)
+          and the title inline-end (left), per the approved mockup.
+          `data-frame-dark` flips the title's texture variant for legibility
+          over bright photos. aria-live announces the active venue. */}
+      <section
         aria-live="polite"
         aria-atomic="true"
-        className="absolute bottom-10 sm:bottom-10 left-1/2 -translate-x-1/2 max-w-[min(90vw,640px)] text-center px-6 py-3 bg-[color:var(--color-ivory)]/10 backdrop-blur-md border border-[color:var(--color-brass)]/30 rounded-2xl shadow-lg pointer-events-none"
+        data-frame-dark={frameDark ? "true" : "false"}
+        className="absolute inset-inline-0 bottom-8 sm:bottom-10 px-[clamp(1.25rem,6vw,7rem)] pointer-events-none"
       >
         <AnimatePresence mode="wait">
           <motion.div
             key={display?.id ?? "fallback"}
-            initial={{ opacity: 0.6 }}
+            initial={{ opacity: reducedMotion ? 1 : 0.55 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0.6 }}
+            exit={{ opacity: reducedMotion ? 1 : 0.55 }}
             transition={labelTransition}
+            className="flex w-full items-end justify-between gap-6"
           >
-            <h2 className="text-[color:var(--color-ivory)] text-lg md:text-xl font-display tracking-wide">
-              {display?.label ?? ""}
-            </h2>
-            <p className="text-[color:var(--color-ivory)]/70 text-xs md:text-sm mt-1 line-clamp-2">
-              {display?.title ?? ""}
-            </p>
+            {/* Spec block — inline-start (DOM first) */}
+            <dl className="m-0 grid gap-1.5 text-start">
+              <div className="hall-label__spec-row">
+                <dt className="hall-label__spec-key">מיקום</dt>
+                <dd className="hall-label__spec-val m-0">{display?.location ?? ""}</dd>
+              </div>
+              <div className="hall-label__spec-row">
+                <dt className="hall-label__spec-key">שנה</dt>
+                <dd className="hall-label__spec-val m-0">
+                  <bdi>{display?.year ?? ""}</bdi>
+                </dd>
+              </div>
+            </dl>
+
+            {/* Title block — inline-end (DOM second) */}
+            <div className="flex flex-col items-end gap-2 text-end">
+              <p className="hall-label__index inline-flex items-center gap-2.5">
+                {/* Color chip — the extracted tone of the active photo
+                    (decorative, editorial; not a competing UI accent). */}
+                <span
+                  aria-hidden="true"
+                  className="inline-block w-2.5 h-2.5 rounded-full ring-1 ring-[color:var(--color-ivory)]/20"
+                  style={{ backgroundColor: display?.colors.blob2 ?? "var(--color-brass)" }}
+                />
+                <bdi>{`${display?.number ?? "01"} / ${totalLabel}`}</bdi>
+              </p>
+              <h2 className="hall-label__title texture-text">{display?.label ?? ""}</h2>
+            </div>
           </motion.div>
         </AnimatePresence>
-      </div>
+      </section>
     </div>
   );
 }

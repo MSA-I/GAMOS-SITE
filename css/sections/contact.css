@@ -179,28 +179,38 @@
   gap: var(--space-4);
 }
 
-/* Each channel row is now a 3-column grid: icon | label/value stack | (empty
-   gap). Icons added 2026-06-02 — phone, mail, WhatsApp green. */
+/* Each channel row = icon + a vertical text stack (label over value). Flex
+   (not grid) keeps the icon glued to its text so the LTR phone/email values
+   never fly off to the far edge — fixes the "jumps" between icon and words.
+   Icons added 2026-06-02; layout reworked 2026-06-10. */
 .contact__channel {
-  display: grid;
-  grid-template-columns: auto 1fr;
+  display: flex;
   align-items: center;
-  column-gap: var(--space-4);
-  row-gap: 0;
+  gap: var(--space-4);
 }
 
 .contact__channel-icon {
   inline-size: 22px;
   block-size: 22px;
   display: block;
-  color: var(--accent);     /* phone + mail strokes use currentColor */
-  grid-row: 1 / span 2;     /* icon spans both label + value rows */
+  flex: none;               /* never shrink — keeps text alignment stable */
+  color: var(--accent);     /* phone + mail + pin strokes use currentColor */
 }
 
 /* WhatsApp icon ships with its own brand green (#25D366) baked into the SVG
    fill — keep currentColor inheritance off so the green isn't overridden. */
 .contact__channel-icon--whatsapp {
   color: #25D366;
+}
+
+/* Vertical stack: label on top, value beneath, both start-aligned so every
+   row's text begins at the same inline offset right next to the icon. */
+.contact__channel-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  min-inline-size: 0;
 }
 
 .contact__channel-label {
@@ -211,7 +221,6 @@
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
   color: var(--accent);
-  margin-block-end: var(--space-1);
 }
 
 .contact__channel-value {
@@ -223,44 +232,75 @@
 
 .contact__channel-value:hover { color: var(--accent); }
 
-.contact__cta-row {
-  display: flex;
-  gap: var(--space-3);
-  flex-wrap: wrap;
-}
-
-.contact__cta {
-  font-family: var(--font-body);
-  font-size: var(--text-base);
-  font-weight: var(--fw-semibold);
-  padding: var(--space-3) var(--space-6);
-  background: transparent;
-  color: var(--cocoa);
-  border: 1px solid var(--accent);
-  border-radius: var(--radius-pill);
+/* ----- Scroll cue → the branded #routes map below (replaces the old Waze /
+   Google CTA buttons, removed 2026-06-10). Animated down-arrow. ----- */
+.contact__scroll-cue {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  align-self: flex-start;
+  margin-block-start: var(--space-2);
   text-decoration: none;
-  transition: background var(--dur-base) var(--ease-out-cinema),
-              color var(--dur-base) var(--ease-out-cinema);
+  color: var(--cocoa);
+  transition: color var(--dur-base) var(--ease-out-cinema);
 }
 
-.contact__cta:hover {
+.contact__scroll-cue:hover { color: var(--accent-hover); }
+
+.contact__scroll-cue:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-md);
+}
+
+.contact__scroll-cue-text {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-wide);
+}
+
+.contact__scroll-cue-arrow {
+  display: grid;
+  place-items: center;
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: var(--radius-circle, 50%);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  animation: contact-cue-bob 1.8s var(--ease-out-cinema) infinite;
+}
+
+.contact__scroll-cue-arrow svg {
+  inline-size: 20px;
+  block-size: 20px;
+}
+
+.contact__scroll-cue:hover .contact__scroll-cue-arrow {
   background: var(--accent);
   color: var(--ink-deep);
 }
 
-.contact__map {
-  display: block;
-  inline-size: 100%;
-  block-size: clamp(240px, 30vw, 360px);
-  border-radius: var(--radius-lg);
-  background: var(--mist);
-  overflow: hidden;
-  margin-block-start: var(--space-6);
+@keyframes contact-cue-bob {
+  0%, 100% { transform: translateY(0);   opacity: 1; }
+  50%      { transform: translateY(6px); opacity: 0.7; }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .contact__scroll-cue-arrow { animation: none; }
+}
+
+/* NOTE: the generic Google Maps iframe (.contact__map) was removed 2026-06-10
+   — the branded interactive #routes map (css/sections/directions.css) now
+   serves the "where are we / how to get here" job. */
 
 /* ---------------------------------------------------------------------------
    #routes — מסלולי הגעה (extracted from #contact 2026-06-03 so the
    sticky-reveal pair effect can slide #contact up over #routes).
+   2026-06-10: the old 3-PNG .routes__grid was replaced by the branded
+   Leaflet map in css/sections/directions.css. Only the section shell rules
+   (.routes / .routes__container / header) stay here — the grid rules are gone.
    --------------------------------------------------------------------------- */
 
 .routes {
@@ -277,49 +317,6 @@
 .routes .section-header {
   text-align: center;
   margin-block-end: var(--space-10);
-}
-
-.routes__grid {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: var(--space-6);
-}
-
-.routes__grid figure {
-  margin: 0;
-  background: var(--ivory);
-  padding: var(--space-3);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
-  transition: transform var(--dur-base) var(--ease-out-cinema),
-              box-shadow var(--dur-base) var(--ease-out-cinema);
-}
-
-.routes__grid figure:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(83, 65, 51, 0.18);
-}
-
-.routes__grid img {
-  display: block;
-  inline-size: 100%;
-  block-size: auto;
-  border-radius: calc(var(--radius-lg) - var(--space-2));
-  aspect-ratio: 829 / 1024;
-  object-fit: cover;
-}
-
-.routes__grid figcaption {
-  font-family: var(--font-display-he);
-  font-size: var(--text-lg);
-  font-weight: var(--fw-bold);
-  color: var(--cocoa);
-  text-align: center;
-  margin-block-start: var(--space-3);
-  margin-block-end: var(--space-2);
 }
 
 /* ---------------------------------------------------------------------------

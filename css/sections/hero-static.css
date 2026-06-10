@@ -193,6 +193,66 @@ img.hero-static__layer--gamos {
 }
 
 /* ---------------------------------------------------------------------------
+   Scroll cue — pill outline with a falling brass dot. Ported from the /press/
+   hero (.press-hero__cue) so the two pages match. Anchored to the bottom of
+   the pinned 100vh viewport, ABOVE the desert (z=10). It is a "scroll down"
+   hint, so it fades out as the rise begins (--p1: 0→1 across progress 0→0.5).
+   --------------------------------------------------------------------------- */
+.hero-static__cue {
+  position: absolute;
+  inset-block-end: clamp(20px, 4vh, 40px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 24px;
+  block-size: 56px;
+  border: 1px solid rgba(245, 239, 230, 0.55);
+  border-radius: 999px;
+  text-decoration: none;
+  pointer-events: auto;
+  /* Fade out as the user starts scrolling (the rise consumes --p1 first). */
+  opacity: calc(1 - var(--p1));
+  transition: border-color var(--dur-base) var(--ease-out-cinema);
+}
+.hero-static__cue:hover,
+.hero-static__cue:focus-visible {
+  border-color: var(--brass-glow);
+}
+.hero-static__cue:focus-visible {
+  outline: 3px solid var(--brass, #CFAE83);
+  outline-offset: 4px;
+}
+
+.hero-static__cue-track {
+  position: relative;
+  display: block;
+  inline-size: 1px;
+  block-size: 32px;
+  background: rgba(245, 239, 230, 0.30);
+}
+
+.hero-static__cue-dot {
+  position: absolute;
+  inset-inline-start: -2px;
+  inset-block-start: 0;
+  inline-size: 5px;
+  block-size: 5px;
+  background: var(--brass-glow);
+  border-radius: 50%;
+  animation: hero-cue-fall 1.6s cubic-bezier(0.55, 0, 0.55, 1) infinite;
+}
+
+@keyframes hero-cue-fall {
+  0%   { transform: translateY(-4px);  opacity: 0; }
+  20%  {                                opacity: 1; }
+  80%  {                                opacity: 1; }
+  100% { transform: translateY(34px);  opacity: 0; }
+}
+
+/* ---------------------------------------------------------------------------
    Mobile (≤768px) — preserve existing CTA repositioning. The Phase B rise
    still applies. The .hero-static__cta transform must keep translateX(-50%)
    so the centering survives at narrow widths.
@@ -232,5 +292,10 @@ img.hero-static__layer--gamos {
   .hero-static__cta:hover img,
   .hero-static__cta:focus-visible img {
     transform: none;
+  }
+  /* Freeze the falling-dot loop; keep the cue visible at the start. */
+  .hero-static__cue-dot {
+    animation: none;
+    opacity: 1;
   }
 }

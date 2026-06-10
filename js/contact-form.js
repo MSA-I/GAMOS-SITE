@@ -145,6 +145,7 @@ function readFormValues() {
   const fd = new FormData(state.form);
   const obj = {
     name:      String(fd.get("name") || "").trim(),
+    company:   String(fd.get("company") || "").trim(),
     phone:     String(fd.get("phone") || "").trim(),
     email:     String(fd.get("email") || "").trim(),
     eventType: String(fd.get("eventType") || "").trim(),
@@ -171,8 +172,9 @@ function buildMessageBody(values) {
   const lines = [
     "שלום, הגעתי דרך האתר.",
     `שם: ${values.name || "—"}`,
-    `טלפון: ${values.phone || "—"}`,
   ];
+  if (values.company) lines.push(`שם החברה: ${values.company}`);
+  lines.push(`טלפון: ${values.phone || "—"}`);
   if (values.email) lines.push(`דוא"ל: ${values.email}`);
   lines.push(`סוג אירוע: ${eventTypeLabel(values.eventType)}`);
   if (values.date)    lines.push(`תאריך מועדף: ${values.date}`);

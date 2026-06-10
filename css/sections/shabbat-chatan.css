@@ -36,14 +36,26 @@
 
 .shabbat__container {
   display: flex;
+  flex-direction: column;
+  max-inline-size: var(--container-wide, 1100px);
+  margin-inline: auto;
+  padding-inline: var(--gutter, clamp(1rem, 4vw, 2rem));
+}
+
+/* Centered opening header — scrolls naturally above the pinned row. */
+.shabbat__header {
+  text-align: center;
+  margin-block: var(--space-12, 3rem) var(--space-8, 2rem);
+}
+
+/* The two-column row. Its block-size IS the scroll range (5 panels × 100vh);
+   the .shabbat__stage inside is pinned by ScrollTrigger across it. */
+.shabbat__layout {
+  display: flex;
   flex-direction: row;
   align-items: flex-start;
   justify-content: space-between;
   gap: clamp(1.5rem, 4vw, 60px);
-  max-inline-size: var(--container-wide, 1100px);
-  margin-inline: auto;
-  padding-inline: var(--gutter, clamp(1rem, 4vw, 2rem));
-  /* The container's block-size IS the scroll range. 5 panels × 100vh. */
 }
 
 /* Left column — natural scrolling text panels. */
@@ -130,16 +142,17 @@
    ----------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .shabbat__container {
-    flex-direction: column;
     gap: var(--space-6, 1.5rem);
     padding-block: var(--space-12, 3rem);
   }
 
-  /* display: contents promotes the two column wrappers' children into the
-     parent's flex flow. The figures (data-index="5..1") arrive AFTER the
-     panels in DOM order, so use their data-index to weave them between
-     panels — image data-index="5" sits right after panel 1, "4" after
-     panel 2, etc. nth-of-type ordinals sequence the panels themselves. */
+  /* display: contents promotes the layout wrapper and both column wrappers'
+     children into the container's flex flow. The figures (data-index="5..1")
+     arrive AFTER the panels in DOM order, so use their data-index to weave
+     them between panels — image data-index="5" sits right after panel 1, "4"
+     after panel 2, etc. nth-of-type ordinals sequence the panels themselves.
+     The header is the container's first child, so it stays on top. */
+  .shabbat__layout,
   .shabbat__panels,
   .shabbat__stage {
     display: contents;

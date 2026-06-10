@@ -1,0 +1,65 @@
+/* ===========================================================================
+   mobile/css/directions.css — #routes branded map, mobile overrides (§13)
+   ---------------------------------------------------------------------------
+   Desktop floats a glass card over the map's inline-end/bottom corner. On a
+   phone that card would swallow the map, so below 768px we pull it OUT of the
+   stage and render it as a static bar beneath the map; tabs scroll
+   horizontally; CTAs grow to ≥44px touch targets.
+
+   @media-only per §13. Loaded after css/sections/directions.css via
+   mobile/loader.js, so these win the cascade.
+   ========================================================================= */
+
+@media (max-width: 768px) {
+  /* Taller, full-bleed-ish stage so the map has room above the bar. */
+  .directions__stage {
+    min-block-size: clamp(300px, 56vh, 460px);
+  }
+
+  /* Card leaves the overlay and becomes a static bar under the map. */
+  .directions__card {
+    position: static;
+    inset: auto;
+    max-inline-size: none;
+    inline-size: 100%;
+    margin-block-start: var(--space-4);
+    /* Solid (not glass) once it's on ivory, for crisp contrast. */
+    background: var(--ivory);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: var(--shadow-soft);
+  }
+
+  /* Tabs scroll horizontally if the three labels get tight. */
+  .directions__tabs {
+    align-self: stretch;
+    justify-content: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .directions__tabs::-webkit-scrollbar { display: none; }
+
+  .directions__tab-label { white-space: nowrap; }
+
+  /* ≥44px touch targets (§9 / touch-targets convention). */
+  .directions__cta {
+    min-block-size: 44px;
+    display: inline-flex;
+    align-items: center;
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .directions__stage {
+    min-block-size: clamp(280px, 50vh, 380px);
+    border-radius: var(--radius-md);
+  }
+
+  /* Stack the three CTAs full-width so labels never truncate. */
+  .directions__cta-row { flex-direction: column; }
+  .directions__cta { inline-size: 100%; }
+}

@@ -80,15 +80,29 @@
   --color-mist: #E8DFD3;
 }
 
+/* Texture-fill URLs — mirror of css/tokens.css §2.2b. The webp masters live
+   at the SITE ROOT (assets/images/brand/…); this sub-app is served from
+   /halls/dist/ by the same root `npx serve`, so root-absolute URLs resolve
+   exactly like the /assets/fonts/ faces above. (Standalone `vite dev` for
+   halls won't find them — that's the established convention here.) */
+:root {
+  --typo-on-light: url("/assets/images/brand/typo-on-light.webp?v=2026-06-10");
+  --typo-on-dark: url("/assets/images/brand/typo-on-dark.webp?v=2026-06-10");
+}
+
 /* Body baseline — applies to both /halls/oasis/ and /halls/lumina/ entry pages.
-   Background-color is intentionally dark; Background.ts replaces this with
-   the active mood color via a fixed sibling div. */
+   Warm ivory ground (Wave 5 LOCKED): the GLSL Background paints the live mood
+   colors over the canvas, but the page must read warm-luxury for the
+   split-second before WebGL boots and behind any transparent clear — so the
+   pure-dark #0d0d0d was traded for an ivory-warm ground. #ECE3D3 is kept in
+   lockstep with Background.ts's `backgroundColor` default so the boot ground
+   and the first painted frame are the same warm tone (no dark→ivory flash). */
 body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #0d0d0d;
-  color: #f7f7f7;
+  background-color: #ece3d3; /* --ivory-warm (= Background.ts default) */
+  color: #1a1410; /* --ink-deep */
   font-family: var(--font-sans);
   user-select: none;
   -webkit-user-select: none;
@@ -97,4 +111,114 @@ body {
 /* Hide native scrollbar — wheel/touch input is captured by Scroll.ts. */
 ::-webkit-scrollbar {
   display: none;
+}
+
+/* =====================================================================
+ * Texture-text — faithful replica of css/components/texture-text.css.
+ * The editorial label title (HallChrome) is filled with the brand
+ * texture via background-clip:text, so it stays continuous with the
+ * main site's typography canon (§4.1).
+ *
+ *   .texture-text / .texture-text--dark : DARK gold-flecked fill
+ *       (typo-on-light) — for titles on LIGHT/ivory surfaces.
+ *   .texture-text--light                : LIGHT cream + gold fill
+ *       (typo-on-dark) — for titles on DARK surfaces.
+ *
+ * frame-dark swap: the label sits on a translucent ivory chip over the
+ * gallery. When the nearest plane is a BRIGHT photo (Wave-1 frame-dark
+ * flag → [data-frame-dark="true"] on the label wrapper), the title flips
+ * to the LIGHT (cream) texture so it never washes out against the photo.
+ *
+ * GRACEFUL DEGRADATION: the fill lives entirely inside @supports; without
+ * background-clip:text the heading keeps its solid token color (set by the
+ * .hall-label__title rule below). RTL: background-clip is direction-agnostic.
+ * ===================================================================== */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .texture-text,
+  .texture-text--dark,
+  .texture-text--light {
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* Default: DARK texture (gold flecks on near-black) for titles on the
+     light/ivory label chip — the dominant case. */
+  .texture-text,
+  .texture-text--dark {
+    background-image: var(--typo-on-light);
+  }
+
+  /* LIGHT texture (cream + gold) for titles over dark surfaces. */
+  .texture-text--light {
+    background-image: var(--typo-on-dark);
+  }
+
+  /* frame-dark: nearest plane is a bright photo → flip the label title to
+     the LIGHT cream fill so it reads against the photo through the chip. */
+  [data-frame-dark="true"] .texture-text,
+  [data-frame-dark="true"] .texture-text--dark {
+    background-image: var(--typo-on-dark);
+  }
+}
+
+/* =====================================================================
+ * Editorial label — color-chip composition folded into React chrome
+ * (HallChrome). Reproduces the reference Label.js layout intent:
+ * an index, a venue TITLE (texture-filled), and a small spec block —
+ * but RTL, with venue location/year replacing the CMYK/RGB/HEX/PMS rows.
+ * Layout positioning lives in HallChrome's Tailwind classes; the pieces
+ * that need texture-fill / precise typographic treatment live here.
+ * ===================================================================== */
+
+/* Title — texture-filled display type. Solid ivory is the @supports
+   fallback color (and what tiny non-supporting engines render). */
+.hall-label__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  font-size: clamp(1.35rem, 2.6vw, 2.25rem);
+  color: var(--color-ivory);
+}
+
+/* Index — "NN / TT" engraved monospace-ish counter. */
+.hall-label__index {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(0.72rem, 0.9vw, 0.85rem);
+  letter-spacing: 0.32em;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--color-ivory) 78%, transparent);
+}
+
+/* Spec block — location / year rows (replaces CMYK/RGB/HEX/PMS). */
+.hall-label__spec-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  column-gap: 0.85rem;
+}
+
+.hall-label__spec-key {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(0.6rem, 0.72vw, 0.72rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-brass) 92%, transparent);
+}
+
+.hall-label__spec-val {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: clamp(0.78rem, 0.95vw, 0.95rem);
+  letter-spacing: 0.01em;
+  color: color-mix(in srgb, var(--color-ivory) 90%, transparent);
 }

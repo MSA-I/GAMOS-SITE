@@ -146,30 +146,43 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
 .press-hero__picture img {
   object-fit: cover;
   object-position: center;
+  /* 2026-06-10: brighten the hero photo per user request. */
+  filter: brightness(1.06) saturate(1.04);
 }
 
-/* Layered overlay: top-darken + bottom-darken with breathing room in the
-   middle so the centered headline stays punchy. */
+/* Layered overlay (2026-06-10): brighter than before — the photo shows
+   through. A right-anchored scrim (RTL: text lives on the right) darkens
+   only the right third so the cream title stays legible without dimming the
+   whole image. The vertical gradient is now gentle (was 0.55/0.70). */
 .press-hero__overlay {
   position: absolute;
   inset: 0;
   z-index: -1;
   background:
+    linear-gradient(to left,
+      rgba(26, 20, 16, 0.50) 0%,
+      rgba(26, 20, 16, 0.18) 38%,
+      rgba(26, 20, 16, 0.00) 60%),
     linear-gradient(180deg,
-      rgba(26, 20, 16, 0.55) 0%,
-      rgba(26, 20, 16, 0.10) 22%,
-      rgba(26, 20, 16, 0.00) 40%,
-      rgba(26, 20, 16, 0.10) 60%,
-      rgba(26, 20, 16, 0.70) 100%);
+      rgba(26, 20, 16, 0.32) 0%,
+      rgba(26, 20, 16, 0.06) 24%,
+      rgba(26, 20, 16, 0.00) 46%,
+      rgba(26, 20, 16, 0.06) 62%,
+      rgba(26, 20, 16, 0.46) 100%);
 }
 
+/* 2026-06-10: hero text moved to the right edge (the blue line in the user's
+   mockup). RTL inline-start = the right, so `justify-items: start` +
+   `text-align: start` packs the three rows against the right edge. */
 .press-hero__content {
   position: relative;
   z-index: 1;
   block-size: 100%;
   display: grid;
   grid-template-rows: auto 1fr auto;
+  justify-items: start;
   align-items: stretch;
+  text-align: start;
   padding-block: clamp(96px, 14vh, 180px) clamp(96px, 14vh, 160px);
   padding-inline: clamp(24px, 5vw, 64px);
   max-inline-size: 1400px;
@@ -181,6 +194,7 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-start;
   gap: var(--space-3);
   font-family: var(--font-body);
   font-size: 0.8125rem;
@@ -202,12 +216,16 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
    color (so the texture fill is honored where supported). */
 .press-hero__title {
   align-self: center;
+  justify-self: start;
   margin: 0;
-  font-family: var(--font-display-he);
+  /* 2026-06-10: Rubik is only loaded at 700/900 (same file), so a lighter
+     weight on Rubik snapped back to 700 — never actually thinned. Switched to
+     Heebo, which IS loaded at 400, so the title renders genuinely thin. */
+  font-family: var(--font-body);
   font-size: clamp(3.5rem, 9vw, 7.5rem);
   line-height: 0.96;
   letter-spacing: -0.025em;
-  font-weight: var(--fw-bold);
+  font-weight: var(--fw-regular);
   max-inline-size: 14ch;
   /* Color falls back to ivory if @supports(background-clip:text) skips. */
   color: var(--ivory);
@@ -219,6 +237,7 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
 
 .press-hero__lede {
   align-self: end;
+  justify-self: start;
   margin: 0;
   max-inline-size: 32ch;
   font-family: var(--font-body);
@@ -326,11 +345,13 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
    is the inherited --ink-deep. */
 .press-intro__sentence {
   margin: 0;
-  font-family: var(--font-display-he);
+  /* 2026-06-10: thin-title style site-page-wide — Heebo 400 (genuinely loaded
+     thin weight; Rubik is only loaded at 700/900). */
+  font-family: var(--font-body);
   font-size: clamp(2.5rem, 6vw, 5rem);
   line-height: 1.04;
   letter-spacing: -0.02em;
-  font-weight: var(--fw-bold);
+  font-weight: var(--fw-regular);
   max-inline-size: 24ch;
 }
 
@@ -498,11 +519,12 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
    (cream + gold) painted via background-clip:text. Sizing only here. */
 .press-card__title {
   margin: 0;
-  font-family: var(--font-display-he);
+  /* 2026-06-10: thin-title style — Heebo 400 (see .press-intro__sentence). */
+  font-family: var(--font-body);
   font-size: clamp(1.85rem, 4.4vw, 3.75rem);
   line-height: 1.02;
   letter-spacing: -0.018em;
-  font-weight: var(--fw-bold);
+  font-weight: var(--fw-regular);
   /* Color fallback for browsers without background-clip:text */
   color: var(--ivory);
 }
@@ -630,28 +652,31 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
   padding-inline: clamp(24px, 5vw, 64px);
 }
 
-.press-closer__picture,
-.press-closer__picture img {
+/* 2026-06-10: the static photo was replaced by an interactive raw-WebGL
+   aurora-hills shader (js/press-shader.js). The canvas fills the section
+   behind the content; ink-deep base shows through the shader's distance
+   fade. */
+.press-closer__canvas {
   position: absolute;
   inset: 0;
   inline-size: 100%;
   block-size: 100%;
   z-index: -2;
-}
-.press-closer__picture img {
-  object-fit: cover;
-  object-position: center;
+  display: block;
+  background: var(--ink-deep);
 }
 
+/* Lighter shade than the old photo needed — just enough vignette so the
+   cream title + buttons stay legible over the brighter aurora tones. */
 .press-closer__shade {
   position: absolute;
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(180deg,
-      rgba(26, 20, 16, 0.45) 0%,
-      rgba(26, 20, 16, 0.20) 35%,
-      rgba(26, 20, 16, 0.55) 100%);
+    radial-gradient(120% 90% at 50% 50%,
+      rgba(26, 20, 16, 0.00) 0%,
+      rgba(26, 20, 16, 0.18) 55%,
+      rgba(26, 20, 16, 0.42) 100%);
 }
 
 .press-closer__content {
@@ -677,11 +702,12 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
 /* Closer title — texture-text--light in markup. Sizing only here. */
 .press-closer__title {
   margin: 0;
-  font-family: var(--font-display-he);
+  /* 2026-06-10: thin-title style — Heebo 400 (see .press-intro__sentence). */
+  font-family: var(--font-body);
   font-size: clamp(2.75rem, 7vw, 6rem);
   line-height: 1.0;
   letter-spacing: -0.022em;
-  font-weight: var(--fw-bold);
+  font-weight: var(--fw-regular);
   color: var(--ivory); /* fallback */
 }
 

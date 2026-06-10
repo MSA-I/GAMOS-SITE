@@ -6,10 +6,15 @@ import type { Project, ExtractedColors, ProjectWithColors } from "./types";
 // FALLBACK_COLORS (brand palette).
 import extractedColors from "./data/extractedColors.json";
 
+// Warm-luxury fallback (Wave 5). Used only when a plane image is absent from
+// extractedColors.json. Biased to the Gamos palette (ivory-warm ground + brass
+// / cocoa blobs) so a missing extraction degrades into the warm skin rather
+// than the reference's dark icy aesthetic — keeps the GLSL background
+// continuous with the main site even before any per-image mood lands.
 const FALLBACK_COLORS: ExtractedColors = {
-  background: "#1a1410",
-  blob1: "#534133",
-  blob2: "#cfae83",
+  background: "#ece3d3", // ivory-warm
+  blob1: "#cfae83", // brass
+  blob2: "#534133", // cocoa
 };
 
 export const projectsData: Project[] = [
@@ -82,6 +87,28 @@ export const projectsData: Project[] = [
     year: "2026",
     image: "images/projects/oasis-10.webp",
   },
+  {
+    id: "grand-arrival",
+    hallId: "oasis",
+    number: "07",
+    title: "כיכר הבואים • The Grand Arrival",
+    subtitle: "רחבת אבן רחבה תחת חזית האולם המוארת",
+    label: "רחבת אבן רחבה תחת חזית האולם המוארת",
+    location: "כיכר הכניסה הראשית",
+    year: "2026",
+    image: "images/projects/oasis-09.webp",
+  },
+  {
+    id: "stone-promenade",
+    hallId: "oasis",
+    number: "08",
+    title: "טיילת האבן • The Stone Promenade",
+    subtitle: "בר עצים וטרסות בין עצי זית עתיקים",
+    label: "בר עצים וטרסות בין עצי זית עתיקים",
+    location: "מתחם החוץ והבר המרכזי",
+    year: "2026",
+    image: "images/projects/oasis-05.webp",
+  },
 
   // ─────────────────────────────────────────────────────────────────────────
   // HALL 2: LUMINA SANCTUARY (היכל דמדומים / מתחם הספירות הזוהרות)
@@ -151,6 +178,28 @@ export const projectsData: Project[] = [
     location: "חלל פנים וחוץ בעיצוב ספירות",
     year: "2026",
     image: "images/projects/lumina-06.webp",
+  },
+  {
+    id: "twin-orbs",
+    hallId: "lumina",
+    number: "07",
+    title: "הספירות התאומות • The Twin Orbs",
+    subtitle: "שתי ספירות זוהרות מרחפות מעל חולות המדבר",
+    label: "שתי ספירות זוהרות מרחפות מעל חולות המדבר",
+    location: "מישור המדבר הפתוח",
+    year: "2026",
+    image: "images/projects/lumina-07.webp",
+  },
+  {
+    id: "infinity-mirror",
+    hallId: "lumina",
+    number: "08",
+    title: "מראת האינסוף • The Infinity Mirror",
+    subtitle: "בריכת אינסוף שקטה מול אופק הדיונות",
+    label: "בריכת אינסוף שקטה מול אופק הדיונות",
+    location: "טרסת הבריכה הצפונית",
+    year: "2026",
+    image: "images/projects/lumina-08.webp",
   },
 ];
 

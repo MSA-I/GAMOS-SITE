@@ -63,6 +63,7 @@
     "/mobile/css/touch-targets.css",
     "/mobile/css/headings.css",
     "/mobile/css/kosher.css",
+    "/mobile/css/directions.css",
   ];
 
   function injectStylesheets () {

@@ -41,9 +41,11 @@
    ========================================================================= */
 
 const SECTION_SELECTOR = "#shabbat-chatan";
-const CONTAINER_SELECTOR = ".shabbat__container";
+const LAYOUT_SELECTOR = ".shabbat__layout";
 const STAGE_SELECTOR = ".shabbat__stage";
 const IMG_SELECTOR = ".shabbat__media img";
+const HEADING_SELECTOR = ".shabbat__heading";
+const TITLE_SELECTOR = ".shabbat__header .section-header__title";
 
 const TINT_VARS = [
   "--shabbat-tint-1",
@@ -65,11 +67,49 @@ function readTints() {
   return TINT_VARS.map((v) => (cs.getPropertyValue(v) || "").trim() || "#EDF9FF");
 }
 
+// rec601 luma (0-255) of a #rrggbb / #rgb hex. Returns 255 (treat as light)
+// for anything unparseable so an odd value never produces dark-on-dark.
+function luma(hex) {
+  const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec((hex || "").trim());
+  if (!m) return 255;
+  let h = m[1];
+  if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return 0.299 * r + 0.587 * g + 0.114 * b;
+}
+
+const DARK_BG_THRESHOLD = 140; // bg luma below this → use the light text fill.
+
+function setVariant(el, light) {
+  if (!el) return;
+  el.classList.toggle("texture-text--light", light);
+  el.classList.toggle("texture-text--dark", !light);
+}
+
+// Flip each heading's texture fill (and the opening title) to the light
+// variant when its paired tint is dark, so text stays readable whatever the
+// image-derived background is. With the current soft-pastel tints they all
+// stay --dark; this keeps the section correct if tints are ever re-extracted
+// darker. Runs once per init for both desktop & mobile.
+function applyTextVariant(tints) {
+  const headings = Array.from(_section.querySelectorAll(HEADING_SELECTOR));
+  headings.forEach((h, i) => {
+    const tint = tints[Math.min(i, tints.length - 1)];
+    setVariant(h, luma(tint) < DARK_BG_THRESHOLD);
+  });
+  // The header sits where the section background == tint-1 (panel-1 colour).
+  setVariant(_section.querySelector(TITLE_SELECTOR), luma(tints[0]) < DARK_BG_THRESHOLD);
+}
+
 function buildDesktopTimeline(gsap, ScrollTrigger) {
   const stage = _section.querySelector(STAGE_SELECTOR);
-  const container = _section.querySelector(CONTAINER_SELECTOR);
+  // Trigger on the two-column row, NOT the whole container — the header sits
+  // above it and must scroll naturally (not be swept into the pin range).
+  const layout = _section.querySelector(LAYOUT_SELECTOR);
   const imgs = Array.from(_section.querySelectorAll(IMG_SELECTOR));
-  if (!stage || !container || imgs.length === 0) return;
+  if (!stage || !layout || imgs.length === 0) return;
 
   // Defensive z-index: DOM order is data-index="5..1"; topmost image
   // (imgs[0], data-index="5") must paint above its successors so its
@@ -87,7 +127,7 @@ function buildDesktopTimeline(gsap, ScrollTrigger) {
 
   const tl = gsap.timeline({
     scrollTrigger: {
-      trigger: container,
+      trigger: layout,
       start: "top top",
       end: "bottom bottom",
       pin: stage,
@@ -203,6 +243,10 @@ export function init() {
 
   // GSAP's registerPlugin is itself idempotent — single unconditional call.
   gsap.registerPlugin(ScrollTrigger);
+
+  // Flip heading/title texture to the readable variant for the image-derived
+  // tints. Independent of viewport, so run once up-front.
+  applyTextVariant(readTints());
 
   _mm = gsap.matchMedia();
   _mm.add("(min-width: 769px)", () => buildDesktopTimeline(gsap, ScrollTrigger));

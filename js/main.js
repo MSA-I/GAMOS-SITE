@@ -33,6 +33,7 @@ import * as siteNavHoverReveal  from "./site-nav-hover-reveal.js"; // 2026-06-04
 import * as scrollSpy           from "./scroll-spy.js";     // .site-nav — aria-current scroll-spy
 import * as shabbatGallery     from "./shabbat-gallery.js";// 2026-06-09 — GSAP pinned mask-reveal (CodePen WbQPRwv port)
 import * as shabbatMobile      from "../mobile/js/shabbat-chatan-mobile.js"; // 2026-06-09 — mobile interleave (display: contents + order)
+import * as directionsMap      from "./directions-map.js";  // 2026-06-10 — #routes branded Leaflet map + origin tabs
 
 // Order matters:
 // - scroll-orchestrator MUST init before any scene (hero or non-hero) that
@@ -58,6 +59,7 @@ const MODULES = [
   ["portals",             portals],
   ["side-dot-nav",        sideDotNav],
   ["reveals",             reveals],
+  ["directions-map",      directionsMap], // 2026-06-10: #routes Leaflet map (after reveals so [data-reveal] is set up)
   ["accordions",          accordions],
   ["slider",              slider],
   ["marquee",             marquee],       // Agent 20 — weblove-motion marquee bands

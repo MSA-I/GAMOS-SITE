@@ -127,6 +127,7 @@
   <link rel="stylesheet" href="/css/sections/about.css">
   <link rel="stylesheet" href="/css/sections/testimonials.css">
   <link rel="stylesheet" href="/css/sections/contact.css">
+  <link rel="stylesheet" href="/css/sections/directions.css">
   <link rel="stylesheet" href="/css/sections/gallery.css">
   <link rel="stylesheet" href="/css/sections/events.css">
   <link rel="stylesheet" href="/css/sections/kosher.css">
@@ -152,6 +153,12 @@
   <script defer src="/assets/vendor/gsap.min.js"></script>
   <script defer src="/assets/vendor/ScrollToPlugin.min.js"></script>
   <script defer src="/assets/vendor/ScrollTrigger.min.js"></script>
+
+  <!-- Leaflet (self-hosted, ~42KB; Constitution §2 — directions map ONLY).
+       Powers the branded interactive #routes "מסלולי הגעה" map in
+       js/directions-map.js. defer → window.L is ready before main.js runs. -->
+  <link rel="stylesheet" href="/assets/vendor/leaflet.css">
+  <script defer src="/assets/vendor/leaflet.js"></script>
 
   <!-- Mobile pass — single self-contained entry. The loader injects
        /mobile/css/*.css link tags, picture half.webp sources, hero CTA
@@ -286,6 +293,15 @@
           <img src="/assets/images/hero/desert.full.webp"
                alt="" decoding="async" loading="eager">
         </picture>
+
+        <!-- Scroll cue (matches /press/ hero): pill outline + falling brass
+             dot. Sits at the bottom of the pinned viewport, fades out as the
+             rise begins. -->
+        <a class="hero-static__cue" href="#lounge" aria-label="גלול לתוכן">
+          <span class="hero-static__cue-track" aria-hidden="true">
+            <span class="hero-static__cue-dot"></span>
+          </span>
+        </a>
 
       </div>
     </section>
@@ -450,10 +466,10 @@
           <header class="section-header">
             <p class="section-header__eyebrow">המטבח שלנו</p>
             <h2 id="culinary-title" class="section-header__title texture-text texture-text--light">
-              חוויה קולינרית בלתי נשכחת
+              חוויה קולינרית עילית
             </h2>
             <p class="section-header__lede">
-              מסע גסטרונומי של מנות מנצחות: מיטב המרכיבים הטריים בשילוב צוות מקצועי שיעשה לכם שמח בצלחת. אירועים שנועדו לעורר את החושים ולהשאיר טעם של עוד.
+              אנו מאמינים כי קולינריה עילית היא הלב הפועם של כל אירוע מוצלח. על המטבח של גאמוס מנצח שף מוערך המוביל צוות ותיק ומיומן, היוצר תפריטים מותאמים אישית לאופי האירוע, לקהל היעד ולחזון שלכם.
             </p>
           </header>
         </div>
@@ -580,7 +596,14 @@
     <section id="shabbat-chatan" class="shabbat" aria-labelledby="shabbat-title">
       <div class="shabbat__container">
 
-        <h2 id="shabbat-title" class="visually-hidden">שבתות חתן</h2>
+        <header class="section-header section-header--center shabbat__header">
+          <p class="section-header__eyebrow"
+             data-reveal="fade-up" style="--reveal-delay: 0ms;">שבתות חתן</p>
+          <h2 id="shabbat-title" class="section-header__title texture-text texture-text--dark"
+              data-reveal="fade-up" style="--reveal-delay: 120ms;">חוגגים שבת חתן בלב הטבע</h2>
+        </header>
+
+        <div class="shabbat__layout">
 
         <div class="shabbat__panels" role="presentation">
           <article class="shabbat__panel">
@@ -640,6 +663,8 @@
               <img src="/assets/images/shabbat-chatan/09.full.jpg" alt="קרובי המשפחה מתאחדים סביב שולחן השבת" loading="lazy" decoding="async" draggable="false">
             </picture>
           </figure>
+        </div>
+
         </div>
 
       </div>
@@ -810,18 +835,23 @@
           <div class="about__body">
             <p class="about__lede"
                data-reveal="slide-right"
-               style="--reveal-delay: 200ms;">
-              גאמוס הוא קומפלקס אירועים יחודי, עצום בגודלו, המעוצב בקפידה על מנת לתת את כלל האפשרויות לאירוע יחודי ויוצא דופן.
+               style="--reveal-delay: 180ms;">
+              גאמוס הוא קומפלקס אירוח ואירועים יוקרתי שנולד מתוך חזון אחד ברור: להעניק לאורחים חוויה ייחודית המשלבת עיצוב מרהיב, קולינריה מוקפדת, שירות יוצא דופן וסביבה שאין דומה לה בישראל.
             </p>
             <p class="about__lede"
                data-reveal="slide-right"
-               style="--reveal-delay: 260ms;">
-              הקומפלקס ממוקם בפארק ישראל ומכיל שני מתחמי אירועים שונים ונפרדים, אולם וריזורט, המספקים חוויה בלתי נשכחת. שילוב של שניהם זה כבר חוויה שלא תשכחו.
+               style="--reveal-delay: 240ms;">
+              בלב נוף מדברי עוצמתי ומרהיב משתרע המתחם, המשלב בין אדריכלות מודרנית, מרחבים פתוחים ותחושת יוקרה טבעית. הנוף הפנורמי, השקט והאוויר יוצרים חוויה שקשה להסביר במילים ובלתי אפשרי לשכוח.
             </p>
             <p class="about__lede"
                data-reveal="slide-right"
-               style="--reveal-delay: 320ms;">
-              אנחנו בגאמוס חשבנו על כל הפרטים, מקטן ועד גדול, על מנת להיות הדבר הבא של ישראל בענף האירועים.
+               style="--reveal-delay: 300ms;">
+              גאמוס אינו רק אולם אירועים, אלא מתחם אירוח שלם: אולם מרשים המותאם לאירועים בכל גודל, גן אירועים פתוח וריזורט יוקרתי הפונה לנוף המדבר. אנחנו מאמינים שאין שני אירועים זהים, ולכן כל אירוע נבנה בהתאמה אישית מלאה, מהקונספט והעיצוב ועד הפרטים הקטנים ביותר.
+            </p>
+            <p class="about__lede"
+               data-reveal="slide-right"
+               style="--reveal-delay: 360ms;">
+              גאמוס. המקום שבו יוקרה פוגשת רגש, ואירוח הופך לחוויה.
             </p>
 
             <ul class="about__usp" role="list"
@@ -1190,8 +1220,10 @@
 
         <p class="kosher__body"
            data-reveal="fade-up" style="--reveal-delay: 360ms;">
-          המתחם פועל בכשרות בהשגחת רבנות מוסמכת, עם הפרדה מלאה בין בשרי לחלבי.
-          תעודות הכשרות זמינות לעיון במשרדי המתחם.
+          אנו מחויבים להעניק חוויית אירוח מכבדת וראויה לכלל המגזרים. המתחם ערוך
+          ומותאם באופן מלא ומקצועי לדרישות הציבור הדתי והחרדי בכל ההיבטים, לרבות
+          מתן פתרונות כשרות מהודרים בסטנדרטים הגבוהים ביותר, ללא פשרות על האיכות,
+          הטעם והנראות של האירוע.
         </p>
       </div>
     </section>
@@ -1217,7 +1249,11 @@
           <p class="section-header__eyebrow"
              data-reveal="slide-right" style="--reveal-delay: 0ms;">צור קשר</p>
           <h2 id="contact-title" class="section-header__title texture-text texture-text--dark"
-              data-reveal="slide-right" style="--reveal-delay: 80ms;">בואו נתחיל לתכנן</h2>
+              data-reveal="slide-right" style="--reveal-delay: 80ms;">בואו נתחיל לתכנן את האירוע שלכם.</h2>
+          <p class="section-header__lede"
+             data-reveal="slide-right" style="--reveal-delay: 140ms;">
+            צוות המומחים של גאמוס עומד לרשותכם כדי להפוך את החזון שלכם למציאות. צרו עמנו קשר לתיאום סיור במתחם וקבלת הצעה מותאמת אישית.
+          </p>
         </header>
 
         <div class="contact__grid">
@@ -1235,6 +1271,13 @@
               <label for="contact-name">שם מלא</label>
               <input type="text" id="contact-name" name="name"
                      autocomplete="name" required aria-required="true">
+            </div>
+
+            <div class="contact__field"
+                 data-reveal="slide-right" style="--reveal-delay: 190ms;">
+              <label for="contact-company">שם החברה <span class="contact__field-optional">(אופציונלי)</span></label>
+              <input type="text" id="contact-company" name="company"
+                     autocomplete="organization">
             </div>
 
             <div class="contact__field"
@@ -1283,7 +1326,7 @@
 
             <div class="contact__submit-wrap"
                  data-reveal="slide-right" style="--reveal-delay: 480ms;">
-              <button type="submit" class="contact__submit">שלחו דרך WhatsApp</button>
+              <button type="submit" class="contact__submit">שליחת פרטים ותיאום סיור במתחם</button>
               <p class="contact__feedback" role="status" aria-live="polite"></p>
             </div>
           </form>
@@ -1295,63 +1338,64 @@
             <ul class="contact__channels" role="list">
               <li class="contact__channel">
                 <img class="contact__channel-icon" src="/assets/img/icons/phone.svg" alt="" width="22" height="22" aria-hidden="true">
-                <span class="contact__channel-label">טלפון</span>
-                <a href="tel:+972779972343" class="contact__channel-value" dir="ltr">
-                  <bdi>077-9972343</bdi>
-                </a>
+                <span class="contact__channel-text">
+                  <span class="contact__channel-label">טלפון</span>
+                  <a href="tel:+972779972343" class="contact__channel-value" dir="ltr">
+                    <bdi>077-9972343</bdi>
+                  </a>
+                </span>
               </li>
               <li class="contact__channel">
                 <img class="contact__channel-icon" src="/assets/img/icons/phone.svg" alt="" width="22" height="22" aria-hidden="true">
-                <span class="contact__channel-label">טלפון נוסף</span>
-                <a href="tel:+972778036482" class="contact__channel-value" dir="ltr">
-                  <bdi>077-8036482</bdi>
-                </a>
+                <span class="contact__channel-text">
+                  <span class="contact__channel-label">טלפון נוסף</span>
+                  <a href="tel:+972778036482" class="contact__channel-value" dir="ltr">
+                    <bdi>077-8036482</bdi>
+                  </a>
+                </span>
               </li>
               <li class="contact__channel">
                 <img class="contact__channel-icon" src="/assets/img/icons/mail.svg" alt="" width="22" height="22" aria-hidden="true">
-                <span class="contact__channel-label">דוא"ל</span>
-                <a href="mailto:office@gamos.co.il?subject=%D7%A4%D7%A0%D7%99%D7%99%D7%94%20%D7%9C%D7%90%D7%99%D7%A8%D7%95%D7%A2%20%D7%91%D7%92%D7%90%D7%9E%D7%95%D7%A1" class="contact__channel-value" dir="ltr">
-                  office@gamos.co.il
-                </a>
+                <span class="contact__channel-text">
+                  <span class="contact__channel-label">דוא"ל</span>
+                  <a href="mailto:office@gamos.co.il?subject=%D7%A4%D7%A0%D7%99%D7%99%D7%94%20%D7%9C%D7%90%D7%99%D7%A8%D7%95%D7%A2%20%D7%91%D7%92%D7%90%D7%9E%D7%95%D7%A1" class="contact__channel-value" dir="ltr">
+                    office@gamos.co.il
+                  </a>
+                </span>
               </li>
               <li class="contact__channel contact__channel--whatsapp">
                 <img class="contact__channel-icon contact__channel-icon--whatsapp" src="/assets/img/icons/whatsapp.svg" alt="" width="22" height="22" aria-hidden="true">
-                <span class="contact__channel-label">ווטסאפ</span>
-                <a href="https://wa.me/972779972343?text=%D7%A9%D7%9C%D7%95%D7%9D%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%2F%D7%AA%20%D7%9C%D7%A7%D7%91%D7%9C%20%D7%A4%D7%A8%D7%98%D7%99%D7%9D%20%D7%A2%D7%9C%20%D7%90%D7%99%D7%A8%D7%95%D7%A2%20%D7%91%D7%92%D7%90%D7%9E%D7%95%D7%A1." class="contact__channel-value" dir="ltr"
-                   target="_blank" rel="noopener noreferrer">
-                  <bdi>077-9972343</bdi>
-                </a>
+                <span class="contact__channel-text">
+                  <span class="contact__channel-label">ווטסאפ</span>
+                  <a href="https://wa.me/972779972343?text=%D7%A9%D7%9C%D7%95%D7%9D%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%2F%D7%AA%20%D7%9C%D7%A7%D7%91%D7%9C%20%D7%A4%D7%A8%D7%98%D7%99%D7%9D%20%D7%A2%D7%9C%20%D7%90%D7%99%D7%A8%D7%95%D7%A2%20%D7%91%D7%92%D7%90%D7%9E%D7%95%D7%A1." class="contact__channel-value" dir="ltr"
+                     target="_blank" rel="noopener noreferrer">
+                    <bdi>077-9972343</bdi>
+                  </a>
+                </span>
               </li>
               <li class="contact__channel">
-                <span class="contact__channel-label">כתובת</span>
-                <span class="contact__channel-value">
-                  די זהב 7, פארק ישראל, מעלה אדומים
+                <img class="contact__channel-icon" src="/assets/img/icons/pin.svg" alt="" width="22" height="22" aria-hidden="true">
+                <span class="contact__channel-text">
+                  <span class="contact__channel-label">כתובת</span>
+                  <span class="contact__channel-value">די זהב 7, פארק ישראל, מעלה אדומים</span>
                 </span>
               </li>
             </ul>
 
-            <div class="contact__cta-row">
-              <a class="contact__cta contact__cta--waze"
-                 href="https://ul.waze.com/ul?preview_venue_id=23134526.231607403.655613&navigate=yes"
-                 target="_blank" rel="noopener noreferrer"
-                 aria-label="פתח ניווט ב-Waze לגאמוס, די זהב 7 מעלה אדומים">
-                <span>נווטו ב-Waze</span>
-              </a>
-              <a class="contact__cta contact__cta--maps"
-                 href="https://maps.google.com/?q=GAMOS+EVENTS+מעלה+אדומים"
-                 target="_blank" rel="noopener noreferrer"
-                 aria-label="פתח ב-Google Maps לגאמוס, די זהב 7 מעלה אדומים">
-                <span>פתחו ב-Google Maps</span>
-              </a>
-            </div>
+            <!-- Scroll cue → the branded #routes map sits directly below this
+                 reveal-pair. Animated down-arrow nudges the visitor to scroll. -->
+            <a class="contact__scroll-cue" href="#routes"
+               aria-label="גללו לצפייה במפת ההגעה למתחם">
+              <span class="contact__scroll-cue-text">גללו לצפייה במפת ההגעה</span>
+              <span class="contact__scroll-cue-arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 5v14"></path>
+                  <path d="M19 12l-7 7-7-7"></path>
+                </svg>
+              </span>
+            </a>
 
-            <iframe class="contact__map"
-                    src="https://www.google.com/maps?q=di+zahav+7,+Maale+Adumim&output=embed"
-                    width="100%" height="320"
-                    style="border:0; border-radius: var(--radius-lg);"
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"
-                    title="מפת המתחם, די זהב 7, פארק ישראל, מעלה אדומים"></iframe>
           </aside>
 
         </div>
@@ -1359,44 +1403,88 @@
     </section>
 
     <!-- ====================================================================
-         #routes — מסלולי הגעה
-         Pulled out of #contact 2026-06-03 so the contact section can slide
-         up over it (olivierlarose sticky-reveal). Three hand-illustrated
-         maps from gamos.co.il, lazy-loaded.
+         #routes — מסלולי הגעה (branded interactive map, 2026-06-10)
+         Replaces the 3 hand-illustrated PNG route cards with ONE Leaflet map
+         (brass/cream tiles) + origin tabs (מירושלים / מהמרכז / מצפון). Each
+         tab flies the map to that origin, draws its route line, updates the
+         glass-card time/distance label, and re-points the Waze/Google/WhatsApp
+         CTAs. Built by js/directions-map.js + css/sections/directions.css.
+         Section id + .reveal-pair__bottom kept (side-dot-nav + sticky-reveal).
     ==================================================================== -->
     <section id="routes" class="routes reveal-pair__bottom" aria-labelledby="routes-title">
       <div class="routes__container">
         <header class="section-header">
           <p class="section-header__eyebrow">איך מגיעים</p>
           <h2 id="routes-title" class="section-header__title texture-text texture-text--dark">מסלולי הגעה</h2>
-          <p class="section-header__lede">לחצו על המפה הרלוונטית להתמצאות מהירה</p>
+          <p class="section-header__lede">בחרו מאיפה אתם מגיעים, ואנחנו נסמן לכם את הדרך</p>
         </header>
-        <ul class="routes__grid" role="list">
-          <li>
-            <figure>
-              <img src="/assets/images/maps/route-from-jerusalem.png"
-                   alt="מסלול הגעה לגאמוס מירושלים: תלפיות, הר חומה, מרכז העיר"
-                   loading="lazy" decoding="async" width="829" height="1024">
-              <figcaption>מירושלים</figcaption>
-            </figure>
-          </li>
-          <li>
-            <figure>
-              <img src="/assets/images/maps/route-from-center.png"
-                   alt="מסלול הגעה לגאמוס מאזור גוש דן: רמות, גבעת זאב, גבעון"
-                   loading="lazy" decoding="async" width="829" height="1024">
-              <figcaption>מהמרכז</figcaption>
-            </figure>
-          </li>
-          <li>
-            <figure>
-              <img src="/assets/images/maps/route-from-north.png"
-                   alt="מסלול הגעה לגאמוס מצפון: בית אל, עפרה, רימונים, אדם"
-                   loading="lazy" decoding="async" width="829" height="1024">
-              <figcaption>מצפון</figcaption>
-            </figure>
-          </li>
-        </ul>
+
+        <div class="directions" data-directions>
+          <!-- Origin tabs (native radios → keyboard + SR accessible). JS syncs
+               aria-selected + the active route. RTL: first = rightmost. -->
+          <div class="directions__tabs" role="tablist" aria-label="בחירת מוצא הנסיעה">
+            <label class="directions__tab" data-directions-tab="telaviv">
+              <input type="radio" name="directions-origin" value="telaviv"
+                     role="tab" aria-selected="false" aria-controls="directions-map">
+              <span class="directions__tab-label">מהמרכז</span>
+            </label>
+            <label class="directions__tab" data-directions-tab="jerusalem">
+              <input type="radio" name="directions-origin" value="jerusalem" checked
+                     role="tab" aria-selected="true" aria-controls="directions-map">
+              <span class="directions__tab-label">מירושלים</span>
+            </label>
+            <label class="directions__tab" data-directions-tab="north">
+              <input type="radio" name="directions-origin" value="north"
+                     role="tab" aria-selected="false" aria-controls="directions-map">
+              <span class="directions__tab-label">מהצפון</span>
+            </label>
+            <label class="directions__tab" data-directions-tab="south">
+              <input type="radio" name="directions-origin" value="south"
+                     role="tab" aria-selected="false" aria-controls="directions-map">
+              <span class="directions__tab-label">מהדרום</span>
+            </label>
+          </div>
+
+          <div class="directions__stage">
+            <div id="directions-map" class="directions__map"
+                 role="application"
+                 aria-label="מפת הגעה לגאמוס, די זהב 7, מישור אדומים"></div>
+
+            <!-- Floating glass card: live time/distance + navigation CTAs.
+                 JS updates the label text + the three hrefs per active tab. -->
+            <aside class="directions__card" aria-live="polite">
+              <p class="directions__eta">
+                <span class="directions__eta-label" data-directions-eta-origin>מירושלים</span>
+                <span class="directions__eta-stat" data-directions-eta>≈ 17 דק׳ · 16 ק״מ</span>
+              </p>
+              <p class="directions__address">די זהב 7, מישור אדומים, מעלה אדומים</p>
+              <div class="directions__cta-row">
+                <a class="directions__cta directions__cta--waze" data-directions-waze
+                   href="https://ul.waze.com/ul?preview_venue_id=23134526.231607403.655613&navigate=yes"
+                   target="_blank" rel="noopener noreferrer">נווטו ב-Waze</a>
+                <a class="directions__cta directions__cta--maps" data-directions-google
+                   href="https://www.google.com/maps/dir/?api=1&destination=31.7878076,35.3371583"
+                   target="_blank" rel="noopener noreferrer">Google Maps</a>
+                <a class="directions__cta directions__cta--wa" data-directions-wa
+                   href="https://wa.me/972779972343?text=%D7%A9%D7%9C%D7%95%D7%9D%2C%20%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A7%D7%91%D7%9C%20%D7%94%D7%A0%D7%97%D7%99%D7%95%D7%AA%20%D7%94%D7%92%D7%A2%D7%94%20%D7%9C%D7%92%D7%90%D7%9E%D7%95%D7%A1."
+                   target="_blank" rel="noopener noreferrer">שאלו בוואטסאפ</a>
+              </div>
+            </aside>
+          </div>
+
+          <p class="directions__attribution">מפה: © OpenStreetMap, © CARTO</p>
+
+          <!-- JS-off fallback: address + the same three navigation links. -->
+          <noscript>
+            <div class="directions__fallback">
+              <p>די זהב 7, מישור אדומים, מעלה אדומים.</p>
+              <a href="https://ul.waze.com/ul?preview_venue_id=23134526.231607403.655613&navigate=yes"
+                 target="_blank" rel="noopener noreferrer">נווטו ב-Waze</a>
+              <a href="https://www.google.com/maps/dir/?api=1&destination=31.7878076,35.3371583"
+                 target="_blank" rel="noopener noreferrer">פתחו ב-Google Maps</a>
+            </div>
+          </noscript>
+        </div>
       </div>
     </section>
     </div><!-- /.reveal-pair -->
