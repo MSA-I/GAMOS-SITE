@@ -26,7 +26,8 @@ import * as counters            from "./counters.js";
 import * as contactForm         from "./contact-form.js";   // Agent 23 — Phase D1
 import * as siteNav             from "./site-nav.js";       // Agent 23 — Phase D2
 import * as scrollytelling      from "./scrollytelling.js"; // 2026-06-01 — GSAP + parallax + loader pct
-import * as roomsGallery        from "./rooms-gallery.js";  // #rooms — חדרי נופש gallery
+import * as roomsGallery        from "./rooms-gallery.js";  // #rooms — חדרי נופש gallery (legacy, self-no-ops without [data-rooms-stage])
+import * as roomsDoor           from "./rooms-door.js";     // 2026-06-11 — #rooms door-opening transition → /rooms/dist/
 import * as loungeSelector      from "./lounge-selector.js";// #lounge — lounge selector
 import * as siteNavHoverReveal  from "./site-nav-hover-reveal.js"; // 2026-06-04 — hide site-nav while in hero
 import * as scrollSpy           from "./scroll-spy.js";     // .site-nav — aria-current scroll-spy
@@ -65,7 +66,8 @@ const MODULES = [
   ["contact-form",        contactForm],   // Agent 23 — Phase D1: WhatsApp + mailto
   ["site-nav",            siteNav],       // Agent 23 — Phase D2: hamburger overlay
   ["scrollytelling",      scrollytelling],// Cinematic loader % + GSAP scroll-to + parallax
-  ["rooms-gallery",       roomsGallery],  // #rooms — חדרי נופש gallery
+  ["rooms-gallery",       roomsGallery],  // #rooms — חדרי נופש gallery (legacy, self-no-ops)
+  ["rooms-door",          roomsDoor],     // #rooms — door-opening transition → /rooms/dist/
   ["lounge-selector",     loungeSelector],// #lounge — lounge selector
   ["scroll-spy",          scrollSpy],     // .site-nav — aria-current highlighting
 ];

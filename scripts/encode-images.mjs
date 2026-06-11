@@ -72,6 +72,16 @@ const SINGLE_WEBP = [
     width: 1200,
     quality: 92,
   },
+  // 2026-06-11: the #rooms door (cream single-panel door, black vertical
+  // handle, white bg) — the entry image that links into the /rooms/dist/
+  // phantom-style image-wall sub-app (Constitution §2.1, third route). White
+  // background, so no alpha is required; a single WebP suffices.
+  {
+    src: "תמונות לאנימציית האתר/חדרי נופש 2/1.png",
+    out: "assets/images/rooms/door.webp",
+    width: 1200,
+    quality: 90,
+  },
   // Texture fills for headings (background-clip: text). Sourced ONLY from the
   // canonical font folder תמונות/פונט/ (CLAUDE.md §4.1). Token names below
   // describe the SURFACE the fill sits on — NOT the texture's own brightness.

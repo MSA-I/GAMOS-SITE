@@ -666,124 +666,33 @@
     <!-- ====================================================================
          #rooms — חדרי נופש
     ==================================================================== -->
-    <section id="rooms" class="rooms" data-rooms-stage aria-labelledby="rooms-title">
-      <header class="section-header">
+    <section id="rooms" class="rooms" aria-labelledby="rooms-title">
+      <header class="section-header section-header--center">
         <p class="section-header__eyebrow"
            data-reveal="slide-right" style="--reveal-delay: 0ms;">חדרי אירוח</p>
         <h2 id="rooms-title" class="section-header__title texture-text texture-text--dark"
             data-reveal="slide-right" style="--reveal-delay: 80ms;">לישון במתחם, להתעורר אל המדבר</h2>
+        <p class="section-header__lede"
+           data-reveal="slide-right" style="--reveal-delay: 160ms;">פתחו את הדלת אל גלריית החדרים והסוויטות של גאמוס.</p>
       </header>
 
-      <div class="rooms__container">
-        <div class="rooms__layout">
-          <!-- Names list (inline-start / right in RTL) → controls the shared stage. -->
-          <div class="rooms__list" role="tablist" aria-label="בחירת חדר אירוח" aria-orientation="vertical">
-            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="0" role="tab" aria-selected="true" aria-controls="rooms-panel-0">
-              <span class="rooms__trigger-name"><span class="rooms__trigger-num">01</span> סוויטת הנוף</span>
-              <span class="rooms__trigger-desc">מיטה זוגית רחבה מול חלון פנורמי אל הרי המדבר.</span>
-            </button>
-            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="1" role="tab" aria-selected="false" aria-controls="rooms-panel-1">
-              <span class="rooms__trigger-name"><span class="rooms__trigger-num">02</span> חדר הזוג</span>
-              <span class="rooms__trigger-desc">חדר רך ואינטימי, בדיוק ללילה שאחרי האירוע.</span>
-            </button>
-            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="2" role="tab" aria-selected="false" aria-controls="rooms-panel-2">
-              <span class="rooms__trigger-name"><span class="rooms__trigger-num">03</span> פינת הסלון</span>
-              <span class="rooms__trigger-desc">ספה מעוגלת, שמפניה צוננת ופינה לשבת בנחת.</span>
-            </button>
-            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="3" role="tab" aria-selected="false" aria-controls="rooms-panel-3">
-              <span class="rooms__trigger-name"><span class="rooms__trigger-num">04</span> חדר דה-לוקס</span>
-              <span class="rooms__trigger-desc">מיטה זוגית, עגלת משקאות וכורסאות לשיחה עד מאוחר.</span>
-            </button>
-            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="4" role="tab" aria-selected="false" aria-controls="rooms-panel-4">
-              <span class="rooms__trigger-name"><span class="rooms__trigger-num">05</span> חדר קלאסי</span>
-              <span class="rooms__trigger-desc">מיטה מוצעת בלבן, אור רך ותחושת מלון אמיתית.</span>
-            </button>
-            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="5" role="tab" aria-selected="false" aria-controls="rooms-panel-5">
-              <span class="rooms__trigger-name"><span class="rooms__trigger-num">06</span> סוויטת המדבר</span>
-              <span class="rooms__trigger-desc">חלל מרווח עם פופים ונוף פתוח אל ההרים.</span>
-            </button>
-            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="6" role="tab" aria-selected="false" aria-controls="rooms-panel-6">
-              <span class="rooms__trigger-name"><span class="rooms__trigger-num">07</span> חדר החמאם</span>
-              <span class="rooms__trigger-desc">חדר רחצה טורקי מרוצף פסיפס, חום נעים ומפנק.</span>
-            </button>
-            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="7" role="tab" aria-selected="false" aria-controls="rooms-panel-7">
-              <span class="rooms__trigger-name"><span class="rooms__trigger-num">08</span> סוויטת הכלה</span>
-              <span class="rooms__trigger-desc">חדר רחצה מפואר באבן, אמבט ומקלחון לליל האירוע.</span>
-            </button>
-            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="8" role="tab" aria-selected="false" aria-controls="rooms-panel-8">
-              <span class="rooms__trigger-name"><span class="rooms__trigger-num">09</span> חדר פרמיום</span>
-              <span class="rooms__trigger-desc">מקלחת גשם רחבה בגימור אבן עשיר.</span>
-            </button>
-            <button type="button" class="rooms__trigger" data-rooms-trigger data-rooms-index="9" role="tab" aria-selected="false" aria-controls="rooms-panel-9">
-              <span class="rooms__trigger-name"><span class="rooms__trigger-num">10</span> סוויטת השקיעה</span>
-              <span class="rooms__trigger-desc">מקלחת מול חלון אל המדבר, פרטי ושקט.</span>
-            </button>
-          </div>
-
-          <!-- Shared image stage (visual pane). Display order: 05,04,09,06,07,03,11,08,01,02 -->
-          <div class="rooms__stage">
-            <figure class="rooms__panel is-active" data-rooms-panel data-rooms-index="0" id="rooms-panel-0" role="tabpanel" aria-hidden="false">
-              <picture>
-                <source type="image/webp" srcset="/assets/images/halls/rooms/05.full.webp">
-                <img src="/assets/images/halls/rooms/05.full.jpg" width="1280" height="1600" loading="eager" decoding="async" alt="סוויטת הנוף, מיטה זוגית מול חלון פנורמי אל המדבר">
-              </picture>
-            </figure>
-            <figure class="rooms__panel" data-rooms-panel data-rooms-index="1" id="rooms-panel-1" role="tabpanel" aria-hidden="true">
-              <picture>
-                <source type="image/webp" srcset="/assets/images/halls/rooms/04.full.webp">
-                <img src="/assets/images/halls/rooms/04.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חדר הזוג, פינת מיטה שקטה מול חלון אל המדבר">
-              </picture>
-            </figure>
-            <figure class="rooms__panel" data-rooms-panel data-rooms-index="2" id="rooms-panel-2" role="tabpanel" aria-hidden="true">
-              <picture>
-                <source type="image/webp" srcset="/assets/images/halls/rooms/09.full.webp">
-                <img src="/assets/images/halls/rooms/09.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="פינת הסלון, ספה מעוגלת עם שמפניה ופינת ישיבה רכה">
-              </picture>
-            </figure>
-            <figure class="rooms__panel" data-rooms-panel data-rooms-index="3" id="rooms-panel-3" role="tabpanel" aria-hidden="true">
-              <picture>
-                <source type="image/webp" srcset="/assets/images/halls/rooms/06.full.webp">
-                <img src="/assets/images/halls/rooms/06.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חדר דה-לוקס, מיטה זוגית עם עגלת משקאות וכורסאות תכלת">
-              </picture>
-            </figure>
-            <figure class="rooms__panel" data-rooms-panel data-rooms-index="4" id="rooms-panel-4" role="tabpanel" aria-hidden="true">
-              <picture>
-                <source type="image/webp" srcset="/assets/images/halls/rooms/07.full.webp">
-                <img src="/assets/images/halls/rooms/07.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חדר קלאסי, מיטה זוגית מוצעת בלבן עם תאורה רכה">
-              </picture>
-            </figure>
-            <figure class="rooms__panel" data-rooms-panel data-rooms-index="5" id="rooms-panel-5" role="tabpanel" aria-hidden="true">
-              <picture>
-                <source type="image/webp" srcset="/assets/images/halls/rooms/03.full.webp">
-                <img src="/assets/images/halls/rooms/03.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="סוויטת המדבר, חדר מרווח עם פופים ונוף מדבר מהחלון">
-              </picture>
-            </figure>
-            <figure class="rooms__panel" data-rooms-panel data-rooms-index="6" id="rooms-panel-6" role="tabpanel" aria-hidden="true">
-              <picture>
-                <source type="image/webp" srcset="/assets/images/halls/rooms/11.full.webp">
-                <img src="/assets/images/halls/rooms/11.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חדר רחצה טורקי מרוצף פסיפס בתאורה רכה בריזורט">
-              </picture>
-            </figure>
-            <figure class="rooms__panel" data-rooms-panel data-rooms-index="7" id="rooms-panel-7" role="tabpanel" aria-hidden="true">
-              <picture>
-                <source type="image/webp" srcset="/assets/images/halls/rooms/08.full.webp">
-                <img src="/assets/images/halls/rooms/08.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חדר רחצה בגימור אבן עם אמבט, מקלחון זכוכית ומראה עגולה">
-              </picture>
-            </figure>
-            <figure class="rooms__panel" data-rooms-panel data-rooms-index="8" id="rooms-panel-8" role="tabpanel" aria-hidden="true">
-              <picture>
-                <source type="image/webp" srcset="/assets/images/halls/rooms/01.full.webp">
-                <img src="/assets/images/halls/rooms/01.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מקלחון אבן מרווח עם מקלחת גשם בגימור עשיר">
-              </picture>
-            </figure>
-            <figure class="rooms__panel" data-rooms-panel data-rooms-index="9" id="rooms-panel-9" role="tabpanel" aria-hidden="true">
-              <picture>
-                <source type="image/webp" srcset="/assets/images/halls/rooms/02.full.webp">
-                <img src="/assets/images/halls/rooms/02.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="סוויטת השקיעה, חדר רחצה עם מקלחת מול חלון אל המדבר">
-              </picture>
-            </figure>
-          </div>
-        </div>
+      <!-- ============================================================ ROOMS ENTRY
+           Clicking the door plays a CSS door-opening transition (js/rooms-door.js
+           + the .rooms-door-portal rules in css/sections/rooms.css), then navigates
+           to the rooms sub-app (Constitution §2.1, third route — the phantom-style
+           curved image wall). prefers-reduced-motion falls back to this plain
+           <a href>'s navigation. A future door-opening MP4 can replace the CSS swing
+           inside js/rooms-door.js + rooms/src/intro/IntroGate.tsx without other changes.
+           The door image is the transparent cut-out at /assets/images/rooms/door.webp.
+           ============================================================ -->
+      <div class="rooms__door-wrap" data-reveal="fade-up" style="--reveal-delay: 200ms;">
+        <a id="rooms-door" class="rooms__door" href="/rooms/dist/" aria-label="כניסה לגלריית חדרי האירוח">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/rooms/door.webp">
+            <img src="/assets/images/rooms/door.webp" width="1200" height="1543" loading="lazy" decoding="async" alt="דלת קרם עם ידית שחורה אנכית, הכניסה לגלריית חדרי האירוח">
+          </picture>
+          <span class="rooms__door-cue">היכנסו אל חדרי האירוח</span>
+        </a>
       </div>
     </section>
 

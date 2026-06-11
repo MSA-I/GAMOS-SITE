@@ -303,3 +303,231 @@
     transform: none;
   }
 }
+
+/* ====================================================================== *
+ *  DOOR ENTRY (2026-06-11) — replaces the two-pane gallery on the home    *
+ *  page. The #rooms section now shows a centered door image that links    *
+ *  to the /rooms/dist/ sub-app (Constitution §2.1, third route — the      *
+ *  phantom.land curved image wall). Clicking it navigates with no         *
+ *  animation today; the future door-opening MP4 seam is documented in     *
+ *  index.html (#rooms) + rooms/src/intro/README.md.                       *
+ *                                                                          *
+ *  LEGACY: the .rooms__container / .rooms__layout / .rooms__list /         *
+ *  .rooms__stage / .rooms__panel / .rooms__trigger rules ABOVE are now     *
+ *  orphaned (the markup they styled was removed). Kept on disk per §2.1    *
+ *  rule 6 ("vanilla legacy preserved") so a revert is one markup swap;     *
+ *  js/rooms-gallery.js self-no-ops without [data-rooms-stage].            *
+ * ====================================================================== */
+.rooms__door-wrap {
+  display: flex;
+  justify-content: center;
+  margin-block-start: var(--space-8);
+}
+
+.rooms__door {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  text-decoration: none;
+  color: var(--ink-deep);
+  cursor: pointer;
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  transition:
+    transform var(--dur-base) var(--ease-out-cinema),
+    filter var(--dur-base) var(--ease-out-cinema);
+}
+
+.rooms__door picture,
+.rooms__door img {
+  display: block;
+}
+
+.rooms__door img {
+  inline-size: auto;
+  block-size: clamp(22rem, 52vh, 34rem);
+  max-inline-size: 90vw;
+  object-fit: contain;
+  filter: drop-shadow(0 24px 48px color-mix(in srgb, var(--ink-deep) 22%, transparent));
+  transition: transform var(--dur-base) var(--ease-out-cinema);
+}
+
+/* Hover/focus: the door eases forward a touch — an invitation to enter. */
+.rooms__door:hover img,
+.rooms__door:focus-visible img {
+  transform: translateY(-6px) scale(1.015);
+}
+
+.rooms__door:active img {
+  transform: translateY(-2px) scale(1.005);
+}
+
+.rooms__door:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 4px;
+}
+
+.rooms__door-cue {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--brass-deep);
+  border-block-end: 1px solid color-mix(in srgb, var(--brass) 55%, transparent);
+  padding-block-end: var(--space-1);
+  transition: color var(--dur-base) var(--ease-out-cinema);
+}
+
+.rooms__door:hover .rooms__door-cue,
+.rooms__door:focus-visible .rooms__door-cue {
+  color: var(--accent-rose);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rooms__door,
+  .rooms__door img {
+    transition: none;
+  }
+  .rooms__door:hover img,
+  .rooms__door:focus-visible img,
+  .rooms__door:active img {
+    transform: none;
+  }
+}
+
+/* ====================================================================== *
+ *  DOOR-OPENING TRANSITION (2026-06-11) — js/rooms-door.js mounts this    *
+ *  full-viewport portal on click, then navigates to /rooms/dist/ once    *
+ *  the swing completes. Pure CSS 3D (no video): an ink-deep void with the *
+ *  transparent door centred; the door swings open on its inline-end hinge *
+ *  (rotateY under perspective) while the scene pushes forward (scale),     *
+ *  landing on black that hands off to the sub-app's IntroGate fade-in.    *
+ *  prefers-reduced-motion → js falls back to plain navigation (this never *
+ *  mounts).                                                                *
+ * ====================================================================== */
+.rooms-door-portal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background: var(--ink-deep);
+  /* Fade the void in fast so the page is covered before the door swings. */
+  opacity: 0;
+  animation: rooms-door-void-in 0.18s var(--ease-out-cinema, ease) forwards;
+  /* 3D stage for the swinging leaf. */
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+  overflow: hidden;
+}
+
+.rooms-door-portal__scene {
+  position: relative;
+  transform-style: preserve-3d;
+  display: grid;
+  place-items: center;
+  will-change: transform, opacity;
+}
+
+/* Warm light from the room beyond — a glow that grows behind the door as it
+   opens, selling "the door opens to somewhere" (instead of a flat image just
+   tilting). Sits BEHIND the leaf, centred on the opening edge. */
+.rooms-door-portal__glow {
+  position: absolute;
+  inset-block: 4%;
+  /* opening is on the handle side (inline-start in this art = the LEFT edge of
+     the leaf in physical space); the glow leaks from there. */
+  inset-inline-start: 8%;
+  inline-size: 60%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--brass) 75%, white) 0%,
+    color-mix(in srgb, var(--brass) 40%, transparent) 45%,
+    transparent 75%
+  );
+  opacity: 0;
+  filter: blur(8px);
+  transform: translateZ(-40px) scale(0.6);
+  will-change: opacity, transform;
+}
+
+.rooms-door-portal__leaf {
+  display: block;
+  position: relative;
+  block-size: min(82vh, 42rem);
+  inline-size: auto;
+  max-inline-size: 90vw;
+  object-fit: contain;
+  /* Hinge on the LEFT edge (away from the handle, which is on the right of the
+     art) — a door pivots opposite its handle. transform-origin is physical, so
+     0% = left. The leaf opens INWARD (away from the viewer) on this hinge. */
+  transform-origin: 0% 50%;
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.55));
+  backface-visibility: hidden;
+}
+
+.rooms-door-portal.is-opening .rooms-door-portal__scene {
+  animation: rooms-door-push 1.5s cubic-bezier(0.5, 0, 0.2, 1) forwards;
+}
+
+.rooms-door-portal.is-opening .rooms-door-portal__leaf {
+  animation: rooms-door-swing 1.5s cubic-bezier(0.5, 0, 0.2, 1) forwards;
+}
+
+.rooms-door-portal.is-opening .rooms-door-portal__glow {
+  animation: rooms-door-glow 1.5s cubic-bezier(0.5, 0, 0.2, 1) forwards;
+}
+
+@keyframes rooms-door-void-in {
+  to {
+    opacity: 1;
+  }
+}
+
+/* The camera holds on the closed door, then PUSHES forward through the opened
+   doorway (scale up) and dims to black so navigation lands seamlessly on the
+   sub-app's dark boot ground. */
+@keyframes rooms-door-push {
+  0% {
+    transform: scale(0.92) translateZ(0);
+  }
+  22% {
+    transform: scale(0.96) translateZ(0);
+  }
+  100% {
+    transform: scale(4.2) translateZ(420px);
+    opacity: 0;
+  }
+}
+
+/* The leaf opens INWARD on its left hinge: a beat of stillness, then a firm
+   swing to ~78° as the camera pushes through. */
+@keyframes rooms-door-swing {
+  0% {
+    transform: rotateY(0deg);
+  }
+  22% {
+    transform: rotateY(3deg);
+  }
+  100% {
+    transform: rotateY(78deg);
+  }
+}
+
+/* The warm room-light blooms as the door parts, brightest mid-swing. */
+@keyframes rooms-door-glow {
+  0% {
+    opacity: 0;
+    transform: translateZ(-40px) scale(0.6);
+  }
+  35% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translateZ(-40px) scale(1.6);
+  }
+}

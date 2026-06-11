@@ -12,6 +12,12 @@ build/
 !halls/dist/
 !halls/dist/**
 
+# Rooms sub-app (Constitution §2.1, third route — phantom-style image wall).
+# Same rationale as halls: track the built artifact so static deploy works
+# after `git clone`. Re-build locally: `npm run build:rooms` from repo root.
+!rooms/dist/
+!rooms/dist/**
+
 # Workbench
 .tmp/
 *.local
