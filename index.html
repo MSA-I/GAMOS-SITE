@@ -677,13 +677,16 @@
       </header>
 
       <!-- ============================================================ ROOMS ENTRY
-           Clicking the door plays a CSS door-opening transition (js/rooms-door.js
-           + the .rooms-door-portal rules in css/sections/rooms.css), then navigates
-           to the rooms sub-app (Constitution §2.1, third route — the phantom-style
-           curved image wall). prefers-reduced-motion falls back to this plain
-           <a href>'s navigation. A future door-opening MP4 can replace the CSS swing
-           inside js/rooms-door.js + rooms/src/intro/IntroGate.tsx without other changes.
-           The door image is the transparent cut-out at /assets/images/rooms/door.webp.
+           Clicking the door plays the producer's door-opening clip IN PLACE — an
+           OPAQUE H.264 MP4 (assets/images/rooms/door.mp4), cropped tight to the
+           casing (no white background box), opening onto a BLACK void that stays
+           black. It's layered over the still cut-out below, right where it sits
+           (NOT a fullscreen player); the still image hides once the clip renders.
+           js/rooms-door.js plays it; on end (or the "דלגו" skip / Esc/Enter) an
+           ink-deep veil fades in and navigates to the rooms sub-app (§2.1 third
+           route — the phantom-style curved wall). The still cut-out
+           (/assets/images/rooms/door.webp) is what shows at rest.
+           prefers-reduced-motion / modified click / playback failure → plain nav.
            ============================================================ -->
       <div class="rooms__door-wrap" data-reveal="fade-up" style="--reveal-delay: 200ms;">
         <a id="rooms-door" class="rooms__door" href="/rooms/dist/" aria-label="כניסה לגלריית חדרי האירוח">

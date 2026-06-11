@@ -14,10 +14,13 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
  * Honours `prefers-reduced-motion: reduce`: the cover starts already hidden
  * (instant reveal, no fade).
  *
- * FUTURE door-opening MP4 (optional upgrade): drop rooms/public/intro/door.mp4
- * and render a <video autoPlay muted playsInline onEnded={...}> in place of the
- * plain cover, gating `revealed` on its `ended` event. The wall stays mounted
- * behind it either way. See rooms/src/intro/README.md.
+ * NOTE (2026-06-11): the door-opening VIDEO now plays on the MAIN-SITE side
+ * (js/rooms-door.js plays assets/images/rooms/door-1080.mp4, ending fully open to
+ * black, then navigates here). So this gate only needs the dark cover-fade to
+ * hand off from that black ending — no video here. If a crossfade to the open-door
+ * frame is ever wanted on this side, render a <video>/<img> over {children} and
+ * gate `revealed` on it; the wall stays mounted behind either way.
+ * See rooms/src/intro/README.md.
  */
 export default function IntroGate({ children }: { children: ReactNode }) {
   const reduce =

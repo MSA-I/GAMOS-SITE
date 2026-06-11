@@ -16,6 +16,7 @@
     "encode:culinary": "node scripts/encode-frames.mjs culinary",
     "encode:all": "node scripts/encode-frames.mjs hero culinary",
     "encode:images": "node scripts/encode-images.mjs",
+    "encode:rooms-door": "node scripts/encode-rooms-door.mjs",
     "extract:shabbat-tints": "node scripts/extract-shabbat-tints.mjs",
     "lighthouse": "npx --yes lighthouse http://localhost:8000 --view --preset=desktop"
   },

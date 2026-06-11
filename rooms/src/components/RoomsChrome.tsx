@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { Home } from "lucide-react";
 import { getRooms } from "../roomsData";
 import type { RoomCard } from "../roomsData";
 import type { CardProjection } from "../wall/Engine";
@@ -82,31 +81,32 @@ export default function RoomsChrome({ activeCard, registerProjector }: Props) {
         דלג לגלריה
       </a>
 
-      {/* Home button — top inline-start. Returns to the #rooms section of the
-          main site (not the top), so closing the gallery lands where it opened. */}
+      {/* Back link — minimal-editorial. A plain text link with a brass underline
+          that grows on hover (the site's link grammar), NOT a glass pill. Returns
+          to the #rooms section of the main site so closing lands where it opened.
+          The arrow nudges on hover. */}
       <motion.a
         href="/#rooms"
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={transition}
-        className="fixed top-6 inset-inline-start-6 z-30 inline-flex items-center gap-2 ps-4 pe-5 py-2.5 min-h-[44px] bg-[color:var(--color-ivory)]/10 backdrop-blur-md border border-[color:var(--color-brass)]/30 rounded-2xl shadow-lg text-[color:var(--color-ivory)] text-sm font-medium hover:bg-[color:var(--color-ivory)]/20 transition-colors duration-200 focus-visible:ring-[3px] focus-visible:ring-[color:var(--color-brass)] focus-visible:outline-none"
+        className="rooms-back"
         aria-label="חזרה לחדרי האירוח באתר Gamos"
       >
-        <Home size={18} aria-hidden="true" />
-        <span className="hidden sm:inline">חזרה</span>
+        <span className="rooms-back__arrow" aria-hidden="true">←</span>
+        <span className="rooms-back__label">חזרה לאתר</span>
       </motion.a>
 
-      {/* Section heading — top inline-end (announces the gallery) */}
+      {/* Section eyebrow — top inline-end. Quiet brass eyebrow + muted sub-line,
+          no box (announces the gallery). */}
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={transition}
-        className="fixed top-6 inset-inline-end-6 z-30 text-end pointer-events-none select-none"
+        className="rooms-heading"
       >
-        <p className="rooms-title__type m-0">חדרי אירוח</p>
-        <p className="m-0 text-[color:var(--color-ivory)]/85 text-sm font-medium">
-          הסוויטות והחדרים של גאמוס
-        </p>
+        <p className="rooms-heading__eyebrow">חדרי אירוח</p>
+        <p className="rooms-heading__sub">הסוויטות והחדרים של גאמוס</p>
       </motion.div>
 
       {/* Per-card floating labels — DOM overlay, transforms written each frame */}
@@ -135,12 +135,9 @@ export default function RoomsChrome({ activeCard, registerProjector }: Props) {
         ))}
       </div>
 
-      {/* Active-card editorial title — bottom, aria-live announces it */}
-      <section
-        aria-live="polite"
-        aria-atomic="true"
-        className="fixed inset-inline-0 bottom-8 sm:bottom-10 z-30 px-[clamp(1.25rem,6vw,7rem)] pointer-events-none flex flex-col items-center gap-1 text-center"
-      >
+      {/* Active-card editorial title — bottom, aria-live announces it. Tight
+          stack: index → texture-text title → optional type, centered. */}
+      <section aria-live="polite" aria-atomic="true" className="rooms-active">
         <p className="rooms-title__index">
           <bdi>{`${activeCard?.number ?? "01"} / ${totalLabel}`}</bdi>
         </p>

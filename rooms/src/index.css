@@ -207,6 +207,121 @@ body {
 }
 
 /* =====================================================================
+ * Minimal-editorial chrome (2026-06-11) — replaces the glass-pill Home
+ * button + boxed heading. Matches the site's /press/ restraint: text links
+ * with a brass underline that grows on hover, quiet typography, no blur.
+ * ===================================================================== */
+
+/* Back link — top inline-start. Plain text + a brass underline that grows from
+   the inline-end on hover (mirrors the main site's .site-nav link grammar). */
+.rooms-back {
+  position: fixed;
+  top: clamp(1.25rem, 3vh, 2rem);
+  inset-inline-start: clamp(1.25rem, 3vw, 2.5rem);
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-block-size: 44px;
+  padding-block: 0.4rem;
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--color-ivory) 90%, transparent);
+  transition: color 0.3s ease;
+}
+
+.rooms-back__arrow {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.rooms-back__label {
+  position: relative;
+  padding-block-end: 0.18rem;
+}
+
+.rooms-back__label::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  block-size: 1px;
+  background: var(--color-brass);
+  transform: scaleX(0);
+  transform-origin: inline-end;
+  transition: transform 0.3s ease;
+}
+
+.rooms-back:hover,
+.rooms-back:focus-visible {
+  color: var(--color-brass);
+  outline: none;
+}
+
+.rooms-back:hover .rooms-back__arrow,
+.rooms-back:focus-visible .rooms-back__arrow {
+  transform: translateX(0.3rem); /* RTL: arrow points/nudges toward the start */
+}
+
+.rooms-back:hover .rooms-back__label::after,
+.rooms-back:focus-visible .rooms-back__label::after {
+  transform: scaleX(1);
+}
+
+.rooms-back:focus-visible {
+  outline: 2px solid var(--color-brass);
+  outline-offset: 6px;
+  border-radius: 2px;
+}
+
+/* Top inline-end section eyebrow — quiet, no box. */
+.rooms-heading {
+  position: fixed;
+  top: clamp(1.25rem, 3vh, 2rem);
+  inset-inline-end: clamp(1.25rem, 3vw, 2.5rem);
+  z-index: 30;
+  text-align: end;
+  pointer-events: none;
+  user-select: none;
+}
+
+.rooms-heading__eyebrow {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-brass) 78%, var(--color-ivory));
+}
+
+.rooms-heading__sub {
+  margin: 0.15rem 0 0;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--color-ivory) 72%, transparent);
+}
+
+/* Bottom active-card block — tight centered stack. */
+.rooms-active {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: clamp(1.5rem, 4vh, 2.75rem);
+  z-index: 30;
+  padding-inline: clamp(1.25rem, 6vw, 7rem);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+/* =====================================================================
  * Active-card editorial title — bottom-anchored, like HallChrome's label.
  * texture-filled display type with a solid ivory fallback.
  * ===================================================================== */
