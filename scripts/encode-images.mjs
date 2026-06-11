@@ -101,15 +101,28 @@ const SINGLE_WEBP = [
     width: 2000,
     quality: 92,
   },
+  // 2026-06-11: the LIGHT-text texture (fills cream headings on DARK
+  // surfaces — hero/halls/kosher/culinary/footer + every `.texture-text--light`)
+  // was re-sourced to the HERO desert photo `מדבר-2.png` per user request
+  // ("ליצור מחדש את הטקסטורה ששייכת לטקסט הבהיר ולהחיל על כל האתר"). The raw
+  // desert is DARK (opaque-pixel luma ≈ 72) with a transparent sky, so it is
+  // flattened onto a warm sand tone and brightened (modulate brightness 2.4 +
+  // saturation 1.15) to clear the §4.1 dark-surface invariant (luma > 153);
+  // the lift lands at ≈ 188 while keeping the warm desert character + the dark
+  // ridge lines that read as the gold/bronze flecks in the text fill. The old
+  // font-folder textures stay as fallbacks so the encoder never silently skips.
   {
     srcCandidates: [
+      "תמונות לאנימציית האתר/HERO/מדבר-2.png",
       "תמונות לאנימציית האתר/פונט/טקסטורה כהה.png",
       "תמונות לאנימציית האתר/פונט/טיפוגרפיה כהה.png",
-      "תמונות לאנימציית האתר/פונט/טקסטורה לטיפוגרפיה כהה.png",
+      "תמונות לאנימציית האתר/פונט/טקסטורה לטיפוגרפיה בהירה.png",
     ],
     out: "assets/images/brand/typo-on-dark.webp",
     width: 2000,
     quality: 92,
+    flatten: "#D9C4A3",
+    modulate: { brightness: 2.4, saturation: 1.15 },
   },
   {
     srcCandidates: [
@@ -340,7 +353,13 @@ async function main() {
     mkdirSync(dirname(outPath), { recursive: true });
     const width = s.width ?? 1600;
     const quality = s.quality ?? 80;
-    await sharp(resolvedSrc.abs, { failOn: "warning" })
+    let pipeline = sharp(resolvedSrc.abs, { failOn: "warning" });
+    // Optional pre-resize adjustments: flatten transparent areas onto a solid
+    // colour, then modulate brightness/saturation. Used by the desert-derived
+    // light-text texture (typo-on-dark.webp) to clear the §4.1 luma invariant.
+    if (s.flatten) pipeline = pipeline.flatten({ background: s.flatten });
+    if (s.modulate) pipeline = pipeline.modulate(s.modulate);
+    await pipeline
       .resize({ width, withoutEnlargement: true })
       .webp({ quality, effort: 6 })
       .toFile(outPath);
