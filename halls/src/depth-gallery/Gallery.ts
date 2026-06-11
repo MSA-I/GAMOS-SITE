@@ -54,29 +54,39 @@ const PLANE_GAP = 5;
 const PLANE_FADE_SMOOTHING = 0.14;
 // Reference uses a square PlaneGeometry(3,3) and scales by texture aspect.
 const PLANE_GEOMETRY_SIZE = 3;
-// SIZING (2026-06-11). Reference scale-driven model kept (scale.y = planeScale,
-// scale.x = planeScale × aspect; reference desktopPlaneScale = 1 for its
-// PORTRAIT flowers), retuned for our LANDSCAPE photos (aspect ~1.78). At
-// DESKTOP_PLANE_SCALE = 1.0 a 16:9 plane is world 5.33w × 3.0h. The height
-// (3.0) is 72% of the 4.14-unit visible height at the z=5 hero distance — large
-// and dominant — while the width (5.33, half 2.67) combined with the wide
-// SIDE_OFFSET below pushes one edge PAST the viewport so the photo is offset to
-// one side and never fully enters the frame (user request: "תזיז את התמונות
-// שיהיו בצד… לא רוצה שכל התמונה תיכנס לפריים"). As the camera advances toward a
-// plane it grows and bleeds further off-frame before the cross-dissolve hands
-// off to the next (opposite-side) plane — so nothing flies THROUGH a centred
-// opaque face (the old dizziness), it sweeps past on alternating sides instead.
-const DESKTOP_PLANE_SCALE = 1.0;
-const MOBILE_PLANE_SCALE = 0.55;
+// SIZING (2026-06-11, reverted to contained-and-centred per user). Reference
+// scale-driven model (scale.y = planeScale, scale.x = planeScale × aspect;
+// reference desktopPlaneScale = 1 for its PORTRAIT flowers), retuned for our
+// LANDSCAPE photos (aspect ~1.78). At DESKTOP_PLANE_SCALE = 0.62 a 16:9 plane is
+// world 3.31w × 1.86h ≈ 45% of the 4.14-unit visible height / ~7.36 visible
+// width at the z=5 hero distance — SMALL and fully CONTAINED, with margin on
+// every side (no edge bleeds off-frame). The user found the big off-frame
+// variant disorienting ("תקטין… תמרכז… שהתמונות לא נכנסות לך בפנים וגורמות
+// סחרור"); a contained, near-centred card that the cross-dissolve fades out
+// before the camera reaches it (the blend samples one gap AHEAD, so the camera
+// never plows through an opaque face) is the reference's calm read.
+const DESKTOP_PLANE_SCALE = 0.62;
+const MOBILE_PLANE_SCALE = 0.4;
 const MOBILE_BREAKPOINT = 768;
 // Side offset of each plane's centre around x=0 (world units). Planes alternate
-// ±SIDE_OFFSET so consecutive photos sit on opposite sides. ±1.5 puts the outer
-// edge of a 5.33-wide card (half 2.67) at ~4.17 vs the ~3.68 visible half-width
-// → the photo is clearly to the side and its outer ~13% bleeds off-frame at the
-// hero moment (more as the camera nears it). Mobile keeps a small offset so a
-// (necessarily wide) landscape card stays mostly on a narrow portrait screen.
-const SIDE_OFFSET = 1.5;
-const MOBILE_SIDE_OFFSET = 0.35;
+// ±SIDE_OFFSET so consecutive photos sit on OPPOSITE sides, opening a clear
+// vertical CHANNEL at x=0 that the camera travels straight down — so a forward
+// move passes BETWEEN the flanking photos, never THROUGH one (user: "המעבר בין
+// התמונות ולא בתוך התמונה… לא רוצה שהתמונה תיכנס לי לפנים").
+//
+// The rule: offset ≥ the plane's half-width, so the plane's INNER edge never
+// crosses x=0 and its on-screen projection stays entirely on its own side at
+// every distance (screen-x ∝ worldX/depth; if inner worldX ≥ 0 it never sweeps
+// over screen-centre as it grows on approach). A 16:9 card at scale 0.62 is
+// 3.31 wide → half-width ~1.66, so ±1.8 clears the centre with margin while the
+// outer edge (~3.46) stays inside the ~3.68 visible half-width — fully on-screen,
+// pushed to the side, NOT bleeding off-frame (matches the user's pink mark).
+//
+// Mobile: a landscape card on a narrow PORTRAIT screen can't open a real centre
+// channel without pushing most of the photo off-screen, so mobile keeps the
+// small near-centred offset (accepts a softer "approach" rather than a corridor).
+const SIDE_OFFSET = 1.8;
+const MOBILE_SIDE_OFFSET = 0.3;
 
 // Sample one gap ahead so the label/mood/fade lands on the plane the camera is
 // approaching (reference planeFadeSampleOffset = moodSampleOffset = 1).
