@@ -54,64 +54,45 @@ const PLANE_GAP = 5;
 const PLANE_FADE_SMOOTHING = 0.14;
 // Reference uses a square PlaneGeometry(3,3) and scales by texture aspect.
 const PLANE_GEOMETRY_SIZE = 3;
-// The reference photos are PORTRAIT (aspect 0.75): scaled ×1.0 they're 2.25
-// world-units wide, sitting at x=±0.9 — narrower than the gap between their
-// centres, so a CHANNEL opens between the left/right planes and the camera
-// glides BETWEEN them. Our venue photos are LANDSCAPE (aspect ~1.78): at ×1.0
-// they'd be 5.33 wide and fully overlap at x=±0.9, so the camera flew THROUGH
-// them (the "סחרחורת" / dizziness the user reported).
-//
-// Fix (user-approved "shrink + spread to the sides", focused 1–2 deep): we no
-// longer scale by the raw geometry size × aspect. Instead we target a fixed
-// world HEIGHT (~1.7 units ≈ 41% of the 4.14-unit visible height at the start
-// distance) and derive width from the texture aspect. A 16:9 photo then lands
-// ~3.0 wide — small enough that pushing the centres to x=±1.55 (spread below)
-// leaves a real channel between neighbours, exactly like the reference. Height,
-// not the geometry, is the size knob now.
-const TARGET_PLANE_WORLD_HEIGHT = 1.7; // desktop world-units tall (≈41% screen)
-const MOBILE_PLANE_WORLD_HEIGHT = 1.25; // a touch smaller on phones
+// SIZING (2026-06-11). Reference scale-driven model kept (scale.y = planeScale,
+// scale.x = planeScale × aspect; reference desktopPlaneScale = 1 for its
+// PORTRAIT flowers), retuned for our LANDSCAPE photos (aspect ~1.78). At
+// DESKTOP_PLANE_SCALE = 1.0 a 16:9 plane is world 5.33w × 3.0h. The height
+// (3.0) is 72% of the 4.14-unit visible height at the z=5 hero distance — large
+// and dominant — while the width (5.33, half 2.67) combined with the wide
+// SIDE_OFFSET below pushes one edge PAST the viewport so the photo is offset to
+// one side and never fully enters the frame (user request: "תזיז את התמונות
+// שיהיו בצד… לא רוצה שכל התמונה תיכנס לפריים"). As the camera advances toward a
+// plane it grows and bleeds further off-frame before the cross-dissolve hands
+// off to the next (opposite-side) plane — so nothing flies THROUGH a centred
+// opaque face (the old dizziness), it sweeps past on alternating sides instead.
+const DESKTOP_PLANE_SCALE = 1.0;
+const MOBILE_PLANE_SCALE = 0.55;
 const MOBILE_BREAKPOINT = 768;
-// Side offset of each plane's centre (world units, pre-spread). The reference's
-// ±0.9 was tuned to its 2.25-wide portrait planes; our ~3.0-wide planes need a
-// wider throw so their centres (2×1.55 = 3.1 apart) exceed the plane width and
-// the channel actually opens. Mobile keeps a smaller throw so planes don't run
-// off a narrow screen.
-const DESKTOP_X_SPREAD_FACTOR = 1.55;
-const MOBILE_X_SPREAD_FACTOR = 0.62;
-// Yaw each side plane slightly inward to face the channel — like looking down a
-// corridor with pictures on alternating walls. 0 = face camera (reference);
-// small positive = toe-in. Sign is applied per side in updatePlaneMotion.
-const PLANE_INWARD_YAW = 0.20; // radians (~11.5°)
+// Side offset of each plane's centre around x=0 (world units). Planes alternate
+// ±SIDE_OFFSET so consecutive photos sit on opposite sides. ±1.5 puts the outer
+// edge of a 5.33-wide card (half 2.67) at ~4.17 vs the ~3.68 visible half-width
+// → the photo is clearly to the side and its outer ~13% bleeds off-frame at the
+// hero moment (more as the camera nears it). Mobile keeps a small offset so a
+// (necessarily wide) landscape card stays mostly on a narrow portrait screen.
+const SIDE_OFFSET = 1.5;
+const MOBILE_SIDE_OFFSET = 0.35;
 
 // Sample one gap ahead so the label/mood/fade lands on the plane the camera is
 // approaching (reference planeFadeSampleOffset = moodSampleOffset = 1).
 const SAMPLE_OFFSET = 1;
 
-// Focus-window opacity model (see updatePlaneVisibility). A plane is brightest
-// when the camera is FOCUS_AHEAD world-units in front of it (its "hero" depth),
-// and fades to 0 over FOCUS_FALLOFF on either side. With FOCUS_AHEAD = 2.5 and
-// FOCUS_FALLOFF = 2.5 the plane hits 0 exactly when the camera is level with it
-// (zAhead = 0) — so a side-mounted plane is gone before it can smear across the
-// channel — and is also invisible until ~5 units ahead, keeping only ~1–2
-// planes on screen at once (the focused read the user asked for). PLANE_GAP is
-// 5, so consecutive planes' focus windows just touch: a clean hand-off.
-const FOCUS_AHEAD = 2.5; // world units ahead of a plane where it peaks
-const FOCUS_FALLOFF = 2.5; // half-width of the triangular opacity window
+// World-units the camera sits in front of a plane at its hero moment (reference
+// firstPlaneViewOffset = lastPlaneViewOffset = 5). Used by the camera-bound
+// accessors below; MUST match Scroll's FIRST/LAST_PLANE_VIEW_OFFSET so the
+// trail progress (which reads getCameraMaxZ/MinZ) maps onto the true camera
+// range, and so each plane reaches full opacity exactly at its gap.
+const PLANE_VIEW_OFFSET = 5;
 
 // Default texture anisotropy when the renderer's max-anisotropy is not
 // available to us (Gallery doesn't hold a renderer reference). 4 is a safe
 // baseline that every modern GPU supports.
 const DEFAULT_ANISOTROPY = 4;
-
-// Base "position.x" magnitude (pre-spread) for the alternating left/right
-// corridor rhythm. Multiplied by the x-spread factor at layout time, so the
-// final centre offset is BASE_X_MAGNITUDE × DESKTOP_X_SPREAD_FACTOR = 1.0 × 1.55
-// = ±1.55 world units — wide enough that ~3.0-wide landscape planes leave a
-// channel between left and right (see TARGET_PLANE_WORLD_HEIGHT note). Plane 0
-// is NOT centred any more (that would put the very first thing you see dead
-// ahead, re-introducing the fly-through); instead every plane sits on a side,
-// alternating right/left, so the camera always travels down the channel.
-const BASE_X_MAGNITUDE = 1.0;
 
 // --- Velocity-driven motion tuning (reference Gallery.js values) ---
 const PARALLAX_AMOUNT_X = 0.16;
@@ -125,10 +106,9 @@ const GESTURE_PARALLAX_AMOUNT_Y = 0.05;
 const GESTURE_PARALLAX_SMOOTHING = 0.05;
 
 interface PlaneUserData {
-  baseX: number; // synthesized alternating x (pre-spread)
+  baseX: number; // small alternating ±SIDE_OFFSET around centre
   baseY: number;
   aspectRatio: number;
-  side: number; // +1 / −1 — which wall this plane sits on (drives inward yaw)
 }
 
 export default class Gallery {
@@ -221,18 +201,15 @@ export default class Gallery {
       const url = base + project.image;
       const planeIndex = i;
 
-      // Alternate every plane right/left (NO centred plane — see
-      // BASE_X_MAGNITUDE note). Even indices to the inline-start side, odd to
-      // the other, so scrolling walks down a corridor with pictures on
-      // alternating walls. Stored pre-spread; layout/motion multiply by the
-      // x-spread factor. `side` (+1/−1) is reused to yaw the plane inward.
-      const side = i % 2 === 0 ? 1 : -1;
-      const baseX = side * BASE_X_MAGNITUDE;
+      // Alternate every plane a SMALL ±SIDE_OFFSET around centre (user choice:
+      // "היסטים קטנים מהמרכז") so consecutive cards drift gently left/right of
+      // centre while staying near-centred and face-on. No more ±1.55 side-wall
+      // throw, no yaw.
+      const baseX = (i % 2 === 0 ? 1 : -1) * this.getSideOffset();
       const userData: PlaneUserData = {
         baseX,
         baseY: 0,
         aspectRatio: 1,
-        side,
       };
 
       const texture = loader.load(
@@ -251,11 +228,11 @@ export default class Gallery {
             userData.aspectRatio = img.width / img.height;
             // Apply the corrected size immediately (don't wait a motion frame)
             // so the first frame this plane is visible already has the right
-            // shape. Sizing is now HEIGHT-driven: fix the world height, derive
-            // width from aspect (see TARGET_PLANE_WORLD_HEIGHT note).
-            const sy = this.getPlaneScaleY();
-            mesh.scale.x = sy * userData.aspectRatio;
-            mesh.scale.y = sy;
+            // shape. Reference scale-driven model: scale.y = planeScale,
+            // scale.x = planeScale × aspect (see DESKTOP_PLANE_SCALE note).
+            const s = this.getPlaneScale();
+            mesh.scale.x = s * userData.aspectRatio;
+            mesh.scale.y = s;
           }
           this.decoded[planeIndex] = true;
         },
@@ -289,15 +266,14 @@ export default class Gallery {
       mesh.userData = userData;
 
       // Initial layout + scale (re-applied each frame by updatePlaneMotion).
-      // Height-driven sizing: y = target world height, x = y × aspect. Aspect
+      // Reference scale-driven sizing: y = planeScale, x = y × aspect. Aspect
       // is 1 until the texture decodes (callback above corrects it within ~1
       // frame for local WebP), and the plane is invisible until decoded anyway.
-      const xSpread = this.getXSpreadFactor();
-      const sy = this.getPlaneScaleY();
-      mesh.position.set(baseX * xSpread, 0, this.getPlaneZ(i));
-      mesh.scale.set(sy * userData.aspectRatio, sy, 1);
-      // Seed the inward yaw so the very first painted frame already toes in.
-      mesh.rotation.y = -side * PLANE_INWARD_YAW;
+      // Position is the small ±SIDE_OFFSET around centre; planes face the
+      // camera (no yaw — rotation stays 0 until breath/parallax tilts it).
+      const s = this.getPlaneScale();
+      mesh.position.set(baseX, 0, this.getPlaneZ(i));
+      mesh.scale.set(s * userData.aspectRatio, s, 1);
 
       this.scene.add(mesh);
 
@@ -311,20 +287,17 @@ export default class Gallery {
   }
 
   /**
-   * Vertical scale factor applied to the unit-ish PlaneGeometry so the plane
-   * lands at a fixed WORLD HEIGHT (not a fraction of the geometry). Width is
-   * this × texture aspect. Geometry is PLANE_GEOMETRY_SIZE tall, so the factor
-   * that yields TARGET_PLANE_WORLD_HEIGHT is height / geometry size.
+   * Reference scale-driven plane scale. The shared PlaneGeometry(3,3) is scaled
+   * by this on Y and this × texture aspect on X, so a landscape photo reads as a
+   * wide card at a fixed fraction of the frame (see DESKTOP_PLANE_SCALE note).
    */
-  private getPlaneScaleY(): number {
-    const targetHeight = this.isMobile
-      ? MOBILE_PLANE_WORLD_HEIGHT
-      : TARGET_PLANE_WORLD_HEIGHT;
-    return targetHeight / PLANE_GEOMETRY_SIZE;
+  private getPlaneScale(): number {
+    return this.isMobile ? MOBILE_PLANE_SCALE : DESKTOP_PLANE_SCALE;
   }
 
-  private getXSpreadFactor(): number {
-    return this.isMobile ? MOBILE_X_SPREAD_FACTOR : DESKTOP_X_SPREAD_FACTOR;
+  /** Small ±offset magnitude each plane's centre alternates by around x=0. */
+  private getSideOffset(): number {
+    return this.isMobile ? MOBILE_SIDE_OFFSET : SIDE_OFFSET;
   }
 
   private bindPointerEvents(): void {
@@ -353,42 +326,33 @@ export default class Gallery {
   }
 
   /**
-   * Distance-to-focus opacity model (adapted from the reference crossfade for
-   * our WIDE landscape planes on alternating sides).
+   * Reference CROSS-DISSOLVE opacity (Gallery.js updatePlaneVisibility). The two
+   * planes the camera is between (from getPlaneBlendData — the SAME source the
+   * active-index uses, so opacity + label never disagree) cross-fade:
+   * current = 1 − blend, next = blend. Every other plane targets 0. Now that
+   * planes are near-centred and face-on (no ±1.55 side throw, no yaw) a
+   * partially-opaque deeper plane reads as a clean concentric ghost behind the
+   * front card, not the off-axis smear the old focus-window model fought — so we
+   * can return to the reference's smooth two-plane dissolve.
    *
-   * The reference samples a FULL gap ahead and cross-dissolves the two nearest
-   * planes. With its narrow PORTRAIT planes that's fine, but our ~3-unit-wide
-   * LANDSCAPE planes, sitting at x=±1.55 while the camera runs down the channel
-   * at x=0, smear faintly across half the frame whenever they're partially
-   * opaque AND far from their focal depth (the "bloom"/dizziness the user saw:
-   * a plane ~6 units ahead was already at 0.75 opacity).
-   *
-   * Instead we give every plane a FOCAL DEPTH — the point where the camera is
-   * `FOCUS_AHEAD` in front of it — and drive opacity purely by how close the
-   * camera's "ahead distance" is to that focus, via a triangular falloff of
-   * half-width `FOCUS_FALLOFF`. So a plane is invisible until it nears its hero
-   * position, peaks once, and fades before the camera draws alongside it (where
-   * a side plane would smear). Only ~1–2 planes are ever visible — the focused
-   * one and a brief neighbour — which is the calmer, focused read the user
-   * asked for. Lerp-smoothed (0.14) as before.
+   * KEPT over the reference: the `failed`/`decoded` gating (never paint an
+   * untextured / undecoded plane) and the reduced-motion opacity snap.
+   * Lerp-smoothed (0.14) as in the reference.
    */
   private updatePlaneVisibility(cameraZ: number): void {
+    const blendData = this.getPlaneBlendData(cameraZ);
+    if (!blendData) return;
+    const { currentPlaneIndex, nextPlaneIndex, blend } = blendData;
+
     for (let i = 0; i < this.planes.length; i++) {
-      // zAhead > 0 while plane i is still in front of the camera; it equals
-      // FOCUS_AHEAD at the plane's hero moment, 0 when the camera is level, and
-      // goes negative once passed. (Camera starts at z≈+5, scrolls toward −z.)
-      const zAhead = cameraZ - this.getPlaneZ(i);
-      // Triangular focus window centred on FOCUS_AHEAD, half-width FOCUS_FALLOFF.
-      const distFromFocus = Math.abs(zAhead - FOCUS_AHEAD);
-      let target = clamp(1 - distFromFocus / FOCUS_FALLOFF, 0, 1);
-      // Ease so the shoulders are soft and the peak holds briefly (smoothstep).
-      target = target * target * (3 - 2 * target);
+      let target = 0;
+      if (i === currentPlaneIndex) target = 1 - blend;
+      if (i === nextPlaneIndex) target = Math.max(target, blend);
 
       // Failed-load planes stay invisible — see `failed` field doc.
       if (this.failed[i]) target = 0;
       // Not-yet-decoded planes stay invisible until their texture lands, so we
-      // never paint an untextured / square plane (finding #20). Once decoded
-      // the normal focus target applies and the plane lerps in.
+      // never paint an untextured / square plane (finding #20).
       if (!this.decoded[i]) target = 0;
 
       const prev = Number.isFinite(this.currentOpacities[i])
@@ -440,8 +404,7 @@ export default class Gallery {
       ? 0
       : lerp(this.driftCurrent, driftTarget, GESTURE_PARALLAX_SMOOTHING);
 
-    const xSpread = this.getXSpreadFactor();
-    const baseScaleY = this.getPlaneScaleY();
+    const baseScale = this.getPlaneScale();
 
     for (let i = 0; i < this.planes.length; i++) {
       const plane = this.planes[i];
@@ -459,29 +422,26 @@ export default class Gallery {
         this.pointerCurrent.y * PARALLAX_AMOUNT_Y * parallaxInfluence;
       const gestureOffsetY = this.driftCurrent * GESTURE_PARALLAX_AMOUNT_Y;
 
-      plane.position.x = data.baseX * xSpread + parallaxOffsetX;
+      plane.position.x = data.baseX + parallaxOffsetX;
       plane.position.y = data.baseY + parallaxOffsetY + gestureOffsetY;
       plane.position.z = this.getPlaneZ(i);
 
-      // Rotation: a constant inward YAW (toe-in toward the channel, like a
-      // corridor wall) COMPOSED with the velocity/pointer breath tilt. The yaw
-      // is the corridor feel; the breath is the life. side=+1 sits on the +x
-      // wall and must yaw negative (face −x, toward centre), hence -side.
+      // Rotation: face-on (no yaw — reference). Only the velocity/pointer breath
+      // tilt animates the plane; at rest it faces the camera squarely so a wide
+      // landscape photo reads flat, not foreshortened.
       const breathInfluence = this.breathIntensity * opacity;
       plane.rotation.x =
         -this.pointerCurrent.y * BREATH_TILT_AMOUNT * breathInfluence;
       plane.rotation.y =
-        -data.side * PLANE_INWARD_YAW +
         this.pointerCurrent.x * BREATH_TILT_AMOUNT * breathInfluence;
       plane.rotation.z = 0;
 
-      // Scale: HEIGHT-driven (fixed world height, width from aspect) + breath
-      // scale pulse. This is what keeps landscape photos from filling the frame
-      // and re-introducing the fly-through.
+      // Scale: reference scale-driven (y = planeScale, x = y × aspect) + breath
+      // scale pulse. Keeps a landscape photo at a fixed fraction of the frame.
       const aspectRatio = data.aspectRatio || 1;
       const scalePulse = 1 + BREATH_SCALE_AMOUNT * breathInfluence;
-      plane.scale.x = baseScaleY * aspectRatio * scalePulse;
-      plane.scale.y = baseScaleY * scalePulse;
+      plane.scale.x = baseScale * aspectRatio * scalePulse;
+      plane.scale.y = baseScale * scalePulse;
       plane.scale.z = 1;
     }
   }
@@ -585,18 +545,20 @@ export default class Gallery {
   }
 
   public getCameraStartZ(): number {
-    // Start with plane 0 AT its focal depth (camera FOCUS_AHEAD in front of
-    // z=0) so the first plane is already in focus on first paint — not blank.
-    return FOCUS_AHEAD;
+    // Start with plane 0 at its hero depth (camera PLANE_VIEW_OFFSET in front of
+    // z=0) so the first plane is already in view on first paint — not blank.
+    return PLANE_VIEW_OFFSET;
   }
 
   public getCameraMinZ(): number {
-    // End with the LAST plane at its focal depth: camera = deepestZ + FOCUS_AHEAD.
-    return this.getPlaneZ(Math.max(this.projects.length - 1, 0)) + FOCUS_AHEAD;
+    // End with the LAST plane at its hero depth: camera = deepestZ + offset.
+    return (
+      this.getPlaneZ(Math.max(this.projects.length - 1, 0)) + PLANE_VIEW_OFFSET
+    );
   }
 
   public getCameraMaxZ(): number {
-    return FOCUS_AHEAD; // = cameraStartZ (plane 0 in focus)
+    return PLANE_VIEW_OFFSET; // = cameraStartZ (plane 0 in view)
   }
 
   public dispose(): void {

@@ -66,13 +66,16 @@ const VELOCITY_STOP_THRESHOLD = 0.0001;
 const WHEEL_SCROLL_SPEED = 1.0;
 const TOUCH_SCROLL_SPEED = 1.8;
 const SCROLL_TO_WORLD_FACTOR = 0.01; // raw scroll units → world Z units
-// These MUST match Gallery's FOCUS_AHEAD (the world-units-ahead where a plane
-// peaks in the focus-window opacity model). The camera's near bound puts plane
-// 0 at its focal depth (camera FOCUS_AHEAD in front of z=0), the far bound puts
-// the last plane at its focal depth — so scrolling sweeps every plane through
-// focus exactly once, start to end, with nothing blank at either extreme.
-const FIRST_PLANE_VIEW_OFFSET = 2.5; // maxCameraZ = nearestZ + this  (= FOCUS_AHEAD)
-const LAST_PLANE_VIEW_OFFSET = 2.5; // minCameraZ = deepestZ + this  (= FOCUS_AHEAD)
+// Reference firstPlaneViewOffset = lastPlaneViewOffset = 5. These MUST match
+// Gallery's PLANE_VIEW_OFFSET (= 5): the near bound puts plane 0 at its hero
+// depth (camera 5 in front of z=0), the far bound puts the last plane there.
+// With the reference cross-dissolve (sampling one PLANE_GAP=5 ahead) each plane
+// reaches full opacity exactly at its gap and the last plane fills at the deep
+// bound — so scrolling sweeps every plane through view once, nothing blank at
+// either extreme. (The trail progress reads Gallery.getCameraMaxZ/MinZ, which
+// also return ±5, so progress maps onto this exact camera range.)
+const FIRST_PLANE_VIEW_OFFSET = 5; // maxCameraZ = nearestZ + this
+const LAST_PLANE_VIEW_OFFSET = 5; // minCameraZ = deepestZ + this
 
 // One keyboard "step" advances the camera by one plane gap of world depth.
 // In raw-input space that is PLANE_GAP / SCROLL_TO_WORLD_FACTOR. PLANE_GAP is 5

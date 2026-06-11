@@ -73,6 +73,7 @@
   --font-mono: ui-monospace, "Menlo", "Consolas", monospace;
   --color-brass: #CFAE83;
   --color-brass-deep: #8B6F46;
+  --color-brass-glow: #D4B98A;
   --color-cocoa: #534133;
   --color-ivory: #F5EFE6;
   --color-ink-deep: #1A1410;
@@ -111,6 +112,168 @@ body {
 /* Hide native scrollbar — wheel/touch input is captured by Scroll.ts. */
 ::-webkit-scrollbar {
   display: none;
+}
+
+/* =====================================================================
+ * Hall chrome controls — mirror the MAIN SITE press page button language
+ * (css/pages/press.css `.press-home-link` + the canonical `.btn` family in
+ * css/utilities.css). Those files are NOT in this sub-app's bundle, so the look
+ * is replicated here against the @theme tokens, using the exact press values:
+ * pill radius (9999px), clamp() viewport insets, ivory/brass palette,
+ * backdrop-blur, uppercase 0.18em tracking, hover-fill + translateY(-1px),
+ * 3px --brass-glow focus ring (offset 4px), and the --ease-out-cinema curve
+ * (cubic-bezier(0.2,0.8,0.2,1)) at --dur-base (240ms).
+ *
+ * IMPORTANT: these classes own their POSITIONING too. The previous markup used
+ * `inset-inline-start-6` / `inset-inline-end-6` Tailwind classes, which are NOT
+ * valid Tailwind v4 utilities (v4 spells them `start-*`/`end-*`) — they compiled
+ * to nothing, so both pills stacked in the same corner. Anchoring them here in
+ * real CSS (logical insets) fixes the collision and matches the press page.
+ *
+ *   .hall-home        : "חזרה לאתר" ghost back-pill, top-inline-END (top-left in
+ *                       RTL) — exact clone of .press-home-link.
+ *   .hall-switch      : positioning wrapper for the hall-switch group,
+ *                       top-inline-START (top-right in RTL) — the opposite
+ *                       corner, so the two never overlap.
+ *   .hall-switch__pill: primary filled pill (press CTA language).
+ * ===================================================================== */
+
+/* Shared pill geometry (press .press-home-link / .press-closer__btn). */
+.hall-home,
+.hall-switch__pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding-block: 0.7em;
+  padding-inline: 1.4em;
+  border-radius: 9999px; /* --radius-pill */
+  border: 1px solid transparent;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    color 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.hall-home:focus-visible,
+.hall-switch__pill:focus-visible {
+  outline: 3px solid var(--color-brass-glow);
+  outline-offset: 4px;
+}
+
+/* "חזרה לאתר" ghost back-pill — top-inline-end (top-left in RTL), like press. */
+.hall-home {
+  position: absolute;
+  inset-block-start: clamp(20px, 3vh, 36px);
+  inset-inline-end: clamp(20px, 3vw, 40px);
+  z-index: 40;
+  background: color-mix(in srgb, var(--color-ink-deep) 38%, transparent);
+  color: var(--color-ivory);
+  border-color: color-mix(in srgb, var(--color-ivory) 60%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.hall-home:hover,
+.hall-home:focus-visible {
+  background: var(--color-ivory);
+  border-color: var(--color-ivory);
+  color: var(--color-ink-deep);
+  transform: translateY(-1px);
+}
+
+/* Mirrored "→" arrow (points OUT of the page in RTL), slides on hover. */
+.hall-home__arrow {
+  display: inline-block;
+  font-size: 1.1em;
+  line-height: 1;
+  unicode-bidi: isolate;
+  direction: ltr;
+  transform: scaleX(-1);
+  transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.hall-home:hover .hall-home__arrow,
+.hall-home:focus-visible .hall-home__arrow {
+  transform: scaleX(-1) translateX(4px);
+}
+
+/* Hall-switch group — opposite corner: top-inline-start (top-right in RTL). */
+.hall-switch {
+  position: absolute;
+  inset-block-start: clamp(20px, 3vh, 36px);
+  inset-inline-start: clamp(20px, 3vw, 40px);
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Current-hall eyebrow beside the switch pill. */
+.hall-switch__eyebrow {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-ivory) 78%, transparent);
+  text-shadow: 0 1px 6px rgba(26, 20, 16, 0.55);
+  white-space: nowrap;
+}
+
+/* Primary filled switch pill (press CTA language: brass-glow → ivory on hover). */
+.hall-switch__pill {
+  background: var(--color-brass-glow);
+  color: var(--color-ink-deep);
+  border-color: var(--color-brass-glow);
+}
+.hall-switch__pill:hover,
+.hall-switch__pill:focus-visible {
+  background: var(--color-ivory);
+  border-color: var(--color-ivory);
+  color: var(--color-ink-deep);
+  transform: translateY(-1px);
+}
+
+/* Press parity ≤640px: home collapses to a 44×44 icon-only chip; eyebrow hidden. */
+@media (max-width: 640px) {
+  .hall-home {
+    inline-size: 44px;
+    block-size: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+  .hall-home__label {
+    display: none;
+  }
+  .hall-switch__eyebrow {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hall-home,
+  .hall-switch__pill,
+  .hall-home__arrow {
+    transition: none;
+  }
+  .hall-home:hover,
+  .hall-home:focus-visible,
+  .hall-switch__pill:hover,
+  .hall-switch__pill:focus-visible {
+    transform: none;
+  }
+  .hall-home:hover .hall-home__arrow,
+  .hall-home:focus-visible .hall-home__arrow {
+    transform: scaleX(-1);
+  }
 }
 
 /* =====================================================================

@@ -1,6 +1,6 @@
 import { useMemo, useRef } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
-import { Home, ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { getProjectsByHall } from "../projectsData";
 import type { ProjectWithColors } from "../types";
 
@@ -47,40 +47,48 @@ export default function HallChrome({ hallId, activeProject, frameDark = false }:
       {/* Skip link — first focusable */}
       <a
         href="#hall-canvas"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:inset-inline-start-4 focus:z-40 focus:pointer-events-auto focus:px-4 focus:py-2 focus:rounded-lg focus:bg-ivory focus:text-ink-deep focus:font-medium focus-visible:ring-[3px] focus-visible:ring-brass focus-visible:outline-none"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:start-4 focus:z-40 focus:pointer-events-auto focus:px-4 focus:py-2 focus:rounded-lg focus:bg-ivory focus:text-ink-deep focus:font-medium focus-visible:ring-[3px] focus-visible:ring-brass focus-visible:outline-none"
       >
         דלג לגלריה
       </a>
 
-      {/* Home button — top-inline-start */}
+      {/* "חזרה לאתר" ghost back-pill — top-inline-end (top-left in RTL), exact
+          press-page .press-home-link language: a mirrored "→" arrow + label,
+          ivory hairline over a blurred ink scrim so it reads over bright photos.
+          Positioned in CSS (.hall-home) — the old Tailwind inset classes were
+          invalid v4 utilities and collided with the switch pill. */}
       <motion.a
         href="/"
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={transition}
-        className="pointer-events-auto absolute top-6 inset-inline-start-6 inline-flex items-center gap-2 ps-4 pe-5 py-2.5 min-h-[44px] bg-[color:var(--color-ivory)]/10 backdrop-blur-md border border-[color:var(--color-brass)]/30 rounded-2xl shadow-lg text-[color:var(--color-ivory)] text-sm font-medium hover:bg-[color:var(--color-ivory)]/20 transition-colors duration-200 focus-visible:ring-[3px] focus-visible:ring-[color:var(--color-brass)] focus-visible:outline-none"
+        className="hall-home pointer-events-auto"
         aria-label="חזרה לאתר Gamos"
       >
-        <Home size={18} aria-hidden="true" />
-        <span className="hidden sm:inline">לאתר</span>
+        <span className="hall-home__arrow" aria-hidden="true">
+          →
+        </span>
+        <span className="hall-home__label">חזרה לאתר</span>
       </motion.a>
 
-      {/* HallSwitcher — top-inline-end */}
+      {/* HallSwitcher — top-inline-start (top-right in RTL), opposite corner from
+          the home pill (no overlap). A primary filled pill (press CTA language)
+          with the current-hall eyebrow beside it. */}
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={transition}
         role="group"
         aria-label="מעבר אולם"
-        className="pointer-events-auto absolute top-6 inset-inline-end-6 inline-flex items-center gap-3 ps-4 pe-3 py-2 min-h-[44px] bg-[color:var(--color-ivory)]/10 backdrop-blur-md border border-[color:var(--color-brass)]/30 rounded-2xl shadow-lg"
+        className="hall-switch pointer-events-auto"
       >
-        <span className="hidden sm:inline text-[color:var(--color-ivory)]/70 text-xs uppercase tracking-[0.18em] font-display">
+        <span className="hall-switch__eyebrow hidden sm:inline">
           {currentHallLabel}
         </span>
         <a
           href={`/halls/dist/${otherHallId}/`}
           aria-label={`עבור ל${otherHallLabel}`}
-          className="px-3 py-1.5 min-h-[36px] rounded-xl bg-[color:var(--color-brass)]/20 hover:bg-[color:var(--color-brass)]/35 text-[color:var(--color-ivory)] text-sm font-semibold transition-colors duration-200 focus-visible:ring-[3px] focus-visible:ring-[color:var(--color-brass)] focus-visible:outline-none inline-flex items-center gap-2"
+          className="hall-switch__pill"
         >
           {hallId === "oasis" ? (
             <>
