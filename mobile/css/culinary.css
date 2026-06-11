@@ -44,3 +44,24 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Run the culinary scrub under reduced-motion ON MOBILE (2026-06-11, §8
+   mobile exception — user-requested). Phones force prefers-reduced-motion via
+   battery-saver / iOS Low-Power Mode, which the core css/sections/scroll-scene.css
+   RM block treats as "kill the scrub": it sets .scroll-scene__canvas{display:none}
+   and collapses .scroll-scene__spacer to ~100vh (no scroll distance). The
+   companion js/scrollytelling.js change registers the scene on mobile-RM; these
+   rules undo the two CSS kills so the canvas actually paints + has the full
+   320vh to scrub over. Desktop RM is untouched (this is gated ≤768px).
+   --------------------------------------------------------------------------- */
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .culinary .scroll-scene__canvas {
+    display: block;
+  }
+  /* Restore the declared scroll distance (core RM collapsed it to auto/100vh). */
+  .culinary .scroll-scene__spacer {
+    block-size: var(--scene-spacer, 320vh);
+    min-block-size: 0;
+  }
+}

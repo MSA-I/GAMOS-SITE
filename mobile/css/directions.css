@@ -30,18 +30,35 @@
     box-shadow: var(--shadow-soft);
   }
 
-  /* Tabs scroll horizontally if the three labels get tight. */
+  /* The 4 origin tabs (מהמרכז · מירושלים · מהצפון · מהדרום) overflow a phone
+     row. The old `justify-content: center` + `overflow-x: auto` was the
+     classic flexbox trap: centered overflow clips BOTH edge tabs and they're
+     unreachable by scroll (the "מהדרום"/edge-tab clipping the user reported).
+     Fix: (1) `safe center` falls back to start-alignment when content
+     overflows (so nothing is clipped + the row is scrollable to the edges);
+     (2) tighten the label padding/size so all 4 usually FIT without scrolling
+     at all; (3) tabs don't shrink, and scroll-padding gives a little inset. */
   .directions__tabs {
-    align-self: stretch;
-    justify-content: center;
+    align-self: center;
+    max-inline-size: 100%;
+    justify-content: safe center;
     flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    scroll-padding-inline: var(--space-2, 0.5rem);
   }
   .directions__tabs::-webkit-scrollbar { display: none; }
 
-  .directions__tab-label { white-space: nowrap; }
+  .directions__tab { flex: 0 0 auto; }
+
+  .directions__tab-label {
+    white-space: nowrap;
+    /* Tighter than desktop's space-3/space-6 so 4 Hebrew labels fit a 360px
+       card without overflow. */
+    padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+    font-size: var(--text-sm);
+  }
 
   /* ≥44px touch targets (§9 / touch-targets convention). */
   .directions__cta {

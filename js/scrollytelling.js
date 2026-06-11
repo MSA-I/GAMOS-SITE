@@ -126,9 +126,18 @@ async function registerScene(canvas) {
 // ----------------------------------------------------------------------------
 
 export function init() {
-  // Honour reduced motion: skip the canvas fanfare entirely.
+  // Honour reduced motion on DESKTOP only. 2026-06-11 (§8 mobile exception,
+  // user-requested): many phones force `prefers-reduced-motion: reduce` via
+  // battery-saver / iOS Low-Power Mode even when the user never asked to
+  // reduce motion — which was silently freezing the culinary scrub to its
+  // static poster on mobile. The user wants the scrub to play on phones
+  // regardless, so we only bail on RM when NOT mobile. Desktop RM is
+  // unchanged (scrub off, poster shows). The matching mobile CSS
+  // (mobile/css/culinary.css) re-shows the canvas + restores the scroll
+  // spacer under RM≤768px. See CLAUDE.md §12.
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduced) {
+  const mobile = matchMedia("(max-width: 768px)").matches;
+  if (reduced && !mobile) {
     // Just hide poster fallbacks etc. Caller's CSS handles it.
     return;
   }

@@ -1,0 +1,266 @@
+/* =====================================================================
+ * Hall chrome — PHONE-FIRST overlay (loaded ONLY by main.mobile.tsx via the
+ * oasis-mobile / lumina-mobile entries; never by the desktop bundle).
+ *
+ * Scope/isolation: every selector is prefixed `.hallm-` so it CANNOT collide
+ * with the desktop `.hall-*` rules in index.css (which still loads first under
+ * the mobile entries — these win by being separate classes, not by overriding).
+ * Reuses the @theme tokens (--color-* / --font-*) + `.texture-text--light`
+ * from index.css. No new colors (Constitution §5: tokens only). A11y per §9:
+ * ≥44px hit areas, 3px brass focus ring, prefers-reduced-motion honored.
+ *
+ * The WebGL gallery is reused verbatim; this file only re-lays-out the chrome
+ * so the editorial label stops wrapping/overlapping the gallery on a 360–430px
+ * phone and the top controls become real touch targets.
+ * ===================================================================== */
+
+/* ── Shared motion curve (mirrors the press --ease-out-cinema used by the
+   desktop chrome) ── */
+:root {
+  --hallm-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --hallm-dur: 200ms;
+}
+
+/* =====================================================================
+ * Top corner controls — compact icon-led chips, ≥44px hit area.
+ * Back chip: top-inline-end (top-left in RTL). Switch chip: top-inline-start
+ * (top-right in RTL) — opposite corner, so they never overlap on a phone.
+ * Both use the blurred-ink scrim + ivory hairline so they read over bright
+ * photos. `viewport-fit=cover` is set on the mobile HTMLs → respect the safe
+ * area so the chips clear the notch / status bar.
+ * ===================================================================== */
+.hallm-home,
+.hallm-switch__pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  /* ≥44px touch target (Fitts' Law / WCAG 2.5.8). */
+  min-block-size: 44px;
+  min-inline-size: 44px;
+  padding-block: 0.6rem;
+  padding-inline: 0.95rem;
+  border-radius: 9999px; /* --radius-pill */
+  border: 1px solid transparent;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.04em; /* tighter than the desktop 0.18em — short labels, small screen */
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--hallm-dur) var(--hallm-ease),
+    border-color var(--hallm-dur) var(--hallm-ease),
+    color var(--hallm-dur) var(--hallm-ease),
+    transform 140ms var(--hallm-ease);
+}
+
+.hallm-home:focus-visible,
+.hallm-switch__pill:focus-visible {
+  outline: 3px solid var(--color-brass-glow);
+  outline-offset: 3px;
+}
+
+/* :active press feedback — confirms the tap (emil: pressable elements must
+   feel responsive). Subtle scale, fast release. */
+.hallm-home:active,
+.hallm-switch__pill:active {
+  transform: scale(0.96);
+}
+
+/* ── Back chip — ghost (blurred ink + ivory text), top-inline-end ── */
+.hallm-home {
+  position: absolute;
+  inset-block-start: max(env(safe-area-inset-top), 16px);
+  inset-inline-end: max(env(safe-area-inset-right), 16px);
+  z-index: 40;
+  background: color-mix(in srgb, var(--color-ink-deep) 46%, transparent);
+  color: var(--color-ivory);
+  border-color: color-mix(in srgb, var(--color-ivory) 55%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+/* Mirrored "→" arrow (points OUT of the page in RTL). */
+.hallm-home__arrow {
+  display: inline-block;
+  font-size: 1.05em;
+  line-height: 1;
+  unicode-bidi: isolate;
+  direction: ltr;
+  transform: scaleX(-1);
+}
+
+.hallm-home__label {
+  /* short label kept beside the arrow — still well within 44px width budget */
+  display: inline;
+}
+
+/* ── Hall-switch chip — primary filled (brass), top-inline-start ── */
+.hallm-switch {
+  position: absolute;
+  inset-block-start: max(env(safe-area-inset-top), 16px);
+  inset-inline-start: max(env(safe-area-inset-left), 16px);
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+}
+
+.hallm-switch__pill {
+  background: var(--color-brass-glow);
+  color: var(--color-ink-deep);
+  border-color: var(--color-brass-glow);
+}
+
+/* Touch devices fire hover on tap → gate hover styling so it never sticks. */
+@media (hover: hover) and (pointer: fine) {
+  .hallm-home:hover {
+    background: var(--color-ivory);
+    border-color: var(--color-ivory);
+    color: var(--color-ink-deep);
+    transform: translateY(-1px);
+  }
+  .hallm-switch__pill:hover {
+    background: var(--color-ivory);
+    border-color: var(--color-ivory);
+    color: var(--color-ink-deep);
+    transform: translateY(-1px);
+  }
+}
+
+/* =====================================================================
+ * Editorial label — ONE full-width bottom bar that STACKS vertically.
+ * Replaces the desktop `justify-between` spec-vs-title row that wraps and
+ * overlaps the gallery at ≤430px. Column order: index → title → spec.
+ * start-aligned (RTL = right edge). A soft blurred-ink gradient behind it
+ * keeps the cream texture-fill title legible over any frame.
+ * ===================================================================== */
+.hallm-label {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: 20;
+  padding-inline: clamp(1.1rem, 5vw, 1.75rem);
+  /* clear the home-bar / gesture area at the very bottom */
+  padding-block-end: max(env(safe-area-inset-bottom), 1.5rem);
+  padding-block-start: 4.5rem; /* room for the gradient to fade in above the text */
+  /* Legibility scrim: soft ink gradient rising from the bottom edge. Bridges
+     the cream title against bright photo regions (emil: legibility over a
+     busy backdrop). Pointer-events stay off so the gallery underneath is
+     fully draggable through the label. */
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--color-ink-deep) 62%, transparent) 0%,
+    color-mix(in srgb, var(--color-ink-deep) 34%, transparent) 42%,
+    transparent 100%
+  );
+}
+
+.hallm-label__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* inline-start under dir=rtl → hugs the right edge */
+  gap: 0.5rem;
+  text-align: start;
+}
+
+/* Index row — color chip + "NN / TT" engraved counter. */
+.hallm-label__index {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--color-ivory) 92%, transparent);
+  text-shadow: 0 1px 5px rgba(26, 20, 16, 0.55);
+}
+
+.hallm-label__chip {
+  display: inline-block;
+  inline-size: 0.6rem;
+  block-size: 0.6rem;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-ivory) 25%, transparent);
+}
+
+/* Title — texture-filled display type, sized to fit a 360px phone on one–two
+   lines. Clamped to 2 lines so an unusually long label never pushes the spec
+   off-screen or back over the gallery. Solid ivory is the @supports fallback
+   (texture-text--light fills it via background-clip:text in index.css). */
+.hallm-label__title {
+  margin: 0;
+  max-inline-size: 22ch;
+  font-family: var(--font-display);
+  font-weight: 900;
+  line-height: 1.12;
+  letter-spacing: 0.01em;
+  font-size: clamp(1.45rem, 6.5vw, 2rem);
+  color: var(--color-ivory);
+  filter: drop-shadow(0 1px 6px rgba(26, 20, 16, 0.5));
+  /* keep to ≤2 lines */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+/* Spec — location · year on a single inline row (replaces the desktop
+   two-row <dl>). sr-only keys (in the JSX) preserve label semantics. */
+.hallm-label__spec {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+}
+
+.hallm-label__spec-item {
+  display: inline-flex;
+}
+
+.hallm-label__spec-val {
+  color: color-mix(in srgb, var(--color-ivory) 88%, transparent);
+  text-shadow: 0 1px 5px rgba(26, 20, 16, 0.5);
+}
+
+.hallm-label__spec-sep {
+  color: color-mix(in srgb, var(--color-brass) 70%, var(--color-ivory));
+  text-shadow: 0 1px 5px rgba(26, 20, 16, 0.5);
+}
+
+/* =====================================================================
+ * Reduced motion (§9 / WCAG 2.2). Remove transform-based motion + the
+ * press scale; keep the legibility gradient and color/opacity affordances.
+ * (The chrome's entrance/label opacity tweens are already neutralized in the
+ * component via useReducedMotion → duration 0; this guards the CSS side.)
+ * ===================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .hallm-home,
+  .hallm-switch__pill {
+    transition: background var(--hallm-dur) ease, color var(--hallm-dur) ease,
+      border-color var(--hallm-dur) ease;
+  }
+  .hallm-home:active,
+  .hallm-switch__pill:active {
+    transform: none;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  @media (prefers-reduced-motion: reduce) {
+    .hallm-home:hover,
+    .hallm-switch__pill:hover {
+      transform: none;
+    }
+  }
+}

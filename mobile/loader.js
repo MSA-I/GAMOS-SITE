@@ -223,9 +223,43 @@
   }
   function domReady () {
     injectHalfSources();
+    applyMobileRoutes();   // BEFORE injectHeroTapZones — overlays clone the rewritten hrefs
     injectCtaLabels();
     injectHeroTapZones();
     setupCulinaryMobileManifest();
+  }
+
+  // ---------------------------------------------------------------------------
+  // 7. Route phones to the mobile sub-app builds  (2026-06-11)
+  // ---------------------------------------------------------------------------
+  // The external React sub-apps now have dedicated phone builds whose chrome is
+  // re-laid-out for small screens (same WebGL): /halls/dist/oasis-mobile/,
+  // /halls/dist/lumina-mobile/, /rooms/dist/mobile/. On ≤768px we rewrite the
+  // hard-coded desktop hrefs IN PLACE so the phone lands on the mobile build:
+  //   - the real hero EVENTS/RESORT anchors → -mobile (injectHeroTapZones runs
+  //     AFTER this and clones the already-rewritten href onto its overlay, so the
+  //     forwarded real.click() navigates to the mobile build);
+  //   - #rooms-door's href → /rooms/dist/mobile/ (js/rooms-door.js reads
+  //     link.href at click time, so it picks this up with no edit to that file).
+  // Desktop (≥769px) is untouched — the index.html hrefs stay desktop. This is
+  // the SINGLE place the phone-routing decision lives (§13 self-contained).
+  function applyMobileRoutes () {
+    if (typeof window.matchMedia !== "function" ||
+        !window.matchMedia("(max-width: 768px)").matches) {
+      return;
+    }
+    const rewrites = [
+      ['.hero-static__layer--events', "/halls/dist/oasis/",  "/halls/dist/oasis-mobile/"],
+      ['.hero-static__layer--resort', "/halls/dist/lumina/", "/halls/dist/lumina-mobile/"],
+      ['#rooms-door',                 "/rooms/dist/",        "/rooms/dist/mobile/"],
+    ];
+    for (const [sel, fromHref, toHref] of rewrites) {
+      const el = document.querySelector(sel);
+      if (!el) continue;
+      const cur = el.getAttribute("href");
+      // Idempotent + exact-match only (don't double-rewrite or touch already-mobile).
+      if (cur === fromHref) el.setAttribute("href", toHref);
+    }
   }
 
   // ---------------------------------------------------------------------------

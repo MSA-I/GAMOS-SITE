@@ -8,6 +8,9 @@ const dist = resolve(here, "..", "dist");
 const pairs = [
   ["index.html",  "oasis/index.html"],
   ["lumina.html", "lumina/index.html"],
+  // Mobile-only mirrors (additive) → /halls/dist/oasis-mobile/ + /halls/dist/lumina-mobile/.
+  ["oasis-mobile.html",  "oasis-mobile/index.html"],
+  ["lumina-mobile.html", "lumina-mobile/index.html"],
 ];
 
 for (const [src, dst] of pairs) {
