@@ -9,36 +9,42 @@ export interface EngineOptions {
   cards: RoomCard[];
 }
 
-// Front-arc label gate: a card is labelled only when its (top) surface Z is
-// above this (i.e. near the front of the cylinder, not wrapped to the sides).
-// Tuned to keep ~3–5 labels visible at once so they never pile up.
-const FRONT_LABEL_Z = -1.6;
-
-/** Screen-space projection of one card, fed to the DOM label overlay. */
-export interface CardProjection {
-  index: number;
-  x: number; // CSS px
-  y: number; // CSS px
-  visible: boolean; // in front of camera + within viewport bleed
+/** Screen-space bounding rect of a card (CSS px) — for the FLIP detail morph. */
+export interface CardScreenRect {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
 }
 
+/** Input→world metrics handed to Drag (no bounds — the pan is infinite). */
+export interface DragMetrics {
+  worldPerPixel: number;
+}
+
+const INTRO_MS = 1200; // intro bloom duration
+
 /**
- * Engine — owns the Three.js Scene / Camera / Renderer + the wallGroup the cards
- * live in, and drives the render loop. Forked from halls/src/depth-gallery/
- * Engine.ts; the dual-scene background pass is dropped (single scene, autoClear
- * on, ink-deep clear color), and the camera is FIXED while a wallGroup pans in
- * X/Y (vs. halls panning the camera in Z).
+ * Engine — owns the Three.js Scene / Camera / Renderer + the group the pooled
+ * cards live in, and drives the render loop. This is the phantom "lens" model:
+ * the camera is FIXED in front of a concave paraboloid wall (FOV 52 @ z 16.5) and
+ * the Wall reads the pan offset directly + wraps the grid modulo (the group is NOT
+ * translated). Clear colour is the §5 ink-deep (warm near-black) so the boot tone,
+ * the IntroGate veil, and the first painted frame all match — no flash.
  *
- * Reused verbatim from the fork: IntersectionObserver RAF-pause, ResizeObserver,
- * pixelRatio cap from the quality profile, reduced-motion idle short-circuit
- * (keyed here on the PAN OFFSET being unchanged), idempotent disposed guard, and
- * the strict dispose order (stop → listeners → drag/hover → wall → renderer).
- * Wall is the sole GPU-dispose owner of geometries/materials/textures.
+ * Reused from the prior rooms Engine: IntersectionObserver RAF-pause,
+ * ResizeObserver, pixelRatio cap from the quality profile, reduced-motion idle
+ * short-circuit (keyed on the pan offset AND intro completion), idempotent
+ * disposed guard, and the strict dispose order (stop → listeners → drag/hover →
+ * wall → renderer). Wall is the sole GPU-dispose owner.
  *
- * Per-frame feeds to React (via stable callbacks): the active card index
- * (nearest the viewport centre) and the projected screen positions of every
- * card (for the DOM label overlay) — written imperatively, never through React
- * state, to avoid re-render storms / jitter.
+ * Per-frame feed to React: the active card (nearest the viewport centre), deduped
+ * by id, for the bottom aria-live title. The per-card DOM-label projection is GONE
+ * (metadata is now baked onto the card textures, like the source).
+ *
+ * FLIP support: freeze(true) pauses pan/hover while the detail page is open;
+ * cardScreenRect(mesh) projects a card's bbox to CSS px for the morph; pickAt(x,y)
+ * raycasts the pooled meshes from a tap point.
  */
 export default class Engine {
   public readonly scene: THREE.Scene;
@@ -56,25 +62,32 @@ export default class Engine {
   private running = false;
   private disposed = false;
   private initialized = false;
+  private frozen = false;
   private readonly observer: IntersectionObserver;
   private readonly resizeObserver: ResizeObserver;
   private readonly handleResize: () => void;
   private readonly handleVisibility: IntersectionObserverCallback;
   private renderErrorLogged = false;
 
-  // Active-index feed.
-  private activeCallback: ((index: number) => void) | null = null;
-  private lastActiveIndex = -1;
+  // Active-card feed.
+  private activeCallback: ((card: RoomCard | null) => void) | null = null;
+  private lastActiveId: string | null = null;
 
-  // Projection feed (label overlay).
-  private projectionCallback: ((projections: CardProjection[]) => void) | null =
-    null;
-  private projScratch = new THREE.Vector3();
+  // Pan + intro state.
+  private panX = 0;
+  private panY = 0;
+  private introStart = 0; // perf timestamp of first frame
+  private introT = 0;
 
-  // Reduced-motion idle short-circuit: the pan offset at the last GPU draw.
+  // Reduced-motion idle short-circuit.
   private lastPanX = Number.NaN;
   private lastPanY = Number.NaN;
   private hasPaintedOnce = false;
+
+  private readonly raycaster = new THREE.Raycaster();
+  private readonly ndc = new THREE.Vector2();
+  private readonly box = new THREE.Box3();
+  private readonly corner = new THREE.Vector3();
 
   constructor(canvas: HTMLCanvasElement, opts: EngineOptions) {
     this.canvas = canvas;
@@ -83,16 +96,16 @@ export default class Engine {
     this.scene = new THREE.Scene();
 
     const { clientWidth, clientHeight } = this.getViewportSize();
-    // Narrow FOV (~30°) at a fair distance → near-orthographic read but keeps a
-    // whisper of perspective so the barrel curve reads. Camera is FIXED; the
-    // wallGroup pans. far plane comfortably past the deepest curved card.
+    // Phantom lens camera: FOV 52 at z 16.5, looking at the origin. Far plane
+    // comfortably past the deepest rim card.
     this.camera = new THREE.PerspectiveCamera(
-      30,
+      52,
       clientWidth / clientHeight,
       0.1,
-      100,
+      200,
     );
-    this.camera.position.set(0, 0, 8.5);
+    this.camera.position.set(0, 0, 16.5);
+    this.camera.lookAt(0, 0, 0);
 
     this.renderer = new THREE.WebGLRenderer({
       canvas,
@@ -104,15 +117,19 @@ export default class Engine {
     this.renderer.setPixelRatio(
       Math.min(window.devicePixelRatio || 1, this.quality.pixelRatioCap),
     );
-    // Ink-deep (§5 warm near-black, NOT pure black). Opaque clear.
+    // §5 ink-deep (warm near-black, NOT pure black). Opaque clear.
     this.renderer.setClearColor(0x1a1410, 1);
     this.renderer.setSize(clientWidth, clientHeight, false);
+    this.scene.add(new THREE.AmbientLight(0xffffff, 1));
 
-    // The pannable group all cards live in.
+    // The group all pooled cards live in (kept at the origin — Wall wraps + lenses).
     this.group = new THREE.Group();
     this.scene.add(this.group);
 
     this.wall = new Wall(this.scene, this.group, opts.cards, this.quality);
+
+    // Reduced motion → no bloom (cards start at scale 1; introT pinned at 1).
+    this.introT = this.quality.reducedMotion ? 1 : 0;
 
     this.handleResize = (): void => {
       if (this.disposed) return;
@@ -120,14 +137,7 @@ export default class Engine {
       this.camera.aspect = size.clientWidth / size.clientHeight;
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(size.clientWidth, size.clientHeight, false);
-      // Recompute pan bounds + drag scale for the new viewport.
-      const bounds = this.wall.computeBounds(
-        this.camera,
-        size.clientWidth,
-        size.clientHeight,
-      );
-      this.drag?.setMetrics(bounds);
-      // Invalidate the idle short-circuit so resize always repaints.
+      this.drag?.setMetrics(this.getInitialMetrics());
       this.lastPanX = Number.NaN;
       this.lastPanY = Number.NaN;
       this._render();
@@ -164,30 +174,27 @@ export default class Engine {
     });
   }
 
-  /** Compute initial pan bounds from the wall + viewport (for Drag construction). */
-  public getInitialBounds(): import("./Wall").WallBounds {
-    const { clientWidth, clientHeight } = this.getViewportSize();
-    return this.wall.computeBounds(this.camera, clientWidth, clientHeight);
+  /** Input→world scale for Drag (the pan is infinite, so there are no bounds). */
+  public getInitialMetrics(): DragMetrics {
+    const { clientWidth } = this.getViewportSize();
+    const dist = this.camera.position.z;
+    const vFov = (this.camera.fov * Math.PI) / 180;
+    const visibleHeight = 2 * Math.tan(vFov / 2) * dist;
+    const visibleWidth = visibleHeight * this.camera.aspect;
+    return { worldPerPixel: visibleWidth / Math.max(clientWidth, 1) };
   }
 
-  /** Inject the Drag input handler (owns the pan offset). */
   public setDrag(drag: Drag): void {
     this.drag = drag;
   }
 
-  /** Inject the Hover handler (raycast lift). */
   public setHover(hover: Hover): void {
     this.hover = hover;
   }
 
-  /** Fire when the active (centre-most) card index changes. */
-  public setActiveCallback(cb: (index: number) => void): void {
+  /** Fire when the active (centre-most) card changes. */
+  public setActiveCallback(cb: (card: RoomCard | null) => void): void {
     this.activeCallback = cb;
-  }
-
-  /** Fire each frame with the projected screen positions of every card. */
-  public setProjectionCallback(cb: (projections: CardProjection[]) => void): void {
-    this.projectionCallback = cb;
   }
 
   public init(): void {
@@ -218,10 +225,16 @@ export default class Engine {
     }
   }
 
-  /**
-   * Tear down. Order: stop → window/observer listeners → drag/hover (DOM
-   * listeners) → wall (GPU) → renderer (WebGL context last). Idempotent.
-   */
+  /** Freeze pan/hover (detail page open). Rendering continues with the last pan. */
+  public freeze(v: boolean): void {
+    this.frozen = v;
+    if (this.drag) this.drag.enabled = !v;
+    if (v) this.wall.setHovered(null);
+    // Resume the idle short-circuit accounting so a thaw repaints.
+    this.lastPanX = Number.NaN;
+    this.lastPanY = Number.NaN;
+  }
+
   public dispose(): void {
     if (this.disposed) return;
     this.disposed = true;
@@ -243,56 +256,52 @@ export default class Engine {
   }
 
   private _render(): void {
-    // Drag owns the pan offset. HORIZONTAL pan is a ROTATION of the cylinder, so
-    // the group is NOT translated in X — Wall.update() bakes panX into each card's
-    // angle θ and computes its full x/z on the cylinder surface (translating the
-    // group too would double-count). VERTICAL pan is a simple slide, so the group
-    // translates in Y (cards keep their baseY; the group moves them up/down).
-    let panX = -this.group.position.x; // unused-as-translation; kept for resume parity
-    let panY = this.group.position.y;
-    if (this.drag) {
-      const offset = this.drag.update();
-      panX = offset.x;
-      panY = offset.y;
-      this.group.position.x = 0; // cylinder owns horizontal placement
-      this.group.position.y = panY;
+    const now =
+      typeof performance !== "undefined" ? performance.now() : Date.now();
+
+    // Intro bloom progress (skipped under reduced motion → introT pinned 1).
+    if (!this.quality.reducedMotion && this.introT < 1) {
+      if (this.introStart === 0) this.introStart = now;
+      this.introT = Math.min(1, (now - this.introStart) / INTRO_MS);
     }
 
-    // Reduced-motion idle short-circuit: under reduce, pan is snapped and
-    // nothing else animates, so skip the whole pass when the pan is unchanged.
+    // Drag owns the pan offset. The group stays at the origin; Wall reads the
+    // pan directly and wraps + lenses each card.
+    if (this.drag && !this.frozen) {
+      const offset = this.drag.update();
+      this.panX = offset.x;
+      this.panY = offset.y;
+    }
+
+    // Reduced-motion idle short-circuit: under reduce, with the intro done and
+    // the pan unchanged, nothing animates — skip the whole pass.
     if (
       this.quality.reducedMotion &&
+      this.introT >= 1 &&
       this.hasPaintedOnce &&
-      panX === this.lastPanX &&
-      panY === this.lastPanY
+      this.panX === this.lastPanX &&
+      this.panY === this.lastPanY
     ) {
       return;
     }
 
-    // Hover raycast (idle only) → wall hovered index.
-    this.hover?.update();
+    if (!this.frozen) this.hover?.update();
 
-    // Wall: curve + hover lift + opacity fade.
-    this.wall.update(panX, panY);
+    this.wall.update(this.panX, this.panY, this.introT);
 
-    // Active-index feed.
     if (this.activeCallback) {
-      const active = this.wall.getActiveIndex(panX, panY);
-      if (active !== this.lastActiveIndex) {
-        this.lastActiveIndex = active;
-        this.activeCallback(active);
+      const card = this.wall.getActiveCard(this.panX, this.panY);
+      const id = card ? card.id : null;
+      if (id !== this.lastActiveId) {
+        this.lastActiveId = id;
+        this.activeCallback(card);
       }
-    }
-
-    // Projection feed (label overlay) — only when pan changed (else identical).
-    if (this.projectionCallback && (panX !== this.lastPanX || panY !== this.lastPanY)) {
-      this.projectionCallback(this.projectAll());
     }
 
     try {
       this.renderer.render(this.scene, this.camera);
-      this.lastPanX = panX;
-      this.lastPanY = panY;
+      this.lastPanX = this.panX;
+      this.lastPanY = this.panY;
       this.hasPaintedOnce = true;
     } catch (err) {
       if (!this.renderErrorLogged) {
@@ -302,34 +311,57 @@ export default class Engine {
     }
   }
 
-  /**
-   * Project the FRONT-ARC cards' top edge to CSS pixels for the label overlay.
-   * Only cards near front-centre on the cylinder get a label (worldZ above a
-   * threshold) — so labels never crowd: the side cards that have wrapped away are
-   * unlabelled. The label tracks each card's TOP so it floats above the image,
-   * clear of the bottom editorial title.
-   */
-  private projectAll(): CardProjection[] {
+  // ---- FLIP support -------------------------------------------------------
+
+  /** Raycast the pooled meshes from a client point → the card + mesh hit (or null). */
+  public pickAt(
+    clientX: number,
+    clientY: number,
+  ): { card: RoomCard; mesh: THREE.Mesh } | null {
     const { clientWidth, clientHeight } = this.getViewportSize();
-    const out: CardProjection[] = [];
-    const count = this.wall.getCount();
-    for (let i = 0; i < count; i++) {
-      this.wall.getCardTopWorldPosition(i, this.projScratch);
-      const worldZ = this.projScratch.z;
-      const v = this.projScratch.project(this.camera);
-      // Front-arc gate: only label cards whose surface is near the front of the
-      // cylinder (worldZ not receded far) AND inside the viewport. This keeps a
-      // handful of labels at most — no overlap pile-up from the wrapped sides.
-      const visible =
-        worldZ > FRONT_LABEL_Z &&
-        v.z < 1 &&
-        Math.abs(v.x) < 1.05 &&
-        Math.abs(v.y) < 1.2;
-      const x = (v.x * 0.5 + 0.5) * clientWidth;
-      const y = (-v.y * 0.5 + 0.5) * clientHeight;
-      out.push({ index: i, x: Math.round(x), y: Math.round(y), visible });
+    this.ndc.x = (clientX / clientWidth) * 2 - 1;
+    this.ndc.y = -((clientY / clientHeight) * 2 - 1);
+    this.raycaster.setFromCamera(this.ndc, this.camera);
+    const hits = this.raycaster.intersectObjects(this.wall.getMeshes(), false);
+    if (hits.length === 0) return null;
+    const mesh = hits[0].object as THREE.Mesh;
+    const card = this.wall.getCardForMesh(mesh);
+    if (!card) return null;
+    return { card, mesh };
+  }
+
+  /**
+   * Screen-space bounding rect of a card's projected box (CSS px). Ported from
+   * phantom-sphere-gallery gallery.js cardScreenRect — project the 6 box corners
+   * to NDC, then to canvas px. The canvas is fixed/full-viewport so its rect's
+   * left/top fold in cleanly (RTL/DPR-independent).
+   */
+  public cardScreenRect(mesh: THREE.Mesh): CardScreenRect {
+    const r = this.canvas.getBoundingClientRect();
+    this.box.setFromObject(mesh);
+    const b = this.box;
+    const pts = [
+      [b.min.x, b.min.y, b.max.z],
+      [b.max.x, b.min.y, b.max.z],
+      [b.min.x, b.max.y, b.max.z],
+      [b.max.x, b.max.y, b.max.z],
+      [b.min.x, b.min.y, b.min.z],
+      [b.max.x, b.max.y, b.min.z],
+    ];
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    for (const [x, y, z] of pts) {
+      this.corner.set(x, y, z).project(this.camera);
+      const sx = r.left + (this.corner.x * 0.5 + 0.5) * r.width;
+      const sy = r.top + (-this.corner.y * 0.5 + 0.5) * r.height;
+      if (sx < minX) minX = sx;
+      if (sx > maxX) maxX = sx;
+      if (sy < minY) minY = sy;
+      if (sy > maxY) maxY = sy;
     }
-    return out;
+    return { left: minX, top: minY, width: maxX - minX, height: maxY - minY };
   }
 
   private getViewportSize(): { clientWidth: number; clientHeight: number } {

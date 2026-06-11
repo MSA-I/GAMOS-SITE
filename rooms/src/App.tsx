@@ -1,42 +1,67 @@
-import { useRef, useState, useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
+import type * as THREE from "three";
 import RoomsWall from "./wall/RoomsWall";
 import RoomsChrome from "./components/RoomsChrome";
+import RoomDetail from "./components/RoomDetail";
 import IntroGate from "./intro/IntroGate";
 import { getRooms } from "./roomsData";
 import type { RoomCard } from "./roomsData";
-import type { CardProjection } from "./wall/Engine";
+import type { CardScreenRect } from "./wall/Engine";
+
+/** Imperative handle the wall exposes once its Engine is live. */
+export interface WallApi {
+  cardScreenRect: (mesh: THREE.Mesh) => CardScreenRect;
+  unfreeze: () => void;
+}
 
 export default function App() {
-  // Lazy initial state: pick the first card synchronously during the first
-  // render so RoomsChrome's active title is populated on the very first paint
-  // (no flash of empty title). The wall feeds the active index from its RAF
-  // loop once the user pans toward a card.
+  // Active (centre-most) card — feeds the bottom aria-live editorial title. Lazy
+  // initial so the title isn't blank on the first paint.
   const [activeCard, setActiveCard] = useState<RoomCard | null>(
     () => getRooms()[0] ?? null,
   );
 
-  // The label-overlay projector: RoomsChrome registers an imperative updater
-  // here (writes transforms straight to its pre-created label DOM nodes); the
-  // Engine (via RoomsWall) calls it each frame. Routed through a ref so neither
-  // component re-renders per frame.
-  const projectorRef = useRef<((p: CardProjection[]) => void) | null>(null);
-  const handleProject = useCallback((p: CardProjection[]) => {
-    projectorRef.current?.(p);
-  }, []);
-  const registerProjector = useCallback(
-    (fn: ((p: CardProjection[]) => void) | null) => {
-      projectorRef.current = fn;
-    },
-    [],
-  );
+  // The selected card (FLIP detail page open). null = gallery only.
+  const [selected, setSelected] = useState<{
+    card: RoomCard;
+    mesh: THREE.Mesh;
+  } | null>(null);
 
-  // IntroGate is the FUTURE-VIDEO SEAM: today it renders {children} immediately
-  // (no-op pass-through). The wall mounts behind it regardless, so WebGL warms
-  // up during any future door-opening playback. See intro/IntroGate.tsx.
+  // The wall's imperative API (cardScreenRect + unfreeze), set once on ready.
+  const apiRef = useRef<WallApi | null>(null);
+  const handleReady = useCallback((api: WallApi) => {
+    apiRef.current = api;
+  }, []);
+
+  // A tap on a card → open the detail page (RoomsWall has already frozen the engine).
+  const handleSelect = useCallback((card: RoomCard, mesh: THREE.Mesh) => {
+    setSelected({ card, mesh });
+  }, []);
+
+  const handleClose = useCallback(() => {
+    apiRef.current?.unfreeze();
+    setSelected(null);
+  }, []);
+
+  // IntroGate is the door-transition seam: it renders {children} immediately with
+  // an ink-deep cover that fades out on mount, handing off from the door's black.
   return (
     <IntroGate>
-      <RoomsWall onActiveChange={setActiveCard} onProject={handleProject} />
-      <RoomsChrome activeCard={activeCard} registerProjector={registerProjector} />
+      <RoomsWall
+        onActiveChange={setActiveCard}
+        onSelect={handleSelect}
+        onReady={handleReady}
+      />
+      <RoomsChrome activeCard={activeCard} />
+      {selected ? (
+        <RoomDetail
+          card={selected.card}
+          measureFrom={() =>
+            apiRef.current!.cardScreenRect(selected.mesh)
+          }
+          onClose={handleClose}
+        />
+      ) : null}
     </IntroGate>
   );
 }

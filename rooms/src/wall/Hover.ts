@@ -47,7 +47,7 @@ export default class Hover {
     };
     this.onPointerLeave = (): void => {
       this.hasPointer = false;
-      this.wall.setHovered(-1);
+      this.wall.setHovered(null);
     };
 
     if (this.enabled) {
@@ -60,21 +60,20 @@ export default class Hover {
     }
   }
 
-  /** Per-frame: cast when idle + pointer present; feed the hovered index. */
+  /** Per-frame: cast when idle + pointer present; feed the hovered pooled mesh. */
   public update(): void {
     if (!this.enabled) return;
     if (this.drag.isDragging() || !this.hasPointer) {
-      // While dragging, hold whatever the wall last had (don't re-cast).
-      if (this.drag.isDragging()) this.wall.setHovered(-1);
+      // While dragging, clear hover (no card lift mid-fling); don't re-cast.
+      if (this.drag.isDragging()) this.wall.setHovered(null);
       return;
     }
     this.raycaster.setFromCamera(this.pointer, this.camera);
     const hits = this.raycaster.intersectObjects(this.wall.getMeshes(), false);
     if (hits.length > 0) {
-      const data = hits[0].object.userData as { index?: number };
-      this.wall.setHovered(typeof data.index === "number" ? data.index : -1);
+      this.wall.setHovered(hits[0].object as THREE.Mesh);
     } else {
-      this.wall.setHovered(-1);
+      this.wall.setHovered(null);
     }
   }
 

@@ -48,12 +48,12 @@ const TOTAL = 20;
 const W = 800;
 const H = 1000;
 
-// Mirror roomsData: real cards at indices 0,5,10,15 (numbers 01,06,11,16).
+// Mirror roomsData REAL_SLOTS: real cards at indices 0,6,11,17 (numbers 01,07,12,18).
 const REAL_TYPES = {
   0: "נוף",
-  5: "סוויטה",
-  10: "חדר",
-  15: "ספא",
+  6: "סוויטה",
+  11: "חדר",
+  17: "ספא",
 };
 
 function esc(s) {
