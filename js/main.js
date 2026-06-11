@@ -31,8 +31,7 @@ import * as roomsDoor           from "./rooms-door.js";     // 2026-06-11 — #r
 import * as loungeSelector      from "./lounge-selector.js";// #lounge — lounge selector
 import * as siteNavHoverReveal  from "./site-nav-hover-reveal.js"; // 2026-06-04 — hide site-nav while in hero
 import * as scrollSpy           from "./scroll-spy.js";     // .site-nav — aria-current scroll-spy
-import * as shabbatGallery     from "./shabbat-gallery.js";// 2026-06-09 — GSAP pinned mask-reveal (CodePen WbQPRwv port)
-import * as shabbatMobile      from "../mobile/js/shabbat-chatan-mobile.js"; // 2026-06-09 — mobile interleave (display: contents + order)
+import * as shabbatGallery     from "./shabbat-gallery.js";// 2026-06-09 — GSAP pinned mask-reveal; 2026-06-11 — pin now runs at all widths (mobile-fidelity)
 import * as directionsMap      from "./directions-map.js";  // 2026-06-10 — #routes branded Leaflet map + origin tabs
 
 // Order matters:
@@ -52,8 +51,7 @@ const MODULES = [
   ["loading-overlay",     loadingOverlay],   // window.gamosLoading must be ready before hero hotspot clicks
   ["hero-static",         heroStatic],       // 2026-06-08: static-image hero + gamosHero progress stub (releases side-dot-nav dominance gate)
   ["site-nav-hover-reveal", siteNavHoverReveal], // 2026-06-04: hide site-nav while in hero (revealed only on cursor in top band)
-  ["shabbat-gallery",     shabbatGallery],   // 2026-06-09: GSAP pinned mask-reveal (CodePen WbQPRwv port)
-  ["shabbat-chatan-mobile", shabbatMobile],  // 2026-06-09: mobile interleave (panels + media into one column)
+  ["shabbat-gallery",     shabbatGallery],   // 2026-06-09: GSAP pinned mask-reveal; 2026-06-11: pin runs at all widths (mobile-fidelity)
   ["scroll-scene",        scrollScene],
   ["portals",             portals],
   ["side-dot-nav",        sideDotNav],

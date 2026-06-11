@@ -138,9 +138,17 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Fallback layout: ≤ 768px AND prefers-reduced-motion:reduce
+   Fallback layout: prefers-reduced-motion:reduce ONLY.
+   ---------------------------------------------------------------------------
+   2026-06-11 mobile-fidelity pass: the `(max-width: 767.98px)` arm was removed
+   so the real 3D rotating ring survives on phones (it was flattening it to a
+   grid). The ring is fit to narrow viewports by scaling .lounge__stage in
+   /mobile/css/lounge.css — rotation/drag/depth preserved. The
+   prefers-reduced-motion arm stays: it is the ONE allowed static fallback
+   (§13), and lounge-selector.js short-circuits init() under RM so the grid
+   below is what renders. (§13 rule-6 sanctioned migration — see Maintenance Log.)
    --------------------------------------------------------------------------- */
-@media (max-width: 767.98px), (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce) {
   .lounge__stage {
     perspective: none;
     block-size: auto;

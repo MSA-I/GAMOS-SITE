@@ -41,6 +41,10 @@
    5. Add data-manifest-url-mobile attribute to the culinary scrub canvas.
       Then on ≤768px, rewrite data-manifest-url to point at the mobile
       manifest BEFORE js/scroll-scene.js fetches it.
+   6. Inject transparent ≥48px tap overlays over the hero EVENTS/RESORT bands
+      (above the desert layer) that forward the tap to the real CTA anchors —
+      so the real desktop hero composition is shown on phones with finger-sized
+      touch targets (2026-06-11 mobile-fidelity pass).
 
    No globals are leaked. No exports — this is a side-effect script.
    ========================================================================= */
@@ -126,14 +130,14 @@
   }
 
   // ---------------------------------------------------------------------------
-  // 4. Hero CTA pill labels
+  // 4. Hero CTA sr-only labels  (2026-06-11 mobile-fidelity pass)
   // ---------------------------------------------------------------------------
-  // The desktop hero shows the EVENTS / RESORT bitmap PNGs as the CTA face.
-  // On phones the bitmap shrinks to ~56vw and reads as decoration, not a
-  // tappable button. We append a <span class="hero-static__cta-label"> to
-  // each anchor; the inline default rule below hides it on desktop, and
-  // /mobile/css/hero-static.css surfaces it as a brass pill button at
-  // ≤768px.
+  // The mobile hero now renders the IDENTICAL desktop 5-layer composition (the
+  // real EVENTS / RESORT bitmaps stay visible — no pills). We still append a
+  // <span class="hero-static__cta-label"> as a sr-only accessible label; the
+  // inline default rule below keeps it clipped on EVERY viewport (it is NOT a
+  // visible pill anymore). The actual finger-sized touch targets are the
+  // transparent overlays injected by injectHeroTapZones() (step 6).
   function injectCtaLabels () {
     const pairs = [
       [".hero-static__layer--events", "אירועים"],
@@ -220,6 +224,47 @@
   function domReady () {
     injectHalfSources();
     injectCtaLabels();
+    injectHeroTapZones();
     setupCulinaryMobileManifest();
+  }
+
+  // ---------------------------------------------------------------------------
+  // 6. Hero tap overlays  (2026-06-11 mobile-fidelity pass)
+  // ---------------------------------------------------------------------------
+  // The mobile hero shows the real EVENTS / RESORT bitmaps (decorative
+  // typography) which the desert silhouette (z10) partly paints over — so the
+  // visible tappable area of each real <a> is small/ambiguous on a phone. We
+  // inject a transparent ≥48px overlay <a> over each CTA band, ABOVE the
+  // desert (z=15, styled in /mobile/css/hero-static.css under @media ≤768px so
+  // it has no footprint on desktop). The overlay carries the real href (no-JS
+  // fallback) and forwards the tap to the real anchor via realAnchor.click(),
+  // so js/hero-static.js's bound [data-hero-link] whoosh + loading-overlay
+  // flourish fires IDENTICALLY. /mobile/ DOM mutation — §13 compliant.
+  function injectHeroTapZones () {
+    const pin = document.querySelector(".hero-static__pin");
+    if (!pin) return;
+    const pairs = [
+      [".hero-static__layer--events", "events"],
+      [".hero-static__layer--resort", "resort"],
+    ];
+    for (const [sel, mod] of pairs) {
+      const real = pin.querySelector(sel);
+      if (!real) continue;
+      // Idempotent — don't double-inject if the loader runs twice.
+      if (pin.querySelector(".hero-static__tap--" + mod)) continue;
+      const a = document.createElement("a");
+      a.className = "hero-static__tap hero-static__tap--" + mod;
+      a.href = real.getAttribute("href") || "#";
+      const label = real.getAttribute("aria-label");
+      if (label) a.setAttribute("aria-label", label);
+      // Forward the tap to the real CTA so its bound whoosh/loading-overlay
+      // flourish runs exactly as a direct click would. preventDefault stops the
+      // overlay's own navigation; if JS is dead, the real href still navigates.
+      a.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        real.click();
+      });
+      pin.appendChild(a);
+    }
   }
 })();

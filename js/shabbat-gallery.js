@@ -9,10 +9,11 @@
    (0% → 60%); simultaneously the next image's object-position eases to
    40%; the section's background-color cross-fades to the next pastel.
 
-   Mobile (≤768px) drops the pin and instead attaches one ScrollTrigger per
-   image for an object-position pan + body tint shift, matching the pen's
-   responsive split. Mobile interleave (panel/image/panel/image) is owned
-   by mobile/js/shabbat-chatan-mobile.js.
+   Mobile (2026-06-11 fidelity pass): the SAME pinned desktop timeline now runs
+   at all widths — mobile gets the identical pin + mask-reveal, not a degraded
+   vertical pan. The old (max-width:768px) buildMobileTimeline branch and the
+   mobile/js/shabbat-chatan-mobile.js interleave were retired; the narrow-stage
+   fit lives in mobile/css/shabbat-chatan.css.
 
    prefers-reduced-motion: reduce → bails (no GSAP), the static CSS
    fallback in css/sections/shabbat-chatan.css renders cleanly. The MQL is
@@ -167,41 +168,10 @@ function buildDesktopTimeline(gsap, ScrollTrigger) {
   }
 }
 
-function buildMobileTimeline(gsap, ScrollTrigger) {
-  const imgs = Array.from(_section.querySelectorAll(IMG_SELECTOR));
-  if (imgs.length === 0) return;
-
-  gsap.set(imgs, { objectPosition: "0% 60%" });
-  const tints = readTints();
-
-  imgs.forEach((image, index) => {
-    const inner = gsap.timeline({
-      scrollTrigger: {
-        trigger: image,
-        // Natural enter-to-leave window — was "top-=70% top+=50%" /
-        // "bottom+=200% bottom" which fired only after the image scrolled
-        // offscreen. The Ken-Burns pan + tint now run as each image
-        // crosses the viewport.
-        start: "top bottom",
-        end: "bottom top",
-        scrub: true,
-      },
-    });
-
-    inner.to(image, {
-      objectPosition: "0% 30%",
-      duration: 5,
-      ease: "none",
-    });
-    inner.to(_section, {
-      // 5-image cap — defensive clamp in case markup grows beyond the
-      // 5 declared --shabbat-tint-N tokens.
-      backgroundColor: tints[Math.min(index, tints.length - 1)],
-      duration: 1.5,
-      ease: "power2.inOut",
-    });
-  });
-}
+/* buildMobileTimeline() retired 2026-06-11 (mobile-fidelity pass): the pinned
+   desktop timeline now runs at all widths (see init()), so the unpinned
+   per-image pan that used to drive ≤768px is gone. Git history retains it if
+   the split is ever reinstated. */
 
 function onRMChange(e) {
   if (e.matches) {
@@ -248,13 +218,16 @@ export function init() {
   // tints. Independent of viewport, so run once up-front.
   applyTextVariant(readTints());
 
+  // 2026-06-11 mobile-fidelity pass (§13 amendment): the pinned desktop
+  // timeline now runs at ALL widths so mobile gets the IDENTICAL pin +
+  // clip-path mask-reveal + Ken-Burns + bg cross-fade, not the old unpinned
+  // per-image vertical pan. The former (max-width:768px) → buildMobileTimeline
+  // branch is retired. Kept inside gsap.matchMedia() (not a bare call) so
+  // _mm.revert() still owns teardown and the API stays uniform.
   _mm = gsap.matchMedia();
-  _mm.add("(min-width: 769px)", () => buildDesktopTimeline(gsap, ScrollTrigger));
-  _mm.add("(max-width: 768px)", () => buildMobileTimeline(gsap, ScrollTrigger));
+  _mm.add("(min-width: 1px)", () => buildDesktopTimeline(gsap, ScrollTrigger));
 
-  // Refresh on next frame so triggers measure post-layout — covers the
-  // case where mobile-mobile.js (or any later module) shifts layout via
-  // style.order / display changes after this module initialized.
+  // Refresh on next frame so triggers measure post-layout.
   requestAnimationFrame(() => {
     try { ScrollTrigger.refresh(); } catch { /* ignore */ }
   });

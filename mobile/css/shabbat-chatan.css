@@ -1,83 +1,70 @@
 /* =============================================================================
-   mobile/css/shabbat-chatan.css — pinned mask-reveal mobile fallback
+   mobile/css/shabbat-chatan.css — the SAME pinned mask-reveal on phones (v2)
    ---------------------------------------------------------------------------
-   Mirror of CodePen WbQPRwv's mobile branch (≤768px): the desktop pin is
-   dropped; panels and images interleave in one flex column. The mobile JS
-   (mobile/js/shabbat-chatan-mobile.js) sets CSS `order` on each panel and
-   media to enforce the panel-image-panel-image cadence.
+   2026-06-11 mobile-fidelity pass (replaces the 2026-06-09 "drop-the-pin,
+   interleave one flex column" branch).
 
-   Only one tap-target per image; each ScrollTrigger pans object-position
-   on its own — no horizontal-scroll, no snap-carousel.
+   Mandate: mobile must run the IDENTICAL desktop pinned mask-reveal. The core
+   js/shabbat-gallery.js was changed so buildDesktopTimeline (the pin +
+   clip-path wipe + Ken-Burns + bg cross-fade) now runs at ALL widths; the old
+   per-image mobile branch and the mobile/js interleave module were retired. So
+   on phones GSAP now pins .shabbat__stage over .shabbat__layout exactly as on
+   desktop.
 
-   Constitution §13: this file holds ALL mobile-only rules; nothing else
-   in css/sections/shabbat-chatan.css should @media-gate to ≤768px.
+   This file therefore must NOT flatten that layout. The previous version set
+   display:contents on the layout/columns + clip-path:none + position:relative
+   on the media — which would break the pin (GSAP can't pin a display:contents
+   element) and disable the mask channel. ALL of that is removed. What remains
+   is pure narrow-viewport TUNING of the desktop two-column pinned stage.
+
+   §4 logical props. §5 no new colors. §13 self-contained.
    ========================================================================== */
 
 @media (max-width: 768px) {
-  .shabbat__container {
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--space-6, 1.5rem);
-    padding-inline: var(--gutter, 1.25rem);
-    padding-block: var(--space-6, 1.5rem);
+
+  /* Keep the two-column flex row (inherited from core). On a 360px screen the
+     desktop text column (clamp(240px,30vw,360px)) + media stage
+     (clamp(320px,45vw,540px)) overflow — narrow the text column to free width
+     for the pinnable media stage. NO display:contents, NO column-stack: the
+     stage must stay a 100vh pinnable block. */
+  .shabbat__panels {
+    min-inline-size: 8rem;
+    max-inline-size: 40vw;
   }
 
-  /* The layout wrapper + both columns become contents — their children flow
-     into the container. Combined with `order` on each panel/media (set by the
-     mobile JS), the visual cadence is panel-image-panel-image-… The header is
-     the container's first child but gets order:-1 so it always stays on top. */
-  .shabbat__layout,
-  .shabbat__panels,
-  .shabbat__stage {
-    display: contents;
-  }
-
-  .shabbat__header {
-    order: -1;
-    margin-block: var(--space-6, 1.5rem) var(--space-4, 1rem);
-  }
-
-  .shabbat__panel {
-    min-block-size: auto;
-    block-size: auto;
-    padding-block: var(--space-6, 1.5rem) var(--space-3, 0.75rem);
-    place-items: center start;
-  }
-
+  /* Scale the large display heading down so it wraps in the narrow column. */
   .shabbat__heading {
-    font-size: clamp(1.6rem, 7.5vw, 2.25rem);
-    line-height: 1.05;
-    text-align: start;
-    max-inline-size: 100%;
+    font-size: clamp(1.4rem, 6vw, 2rem);
+    line-height: 1.08;
+    max-inline-size: 14ch;
   }
 
-  /* Each image becomes an in-flow card. */
+  /* Let the stage take the remaining width; block-size:100vh is inherited from
+     core so it pins full-height. Do NOT override position/inset/clip-path —
+     those are the absolute-stack + mask channels GSAP drives. */
+  .shabbat__stage {
+    max-inline-size: none;
+  }
+
+  /* Fill the narrow stage cleanly. object-fit:cover keeps the masked image
+     framed; clip-path / object-position stay untouched (GSAP owns them). */
   .shabbat__media {
-    position: relative;
-    inset-block: auto;
-    inset-inline: auto;
     inline-size: 100%;
-    max-inline-size: 100%;
-    block-size: clamp(280px, 60vw, 360px);
-    margin-block-end: var(--space-3, 0.75rem);
-    border-radius: 10px;
-    transform: none;
-    /* Mobile pen branch: each image is fully visible; only object-position
-       is animated. Drop clip-path to avoid an empty frame on first paint. */
-    clip-path: none;
-    box-shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.35);
   }
-
   .shabbat__media img {
-    object-position: 0% 60%;
+    object-fit: cover;
+    /* Keep the pinned clip-path scrub on the compositor (per
+       fixing-motion-performance — promote only the 5 images, not everything). */
+    will-change: clip-path;
   }
 }
 
-/* Reduced-motion override (mobile): leave the static stack — no transforms,
-   no ScrollTrigger pan. The desktop CSS reduced-motion fallback already
-   covers ≥769px; this mirrors the behaviour for ≤768px. */
+/* Reduced-motion (mobile): the JS bails entirely under RM and the core
+   css/sections/shabbat-chatan.css RM block supplies the static stack. Make
+   sure our tuning can't promote a layer or fight that static read. */
 @media (max-width: 768px) and (prefers-reduced-motion: reduce) {
   .shabbat__media img {
+    will-change: auto;
     object-position: 0% 50%;
     transition: none;
   }

@@ -1,168 +1,102 @@
 /* =============================================================================
-   mobile/css/hero-static.css — hero CTAs as real pill buttons on phones
+   mobile/css/hero-static.css — IDENTICAL desktop hero composition on phones
    ---------------------------------------------------------------------------
-   Phase 3A (mobile pass 2026-06-08, rewritten 2026-06-08 v2 after
-   design-taste audit).
+   2026-06-11 mobile-fidelity pass (replaces the 2026-06-08 v2 "pill button"
+   approach).
 
-   Design read
-   -----------
-   The desktop hero is a 5-PNG layered composition. The events.webp and
-   resort.webp PNGs are baked-in *typographic marks* — they communicate
-   "EVENTS" / "RESORT" as a brand artefact, not as a tappable button.
-   On a 360px viewport rendered as a 56vw image (~200px wide × 70px
-   tall) they read as decoration, not as a CTA. The :hover scale + glow
-   only fires on mouse — touch users get nothing back.
+   Mandate: mobile must show the SAME 5-layer PNG composition as desktop, not a
+   substitute. The desktop hero (css/sections/hero-static.css) positions every
+   layer with %/vw/clamp values that scale down proportionally — and its former
+   ≤768px reposition block was removed (see that file + the §12 log), so on
+   phones the layers now inherit the EXACT desktop positions. This file adds
+   NOTHING that overrides their position/size; it only:
 
-   v2 fix
-   ------
-   On ≤768px we hide the bitmap PNG (decoration that doesn't translate)
-   and surface the <span class="hero-static__cta-label"> as a proper
-   pill button: brass-filled, ink-dark Hebrew label, 56dp tall,
-   active-state press-down, drop-shadow glow on focus. The base layer
-   + GAMOS mark + desert silhouette stay intact — the user still gets
-   the GAMOS atmosphere; the action is just clear now.
+     1. Keeps the real events.webp / resort.webp bitmaps VISIBLE (the old v2
+        hid them with img{inline-size:0} and painted brass pills — both gone).
+     2. Keeps .hero-static__cta-label visually-hidden (a sr-only a11y label the
+        loader still injects; never surfaced as a pill).
+     3. Styles the two transparent ≥48px tap overlays that /mobile/loader.js
+        injects (injectHeroTapZones) — the real EVENTS/RESORT bitmaps are
+        decorative typography occluded by the desert layer, so a dedicated
+        touch target sits ABOVE the desert (z=15, between desert z10 and cue
+        z20) and forwards the tap to the real <a> (whoosh + loading-overlay
+        flourish intact).
 
-   Why pills not text-only:
-   - Hebrew display type (Rubik 700) at text-2xl on the brass background
-     reads as a confident, premium CTA — same family as the desktop
-     headline, no font register break (per design-taste-frontend §4.1).
-   - Pill shape gives the eye a clear hit-target frame — Fitts' Law
-     (per mobile-design touch-psychology).
-   - Single accent color (--brass) means we don't violate the §5
-     palette discipline. No gradient, no AI-purple, no neon.
+   §4 logical properties (the % anchors mirror the desktop layers for exact
+   alignment, as that file documents as the hero's deliberate exception). §5 no
+   new colors. §13 self-contained — this file + loader.js only.
    ========================================================================== */
 
 @media (max-width: 768px) {
 
-  /* GAMOS mark — keep it small + tighter to the corner so the CTAs
-     have breathing room. */
-  .hero-static__layer--gamos {
-    top: 5%;
-    left: 5%;
-    width: clamp(110px, 28vw, 170px);
-  }
+  /* The real composition renders as-is. Nothing here repositions or hides the
+     gamos / events / resort / desert layers — they inherit desktop. */
 
-  /* Events / Resort: turn the <a> into a pill button. The PNG bitmap
-     gets hidden; the <span> becomes the visible label. */
-  .hero-static__layer--events,
-  .hero-static__layer--resort {
-    width: auto;                     /* shrink-wrap to label */
-    min-inline-size: 220px;          /* readable at 320px viewport */
-    inline-size: clamp(220px, 64vw, 320px);
-    /* Re-center via translateX only — the hero is static (v9, 2026-06-10);
-       the old Phase B rise (translateY on --p2) was removed. */
-    transform: translateX(-50%);
-    /* Pill shell. */
-    background: var(--brass);
-    color: var(--ink-deep);
-    border-radius: var(--radius-pill);
-    padding: 0;                       /* label owns the padding */
-    box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.35) inset,
-      0 12px 28px -10px rgba(83, 65, 51, 0.45),
-      0 2px 6px rgba(26, 20, 16, 0.18);
-    /* Active-state physical press confirmation. */
-    transition:
-      transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
-      box-shadow 220ms ease,
-      background 220ms ease;
-  }
-
-  /* Hide the bitmap PNG inside the CTA. The <span> now carries the
-     visible label. We set width:0 height:0 instead of display:none
-     so existing focus-ring + hover layouts that compute against the
-     <a>'s box don't break. */
-  .hero-static__layer--events > img,
-  .hero-static__layer--resort > img {
-    inline-size: 0;
-    block-size: 0;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  /* The label becomes the visible pill content. Override the desktop
-     visually-hidden rules. */
+  /* Belt-and-braces: the loader injects .hero-static__cta-label as a sr-only
+     label. Keep it clipped on mobile too (it is NOT a visible pill). */
   .hero-static__cta-label {
-    position: static;
-    inline-size: auto;
-    block-size: auto;
-    padding-block: 1rem;             /* 16px → ~56dp total height with line-height */
-    padding-inline: 1.75rem;
-    margin: 0;
-    overflow: visible;
-    clip: auto;
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
-    display: block;
-    text-align: center;
-    font-family: var(--font-display-he);
-    font-size: clamp(1.125rem, 4.6vw, 1.4rem);
-    font-weight: var(--fw-bold);
-    letter-spacing: 0.04em;
-    line-height: 1;
-    color: var(--ink-deep);
   }
 
-  /* Pin events vs resort vertically so they don't crowd. The desert
-     image hugs the bottom of the hero — keep CTAs above its top edge. */
-  .hero-static__layer--events { top: 30%; }
-  .hero-static__layer--resort { top: 46%; }
-
-  /* Touch press: the desktop :hover scale + glow doesn't fire on touch.
-     :active gives a real "I clicked" confirmation. */
-  .hero-static__layer--events:active,
-  .hero-static__layer--resort:active {
-    /* Compose: re-center + press-down scale (hero is static, v9). */
-    transform: translateX(-50%) scale(0.97);
-    background: var(--brass-deep);
-    color: var(--ivory);
+  /* ---------------------------------------------------------------------------
+     Transparent tap overlays (injected by loader.js injectHeroTapZones).
+     Mirror the desktop EVENTS/RESORT bands: left:50% + translateX(-50%),
+     width clamp(220px,22vw,360px) — but a comfortable 64vw touch band capped
+     so it stays over the bitmap. ≥48px in BOTH axes (WCAG §9). Sits above the
+     desert silhouette (z10) so the tap always lands even where the desert
+     paints over the typography. The real <a> stays clickable too; the overlay
+     just guarantees a finger-sized hit area.
+     --------------------------------------------------------------------------- */
+  .hero-static__tap {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    inline-size: clamp(220px, 64vw, 360px);
+    min-inline-size: 48px;
+    min-block-size: 48px;
+    block-size: clamp(56px, 12vh, 104px);
+    z-index: 15;
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-pill);
+    /* a faint press wash confirms the tap without moving the composition */
+    transition: background-color var(--dur-base, 220ms) var(--ease-out-cinema, ease);
+    -webkit-tap-highlight-color: transparent;
   }
-  .hero-static__layer--events:active .hero-static__cta-label,
-  .hero-static__layer--resort:active .hero-static__cta-label {
-    color: var(--ivory);
-  }
+  /* Vertically center each overlay on its layer band (desktop events 26%,
+     resort 37%; the bitmaps are ~70px tall so the band center sits a touch
+     below the layer's top edge). */
+  .hero-static__tap--events { inset-block-start: clamp(24%, 27%, 31%); }
+  .hero-static__tap--resort { inset-block-start: clamp(35%, 38%, 42%); }
 
-  /* Focus ring still uses --brass on ivory. Make it ink-deep on the
-     pill so it reads against the brass fill. */
-  .hero-static__layer--events:focus-visible,
-  .hero-static__layer--resort:focus-visible {
-    outline: 3px solid var(--ink-deep);
-    outline-offset: 3px;
+  .hero-static__tap:active {
+    background-color: color-mix(in srgb, var(--brass) 18%, transparent);
   }
-
-  /* The :hover sibling-dim rule from desktop hero CSS still fires when
-     :focus-visible is active — undo it for the pill so a focused CTA
-     doesn't half-fade its sibling on touch (the sibling becomes a
-     legibility problem, not a benefit). */
-  .hero-static:has(.hero-static__cta:focus-visible) .hero-static__cta:not(:focus-visible) {
-    opacity: 1;
-    filter: none;
+  .hero-static__tap:focus-visible {
+    outline: 3px solid var(--brass);
+    outline-offset: 2px;
   }
 }
 
-/* Smallest phones (320 viewport): tighten width + line height so the
-   label still reads at 1 line without orphan tail. */
+/* Smallest phones (≤380px): the band centers shift slightly as the layers
+   scale down; nudge so the overlays still cover the bitmaps. */
 @media (max-width: 380px) {
-  .hero-static__layer--events,
-  .hero-static__layer--resort {
-    inline-size: 70vw;
-    min-inline-size: 0;
-  }
-  .hero-static__cta-label {
-    font-size: 1.05rem;
-  }
-  .hero-static__layer--events { top: 32%; }
-  .hero-static__layer--resort { top: 48%; }
+  .hero-static__tap--events { inset-block-start: 26%; }
+  .hero-static__tap--resort { inset-block-start: 38%; }
+  .hero-static__tap { inline-size: 72vw; }
 }
 
-/* Reduced motion: kill the press-down. Color swap on :active is fine. */
+/* Reduced motion: freeze the press wash (color swap stays instant). */
 @media (max-width: 768px) and (prefers-reduced-motion: reduce) {
-  .hero-static__layer--events,
-  .hero-static__layer--resort {
-    transition: background 0.01ms ease, color 0.01ms ease;
-  }
-  .hero-static__layer--events:active,
-  .hero-static__layer--resort:active {
-    transform: translateX(-50%);  /* freeze the press-down */
+  .hero-static__tap {
+    transition: background-color 0.01ms linear;
   }
 }

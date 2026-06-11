@@ -1,0 +1,14 @@
+{
+  "scene": "culinary-mobile",
+  "frameCount": 361,
+  "frameUrl": "/assets/frames/culinary-mobile/frame_{NNNN}.webp",
+  "width": 960,
+  "height": 540,
+  "sourceVideo": "culinary-1080.mp4",
+  "sourceMtime": "2026-06-04T12:21:53.117Z",
+  "encoded": "2026-06-11T09:34:29.246Z",
+  "fpsExtracted": 24,
+  "scaleWidthPx": 960,
+  "webpQuality": 80,
+  "tier": "mobile"
+}

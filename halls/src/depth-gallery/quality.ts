@@ -34,7 +34,12 @@ export interface DownscaleLadder {
   radialSegments: number;
   /** Hard cap on accumulated trail points. Desktop 220 → mobile ~80. */
   maxTrailPoints: number;
-  /** Whether the head-particle pool runs at all (off on coarse pointer). */
+  /**
+   * Whether the head-particle pool runs at all. Always ON (2026-06-11
+   * mobile-fidelity pass — keep all 4 systems on mobile, tune-not-remove);
+   * capped small via maxHeadParticles on mobile. Only reduced-motion suppresses
+   * the particles (the master switch in TrailController, not this gate).
+   */
   headParticlesEnabled: boolean;
   /** Head-particle pool size where it DOES run. Desktop 18 → mobile 8. */
   maxHeadParticles: number;
@@ -103,9 +108,11 @@ export function detectQuality(): QualityProfile {
     maxTrailPoints: isMobile
       ? MOBILE_MAX_TRAIL_POINTS
       : DESKTOP_MAX_TRAIL_POINTS,
-    // Head particles are the cheapest thing to drop on a touch device and the
-    // first the plan calls out — kill them on coarse pointer.
-    headParticlesEnabled: !coarsePointer,
+    // Head particles (signature system #3) STAY ON for mobile (2026-06-11
+    // mobile-fidelity pass — keep all 4 systems, tune-not-remove). They're kept
+    // cheap by the small MOBILE_MAX_HEAD_PARTICLES cap + the unlit
+    // MeshBasicMaterial on coarse pointers. Only reduced-motion suppresses them.
+    headParticlesEnabled: true,
     maxHeadParticles: isMobile
       ? MOBILE_MAX_HEAD_PARTICLES
       : DESKTOP_MAX_HEAD_PARTICLES,

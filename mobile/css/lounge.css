@@ -1,111 +1,60 @@
 /* =============================================================================
-   mobile/css/lounge.css — coverflow on phones (v3 final)
+   mobile/css/lounge.css — the REAL 3D rotating ring on phones (v4)
    ---------------------------------------------------------------------------
-   v1: shrunk the 3D ring with a tighter perspective + radius override.
-       Result: the ring rotated correctly but at any one moment showed
-       only 3 cards in a horizontal line — read as "row of 3 photos",
-       not "ring of 8". The 3D depth was technically there but visually
-       invisible without continuous motion. Confirmed via Playwright
-       still-frame verification.
+   2026-06-11 mobile-fidelity pass (replaces the v3 "coverflow carousel").
 
-   v3: pivot to a horizontal scroll-snap COVERFLOW carousel — same
-       8 photos, same captions, same morning→midnight progression, but
-       a touch-native idiom that works in still frames AND under thumb.
-       Each card scaled 1.0 in the snap-aligned center, 0.86 + opacity
-       0.7 at the edges. The eye reads 3 cards at once with the focused
-       one a beat larger — that's coverflow's signature, native to iOS.
+   Mandate: mobile must run the SAME 3D ring as desktop — 8 photos on a Y-axis
+   perspective ring, rotated by touch-drag + fling + idle drift (js/lounge-
+   selector.js, which already binds unified PointerEvents + setPointerCapture +
+   IO-gated RAF, and whose .lounge__stage already has touch-action:pan-y). The
+   v3 coverflow hard-killed the ring (transform:none!important + flex scroll-
+   snap); that is GONE. The core grid fallback that used to also fire at
+   ≤767.98px was removed from css/sections/lounge.css (its prefers-reduced-
+   motion arm stays — the one allowed static fallback).
 
-       The ring JS (/js/lounge-selector.js) becomes a no-op visually:
-       its RAF still writes --lounge-rotation on the ring and per-item
-       --lounge-item-transform / --lounge-opacity, but the rules below
-       hard-override .lounge__ring transform to none and each item's
-       transform to scale() — so nothing the JS writes paints. No JS
-       changes to the core needed; this CSS owns the mobile experience
-       end-to-end. (The loader at /mobile/loader.js is a side-effect-
-       only shim that injects this stylesheet and does not touch the
-       lounge module.)
+   The only mobile problem the ring has is FIT: js computes radius
+   clamp(280, 38vw, 480) → floors at 280px on a 360px screen, so the ring's
+   projected extent (~±326px at the near point with perspective:2000) overflows
+   a 180px half-viewport. We cannot change the JS radius (core; no hook). So we
+   scale the PERSPECTIVE PARENT (.lounge__stage) — which carries NO JS-written
+   transform (js writes rotateY() on the .lounge__ring CHILD and
+   rotateY()/translateZ() on each item). Scaling the stage shrinks the whole
+   projected ring to fit while preserving rotation / drag / depth. Drag math
+   (px → deg) is scale-independent, so the gesture still feels 1:1.
 
-   Reduced-motion still falls back to the flat grid in
-   /css/sections/lounge.css.
+   Overflow math (read from css/sections/lounge.css + lounge-selector.js):
+     item width clamp(220, 22vw, 320) → 220px at 360vw (half 110px)
+     radius floor 280px ; perspective 2000 → nearScale ≈ 2000/1720 ≈ 1.16
+     worst half-extent ≈ 280·sin45° + 110·1.16 ≈ 198 + 128 ≈ 326px
+     × 0.6 → ≈196px vs 180px half-viewport ; the ~16px sliver at the worst
+     rotation angle is harmlessly clipped by .lounge{overflow:hidden} (a CSS
+     transform does NOT grow an ancestor's scrollWidth). Common front angles
+     fit with margin, so it still reads as a RING (varied depths), not a row.
+
+   §4 logical props (the unavoidable transform aside). §5 no new colors.
+   §13 self-contained. RM users get the core grid (guarded below).
    ========================================================================== */
 
-@media (max-width: 767.98px) and (prefers-reduced-motion: no-preference) {
+@media (max-width: 768px) and (prefers-reduced-motion: no-preference) {
 
-  /* Stage becomes a horizontal scroll-snap track. Drop perspective
-     entirely — coverflow's depth illusion comes from scale + opacity,
-     not perspective. */
+  /* Scale the perspective parent so the genuine 3D ring fits a phone. This is
+     the ONLY transform we touch — never .lounge__ring / .lounge__item (those
+     are the JS rotation/placement channels; overriding them would re-kill the
+     ring, which is the v3 bug we are removing). */
   .lounge__stage {
-    perspective: none;
-    block-size: auto;
-    cursor: auto;
-    touch-action: pan-y;
-    /* Reset flex from base CSS — we want a horizontal scroll container. */
-    display: block;
+    transform: scale(0.6);
+    transform-origin: center center;
+    /* Compress the reserved height so the 0.6-scaled ring sits snug instead of
+       leaving a tall empty gap (desktop reserves clamp(420px,64vh,720px)). */
+    block-size: clamp(300px, 44vh, 480px);
   }
 
-  .lounge__ring {
-    /* The RAF loop still writes --lounge-rotation here, but transform
-       below is hard-locked to none so the rotation is a no-op. The ring
-       becomes a flex row of cards with horizontal scroll-snap. */
-    position: relative;
-    transform: none !important;
-    transform-style: flat;
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    padding-block: 1rem;
-    padding-inline: calc(50% - 105px);     /* center first/last card on viewport */
-    overflow-x: auto;
-    overflow-y: visible;
-    scroll-snap-type: x mandatory;
-    scroll-snap-stop: always;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    block-size: auto;
-  }
-  .lounge__ring::-webkit-scrollbar { display: none; }
-
-  /* Each card: roughly 56vw wide, aspect 3/4 → ~75vw tall. Snap-aligned
-     to center so the focused card sits dead-center. Side cards scale
-     down + fade for the depth illusion. */
-  .lounge__item {
-    position: relative;
-    inset-block-start: auto;
-    inset-inline-start: auto;
-    margin: 0 !important;
-    flex: 0 0 auto;
-    inline-size: clamp(200px, 56vw, 280px);
-    aspect-ratio: 3 / 4;
-    transform: scale(0.86);
-    opacity: 0.7;
-    transition:
-      transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1),
-      opacity   420ms ease;
-    scroll-snap-align: center;
-    /* Defeat any inline transform/opacity the JS RAF wrote. */
-  }
-
-  /* :focus-within / :hover gives an interim "active" state. Real
-     coverflow needs IntersectionObserver to detect the centered card,
-     but as a CSS-only approximation this works for tap + keyboard
-     focus. */
-  .lounge__item:focus-within,
-  .lounge__item:hover {
-    transform: scale(1);
-    opacity: 1;
-  }
-
-  /* Captions sit at the bottom of each card with a soft gradient — the
-     desktop styling already handles this; we just bump the type down a
-     notch on phones. */
-  .lounge__item figcaption {
-    padding-block: var(--space-3);
-    padding-inline: var(--space-3);
-  }
+  /* The 0.6 scale shrinks captions too — bump them back up a notch so they
+     stay legible after the downscale. */
   .lounge__item figcaption h3 {
-    font-size: var(--text-md);
+    font-size: var(--text-2xl);
   }
   .lounge__item figcaption p {
-    font-size: var(--text-xs);
+    font-size: var(--text-lg);
   }
 }

@@ -196,22 +196,15 @@ img.hero-static__layer--gamos {
 }
 
 /* ---------------------------------------------------------------------------
-   Mobile (≤768px) — CTA repositioning. The translateX(-50%) centering is kept
-   so EVENTS/RESORT stay centered at narrow widths.
+   Mobile (≤768px) — NO repositioning (2026-06-11 mobile-fidelity pass).
+   The hero now renders the IDENTICAL desktop 5-layer composition on phones —
+   the layers are %-positioned + vw/clamp-sized so they scale down
+   proportionally. The former ≤768px CTA-reposition block was removed so mobile
+   inherits the exact desktop layer positions; ≥44px touch targets are provided
+   by transparent overlay anchors injected by /mobile/loader.js
+   (injectHeroTapZones) and styled in /mobile/css/hero-static.css.
+   (§13 rule-6 sanctioned migration — see Maintenance Log.)
    --------------------------------------------------------------------------- */
-@media (max-width: 768px) {
-  .hero-static__layer--gamos {
-    top: 5%;
-    left: 5%;
-    width: clamp(110px, 30vw, 180px);
-  }
-  .hero-static__layer--events,
-  .hero-static__layer--resort {
-    width: clamp(180px, 56vw, 260px);
-  }
-  .hero-static__layer--events { top: 22%; }
-  .hero-static__layer--resort { top: 32%; }
-}
 
 /* ---------------------------------------------------------------------------
    Reduced motion: only the idle falling-dot loop is animation. Freeze it.
