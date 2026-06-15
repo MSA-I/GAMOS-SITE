@@ -29,6 +29,7 @@ import * as scrollytelling      from "./scrollytelling.js"; // 2026-06-01 — GS
 import * as roomsGallery        from "./rooms-gallery.js";  // #rooms — חדרי נופש gallery (legacy, self-no-ops without [data-rooms-stage])
 import * as roomsDoor           from "./rooms-door.js";     // 2026-06-11 — #rooms door-opening transition → /rooms/dist/
 import * as loungeSelector      from "./lounge-selector.js";// #lounge — lounge selector
+import * as loungeLightbox      from "./lounge-lightbox.js";// 2026-06-15 — #lounge tap → fullscreen viewer (drag still rotates)
 import * as siteNavHoverReveal  from "./site-nav-hover-reveal.js"; // 2026-06-04 — hide site-nav while in hero
 import * as scrollSpy           from "./scroll-spy.js";     // .site-nav — aria-current scroll-spy
 import * as shabbatGallery     from "./shabbat-gallery.js";// 2026-06-09 — GSAP pinned mask-reveal; 2026-06-11 — pin now runs at all widths (mobile-fidelity)
@@ -67,6 +68,7 @@ const MODULES = [
   ["rooms-gallery",       roomsGallery],  // #rooms — חדרי נופש gallery (legacy, self-no-ops)
   ["rooms-door",          roomsDoor],     // #rooms — door-opening transition → /rooms/dist/
   ["lounge-selector",     loungeSelector],// #lounge — lounge selector
+  ["lounge-lightbox",     loungeLightbox],// #lounge — tap → fullscreen viewer (after selector; shares the stage's pointer events)
   ["scroll-spy",          scrollSpy],     // .site-nav — aria-current highlighting
 ];
 

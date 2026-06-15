@@ -63,30 +63,58 @@ function main() {
   const outMp4 = resolve(OUT_DIR, "door.mp4");
   const poster = resolve(OUT_DIR, "door-poster.webp");
 
-  console.log("[rooms-door] encoding door.mp4 (opaque H.264, crop only, no downscale, ×3, crf16) …");
+  console.log("[rooms-door] encoding door.mp4 (opaque H.264, crop, full→limited range, tagged bt709, ×3, crf16) …");
   ffmpeg([
     "-y", "-i", SRC,
-    // Crop only — NO scale → no YUV↔RGB resample that would shift/band the cream.
-    "-vf", `setpts=PTS/${SPEED},${CROP},format=yuv420p`,
+    // COLOUR-RANGE FIX (2026-06-15). The source is FULL-range (signalstats YMIN≈13,
+    // YMAX≈237 — outside the limited 16–235 band) but carries NO colour tags. Photoshop
+    // ignores tags and reads the raw full-range pixels → shows the TRUE cream. VLC +
+    // every browser honour the H.264 default for an untagged stream = LIMITED-range
+    // bt709, so they EXPAND already-full pixels (limited→full) and the cream washes out
+    // (true 197 → on-screen ~210) — that's the "door changes colour" the user saw.
+    //
+    // The fix is to CONVERT the pixels full→limited (so they sit in 16–235) AND tag the
+    // stream tv/bt709. Proven by ffmpeg round-trip: corrected clip, decoded the way a
+    // browser does (limited→full), reads cream ≈ c5b4aa ≈ the Photoshop-true c5b5a8.
+    //
+    // ⚠ An EARLIER attempt added `-color_range tv` WITHOUT the full→limited conversion —
+    // it merely LABELLED full-range pixels as limited, so decoders over-expanded them
+    // (cream 213→206) and someone wrongly concluded "tags are bad, leave it untagged".
+    // Untagged is the disease (browsers default to limited and mis-expand). The cure is
+    // CONVERT **and** TAG together — both halves below. Do NOT drop either half.
+    "-vf", `setpts=PTS/${SPEED},${CROP},scale=in_range=full:out_range=limited,format=yuv420p`,
     "-c:v", "libx264", "-profile:v", "high", "-pix_fmt", "yuv420p",
     "-preset", "slow", "-crf", "16", // near-visually-lossless (user: don't reduce quality)
-    // NO colour tags. The source is FULL-range + untagged; an earlier attempt to
-    // "stabilize" with `-color_range tv -colorspace bt709 …` made the browser apply
-    // a limited→full bt709 EXPANSION to already-full-range pixels, pulling the cream
-    // from ~213 down to ~206 (the visible shift the user reported, proven by browser
-    // canvas readback). Leaving the stream untagged makes the browser decode it the
-    // SAME way as the source → cream matches the still cut-out. Do NOT re-add `tv`.
-    "-an", "-movflags", "+faststart",
+    // Tag the converted (now limited-range) stream so every decoder reads it identically.
+    "-color_range", "tv",
+    "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709",
+    // Ask libx264 to stamp the colour fields into the SPS VUI too (the wrapper writes
+    // its own VUI back onto the stream). The DECODE-CRITICAL fields land correctly:
+    // colormatrix=bt709 (→ matrix 1) and fullrange=off (→ full 0) — these two alone
+    // govern the YUV→RGB math that was shifting the cream, and they verify correct.
+    // primaries+transfer stay "unspecified" in the colr box on this ffmpeg/x264 build
+    // (a muxer quirk — even a direct h264_metadata bsf stamp won't move them); that's
+    // HARMLESS, browsers default unspecified SDR primaries/transfer to bt709/sRGB.
+    // NOTE: x264 uses `fullrange=off` (NOT `range=tv`); the wrong name aborts the whole
+    // param string silently, so don't "simplify" it back.
+    "-x264-params", "colorprim=bt709:transfer=bt709:colormatrix=bt709:fullrange=off",
+    // +write_colr embeds the MP4 `colr` box so players that ignore the bitstream VUI
+    // (the gap that caused the cross-player mismatch) still see the colour space.
+    "-an", "-movflags", "+faststart+write_colr",
     outMp4,
   ]);
 
   // Poster = first frame (closed door), same crop, no downscale — the <video>
   // poster while it loads, matching the rest cut-out so there's no swap flash.
-  console.log("[rooms-door] encoding door-poster.webp …");
+  // Read the source as FULL-range (scale=in_range=full:out_range=full) before baking
+  // to RGB so the poster's pixels equal the TRUE cream the corrected door.mp4 now
+  // displays — otherwise the poster (baked from the untagged→assumed-limited decode)
+  // would show the OLD shifted cream and flash against the corrected first frame.
+  console.log("[rooms-door] encoding door-poster.webp (full-range read → true cream) …");
   ffmpeg([
     "-y", "-ss", "0", "-i", SRC,
     "-frames:v", "1",
-    "-vf", CROP,
+    "-vf", `${CROP},scale=in_range=full:out_range=full,format=rgb24`,
     "-c:v", "libwebp", "-quality", "92",
     poster,
   ]);

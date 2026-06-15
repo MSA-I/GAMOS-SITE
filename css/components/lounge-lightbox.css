@@ -1,0 +1,197 @@
+/* ===========================================================================
+   lounge-lightbox.css — fullscreen viewer for the #lounge ring (2026-06-15)
+   ---------------------------------------------------------------------------
+   js/lounge-lightbox.js builds this overlay on tap (a tap = pointer barely
+   moved; a drag still rotates the ring via lounge-selector.js). Full-viewport
+   ink-deep backdrop, image at object-fit:contain, caption (h3 + p) beneath,
+   prev/next arrows + close. RTL-first, logical properties, palette from §5
+   tokens only (no hard-coded colour/size). Fades via --dur-base/--ease-out-cinema;
+   reduced-motion collapses the transition (tokens already ~0ms under RM).
+   ========================================================================= */
+
+.lounge-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);            /* above sticky nav + overlays */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(var(--space-4), 5vw, var(--space-12));
+  background: color-mix(in srgb, var(--ink-deep) 92%, transparent);
+  backdrop-filter: blur(8px) saturate(0.95);
+  -webkit-backdrop-filter: blur(8px) saturate(0.95);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out-cinema);
+}
+
+.lounge-lightbox.is-open {
+  opacity: 1;
+}
+
+/* ----- Figure: image + caption stacked ----- */
+.lounge-lightbox__figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  max-inline-size: min(92vw, 1100px);
+  max-block-size: 90vh;
+}
+
+.lounge-lightbox__img {
+  display: block;
+  max-inline-size: 100%;
+  /* leave room for the caption beneath within the 90vh figure */
+  max-block-size: 74vh;
+  inline-size: auto;
+  block-size: auto;
+  object-fit: contain;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-strong);
+  background: var(--bg-cocoa);
+  /* gentle zoom-in as the box opens */
+  transform: scale(0.98);
+  transition: transform var(--dur-slow) var(--ease-out-cinema);
+}
+
+.lounge-lightbox.is-open .lounge-lightbox__img {
+  transform: scale(1);
+}
+
+/* ----- Caption ----- */
+.lounge-lightbox__caption {
+  text-align: center;
+  color: var(--ivory);
+  max-inline-size: 60ch;
+}
+
+.lounge-lightbox__title {
+  font-family: var(--font-display-he);
+  font-size: var(--text-xl);
+  font-weight: var(--fw-bold);
+  margin: 0 0 var(--space-1) 0;
+  color: var(--ivory);
+}
+
+.lounge-lightbox__desc {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--lh-normal);
+  margin: 0;
+  color: color-mix(in srgb, var(--ivory) 85%, transparent);
+}
+
+/* ----- Close button (top-inline-end) ----- */
+.lounge-lightbox__close {
+  position: absolute;
+  inset-block-start: clamp(var(--space-3), 3vw, var(--space-5));
+  inset-inline-end: clamp(var(--space-3), 3vw, var(--space-5));
+  inline-size: 38px;
+  block-size: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  line-height: 1;
+  color: var(--ivory);
+  background: color-mix(in srgb, var(--ink-deep) 50%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ivory) 28%, transparent);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out-cinema),
+              border-color var(--dur-fast) var(--ease-out-cinema),
+              transform var(--dur-fast) var(--ease-out-cinema);
+}
+
+.lounge-lightbox__close:hover,
+.lounge-lightbox__close:focus-visible {
+  background: color-mix(in srgb, var(--brass) 70%, transparent);
+  border-color: color-mix(in srgb, var(--brass) 60%, transparent);
+  color: var(--ink-deep);
+  transform: scale(1.06);
+}
+
+/* ----- Prev / next arrows ----- */
+.lounge-lightbox__nav {
+  position: absolute;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  inline-size: 40px;
+  block-size: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ivory);
+  background: color-mix(in srgb, var(--ink-deep) 50%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ivory) 28%, transparent);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out-cinema),
+              border-color var(--dur-fast) var(--ease-out-cinema),
+              transform var(--dur-fast) var(--ease-out-cinema);
+}
+
+.lounge-lightbox__nav:hover,
+.lounge-lightbox__nav:focus-visible {
+  background: color-mix(in srgb, var(--brass) 70%, transparent);
+  border-color: color-mix(in srgb, var(--brass) 60%, transparent);
+  color: var(--ink-deep);
+}
+
+/* Chevron glyph: a small square showing only its top + right PHYSICAL borders,
+   rotated so the open corner points toward the button's screen edge. Physical
+   borders (not logical) on purpose — logical border-inline-* flips under RTL and
+   was rotating the glyph to point DOWN. The buttons sit on fixed screen sides
+   (prev = right, next = left) regardless of writing direction, so physical is
+   correct here. */
+.lounge-lightbox__nav::before {
+  content: "";
+  inline-size: 9px;
+  block-size: 9px;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+}
+
+/* --prev sits on the RIGHT edge (inline-end in RTL); its chevron points RIGHT. */
+.lounge-lightbox__nav--prev {
+  inset-inline-end: clamp(var(--space-3), 2.5vw, var(--space-5));
+}
+.lounge-lightbox__nav--prev::before {
+  transform: rotate(45deg);
+  margin-inline-start: 3px; /* optical centering of the rotated glyph */
+}
+
+/* --next sits on the LEFT edge (inline-start in RTL); its chevron points LEFT. */
+.lounge-lightbox__nav--next {
+  inset-inline-start: clamp(var(--space-3), 2.5vw, var(--space-5));
+}
+.lounge-lightbox__nav--next::before {
+  transform: rotate(-135deg);
+  margin-inline-end: 3px; /* optical centering of the rotated glyph */
+}
+
+.lounge-lightbox__nav:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lounge-lightbox,
+  .lounge-lightbox__img,
+  .lounge-lightbox__close,
+  .lounge-lightbox__nav {
+    transition: none;
+  }
+  .lounge-lightbox__img {
+    transform: none;
+  }
+}
+
+/* Narrow viewports: keep the chrome compact + tighten the caption gap. The
+   38–40px controls already read fine on phones; no up-sizing (that was the
+   "ענקיים" bug). 40px nav meets the comfortable tap floor without dominating. */
+@media (max-width: 768px) {
+  .lounge-lightbox__figure {
+    gap: var(--space-3);
+  }
+}

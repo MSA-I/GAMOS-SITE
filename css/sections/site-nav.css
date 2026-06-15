@@ -262,11 +262,19 @@ html[data-hero-mode="true"][data-nav-revealed="true"] .site-nav__inner {
   opacity: 0;
   transition: opacity var(--dur-base) var(--ease-out-cinema);
   display: flex;
-  align-items: center;
   justify-content: center;
+  /* NOTE: do NOT use `align-items: center` here. With all ~15 links the inner
+     list is TALLER than the viewport; flex centering then overflows
+     SYMMETRICALLY and pushes the top items ABOVE the scroll origin where they
+     can't be reached (the bug: "can't scroll to the top items"). Instead the
+     inner block centers via `margin: auto` (see __inner) — it centers when the
+     content fits and collapses to 0 when it overflows, keeping the top
+     reachable. -webkit-overflow-scrolling gives momentum scroll on iOS. */
   padding-block: var(--space-24) var(--space-16);
   padding-inline: var(--gutter);
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .site-nav__mobile[hidden] {
@@ -280,6 +288,13 @@ html[data-hero-mode="true"][data-nav-revealed="true"] .site-nav__inner {
 .site-nav__mobile__inner {
   width: 100%;
   max-width: var(--container-narrow);
+  /* margin:auto (not the parent's align-items:center) does the vertical
+     centering. When the list fits, the auto top/bottom margins split the slack
+     evenly → centered. When it's taller than the scroll area, the auto margins
+     collapse to 0 → the list starts at the top and EVERY item is scroll-
+     reachable (incl. padding-block on the parent). This is the standard
+     overflow-safe centering pattern for a scrollable flex overlay. */
+  margin-block: auto;
   margin-inline: auto;
 }
 

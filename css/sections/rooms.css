@@ -381,7 +381,7 @@
 
 .rooms__door:hover .rooms__door-cue,
 .rooms__door:focus-visible .rooms__door-cue {
-  color: var(--accent-rose);
+  color: var(--brass);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -474,7 +474,7 @@
 
 .rooms__door .rooms-door__skip:hover,
 .rooms__door .rooms-door__skip:focus-visible {
-  color: var(--accent-rose);
+  color: var(--brass);
   outline: none;
 }
 

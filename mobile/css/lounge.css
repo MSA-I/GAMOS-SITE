@@ -49,12 +49,23 @@
     block-size: clamp(300px, 44vh, 480px);
   }
 
-  /* The 0.6 scale shrinks captions too — bump them back up a notch so they
-     stay legible after the downscale. */
+  /* Captions (2026-06-15 — typographic hierarchy fix).
+     The 0.6 stage scale shrinks the figcaption too, so an earlier pass bumped
+     both lines way up (h3 2xl/39px, p lg/25px). After the ×0.6 those render at
+     ~23px / ~15px — close enough in size that title and body read as ONE block
+     (the user's complaint: "שניהם אותו גודל"). We now (a) pull both DOWN so the
+     ring's captions don't shout over the photo, and (b) open a clear gap between
+     them — title stays a display weight, body drops to a lighter, smaller line.
+     Sizes are pre-downscale; ÷ the 0.6 stage scale gives the on-screen px. */
   .lounge__item figcaption h3 {
-    font-size: var(--text-2xl);
+    font-size: var(--text-xl);          /* 31px → ~19px on-screen (title) */
+    line-height: var(--lh-tight);
   }
   .lounge__item figcaption p {
-    font-size: var(--text-lg);
+    font-size: var(--text-base);        /* 16px → ~10px on-screen (supporting) */
+    font-weight: var(--fw-regular);
+    line-height: var(--lh-snug);
+    /* Soften the body so the eye lands on the title first. */
+    color: color-mix(in srgb, var(--ivory) 80%, transparent);
   }
 }
