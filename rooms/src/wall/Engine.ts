@@ -27,7 +27,7 @@ const INTRO_MS = 1200; // intro bloom duration
 /**
  * Engine — owns the Three.js Scene / Camera / Renderer + the group the pooled
  * cards live in, and drives the render loop. This is the phantom "lens" model:
- * the camera is FIXED in front of a concave paraboloid wall (FOV 52 @ z 16.5) and
+ * the camera is FIXED in front of a concave paraboloid wall (FOV 65 @ z 16.5) and
  * the Wall reads the pan offset directly + wraps the grid modulo (the group is NOT
  * translated). Clear colour is the §5 ink-deep (warm near-black) so the boot tone,
  * the IntroGate veil, and the first painted frame all match — no flash.
@@ -96,10 +96,10 @@ export default class Engine {
     this.scene = new THREE.Scene();
 
     const { clientWidth, clientHeight } = this.getViewportSize();
-    // Phantom lens camera: FOV 52 at z 16.5, looking at the origin. Far plane
+    // Phantom lens camera: FOV 65 at z 16.5, looking at the origin. Far plane
     // comfortably past the deepest rim card.
     this.camera = new THREE.PerspectiveCamera(
-      52,
+      65,
       clientWidth / clientHeight,
       0.1,
       200,
