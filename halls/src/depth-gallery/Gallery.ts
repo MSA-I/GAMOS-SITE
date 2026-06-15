@@ -432,7 +432,17 @@ export default class Gallery {
         this.pointerCurrent.y * PARALLAX_AMOUNT_Y * parallaxInfluence;
       const gestureOffsetY = this.driftCurrent * GESTURE_PARALLAX_AMOUNT_Y;
 
-      plane.position.x = data.baseX + parallaxOffsetX;
+      // SETTLE-TO-CENTRE — MOBILE ONLY (2026-06-15). On a narrow PORTRAIT phone
+      // an offset card's outer edge fell outside the frustum (~¾ of the photo
+      // showed). So on mobile a card sweeps in from its side offset (baseX) while
+      // faded, then as it becomes the ACTIVE card (opacity → 1) it eases to x=0 —
+      // fully centred and fully IN FRAME, so the whole photo is visible at the
+      // read moment; it drifts back to its side as it fades out. opacity is the
+      // blend factor, so the two cross-fading cards trade places through centre.
+      // DESKTOP keeps the original side-offset composition unchanged (settle=1):
+      // its wider frustum already shows the offset card acceptably.
+      const settle = this.isMobile ? (1 - opacity) : 1;
+      plane.position.x = data.baseX * settle + parallaxOffsetX;
       plane.position.y = data.baseY + parallaxOffsetY + gestureOffsetY;
       plane.position.z = this.getPlaneZ(i);
 
