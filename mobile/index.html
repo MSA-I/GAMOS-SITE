@@ -37,17 +37,20 @@
   <!-- Favicon — SVG primary; Agent 03 ships the rasterized 16/32/180 set later. -->
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 
-  <!-- Performance: preload LCP candidates (layered static hero — base + 4 layers) -->
-  <link rel="preload" as="image" type="image/webp"
-        href="/assets/images/hero/base.full.webp" fetchpriority="high">
-  <link rel="preload" as="image" type="image/webp"
-        href="/assets/images/hero/desert.full.webp" fetchpriority="high">
-  <link rel="preload" as="image" type="image/webp"
-        href="/assets/images/hero/gamos.webp">
-  <link rel="preload" as="image" type="image/webp"
-        href="/assets/images/hero/events.webp">
-  <link rel="preload" as="image" type="image/webp"
-        href="/assets/images/hero/resort.webp">
+  <!-- Performance: preload LCP candidates (v10 scroll hero — sky + desert subject).
+       subject is the LCP element; re-encoded from a 20MB PNG to responsive WebP
+       (1280/1920/2560/full = 68/164/290/1702 KB) 2026-06-15. The PNG remains as
+       the <picture> fallback for browsers without WebP. imagesrcset/imagesizes
+       let the preloader pick the same variant the <picture> will choose. -->
+  <link rel="preload" as="image" type="image/jpeg"
+        href="/assets/images/hero-scene/sky.jpg" fetchpriority="high">
+  <link rel="preload" as="image" type="image/webp" fetchpriority="high"
+        imagesrcset="/assets/images/hero-scene/subject-1280.webp 1280w,
+                     /assets/images/hero-scene/subject-1920.webp 1920w,
+                     /assets/images/hero-scene/subject-2560.webp 2560w,
+                     /assets/images/hero-scene/subject.webp 6240w"
+        imagesizes="100vw"
+        href="/assets/images/hero-scene/subject-1920.webp">
 
   <!-- Performance: preload shabbat-chatan panel-1 image (visible at section enter) -->
   <link rel="preload" as="image" type="image/webp"
@@ -126,7 +129,7 @@
   <link rel="stylesheet" href="/css/utilities.css">
 
   <!-- Stylesheets: per-section (one per architectural section, per Constitution §10.1) -->
-  <link rel="stylesheet" href="/css/sections/hero-static.css">
+  <link rel="stylesheet" href="/css/sections/hero-scene.css">
   <link rel="stylesheet" href="/css/sections/portals.css">
   <link rel="stylesheet" href="/css/sections/scroll-scene.css">
   <link rel="stylesheet" href="/css/sections/lounge.css">
@@ -155,13 +158,22 @@
   <link rel="stylesheet" href="/css/components/texture-text.css">
   <link rel="stylesheet" href="/css/components/site-nav-hover.css">
   <link rel="stylesheet" href="/css/components/lounge-lightbox.css">
+  <!-- Canonical button + caption systems. UNLAYERED + loaded LAST among the
+       component sheets so they win equal-specificity ties over the unlayered
+       section CSS without `!important` (2026-06-15 unify pass). -->
+  <link rel="stylesheet" href="/css/components/buttons.css">
+  <link rel="stylesheet" href="/css/components/media-caption.css">
 
-  <!-- GSAP + ScrollToPlugin + ScrollTrigger (self-hosted; powers cinematic
-       scroll + parallax in js/scrollytelling.js per video-to-website spec
-       AND the pinned mask-reveal in js/shabbat-gallery.js). -->
+  <!-- GSAP 3.15.0 (self-hosted; powers cinematic scroll + parallax in
+       js/scrollytelling.js, the pinned mask-reveal in js/shabbat-gallery.js,
+       AND the scroll-pinned hero in js/hero-scene.js).
+       DrawSVGPlugin + SplitText (now-free GSAP plugins) drive the hero's
+       letter-stroke-on + title word-stagger, exactly as the sandbox source. -->
   <script defer src="/assets/vendor/gsap.min.js"></script>
   <script defer src="/assets/vendor/ScrollToPlugin.min.js"></script>
   <script defer src="/assets/vendor/ScrollTrigger.min.js"></script>
+  <script defer src="/assets/vendor/DrawSVGPlugin.min.js"></script>
+  <script defer src="/assets/vendor/SplitText.min.js"></script>
 
   <!-- Leaflet (self-hosted, ~42KB; Constitution §2 — directions map ONLY).
        Powers the branded interactive #routes "מסלולי הגעה" map in
@@ -231,81 +243,150 @@
   <main id="main-content">
 
     <!-- ====================================================================
-         #hero — Static composition hero (v9, 2026-06-10)
-         100vh section. NO scroll-driven motion: the previous two-phase rise
-         (desert-rises-first then everything lifts together, driven by
-         --scene-progress) was removed per user request — it was buggy and
-         didn't deliver the intended effect. The hero is now ONE frozen
-         composition that simply scrolls out of the viewport as a single unit
-         in normal document flow; #lounge follows beneath it. The 5-layer
-         z-order / composition is preserved exactly.
+         #hero — Cinematic scroll-pinned hero (REBUILT 2026-06-15)
+         VERBATIM vanilla port of the findrealestate sandbox hero. 500vh scroll
+         track; the inner .hero_top (sticky 100vh) pins the layers while you
+         scroll, and GSAP ScrollTrigger (js/hero-scene.js) scrubs the layers.
+         Source class names (.hero_root/.hero_top/… , .gamos-hero/.gamos-cue)
+         are copied 1:1 from the sandbox. See CLAUDE.md §3.
 
-         Layers (z-order bottom→top, see hero-static.css):
-           1. base   (שכבה 2.png)   z=1   ivory + bottom wave
-           2. gamos  (GAMOS 1.png)  z=2   decorative, top-left
-           3. events (EVENT 1.png)  z=3   CTA → /halls/dist/events/  (covered by desert)
-           4. resort (RESORT 2.png) z=4   CTA → /halls/dist/resort/ (covered by desert)
-           5. desert (מדבר.png)     z=10  TOPMOST — covers EVENTS / RESORT typography
+         Layers (z-order bottom→top, see css/sections/hero-scene.css):
+           0. hero_back      (sky.jpg)     sky, object-fit:cover
+           1. hero_house     (subject.png) desert — rises (y:-40%) + grows (1.3)
+           1. hero_composite (subject.png) 2nd desert copy MASKED by the logo
+                                            letters → letters fill with the dune
+           2. hero_clouds    (clouds.png)  ×2, spread L/R on scroll
+           1. hero_logo      (logo.svg)    white-stroke outline (drawSVG strokes
+                                            it on) → crossfades to hero_composite
+           3. hero_smoke     (smoke.png)   rises from the bottom (translateY 70→0)
+           3. hero_overlay   (gradient)    fades to ivory for a seamless join
+              hero_content   eyebrow + 2-line title (SplitText stagger) + subtitle
+          20. gamos-cue      brass pill + falling dot → #hall-portal
 
-         No data-scrub attributes → js/scroll-scene.js does not register the
-         section, so --scene-progress is never written. The window.gamosHero
-         stub (js/hero-static.js) still reports scroll position to side-dot-nav
-         and portals via its own getBoundingClientRect math.
+         js/hero-scene.js builds the verbatim GSAP scrub + entrance timelines,
+         injects the logo outline + mask, installs the window.gamosHero stub
+         (progress over the 500vh → side-dot-nav + portals), and routes the
+         composer's EVENTS/RESORT CTAs.
     ==================================================================== -->
-    <section id="hero" class="hero-static"
-             aria-label="פתיחה">
-      <div class="hero-static__pin">
+    <section id="hero" class="hero_root" aria-label="פתיחה">
+      <div class="hero_top">
+        <div class="hero_bg">
 
-        <picture class="hero-static__layer hero-static__layer--base">
-          <source type="image/webp"
-                  srcset="/assets/images/hero/base.half.webp 1024w,
-                          /assets/images/hero/base.full.webp 2048w"
-                  sizes="100vw">
-          <img src="/assets/images/hero/base.full.jpg"
-               alt="" fetchpriority="high" decoding="async">
-        </picture>
+          <div class="hero_back">
+            <img src="/assets/images/hero-scene/sky.jpg" alt="" decoding="async" fetchpriority="high">
+          </div>
 
-        <img class="hero-static__layer hero-static__layer--gamos"
-             src="/assets/images/hero/gamos.webp"
-             alt="GAMOS"
-             decoding="async" fetchpriority="high">
+          <div class="hero_house">
+            <picture>
+              <source type="image/webp"
+                      srcset="/assets/images/hero-scene/subject-1280.webp 1280w,
+                              /assets/images/hero-scene/subject-1920.webp 1920w,
+                              /assets/images/hero-scene/subject-2560.webp 2560w,
+                              /assets/images/hero-scene/subject.webp 6240w"
+                      sizes="100vw">
+              <img src="/assets/images/hero-scene/subject.png" alt=""
+                   width="6240" height="1599" loading="eager" decoding="async" fetchpriority="high">
+            </picture>
+          </div>
 
-        <a class="hero-static__layer hero-static__layer--events hero-static__cta"
-           href="/halls/dist/events/"
-           data-hero-link="venue"
-           aria-label="כניסה לאולם האירועים">
-          <img src="/assets/images/hero/events.webp"
-               alt="EVENTS"
-               decoding="async" fetchpriority="high">
-        </a>
+          <!-- second copy of the desert, masked by the logo letters -->
+          <div class="hero_composite">
+            <div class="hero_house">
+              <picture>
+                <source type="image/webp"
+                        srcset="/assets/images/hero-scene/subject-1280.webp 1280w,
+                                /assets/images/hero-scene/subject-1920.webp 1920w,
+                                /assets/images/hero-scene/subject-2560.webp 2560w,
+                                /assets/images/hero-scene/subject.webp 6240w"
+                        sizes="100vw">
+                <img src="/assets/images/hero-scene/subject.png" alt=""
+                     width="6240" height="1599" loading="eager" decoding="async">
+              </picture>
+            </div>
+          </div>
 
-        <a class="hero-static__layer hero-static__layer--resort hero-static__cta"
-           href="/halls/dist/resort/"
-           data-hero-link="resort"
-           aria-label="כניסה לריזורט">
-          <img src="/assets/images/hero/resort.webp"
-               alt="RESORT"
-               decoding="async" fetchpriority="high">
-        </a>
+          <div class="hero_clouds">
+            <div class="hero_cloud">
+              <img src="/assets/images/hero-scene/clouds.png" alt="" decoding="async">
+            </div>
+            <div class="hero_cloud">
+              <img src="/assets/images/hero-scene/clouds.png" alt="" decoding="async">
+            </div>
+          </div>
 
-        <picture class="hero-static__layer hero-static__layer--desert">
-          <source type="image/webp"
-                  srcset="/assets/images/hero/desert.half.webp 1024w,
-                          /assets/images/hero/desert.full.webp 2048w"
-                  sizes="100vw">
-          <img src="/assets/images/hero/desert.full.webp"
-               alt="" decoding="async" loading="eager">
-        </picture>
+          <!-- logo outline (white stroke); SVG injected from logo.svg by hero-scene.js -->
+          <div class="hero_logo"></div>
 
-        <!-- Scroll cue (matches /press/ hero): pill outline + falling brass
-             dot. Sits at the bottom of the hero. Clicking it smooth-scrolls
-             to the next section (#lounge) via its href + scroll-behavior. -->
-        <a class="hero-static__cue" href="#lounge" aria-label="גלול לסקציה הבאה">
-          <span class="hero-static__cue-track" aria-hidden="true">
-            <span class="hero-static__cue-dot"></span>
+          <div class="hero_smoke">
+            <img src="/assets/images/hero-scene/smoke.png" alt="" decoding="async">
+          </div>
+        </div>
+
+        <div class="hero_content">
+          <p class="hero_eyebrow">מישור אדומים • צעד מירושלים</p>
+          <div class="hero_title" dir="rtl">
+            <h1>על קצה המדבר,<br><span class="accent">רגע שיישאר איתכם.</span></h1>
+          </div>
+          <p class="hero_text">גני אירועים וריזורט, מול נוף שלא צריך הסבר.</p>
+        </div>
+
+        <!-- Scroll cue: brass pill + falling dot → #hall-portal (sandbox .gamos-cue) -->
+        <a class="gamos-cue" href="#hall-portal" aria-label="גלול לסקציה הבאה">
+          <span class="gamos-cue__track" aria-hidden="true">
+            <span class="gamos-cue__dot"></span>
           </span>
         </a>
 
+      </div>
+
+      <!-- off-screen smoke/overlay overlap (mirrors the sandbox hero_overlap) -->
+      <div class="hero_overlap">
+        <div class="hero_smoke">
+          <img src="/assets/images/hero-scene/smoke.png" alt="" decoding="async">
+        </div>
+        <div class="hero_overlay"></div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         #hall-portal — interactive composer (the sandbox's "section after the
+         hero"). VERBATIM port of the sandbox .gamos-hero block. Sits BETWEEN
+         #hero and #lounge: GAMOS base image + EVENTS / RESORT wordmark CTAs
+         (hover-bulge + dim-siblings via :has()) + brass prompt + scroll cue.
+         The two CTAs route to the real /halls/dist/{events,resort}/ sub-apps
+         (whoosh + loading overlay) via js/hero-scene.js [data-hero-link].
+    ==================================================================== -->
+    <section id="hall-portal" aria-label="בחירת תצוגת אולם">
+      <div class="gamos-hero">
+        <img class="gamos-hero__base" src="/assets/images/hero-scene/base.png" alt="" aria-hidden="true">
+        <img class="gamos-hero__logo" src="/assets/images/hero/gamos.webp" alt="GAMOS">
+
+        <div class="gamos-hero__prompt" aria-hidden="true">
+          <span class="gamos-hero__prompt-text">לחצו כדי לבחור תצוגת אולם</span>
+          <span class="gamos-hero__prompt-line" aria-hidden="true"></span>
+          <span class="gamos-hero__prompt-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 9l7 7 7-7"/></svg>
+          </span>
+        </div>
+
+        <a class="gamos-hero__cta gamos-hero__cta--events"
+           href="/halls/dist/events/"
+           data-hero-link="venue"
+           aria-label="כניסה לאולם האירועים">
+          <img src="/assets/images/hero/events.webp" alt="EVENTS" decoding="async">
+        </a>
+        <a class="gamos-hero__cta gamos-hero__cta--resort"
+           href="/halls/dist/resort/"
+           data-hero-link="resort"
+           aria-label="כניסה לריזורט">
+          <img src="/assets/images/hero/resort.webp" alt="RESORT" decoding="async">
+        </a>
+
+        <a class="gamos-cue" href="#lounge" aria-label="גלול לסקציה הבאה">
+          <span class="gamos-cue__track" aria-hidden="true">
+            <span class="gamos-cue__dot"></span>
+          </span>
+        </a>
       </div>
     </section>
 
@@ -489,10 +570,10 @@
               <source type="image/webp" srcset="/assets/images/culinary/01.full.webp">
               <img src="/assets/images/culinary/01.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מדליוני בקר צלויים ברוטב יין על צלחת לבנה">
             </picture>
-            <figcaption class="culinary__item-caption">
-              <span class="culinary__item-tag">עיקרית</span>
-              <h3 class="culinary__item-name">מדליוני בקר</h3>
-              <p class="culinary__item-desc">נתח רך, צלייה מדויקת ורוטב יין כהה.</p>
+            <figcaption class="media-caption culinary__item-caption">
+              <span class="media-caption__tag culinary__item-tag">עיקרית</span>
+              <h3 class="media-caption__title culinary__item-name">מדליוני בקר</h3>
+              <p class="media-caption__body culinary__item-desc">נתח רך, צלייה מדויקת ורוטב יין כהה.</p>
             </figcaption>
           </li>
           <li class="culinary__item">
@@ -500,10 +581,10 @@
               <source type="image/webp" srcset="/assets/images/culinary/05.full.webp">
               <img src="/assets/images/culinary/05.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="קרודו דג לבן בשמן זית, צ'ילי, צנונית ובצל ירוק">
             </picture>
-            <figcaption class="culinary__item-caption">
-              <span class="culinary__item-tag">ראשונה</span>
-              <h3 class="culinary__item-name">קרודו דג לבן</h3>
-              <p class="culinary__item-desc">פרוסות דג טרי בשמן זית, צ'ילי וצנונית.</p>
+            <figcaption class="media-caption culinary__item-caption">
+              <span class="media-caption__tag culinary__item-tag">ראשונה</span>
+              <h3 class="media-caption__title culinary__item-name">קרודו דג לבן</h3>
+              <p class="media-caption__body culinary__item-desc">פרוסות דג טרי בשמן זית, צ'ילי וצנונית.</p>
             </figcaption>
           </li>
           <li class="culinary__item">
@@ -511,10 +592,10 @@
               <source type="image/webp" srcset="/assets/images/culinary/07.full.webp">
               <img src="/assets/images/culinary/07.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מאפה פילו פריך בפיזור פיסטוק על מצע לבן">
             </picture>
-            <figcaption class="culinary__item-caption">
-              <span class="culinary__item-tag">פתיחה</span>
-              <h3 class="culinary__item-name">פילו ופיסטוק</h3>
-              <p class="culinary__item-desc">מאפה פריך, סירופ חם ופיסטוק קצוץ.</p>
+            <figcaption class="media-caption culinary__item-caption">
+              <span class="media-caption__tag culinary__item-tag">פתיחה</span>
+              <h3 class="media-caption__title culinary__item-name">פילו ופיסטוק</h3>
+              <p class="media-caption__body culinary__item-desc">מאפה פריך, סירופ חם ופיסטוק קצוץ.</p>
             </figcaption>
           </li>
           <li class="culinary__item">
@@ -522,10 +603,10 @@
               <source type="image/webp" srcset="/assets/images/culinary/10.full.webp">
               <img src="/assets/images/culinary/10.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="קרפצ'יו סלמון בקערה רחבה עם צ'ילי וצנוניות">
             </picture>
-            <figcaption class="culinary__item-caption">
-              <span class="culinary__item-tag">פתיחה</span>
-              <h3 class="culinary__item-name">קרפצ'יו סלמון</h3>
-              <p class="culinary__item-desc">פרוסות דקות בשמן הדרים, צ'ילי וצנוניות.</p>
+            <figcaption class="media-caption culinary__item-caption">
+              <span class="media-caption__tag culinary__item-tag">פתיחה</span>
+              <h3 class="media-caption__title culinary__item-name">קרפצ'יו סלמון</h3>
+              <p class="media-caption__body culinary__item-desc">פרוסות דקות בשמן הדרים, צ'ילי וצנוניות.</p>
             </figcaption>
           </li>
           <li class="culinary__item">
@@ -533,10 +614,10 @@
               <source type="image/webp" srcset="/assets/images/culinary/12.full.webp">
               <img src="/assets/images/culinary/12.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="אנטריקוט על האש עם תפוחי אדמה חרוכים ושיפוד ירקות">
             </picture>
-            <figcaption class="culinary__item-caption">
-              <span class="culinary__item-tag">על האש</span>
-              <h3 class="culinary__item-name">אנטריקוט על האש</h3>
-              <p class="culinary__item-desc">נתח על הגריל, תפוחי אדמה חרוכים ושיפוד ירקות.</p>
+            <figcaption class="media-caption culinary__item-caption">
+              <span class="media-caption__tag culinary__item-tag">על האש</span>
+              <h3 class="media-caption__title culinary__item-name">אנטריקוט על האש</h3>
+              <p class="media-caption__body culinary__item-desc">נתח על הגריל, תפוחי אדמה חרוכים ושיפוד ירקות.</p>
             </figcaption>
           </li>
           <li class="culinary__item">
@@ -544,10 +625,10 @@
               <source type="image/webp" srcset="/assets/images/culinary/13.full.webp">
               <img src="/assets/images/culinary/13.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="פילה בקר ברוטב דובדבנים עם שעועית ירוקה ובצל מקורמל">
             </picture>
-            <figcaption class="culinary__item-caption">
-              <span class="culinary__item-tag">עיקרית</span>
-              <h3 class="culinary__item-name">פילה בקר ודובדבנים</h3>
-              <p class="culinary__item-desc">נתח רך ברוטב דובדבנים, שעועית ובצל מקורמל.</p>
+            <figcaption class="media-caption culinary__item-caption">
+              <span class="media-caption__tag culinary__item-tag">עיקרית</span>
+              <h3 class="media-caption__title culinary__item-name">פילה בקר ודובדבנים</h3>
+              <p class="media-caption__body culinary__item-desc">נתח רך ברוטב דובדבנים, שעועית ובצל מקורמל.</p>
             </figcaption>
           </li>
           <li class="culinary__item">
@@ -555,10 +636,10 @@
               <source type="image/webp" srcset="/assets/images/culinary/14.full.webp">
               <img src="/assets/images/culinary/14.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="סלט עלים ירוקים עם פלחי תפוח ירוק וקראנץ' כהה">
             </picture>
-            <figcaption class="culinary__item-caption">
-              <span class="culinary__item-tag">סלט</span>
-              <h3 class="culinary__item-name">סלט עלים ותפוח</h3>
-              <p class="culinary__item-desc">עלים ירוקים, פלחי תפוח ירוק ופצפוצי קראנץ'.</p>
+            <figcaption class="media-caption culinary__item-caption">
+              <span class="media-caption__tag culinary__item-tag">סלט</span>
+              <h3 class="media-caption__title culinary__item-name">סלט עלים ותפוח</h3>
+              <p class="media-caption__body culinary__item-desc">עלים ירוקים, פלחי תפוח ירוק ופצפוצי קראנץ'.</p>
             </figcaption>
           </li>
           <li class="culinary__item">
@@ -566,10 +647,10 @@
               <source type="image/webp" srcset="/assets/images/culinary/15.full.webp">
               <img src="/assets/images/culinary/15.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="גליל פילו פריך על מצע סלק עם נבטים ושומשום שחור">
             </picture>
-            <figcaption class="culinary__item-caption">
-              <span class="culinary__item-tag">ראשונה</span>
-              <h3 class="culinary__item-name">גליל פילו על סלק</h3>
-              <p class="culinary__item-desc">עטיפת פילו פריכה על מצע סלק עם נבטים.</p>
+            <figcaption class="media-caption culinary__item-caption">
+              <span class="media-caption__tag culinary__item-tag">ראשונה</span>
+              <h3 class="media-caption__title culinary__item-name">גליל פילו על סלק</h3>
+              <p class="media-caption__body culinary__item-desc">עטיפת פילו פריכה על מצע סלק עם נבטים.</p>
             </figcaption>
           </li>
           <li class="culinary__item">
@@ -577,10 +658,10 @@
               <source type="image/webp" srcset="/assets/images/culinary/16.full.webp">
               <img src="/assets/images/culinary/16.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="קרפצ'יו בקר בשמן זית עם רוקט, שום ובלסמי">
             </picture>
-            <figcaption class="culinary__item-caption">
-              <span class="culinary__item-tag">פתיחה</span>
-              <h3 class="culinary__item-name">קרפצ'יו בקר</h3>
-              <p class="culinary__item-desc">פרוסות דקות בשמן זית, רוקט, שום ובלסמי.</p>
+            <figcaption class="media-caption culinary__item-caption">
+              <span class="media-caption__tag culinary__item-tag">פתיחה</span>
+              <h3 class="media-caption__title culinary__item-name">קרפצ'יו בקר</h3>
+              <p class="media-caption__body culinary__item-desc">פרוסות דקות בשמן זית, רוקט, שום ובלסמי.</p>
             </figcaption>
           </li>
         </ul>
@@ -934,13 +1015,13 @@
       </div>
 
       <div class="testimonials__controls" role="group" aria-label="ניווט המלצות">
-        <button type="button" class="testimonials__btn testimonials__btn--prev"
+        <button type="button" class="btn btn--icon testimonials__btn testimonials__btn--prev"
                 data-slider-prev
                 aria-label="המלצה קודמת">
           <span aria-hidden="true">‹</span>
         </button>
         <div class="testimonials__dots" data-slider-dots aria-label="ניווט שקופיות"></div>
-        <button type="button" class="testimonials__btn testimonials__btn--next"
+        <button type="button" class="btn btn--icon testimonials__btn testimonials__btn--next"
                 data-slider-next
                 aria-label="המלצה הבאה">
           <span aria-hidden="true">›</span>
@@ -1239,7 +1320,7 @@
 
             <div class="contact__submit-wrap"
                  data-reveal="slide-right" style="--reveal-delay: 480ms;">
-              <button type="submit" class="contact__submit">שליחת פרטים ותיאום סיור במתחם</button>
+              <button type="submit" class="btn btn--filled btn--primary-lg contact__submit">שליחת פרטים ותיאום סיור במתחם</button>
               <p class="contact__feedback" role="status" aria-live="polite"></p>
             </div>
           </form>
@@ -1379,13 +1460,13 @@
               </p>
               <p class="directions__address">די זהב 7, מישור אדומים, מעלה אדומים</p>
               <div class="directions__cta-row">
-                <a class="directions__cta directions__cta--waze" data-directions-waze
+                <a class="btn directions__cta directions__cta--waze" data-directions-waze
                    href="https://ul.waze.com/ul?preview_venue_id=23134526.231607403.655613&navigate=yes"
                    target="_blank" rel="noopener noreferrer">נווטו ב-Waze</a>
-                <a class="directions__cta directions__cta--maps" data-directions-google
+                <a class="btn directions__cta directions__cta--maps" data-directions-google
                    href="https://www.google.com/maps/dir/?api=1&destination=31.7878076,35.3371583"
                    target="_blank" rel="noopener noreferrer">Google Maps</a>
-                <a class="directions__cta directions__cta--wa" data-directions-wa
+                <a class="btn directions__cta directions__cta--wa" data-directions-wa
                    href="https://wa.me/972779972343?text=%D7%A9%D7%9C%D7%95%D7%9D%2C%20%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A7%D7%91%D7%9C%20%D7%94%D7%A0%D7%97%D7%99%D7%95%D7%AA%20%D7%94%D7%92%D7%A2%D7%94%20%D7%9C%D7%92%D7%90%D7%9E%D7%95%D7%A1."
                    target="_blank" rel="noopener noreferrer">שאלו בוואטסאפ</a>
               </div>

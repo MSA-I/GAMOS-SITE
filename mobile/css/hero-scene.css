@@ -1,0 +1,21 @@
+/* =============================================================================
+   mobile/css/hero-scene.css — scroll hero (REBUILT 2026-06-15)
+   ---------------------------------------------------------------------------
+   INTENTIONALLY (almost) EMPTY. The hero is a verbatim 1:1 port of the
+   findrealestate sandbox, whose every dimension is driven by a viewport-
+   responsive rem-base (`--rem: 2.6666666667vw` < 768px, scoped on #hero.hero_root
+   in css/sections/hero-scene.css). That means the WHOLE composition already
+   scales proportionally on phones exactly as it does in the source — the
+   sandbox itself ships NO separate mobile hero stylesheet. So there are no
+   @media overrides to add here; adding fixed sizes would only fight the
+   responsive rem math and break fidelity (§13 rule 8 — preserve the experience).
+
+   This file stays registered in /mobile/loader.js (MOBILE_CSS) as the seam for
+   any future phone-only hero tweak; keep all such rules inside the @media below.
+   ========================================================================= */
+
+@media (max-width: 768px) {
+  /* No overrides — the viewport-responsive --rem base handles phone scaling.
+     (The composer EVENTS/RESORT routing to -mobile sub-app builds is handled in
+     /mobile/loader.js applyMobileRoutes against .gamos-hero__cta--*.) */
+}

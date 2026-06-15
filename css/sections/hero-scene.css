@@ -1,0 +1,272 @@
+/* ===========================================================================
+   hero-scene.css — cinematic scroll-pinned hero (REBUILT 2026-06-15)
+   ---------------------------------------------------------------------------
+   VERBATIM 1:1 PORT of the findrealestate sandbox hero
+   (`…/findrealestate-clone - עותק/`):
+     • `.hero_*` layer rules ← `_next/static/css/f46e979614fc3394.css`
+     • `.gamos-*` composer/cue/prompt rules ← `_next/static/css/a463080343a8b988.css`
+   Class names are copied from the source (user directive 2026-06-15). Verified
+   no collision elsewhere in the repo (`.gamos-cue`/`.gamos-hero` were NOT used
+   by /press/ — the earlier "collision" note was stale).
+
+   REM-BASE: the sandbox drives every hero `rem` from a viewport-responsive root
+   font-size — `html{font-size:2.6666666667vw}` (<768) → `0.5208333333vw`
+   (≥768) → `10px` (≥1920). GAMOS-SITE's global root is locked at 16px (base.css),
+   so we reproduce the sandbox's exact pixel geometry with a scoped custom
+   property `--rem` and write every source `Xrem` as `calc(X * var(--rem))`.
+   This is root-independent (no `em` compounding) → pixel-identical at every
+   width to the sandbox. (--rem 0.5208333vw = 7.5px @1440 = sandbox @1440.)
+
+   The whole block is unlayered → it wins over base.css's `@layer base` media
+   reset (`img{height:auto}`) without `!important`, so `.hero_house img{height:100%}`
+   etc. take effect exactly as in the sandbox.
+   ========================================================================= */
+
+/* ----- scoped responsive rem-base (mirrors sandbox html{font-size}) -------- */
+#hero.hero_root { --rem: 2.6666666667vw; }
+@media (min-width: 768px)  { #hero.hero_root { --rem: 0.5208333333vw; } }
+@media (min-width: 1920px) { #hero.hero_root { --rem: 10px; } }
+
+/* ----------------------------------------------------------- ROOT / PIN ---- */
+/* sandbox: height 350vh (<768) / 500vh (≥768); margin-bottom:-100vh.
+   We add background+isolation+z-index so the hero sits cleanly above the site
+   chrome and the cream join to #hall-portal is seamless. visibility:hidden →
+   GSAP entrance autoAlpha reveals (JS also force-reveals as a safety net). */
+.hero_root {
+  position: relative;
+  height: 350vh;
+  margin-bottom: -100vh;
+  background: var(--ivory);
+  isolation: isolate;
+  z-index: 110;
+  visibility: hidden;
+}
+@media (min-width: 768px) { .hero_root { height: 500vh; } }
+
+.hero_top { position: sticky; top: 0; height: 100vh; }
+
+.hero_bg { overflow: hidden; pointer-events: none; }
+.hero_back,
+.hero_bg { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+.hero_back img { width: 100%; height: 100%; object-fit: cover; object-position: center center; max-width: none; }
+
+/* desert subject — rises (y:-40%) + grows (scale:1.3) on scroll */
+.hero_house {
+  position: absolute; top: 60vh; left: 0; right: 0;
+  height: calc(33.4 * var(--rem)); z-index: 1; transform-origin: bottom center;
+}
+@media (min-width: 768px) { .hero_house { height: calc(170.8 * var(--rem)); } }
+/* <picture> wrapper (index.html ships responsive WebP) must fill the house so the
+   inner <img>'s height:100% resolves against the full house box, not the picture's
+   intrinsic height. Without this the desert collapses to ~369px. */
+.hero_house picture { display: block; width: 100%; height: 100%; }
+.hero_house img { width: 100%; height: 100%; object-fit: contain; max-width: none; }
+
+/* second desert copy, MASKED by the logo letters (mask data-URI injected by JS,
+   so the letters "fill" with the desert texture). opacity:0 → revealed on scroll. */
+.hero_composite {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; opacity: 0;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center center; mask-position: center center;
+  -webkit-mask-size: calc(97.7 * var(--rem)) calc(35.4 * var(--rem));
+  mask-size: calc(97.7 * var(--rem)) calc(35.4 * var(--rem));
+}
+
+.hero_clouds { top: 0; left: 0; right: 0; bottom: 0; }
+.hero_cloud,
+.hero_clouds { position: absolute; z-index: 2; }
+.hero_cloud:first-child {
+  top: calc(33.7 * var(--rem)); left: calc(-57.2 * var(--rem));
+  width: calc(70.2 * var(--rem)); height: calc(29.8 * var(--rem));
+}
+@media (min-width: 768px) {
+  .hero_cloud:first-child { top: 25%; left: calc(-33.72 * var(--rem)); width: calc(112.4 * var(--rem)); height: calc(47.7 * var(--rem)); }
+}
+.hero_cloud:last-child {
+  top: calc(37.12 * var(--rem)); right: calc(-41.2 * var(--rem));
+  width: calc(55.7 * var(--rem)); height: calc(23.6 * var(--rem));
+}
+@media (min-width: 768px) {
+  .hero_cloud:last-child { top: 20%; right: calc(-33.72 * var(--rem)); width: calc(93.6 * var(--rem)); height: calc(39.7 * var(--rem)); }
+}
+.hero_cloud img { width: 100%; height: 100%; object-fit: cover; max-width: none; }
+
+/* logo letters — white-stroke OUTLINE (drawSVG strokes them on); crossfades to
+   the filled .hero_composite. box = 97.7rem × (97.7×79.53/219.78)=35.4rem. */
+.hero_logo {
+  position: absolute; z-index: 1; opacity: 0;
+  top: calc(50% - (5.1 * var(--rem))); left: calc(50% - (11.75 * var(--rem)));
+  width: calc(23.5 * var(--rem)); height: calc(10.2 * var(--rem));
+}
+@media (min-width: 768px) {
+  .hero_logo { top: calc(50% - (17.7 * var(--rem))); left: calc(50% - (48.85 * var(--rem))); width: calc(97.7 * var(--rem)); height: calc(35.4 * var(--rem)); }
+}
+.hero_logo svg { width: 100%; height: 100%; overflow: visible; }
+.hero_logo path { fill: rgba(0, 0, 0, 0); stroke: #fff; stroke-width: 0.75px; }
+@media (min-width: 768px) { .hero_logo path { stroke-width: 0.5px; } }
+
+/* off-screen smoke/overlay overlap (mirrors sandbox .hero_overlap) */
+.hero_overlap { position: absolute; top: 0; left: 0; right: 0; bottom: 100vh; pointer-events: none; }
+
+.hero_smoke { position: absolute; left: 0; right: 0; bottom: 0; height: calc(45 * var(--rem)); z-index: 3; }
+@media (min-width: 768px) { .hero_smoke { height: calc(62 * var(--rem)); } }
+.hero_top .hero_smoke { transform: translateY(70%); }   /* rises to 0% on scroll */
+.hero_smoke img { width: 100%; height: 100%; object-fit: cover; object-position: top center; max-width: none; }
+
+/* overlay fade — sandbox fades to #fff; GAMOS-CREAM override fades to ivory so
+   the join to #hall-portal is seamless. */
+.hero_overlay {
+  position: absolute; left: 0; right: 0; bottom: 0; height: calc(10 * var(--rem)); z-index: 3;
+  background: linear-gradient(180deg, rgba(245, 239, 230, 0), var(--ivory));
+}
+@media (min-width: 768px) { .hero_overlay { height: calc(30.9 * var(--rem)); } }
+
+.hero_content { position: relative; display: grid; align-items: center; height: 100%; padding-bottom: calc(15 * var(--rem)); }
+@media (min-width: 768px) { .hero_content { padding-bottom: calc(22.8 * var(--rem)); } }
+
+/* Hero text — sandbox geometry/sizes kept verbatim, but COLOURS + WEIGHTS
+   re-pointed to the GAMOS palette (§5) and the canonical section-header language
+   (2026-06-15, user request "התאם צבעים + עדן את המשפטים הם עבים"):
+     eyebrow  → --accent (brass),  --fw-semibold (was #ac9a78 / 600)
+     title    → --fg (ink-deep),   --fw-bold     (was #191410 / 800 — too heavy)
+     accent   → --brass-deep        (was #857147 — ~identical, now tokenised)
+     subtitle → --fg-muted,         --fw-medium   (was #716657 / 500)
+   §10.2: no hard-coded hex — all via tokens. */
+.hero_eyebrow {
+  margin: 0 0 calc(1.2 * var(--rem)); text-align: center;
+  font-family: "Heebo", sans-serif; font-weight: var(--fw-semibold);
+  font-size: calc(1.8 * var(--rem)); letter-spacing: 0.18em; color: var(--accent);
+}
+.hero_title h1 {
+  margin: 0; font-family: "Heebo", sans-serif; font-weight: var(--fw-bold);
+  font-size: calc(5.4 * var(--rem)); line-height: 100%; letter-spacing: -0.02em;
+  text-align: center; color: var(--fg); max-inline-size: none;
+}
+@media (min-width: 768px) { .hero_title h1 { font-size: calc(14 * var(--rem)); } }
+.hero_title .accent { color: var(--brass-deep); }
+.hero_text {
+  margin: calc(1.5 * var(--rem)) 0 0; text-align: center; text-wrap: balance;
+  font-family: "Heebo", sans-serif; font-weight: var(--fw-medium);
+  font-size: calc(1.6 * var(--rem)); line-height: 150%; color: var(--fg-muted); max-inline-size: none;
+}
+@media (min-width: 768px) {
+  .hero_text { margin: calc(2 * var(--rem)) 0 0; font-size: calc(3.2 * var(--rem)); line-height: 130%; letter-spacing: -0.01em; }
+}
+
+/* ===========================================================================
+   .gamos-hero — the interactive composer section ("the section after the hero")
+   VERBATIM from the sandbox GAMOS-HERO-CTA block. Lives at #hall-portal,
+   between #hero and #lounge. base image + EVENTS/RESORT wordmark CTAs
+   (hover-bulge + dim-siblings via :has()) + brass prompt + scroll cue.
+   ========================================================================= */
+/* The hero's `margin-bottom:-100vh` tucks this composer up under the hero's
+   final screen-height (the sandbox's reveal-from-under). Because the hero is a
+   stacking context with z-index:110 (so site chrome layers correctly), the
+   composer must sit ABOVE it to be revealed during that overlap — otherwise the
+   hero paints over it and the page appears to skip straight to #lounge. */
+#hall-portal { position: relative; z-index: 111; }
+.gamos-hero {
+  position: relative; width: 100%; aspect-ratio: 2048 / 1360;
+  background: var(--ivory); overflow: hidden; isolation: isolate;
+}
+.gamos-hero__base {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: center; z-index: 1;
+  pointer-events: none; user-select: none;
+}
+.gamos-hero__logo {
+  position: absolute; top: 4%; left: 4%; width: clamp(140px, 12vw, 260px);
+  height: auto; z-index: 2; pointer-events: none; user-select: none;
+}
+.gamos-hero__cta {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  width: clamp(220px, 22vw, 360px); height: auto; cursor: pointer;
+  text-decoration: none; z-index: 3;
+  transition: opacity 280ms ease, filter 280ms ease;
+  outline: 0 solid transparent; -webkit-user-drag: none;
+}
+.gamos-hero__cta--events { top: 42%; z-index: 3; }
+.gamos-hero__cta--resort { top: 51%; z-index: 4; }
+.gamos-hero__cta img {
+  display: block; width: 100%; height: auto; max-width: none;
+  transition: filter 280ms ease, transform 320ms cubic-bezier(.16,1,.3,1);
+  -webkit-user-drag: none; user-select: none;
+}
+.gamos-hero__cta:hover img,
+.gamos-hero__cta:focus-visible img {
+  transform: scale(1.06);
+  filter: brightness(1.10) drop-shadow(0 0 28px rgba(207,174,131,.55));
+}
+.gamos-hero__cta:focus-visible { outline: 3px solid #CFAE83; outline-offset: 6px; border-radius: 8px; }
+.gamos-hero:has(.gamos-hero__cta:hover) .gamos-hero__cta:not(:hover),
+.gamos-hero:has(.gamos-hero__cta:focus-visible) .gamos-hero__cta:not(:focus-visible) {
+  opacity: .55; filter: brightness(.92);
+}
+
+.gamos-hero__prompt {
+  position: absolute; top: 34%; left: 50%; transform: translateX(-50%); z-index: 5;
+  display: flex; flex-direction: column; align-items: center; gap: .9rem;
+  pointer-events: none; text-align: center; white-space: nowrap;
+}
+.gamos-hero__prompt-text {
+  font-family: Heebo, sans-serif; font-weight: 500;
+  font-size: clamp(1.3rem, 1.5vw, 2rem); letter-spacing: .32em; color: #8B6F46; opacity: 0;
+  animation: gamos-prompt-in 1100ms cubic-bezier(.16,1,.3,1) 400ms forwards,
+             gamos-prompt-pulse 3200ms ease-in-out 1600ms infinite;
+}
+.gamos-hero__prompt-line {
+  width: 1px; height: 0;
+  background: linear-gradient(180deg, #CFAE83, rgba(207,174,131,0));
+  animation: gamos-prompt-line 900ms cubic-bezier(.16,1,.3,1) 1100ms forwards;
+}
+.gamos-hero__prompt-arrow {
+  width: clamp(18px, 1.4vw, 24px); height: clamp(18px, 1.4vw, 24px); opacity: 0;
+  animation: gamos-prompt-in 900ms cubic-bezier(.16,1,.3,1) 1100ms forwards,
+             gamos-arrow-bob 2400ms ease-in-out 2000ms infinite;
+}
+.gamos-hero__prompt-arrow svg {
+  display: block; width: 100%; height: 100%;
+  stroke: #CFAE83; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* ----------------------------------------------------------- SCROLL CUE ---- */
+/* Brass pill + falling dot. Two instances: inside .hero_top (→#hall-portal) and
+   inside .gamos-hero (→#lounge). VERBATIM from the sandbox .gamos-cue. */
+.gamos-cue {
+  position: absolute; inset-block-end: clamp(24px, 5vh, 48px);
+  left: 50%; transform: translateX(-50%); z-index: 20;
+  visibility: visible; display: inline-flex; align-items: center; justify-content: center;
+  inline-size: 26px; block-size: 60px;
+  border: 1.5px solid rgba(139, 111, 70, .85); border-radius: 9999px;
+  text-decoration: none; pointer-events: auto; opacity: 1;
+  transition: border-color 240ms cubic-bezier(.2,.8,.2,1);
+}
+.gamos-cue:hover, .gamos-cue:focus-visible { border-color: #8B6F46; }
+.gamos-cue:focus-visible { outline: 3px solid #CFAE83; outline-offset: 4px; }
+.gamos-cue__track { position: relative; display: block; inline-size: 1px; block-size: 34px; background: rgba(139, 111, 70, .4); }
+.gamos-cue__dot {
+  position: absolute; inset-inline-start: -2.5px; inset-block-start: 0;
+  inline-size: 6px; block-size: 6px; background: #8B6F46; border-radius: 50%;
+  animation: gamos-cue-fall 1.6s cubic-bezier(.55,0,.55,1) infinite;
+}
+
+/* ----------------------------------------------------------- KEYFRAMES ----- */
+@keyframes gamos-prompt-in   { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes gamos-prompt-line { 0% { height: 0; opacity: 0; } 100% { height: clamp(28px, 4vh, 52px); opacity: 1; } }
+@keyframes gamos-prompt-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+@keyframes gamos-arrow-bob   { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+@keyframes gamos-cue-fall    { 0% { transform: translateY(-4px); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(34px); opacity: 0; } }
+
+/* -------------------------------------------------------- REDUCED MOTION ---- */
+/* §8/§9: scrub off, reveals static. JS shows the final composition (logo filled,
+   subject in place); only the cue + prompt loops freeze. */
+@media (prefers-reduced-motion: reduce) {
+  .hero_root { visibility: visible; }
+  .gamos-cue__dot,
+  .gamos-hero__prompt-text,
+  .gamos-hero__prompt-line,
+  .gamos-hero__prompt-arrow { animation: none; opacity: 1; }
+  .gamos-hero__prompt-line { height: clamp(28px, 4vh, 52px); }
+  .gamos-hero__cta img, .gamos-hero__cta { transition: none; }
+  .gamos-hero__cta:hover img, .gamos-hero__cta:focus-visible img { transform: none; }
+}

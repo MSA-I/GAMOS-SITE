@@ -27,7 +27,9 @@
 
 **מותר:**
 - HTML5 + CSS3 (custom properties, container queries, `@layer`) + ES2022 vanilla JS modules.
-- **GSAP + ScrollTrigger** — לקישור scroll progress ל-`video.currentTime` (טכניקת `video-to-website` skill).
+- **GSAP + ScrollTrigger** — לקישור scroll progress ל-`video.currentTime` (טכניקת `video-to-website` skill),
+  ל-pinned mask-reveal של `#shabbat-chatan`, **ול-v10 cinematic scroll-hero** (`js/hero-scene.js` —
+  entrance timeline + ScrollTrigger scrub על 500vh; ADDED 2026-06-15, ראה §3). Self-hosted ב-`assets/vendor/`.
 - ~~**Lenis** — smooth scroll בדסקטופ בלבד (`smoothTouch: false`).~~ **REMOVED 2026-06-10**
   מעולם לא מומש — היה no-op stub (`js/lenis.js` שרק הדפיס "TODO"). נמחק
   מה-stack בפאס איחוד-העיצוב כדי שה-stack ישקף את המציאות. אם בעתיד יידרש
@@ -138,50 +140,82 @@ pass-through; ראה `rooms/src/intro/README.md`).
 
 ---
 
-## §3 Hero Concept (LOCKED 2026-06-10 v9 — static composition; replaces v8.1 two-phase rise)
+## §3 Hero Concept (LOCKED 2026-06-15 v10 — cinematic scroll-pinned scene; reverses v9 static)
 
-**שינוי v9 (2026-06-10):** ה-scroll-driven rise בוטל לחלוטין לבקשת המשתמש ("התמונה
-של המדבר עולה ומושכת הכל — יוצר באגים, לא האפקט שדמיינתי"). אין יותר sticky pin,
-אין `--scene-progress`, אין two-phase choreography, אין שכבה שזזה ביחס לאחרת. ה-Hero
-הוא כעת **קומפוזיציה סטטית אחת קפואה** — סדר/z-order של חמש התמונות נשמר בדיוק כפי
-שהיה במצב המנוחה — שפשוט **נגללת מחוץ למסך כיחידה אחת** ב-document flow רגיל, ו-`#lounge`
-מופיע מתחתיה כסקציה הבאה הרגילה.
+**שינוי v10 (2026-06-15, אישר המשתמש במפורש):** ה-scroll choreography **הוחזר**.
+המשתמש ביקש לקחת את ההירו שפותח ושוכלל ב-sandbox `findrealestate-clone - עותק`
+(Next.js static export) ולהחליף בו לחלוטין את ההירו של גאמוס, ולהוסיף את הסקציה
+שאחרי ההירו כסקציה חדשה בין ההירו ל-`#lounge`. זה **הופך את החלטת v9** (2026-06-10,
+שבה ה-rise בוטל בגלל באגים) — ה-sandbox הוא הגרסה הנקייה של אותו אפקט-עלייה.
+**הפורט הוא re-implementation וונילה, לא העתקת-קבצים** — ה-sandbox הוא React, וה-§2
+אוסר framework באתר הראשי. **REBUILT 2026-06-15 (אישר המשתמש "תמחק מה שסוכן קודם
+עשה הוא לא בנה טוב את זה"):** פורט קודם נמחק ונבנה מחדש כ-**העתקה מילולית 1:1** מקבצי
+המקור המקומפלים של ה-sandbox (`f46e979614fc3394.css` ל-`.hero_*`, `a463080343a8b988.css`
+ל-`.gamos-*`, וה-timeline המדויק מ-`page-*.js`). שתי החלטות משתמש לנאמנות-מלאה:
+(א) **שמות-המחלקות מהמקור** — `.hero_root/.hero_top/.hero_bg/.hero_back/.hero_house/
+.hero_composite/.hero_clouds/.hero_cloud/.hero_logo/.hero_smoke/.hero_overlay/.hero_content/
+.hero_eyebrow/.hero_title/.hero_text/.hero_overlap` להירו, ו-`.gamos-hero*/.gamos-cue*`
+לקומפוזר (לא namespace חדש). אומת שאין התנגשות בריפו. (ב) **הפלאגינים האמיתיים** —
+`DrawSVGPlugin` (אותיות הלוגו נמשכות ב-stroke) + `SplitText` (stagger מילים בכותרת),
+שניהם GSAP 3.13+ שכעת חינמיים, self-hosted ב-`assets/vendor/`. **כל ה-stack שודרג
+ל-GSAP 3.15.0** (core+ScrollTrigger+ScrollToPlugin+DrawSVG+SplitText, אותה גרסה) כדי
+למנוע אי-התאמת plugin/core. אומת ב-Playwright: scrub זהה ל-sandbox בכל fraction, אפס
+console errors, שאר צרכני GSAP (shabbat pin, scroll-scene) תקינים.
 
-ה-Hero הוא **סקציה אחת** של **100vh** (`<section id="hero" class="hero-static">`)
-שבתוכה `<div class="hero-static__pin">` עם `position: relative; height: 100%` (לא יותר
-`sticky`). ה-pin מכיל **חמש שכבות PNG מורכבות** (z-order מלמטה למעלה):
+ה-Hero הוא **סקציה אחת של 500vh** (`<section id="hero" class="hero_root">`) שבתוכה
+`<div class="hero_top">` ב-`position:sticky; height:100vh` — ה-pin נעוץ ל-viewport
+בזמן שגוללים 5 גבהי-מסך, ו-**GSAP ScrollTrigger** (`js/hero-scene.js`) מנפיש את השכבות
+במקום את הדף. ה-`--rem` scoped (`0.5208vw` ≥768) משחזר פיקסל-מדויק את ה-`html{font-size}`
+של ה-sandbox כי root של GAMOS נעול ב-16px. שכבות (z-order מלמטה למעלה, `css/sections/hero-scene.css`):
 
-1. **base** (`שכבה 2.png`) — full-viewport, רקע שמנת + קצה גלי תחתון. **z=1**.
-2. **gamos** (`GAMOS 1.png`) — decorative, top-left. brand mark, לא ניווט. **z=2**.
-3. **events** (`EVENT 1.png`) — `<a>` interactive → `/halls/dist/events/`. **z=3** (מתחת למדבר).
-4. **resort** (`RESORT 2.png`) — `<a>` interactive → `/halls/dist/resort/`. **z=4** (מתחת למדבר).
-5. **desert** (`מדבר.png`) — hill silhouettes anchored to pin bottom. **z=10 — TOPMOST** — מכסה ויזואלית את ה-EVENTS / RESORT typography.
+0. **back** (`sky.jpg`) — שמיים, `object-fit:cover`. **z=0**.
+1. **subject** (`subject.png`) — מדבר; **עולה (`y:-40%`) וגדל (`scale:1.3`) בגלילה**. **z=1**.
+1. **composite** (`subject.png`) — עותק שני של המדבר, **ממוסך ע"י אותיות הלוגו** (CSS mask
+   מ-`logo.svg`, data-URI מוזרק ב-JS) → האותיות "מתמלאות" בטקסטורת המדבר. **z=1**.
+2. **clouds** (`clouds.png`) ×2 — מתפזרים שמאלה/ימינה בגלילה. **z=2**.
+1. **logo** (`logo.svg`, 12 paths, viewBox `0 0 219.78 79.53`) — outline לבן (stroke)
+   שמתחלף ב-crossfade ל-composite הממולא. **z=1**.
+3. **smoke** (`smoke.png`) — עשן עולה מהתחתית. **z=3**.
+3. **overlay** — gradient דועך ל-`--ivory` לחיבור חלק. **z=3**.
+4. **content** — eyebrow + כותרת דו-שורתית + תת-כותרת (גולש מעלה + דועך בגלילה). **z=4**.
+20. **cue** — pill פליז + נקודה נופלת → `#hall-portal`. **z=20**.
 
-כל שכבה מקודדת ל-WebP עם אלפא משומר (q=88 לתמונות הגדולות, q=92 לטקסטים).
-שכבה אחת (base) גם מקבלת JPG fallback. 4 השאר — WebP בלבד (אלפא חיוני).
-תמונת ה-desert עודכנה ב-2026-06-09 ל-`../GAMOS-DOCS/תמונות לאנימציית האתר/HERO/מדבר.png`
-(15.4MB; הספרייה הועברה מ-GAMOS-SITE ל-GAMOS-DOCS באותו יום — ראה §7).
+**סקציה `#hall-portal` (`<div class="gamos-hero">`)** יושבת **בין ההירו ל-`#lounge`** —
+ה-composer האינטראקטיבי שהיה "הסקציה שאחרי ההירו" ב-sandbox: תמונת base של GAMOS
+(`.gamos-hero__base`, `aspect-ratio:2048/1360`) + לוגו (`.gamos-hero__logo`) + שני CTAs
+wordmark (`.gamos-hero__cta--events/--resort`) עם hover-bulge + dim-siblings (`:has()`),
+prompt "לחצו כדי לבחור תצוגת אולם" (`.gamos-hero__prompt` — text + line + chevron מרצד),
+ו-cue משלה (`.gamos-cue` → `#lounge`). שני ה-CTAs מנתבים ל-sub-apps האמיתיים
+(`/halls/dist/events/` + `/halls/dist/resort/`) עם whoosh + loading-overlay דרך
+`js/hero-scene.js` (`[data-hero-link]`); `mobile/loader.js` `applyMobileRoutes` משכתב
+אותם ל-`-mobile` ב-≤768px. **`#hall-portal` חייב `position:relative; z-index:111`**
+(מעל ה-`z-index:110` של ההירו) — אחרת ה-`margin-bottom:-100vh` של ההירו גורם לו לצייר
+מעל הקומפוזר וה-composer "נבלע". **לקח: אסור `/* */` מקונן בתוך תגובת-CSS** — הוא סוגר
+את התגובה מוקדם ובולע את חוקי ה-CSS שאחריו (בדיוק מה ששבר את `aspect-ratio` של הקומפוזר
+בבנייה הראשונה).
 
-**אין scroll choreography.** הסקציה **לא** רשומה ל-orchestrator — אין `data-scrub*`
-attributes על ה-`<section>`. לכן `js/scroll-scene.js` לא מזהה אותה ו-`--scene-progress`
-לעולם לא נכתב. אין `--p1`/`--p2`/`--rise-end`/transforms של translateY ב-CSS. כל שכבה
-יושבת במיקומה הסטטי; כל ההירו נגלל החוצה יחד עם זרימת המסמך הרגילה.
+**נכסים (2026-06-15):** ארבע שכבות ההירו הקולנועיות (`sky.jpg`, `subject.png`,
+`clouds.png`, `smoke.png`) ב-`assets/images/hero-scene/` הועתקו **כמו שהן** מה-sandbox
+(החלטת משתמש) — `subject.png` הוא PNG ללא-אובדן של ~20MB. **חורג מ-§8**; קידוד WebP
+מחדש הוא follow-up לפני go-live (ראה `STATUS.md` + §14 `DEPLOYMENT-COSTS.md`). ה-composer
+משתמש מחדש ב-`assets/images/hero/{gamos,events,resort}.webp` הקיימים + `base.png`.
 
-**`window.gamosHero` stub נשמר** (`js/hero-static.js`) — side-dot-nav (HERO_DOMINANCE)
-ו-portals מאזינים ל-`window.gamosHero.onProgress`. ה-stub מחשב progress עצמאית מ-
-`getBoundingClientRect` של הסקציה (0..1 לאורך 100vh), בלתי-תלוי באנימציה הוויזואלית —
-ולכן עובד כרגיל מול סקציה של 100vh.
+**`window.gamosHero` stub עבר ל-`js/hero-scene.js`** — side-dot-nav (HERO_DOMINANCE 0.85)
+ו-portals מאזינים ל-`onProgress`. ה-stub מחשב progress מ-`getBoundingClientRect`
+לאורך **כל ה-500vh** (`-r.top / (offsetHeight - innerHeight)`, 0..1), בלתי-תלוי
+ב-GSAP. GSAP בונה timeline נפרד; אין רישום ל-`window.gamosScroll` orchestrator.
 
-`prefers-reduced-motion: reduce` — אין rises לבטל. רק לולאת ה-falling-dot של ה-scroll
-cue (אנימציה idle) קופאת.
+**`prefers-reduced-motion: reduce`** — ה-entrance + scrub מדלגים; ההירו מציג את
+הקומפוזיציה הסופית סטטית (logo ממולא, subject במקום). רק לולאות ה-cue + prompt קופאות.
 
-**Click flow + Hover/focus animation:** ללא שינוי. CTAs נשארים `pointer-events:auto`,
-desert ב-`pointer-events:none` — לחיצות על pixel transparenti של תמונת המדבר עוברות
-ל-CTA מתחתיה. אם תמונת המדבר אטומה לחלוטין מעל אזורי ה-CTAs, ה-CTAs יחסמו ויש לבדוק
-ויזואלית ולהוסיף click-overlay אם צריך (post-verify).
+**Legacy v9 נשמר (כמו §2.1 כלל 6):** `js/hero-static.js`, `css/sections/hero-static.css`,
+ו-`mobile/css/hero-static.css` **לא נמחקים** — רק מנותקים מה-`index.html` (ה-`<link>`
+ו-ה-MODULES entry הוחלפו). חזרה ל-v9 = החלפת markup + link + entry אחת. ה-stub
+class-agnostic, ו-`js/site-nav-hover-reveal.js` משתמש בסלקטור `#hero` (לא תלוי-מחלקה),
+אז כל אחד מהשניים יכול לאכלס את `window.gamosHero` ולהסתיר את ה-site-nav.
 
-**Sections after `#hero`:** lounge, culinary, shabbat-chatan, rooms, about, testimonials,
-gallery, events, kosher, contact. אין יותר `#hero-cover` — הוסר ב-v7 והמודל v6 נמחק.
+**Sections after `#hero`:** hall-portal, lounge, culinary, shabbat-chatan, rooms, about,
+testimonials, gallery, events, kosher, contact, routes.
 
 ---
 

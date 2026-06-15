@@ -62,7 +62,7 @@
     "/mobile/css/lounge.css",
     "/mobile/css/shabbat-chatan.css",
     "/mobile/css/culinary.css",
-    "/mobile/css/hero-static.css",
+    "/mobile/css/hero-scene.css",   // 2026-06-15: v10 scroll hero (replaces hero-static.css; that file kept as legacy)
     "/mobile/css/responsive-images.css",
     "/mobile/css/touch-targets.css",
     "/mobile/css/headings.css",
@@ -223,10 +223,13 @@
   }
   function domReady () {
     injectHalfSources();
-    applyMobileRoutes();   // BEFORE injectHeroTapZones — overlays clone the rewritten hrefs
-    injectCtaLabels();
-    injectHeroTapZones();
+    applyMobileRoutes();   // rewrites #hall-portal CTA hrefs → -mobile sub-app builds
     setupCulinaryMobileManifest();
+    // injectCtaLabels() + injectHeroTapZones() retired 2026-06-15: the v10 hero
+    // CTAs live in the #hall-portal composer as visible, finger-sized anchors
+    // (clamp() widths, no occluding desert layer) — no tap-zone overlays or
+    // sr-only pill labels needed. The functions are kept below (self-no-op on
+    // the absent .hero-static__* selectors) for a clean revert to the legacy hero.
   }
 
   // ---------------------------------------------------------------------------
@@ -249,9 +252,11 @@
       return;
     }
     const rewrites = [
-      ['.hero-static__layer--events', "/halls/dist/events/",  "/halls/dist/events-mobile/"],
-      ['.hero-static__layer--resort', "/halls/dist/resort/", "/halls/dist/resort-mobile/"],
-      ['#rooms-door',                 "/rooms/dist/",        "/rooms/dist/mobile/"],
+      // 2026-06-15: hero CTAs live in the #hall-portal composer (.gamos-hero, the
+      // verbatim sandbox class names of the rebuilt scroll hero).
+      ['.gamos-hero__cta--events', "/halls/dist/events/", "/halls/dist/events-mobile/"],
+      ['.gamos-hero__cta--resort', "/halls/dist/resort/", "/halls/dist/resort-mobile/"],
+      ['#rooms-door',              "/rooms/dist/",        "/rooms/dist/mobile/"],
     ];
     for (const [sel, fromHref, toHref] of rewrites) {
       const el = document.querySelector(sel);
