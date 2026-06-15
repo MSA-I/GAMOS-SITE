@@ -1,0 +1,54 @@
+# Cloudflare Pages headers — GAMOS-SITE (Constitution §14, host = Cloudflare Pages).
+# Syntax: a path pattern line, followed by indented "Header: value" lines.
+# Cloudflare applies the FIRST matching block per header; order most-specific first.
+#
+# Caching strategy:
+#   - Vite-hashed sub-app assets (…-<hash>.js/.css) are content-addressed → immutable, 1y.
+#   - Self-hosted vendor libs + fonts + images are content-stable → 1y immutable
+#     (re-encodes change the path or are intentional deploys).
+#   - HTML is the mutable entry → short cache + revalidate so content edits go live fast.
+
+# ---- Sub-app build artifacts (Vite hashed filenames) ------------------------
+/halls/dist/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+/rooms/dist/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# ---- Self-hosted vendor libraries (GSAP, Leaflet, paper-shaders) ------------
+/assets/vendor/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# ---- Fonts (self-hosted WOFF2) ----------------------------------------------
+/assets/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+
+# ---- Images + frames + video (content-stable encoded outputs) ---------------
+/assets/images/*
+  Cache-Control: public, max-age=31536000, immutable
+/assets/frames/*
+  Cache-Control: public, max-age=31536000, immutable
+/assets/video/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# ---- Core CSS/JS (vanilla, unhashed — revalidate so edits ship) -------------
+/css/*
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+/js/*
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+# ---- Baseline security headers for every response --------------------------
+# (CSP is intentionally omitted for now — a report-only policy is a tracked
+#  follow-up; adding an enforcing CSP without testing would risk blocking the
+#  self-hosted GSAP/Leaflet/paper-shaders + the React sub-apps.)
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+# ---- HTML entry documents (short cache, always revalidate) ------------------
+/
+  Cache-Control: public, max-age=300, must-revalidate
+/*.html
+  Cache-Control: public, max-age=300, must-revalidate

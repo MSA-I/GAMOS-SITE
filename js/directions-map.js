@@ -184,12 +184,23 @@ const ORIGIN_CITY = {
   south:     "באר שבע",
 };
 
-// Voyager-no-labels: warm beige land + naturally BLUE water, and no built-in
-// text so our Hebrew labels stay clean. A gentle CSS tint warms it to brand
-// without killing the blue sea (css/sections/directions.css).
-const TILE_URL =
-  "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png";
-const TILE_ATTR = "© OpenStreetMap, © CARTO";
+// Basemap tiles: warm beige land + naturally BLUE water, no built-in labels
+// (our Hebrew labels stay clean). A gentle CSS tint warms it to brand without
+// killing the blue sea (css/sections/directions.css) — the recolor filter is
+// provider-agnostic, so MapTiler "basic" is a drop-in for CARTO Voyager.
+//
+// ⚠️ PRODUCTION (Constitution §14 / DEPLOYMENT-COSTS.md): the keyless CARTO
+// endpoint below is for LOCAL DEV ONLY — it violates CARTO's ToS in production.
+// Before go-live, create a free MapTiler key (cloud.maptiler.com), DOMAIN-LOCK
+// it to gamos.co.il, and paste it into MAPTILER_KEY. With a key set, the map
+// auto-switches to MapTiler (100k tiles/mo free); empty = CARTO dev fallback.
+const MAPTILER_KEY = ""; // ← paste domain-restricted MapTiler key here for prod
+const TILE_URL = MAPTILER_KEY
+  ? `https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`
+  : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png";
+const TILE_ATTR = MAPTILER_KEY
+  ? '© <a href="https://www.maptiler.com/copyright/">MapTiler</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  : "© OpenStreetMap, © CARTO";
 
 // Brass venue pin as an inline-SVG divIcon (no dependency on Leaflet's
 // default marker PNGs). Pulse handled in CSS via .directions__pin.

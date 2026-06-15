@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# The /mobile/ tree is a generated viewport-specific mirror of / (same content,
+# §13). Keep it out of the index to avoid duplicate-content; visitors reach it
+# via the client-side viewport redirect, not via search.
+Disallow: /mobile/
+
+Sitemap: https://gamos.co.il/sitemap.xml
