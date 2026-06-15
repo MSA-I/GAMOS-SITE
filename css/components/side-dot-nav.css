@@ -139,7 +139,7 @@
   background: var(--ivory);
   padding-inline: var(--space-3);                  /* 12px */
   padding-block: 6px;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-btn);
   border: 1px solid var(--brass);
   box-shadow: var(--shadow-soft);
 

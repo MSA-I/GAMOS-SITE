@@ -1,0 +1,175 @@
+/* =====================================================================
+ * buttons.css — the ONE canonical button/CTA system (GAMOS-SITE)
+ * Owner: unify pass (2026-06-15) · LINE-LANGUAGE rev (2026-06-15)
+ *
+ * EDITORIAL LANGUAGE — "minimal-editorial chrome" (user decision 2026-06-15):
+ * NO boxes, NO borders, NO fills, NO pill radius. Every CTA is TEXT + a brass
+ * underline that GROWS on hover — the canonical `.site-nav__links a::after`
+ * grammar (css/sections/site-nav.css:142-161), reused verbatim. This reverses
+ * the earlier "bordered pill" and the "sharp 0px box" looks; the reference is
+ * the original rooms-back link ("plain text + a brass underline that grows on
+ * hover, quiet typography, no blur").
+ *
+ * The roles:
+ *   SECONDARY / on light bg   → .btn            (cocoa text, underline grows on hover)
+ *   PRIMARY / emphasis        → .btn.btn--filled (thick brass underline AT REST → thickens)
+ *   PRIMARY big               → + .btn--primary-lg (larger type/padding)
+ *   ON DARK / on image        → .btn.btn--glass  (ivory text + soft shadow, underline grows)
+ *   CHIP / editorial tag      → .btn--chip       (small caps + thin underline)
+ *   ICON (glyph-only)         → .btn.btn--icon   (no box; glyph tints brass on hover)
+ *
+ * The underline lives on `::after`. On controls with an inner label span
+ * (sub-apps' __label / press __text) the section CSS may hang it on the span
+ * instead, but on the main site the CTAs are bare text so it sits on .btn.
+ *
+ * CASCADE: UNLAYERED + linked AFTER section CSS in index.html → wins ties by
+ * source order, zero !important.
+ *
+ * Tokens only (css/tokens.css §10.2):
+ *   --font-body, --brass, --brass-deep, --brass-glow, --cocoa, --ink-deep,
+ *   --ivory, --dur-base, --ease-out-cinema, --focus-ring, --tracking-eyebrow,
+ *   --radius-sm, --text-xs
+ *
+ * RTL-safe: transform-origin pinned to `right` (reading-start in RTL), logical
+ * insets, inline-flex + gap. Arrow direction handled per-arrow.
+ * ===================================================================== */
+
+/* ---- Shared editorial line geometry (base = SECONDARY on light bg) ---- */
+.btn {
+  position: relative;            /* anchor for the ::after underline */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding-block: 0.45em;
+  padding-inline: 0;             /* no box — the text IS the target */
+  border: 0;
+  background: transparent;
+  color: var(--cocoa);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;            /* 13px — editorial label scale */
+  font-weight: var(--fw-semibold); /* 500 */
+  line-height: 1;
+  letter-spacing: var(--tracking-eyebrow);  /* 0.18em — engraved feel */
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--dur-base) var(--ease-out-cinema);
+}
+
+/* The growing brass underline — verbatim the .site-nav link grammar. */
+.btn::after {
+  content: "";
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  block-size: 1.5px;
+  background: var(--brass);
+  transform: scaleX(0);
+  transform-origin: right center;  /* RTL: grow from the reading start */
+  transition: transform var(--dur-base) var(--ease-out-cinema);
+}
+.btn:hover,
+.btn:focus-visible { color: var(--brass-deep); }
+.btn:hover::after,
+.btn:focus-visible::after { transform: scaleX(1); }
+.btn:focus-visible {
+  outline: 3px solid var(--brass);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+/* ---- Hebrew labels are not uppercase-able; keep their natural case but
+   preserve the wide editorial tracking. Latin-only labels stay uppercase. */
+.btn:lang(he),
+.btn[lang="he"] { text-transform: none; }
+
+/* ---- Directional arrow (opt-in: wrap the glyph in .btn__arrow). Mirrors
+   for RTL and slides outward on hover. ---- */
+.btn__arrow {
+  display: inline-block;
+  font-size: 1.1em;
+  line-height: 1;
+  unicode-bidi: isolate;
+  direction: ltr;
+  transition: transform var(--dur-base) var(--ease-out-cinema);
+}
+[dir="rtl"] .btn__arrow { transform: scaleX(-1); }
+.btn:hover .btn__arrow,
+.btn:focus-visible .btn__arrow { transform: translateX(4px); }
+[dir="rtl"] .btn:hover .btn__arrow,
+[dir="rtl"] .btn:focus-visible .btn__arrow { transform: scaleX(-1) translateX(4px); }
+
+/* ---- GLASS: text over dark bg / imagery. Ivory text + a soft shadow for
+   legibility (replaces the old scrim+blur box), underline grows on hover. ---- */
+.btn--glass {
+  color: var(--ivory);
+  text-shadow: 0 1px 8px rgba(26, 20, 16, 0.55);  /* readability over imagery */
+}
+.btn--glass:hover,
+.btn--glass:focus-visible { color: var(--brass-glow); }
+.btn--glass::after { background: var(--brass-glow); }
+
+/* ---- PRIMARY (filled role → now a thick brass underline shown AT REST).
+   Keeps "this is the main action" weight without a box. Thickens on hover. ---- */
+.btn--filled { color: var(--ink-deep); }
+.btn--filled::after {
+  block-size: 2.5px;
+  transform: scaleX(1);          /* always visible — anchors the primary CTA */
+  transition: block-size var(--dur-base) var(--ease-out-cinema),
+              background var(--dur-base) var(--ease-out-cinema);
+}
+.btn--filled:hover,
+.btn--filled:focus-visible { color: var(--brass-deep); }
+.btn--filled:hover::after,
+.btn--filled:focus-visible::after { block-size: 3.5px; background: var(--brass-deep); }
+
+/* ---- PRIMARY (large emphasis): bigger type for the single most important CTA. ---- */
+.btn--primary-lg {
+  padding-block: 0.6em;
+  font-size: 0.9375rem;            /* 15px */
+}
+
+/* ---- Editorial chip / tag (small caps + a thin underline, no box). ---- */
+.btn--chip {
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+}
+.btn--chip::after { block-size: 1px; }
+
+/* ---- ICON (glyph-only: slider arrows, etc.) — no box. 44px hit-area kept for
+   WCAG; the glyph tints brass + nudges on hover, no underline (it's a symbol,
+   not a label). ---- */
+.btn--icon {
+  inline-size: 44px;
+  block-size: 44px;
+  padding: 0;
+  gap: 0;
+  color: var(--brass-deep);
+  letter-spacing: normal;
+  text-transform: none;
+  transition: color var(--dur-base) var(--ease-out-cinema),
+              transform var(--dur-base) var(--ease-out-cinema);
+}
+.btn--icon::after { content: none; }   /* no underline under a glyph */
+.btn--icon:hover,
+.btn--icon:focus-visible {
+  color: var(--brass);
+  transform: scale(1.12);
+}
+
+/* ---- Reduced motion: show underlines statically (no grow), silence nudges. ---- */
+@media (prefers-reduced-motion: reduce) {
+  .btn::after,
+  .btn:hover::after,
+  .btn:focus-visible::after { transition: none; }
+  .btn:hover::after,
+  .btn:focus-visible::after { transform: scaleX(1); }   /* appear, don't wipe */
+  .btn__arrow,
+  .btn:hover .btn__arrow,
+  .btn:focus-visible .btn__arrow { transition: none; transform: none; }
+  [dir="rtl"] .btn__arrow { transform: scaleX(-1); }
+  .btn--icon:hover,
+  .btn--icon:focus-visible { transform: none; }
+}

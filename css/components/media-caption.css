@@ -1,0 +1,81 @@
+/* =====================================================================
+ * media-caption.css — the ONE caption pattern for text over media
+ * Owner: unify pass (2026-06-15)
+ *
+ * Replaces the divergent per-section caption skins (lounge figcaption,
+ * culinary item caption) with a single component. The box is an absolutely
+ * positioned bottom overlay; the scrim under it comes from the shared
+ * --scrim-strong token so legibility is identical everywhere.
+ *
+ * CONVENTION: captions are ALWAYS VISIBLE (not hover-gated) — keyboard,
+ * touch, and AT users must read them without interaction. Sections may add
+ * an image hover-zoom as a pure enhancement, but must not gate the caption
+ * text behind :hover.
+ *
+ * Markup:
+ *   <figcaption class="media-caption">
+ *     <span class="media-caption__tag">…</span>     (optional brass capsule)
+ *     <h3 class="media-caption__title">…</h3>
+ *     <p  class="media-caption__body">…</p>
+ *   </figcaption>
+ *
+ * Tokens only (css/tokens.css §10.2):
+ *   --scrim-strong, --ivory, --fg-on-dark-muted, --brass-glow, --ink-deep,
+ *   --font-display-he, --font-body, --fw-bold, --fw-medium, --fw-regular,
+ *   --text-lg, --text-sm, --text-xs, --lh-snug, --lh-normal, --space-*,
+ *   --radius-pill, --tracking-eyebrow
+ *
+ * UNLAYERED + linked after section CSS, so it wins ties without !important.
+ * RTL: text-align:start + logical padding. Direction-safe.
+ * ===================================================================== */
+
+.media-caption {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding-block: var(--space-8) var(--space-6);
+  padding-inline: var(--space-6);
+  background: var(--scrim-strong);
+  color: var(--ivory);
+  text-align: start;
+  pointer-events: none;   /* the caption never eats clicks meant for the card/link */
+}
+
+/* Editorial tag label (generalizes the old .culinary__item-tag) — LINE-LANGUAGE
+   rev (2026-06-15): no brass capsule box; brass text + a thin brass underline,
+   matching the site-wide "text + line" CTA grammar. Sits on dark imagery. */
+.media-caption__tag {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--brass-glow);
+  padding-block: var(--space-1);
+  border-block-end: 1.5px solid var(--brass-glow);
+  margin: 0;
+}
+
+.media-caption__title {
+  font-family: var(--font-display-he);
+  font-size: var(--text-lg);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-snug);
+  color: var(--ivory);
+  margin: 0;
+}
+
+.media-caption__body {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-normal);
+  color: var(--fg-on-dark-muted);
+  margin: 0;
+}

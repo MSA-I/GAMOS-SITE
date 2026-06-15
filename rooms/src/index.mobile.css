@@ -230,18 +230,17 @@
   }
 }
 
+/* LINE-LANGUAGE rev (2026-06-15): quiet text hint, no box/blur — soft ink
+   shadow for legibility over the wall + a thin brass underline. */
 .roomsm-hint__pill {
   font-family: var(--font-body);
   font-weight: 500;
   font-size: 0.74rem;
   letter-spacing: 0.03em;
-  color: color-mix(in srgb, var(--color-ivory) 80%, transparent);
-  background: color-mix(in srgb, var(--color-ink-deep) 60%, transparent);
-  backdrop-filter: blur(6px);
-  border: 1px solid color-mix(in srgb, var(--color-brass) 28%, transparent);
-  border-radius: 9999px;
-  padding-block: 0.4rem;
-  padding-inline: 0.95rem;
+  color: color-mix(in srgb, var(--color-ivory) 90%, transparent);
+  text-shadow: 0 1px 10px rgba(26, 20, 16, 0.7);
+  border-block-end: 1px solid color-mix(in srgb, var(--color-brass-glow) 70%, transparent);
+  padding-block: 0.3rem;
 }
 
 /* ---------------------------------------------------------------------

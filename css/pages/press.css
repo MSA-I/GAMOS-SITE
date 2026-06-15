@@ -45,6 +45,9 @@
       ivory pill once the user is over the editorial intro on ivory.
    --------------------------------------------------------------------------- */
 
+/* LINE-LANGUAGE rev (2026-06-15): no box/blur — ivory text + a brass underline
+   that grows on hover (hung on the inner __text span). Matches the site-wide
+   "text + line" CTA grammar. */
 .press-home-link {
   position: fixed;
   inset-block-start: clamp(20px, 3vh, 36px);
@@ -53,10 +56,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding-block: 0.7em;
-  padding-inline: 1.4em;
-  border: 1px solid color-mix(in srgb, var(--ivory) 60%, transparent);
-  border-radius: var(--radius-pill);
+  padding-block: 0.45em;
   background: transparent;
   color: var(--ivory);
   font-family: var(--font-body);
@@ -65,20 +65,33 @@
   letter-spacing: 0.18em;
   text-transform: uppercase;
   text-decoration: none;
-  transition: background     var(--dur-base) var(--ease-out-cinema),
-              border-color   var(--dur-base) var(--ease-out-cinema),
-              color          var(--dur-base) var(--ease-out-cinema),
-              transform      var(--dur-base) var(--ease-out-cinema);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  text-shadow: 0 1px 8px rgba(26, 20, 16, 0.55);   /* legibility over imagery */
+  transition: color var(--dur-base) var(--ease-out-cinema);
+}
+
+.press-home-link__text {
+  position: relative;
+  padding-block-end: 0.18em;
+}
+.press-home-link__text::after {
+  content: "";
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  block-size: 1.5px;
+  background: var(--brass-glow);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform var(--dur-base) var(--ease-out-cinema);
 }
 
 .press-home-link:hover,
 .press-home-link:focus-visible {
-  background: var(--ivory);
-  border-color: var(--ivory);
-  color: var(--ink-deep);
-  transform: translateY(-1px);
+  color: var(--brass-glow);
+}
+.press-home-link:hover .press-home-link__text::after,
+.press-home-link:focus-visible .press-home-link__text::after {
+  transform: scaleX(1);
 }
 
 .press-home-link:focus-visible {
@@ -106,18 +119,18 @@
   transform: scaleX(-1) translateX(4px);
 }
 
-/* When scrolled past the hero, the chip flips to a solid ivory pill so it
-   reads on the ivory editorial intro section. */
+/* When scrolled past the hero (over the ivory editorial intro), the link flips
+   to ink-deep text + brass underline so it reads on the light surface. */
 html:not([data-press-hero="true"]) .press-home-link {
-  background: var(--ink-deep);
-  border-color: var(--ink-deep);
-  color: var(--ivory);
+  color: var(--ink-deep);
+  text-shadow: none;
 }
-
+html:not([data-press-hero="true"]) .press-home-link__text::after {
+  background: var(--brass);
+}
 html:not([data-press-hero="true"]) .press-home-link:hover,
 html:not([data-press-hero="true"]) .press-home-link:focus-visible {
-  background: var(--brass-deep);
-  border-color: var(--brass-deep);
+  color: var(--brass-deep);
 }
 
 
@@ -449,33 +462,29 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
   font-variant-numeric: tabular-nums;
 }
 
+/* LINE-LANGUAGE rev (2026-06-15): editorial tag, no box/blur — brass text +
+   a thin brass underline. */
 .press-card__pill {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding-block: 0.45em;
-  padding-inline: var(--space-4);
-  border: 1px solid color-mix(in srgb, var(--brass-glow) 70%, transparent);
-  border-radius: var(--radius-pill);
-  background: color-mix(in srgb, var(--ink-deep) 35%, transparent);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  padding-block: 0.3em;
+  border-block-end: 1.5px solid color-mix(in srgb, var(--brass-glow) 80%, transparent);
   font-family: var(--font-body);
   font-size: 0.78rem;
   font-weight: var(--fw-semibold);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--brass-glow);
-  transition: background var(--dur-base) var(--ease-out-cinema),
-              border-color var(--dur-base) var(--ease-out-cinema),
-              color        var(--dur-base) var(--ease-out-cinema);
+  text-shadow: 0 1px 8px rgba(26, 20, 16, 0.55);
+  transition: color var(--dur-base) var(--ease-out-cinema),
+              border-color var(--dur-base) var(--ease-out-cinema);
 }
 
 .press-card__link:hover .press-card__pill,
 .press-card__link:focus-visible .press-card__pill {
-  background: rgba(212, 185, 138, 0.92);
-  border-color: var(--brass-glow);
-  color: var(--ink-deep);
+  color: var(--ivory);
+  border-color: var(--ivory);
 }
 
 /* Content — bottom-anchored block, max-width column. */
@@ -729,7 +738,11 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
   justify-content: center;
 }
 
+/* LINE-LANGUAGE rev (2026-06-15): closer CTAs over the dark shader — text +
+   brass underline, no box. Primary ("צור קשר") shows a thick underline at
+   rest; the ghost ("חזרה") grows its underline on hover. */
 .press-closer__btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -737,21 +750,33 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
   font-size: 1rem;
   font-weight: var(--fw-semibold);
   letter-spacing: 0.08em;
-  color: var(--ink-deep);
-  background: var(--brass-glow);
-  padding-block: 0.95em;
-  padding-inline: 2.5em;
-  border-radius: var(--radius-pill);
+  color: var(--brass-glow);
+  padding-block: 0.5em;
   text-decoration: none;
-  transition: background var(--dur-base) var(--ease-out-cinema),
-              color      var(--dur-base) var(--ease-out-cinema),
-              transform  var(--dur-base) var(--ease-out-cinema);
+  text-shadow: 0 1px 8px rgba(26, 20, 16, 0.55);
+  transition: color var(--dur-base) var(--ease-out-cinema);
+}
+.press-closer__btn::after {
+  content: "";
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  block-size: 2.5px;
+  background: var(--brass-glow);
+  transform: scaleX(1);          /* primary CTA: underline lit at rest */
+  transform-origin: right center;
+  transition: block-size var(--dur-base) var(--ease-out-cinema),
+              background var(--dur-base) var(--ease-out-cinema);
 }
 
 .press-closer__btn:hover,
 .press-closer__btn:focus-visible {
+  color: var(--ivory);
+}
+.press-closer__btn:hover::after,
+.press-closer__btn:focus-visible::after {
+  block-size: 3.5px;
   background: var(--ivory);
-  transform: translateY(-2px);
 }
 
 .press-closer__btn:focus-visible {
@@ -759,17 +784,23 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
   outline-offset: 4px;
 }
 
+/* Ghost (secondary) — ivory text, underline GROWS from zero on hover. */
 .press-closer__btn--ghost {
   color: var(--ivory);
-  background: transparent;
-  border: 1px solid rgba(245, 239, 230, 0.6);
 }
-
+.press-closer__btn--ghost::after {
+  block-size: 1.5px;
+  background: var(--ivory);
+  transform: scaleX(0);
+}
 .press-closer__btn--ghost:hover,
 .press-closer__btn--ghost:focus-visible {
-  background: var(--ivory);
-  color: var(--ink-deep);
-  border-color: var(--ivory);
+  color: var(--brass-glow);
+}
+.press-closer__btn--ghost:hover::after,
+.press-closer__btn--ghost:focus-visible::after {
+  block-size: 1.5px;
+  transform: scaleX(1);
 }
 
 

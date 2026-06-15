@@ -245,7 +245,7 @@
     flex: 0 0 auto;
     inline-size: auto;
     border-block-end: 0;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-btn);
     padding-block: var(--space-2);
     padding-inline: var(--space-4);
     background-color: var(--bg-alt);

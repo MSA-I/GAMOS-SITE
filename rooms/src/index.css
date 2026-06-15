@@ -44,6 +44,7 @@
   --font-body: "Heebo", "Arial", sans-serif;
   --color-brass: #CFAE83;
   --color-brass-deep: #8B6F46;
+  --color-brass-glow: #D4B98A; /* glow/highlight — mirrors halls @theme (focus ring) */
   --color-cocoa: #534133;
   --color-ivory: #F5EFE6;
   --color-ink-deep: #1A1410;
@@ -133,8 +134,9 @@ body {
  * with a brass underline that grows on hover, quiet typography, no blur.
  * ===================================================================== */
 
-/* Back link — top inline-start. Plain text + a brass underline that grows from
-   the inline-end on hover (mirrors the main site's .site-nav link grammar). */
+/* Back link — top inline-start. LINE-LANGUAGE rev (2026-06-15, restores the
+   original minimal-editorial chrome): plain ivory text + a brass underline that
+   grows from the inline-end on hover, quiet typography, no box/blur. */
 .rooms-back {
   position: fixed;
   top: clamp(1.25rem, 3vh, 2rem);
@@ -147,55 +149,61 @@ body {
   padding-block: 0.4rem;
   text-decoration: none;
   font-family: var(--font-body);
-  font-size: 0.95rem;
-  font-weight: 500; /* lightened from 600 — 2026-06-15 site-wide weight pass */
-  letter-spacing: 0.02em;
-  color: color-mix(in srgb, var(--color-ivory) 90%, transparent);
-  transition: color 0.3s ease;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-ivory);
+  text-shadow: 0 1px 8px rgba(26, 20, 16, 0.55);
+  transition: color 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+/* Mirrored arrow (points OUT of the page in RTL), slides on hover. */
 .rooms-back__arrow {
   display: inline-block;
-  transition: transform 0.3s ease;
+  font-size: 1.1em;
+  line-height: 1;
+  unicode-bidi: isolate;
+  direction: ltr;
+  transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .rooms-back__label {
   position: relative;
-  padding-block-end: 0.18rem;
+  padding-block-end: 0.18em;
 }
-
 .rooms-back__label::after {
   content: "";
   position: absolute;
   inset-inline: 0;
   inset-block-end: 0;
-  block-size: 1px;
-  background: var(--color-brass);
+  block-size: 1.5px;
+  background: var(--color-brass-glow);
   transform: scaleX(0);
-  transform-origin: inline-end;
-  transition: transform 0.3s ease;
+  transform-origin: right center;   /* RTL: grow from reading start */
+  transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .rooms-back:hover,
 .rooms-back:focus-visible {
-  color: var(--color-brass);
+  color: var(--color-brass-glow);
   outline: none;
 }
 
 .rooms-back:hover .rooms-back__arrow,
 .rooms-back:focus-visible .rooms-back__arrow {
-  transform: translateX(0.3rem); /* RTL: arrow points/nudges toward the start */
+  transform: translateX(0.3rem);
 }
-
 .rooms-back:hover .rooms-back__label::after,
 .rooms-back:focus-visible .rooms-back__label::after {
   transform: scaleX(1);
 }
 
 .rooms-back:focus-visible {
-  outline: 2px solid var(--color-brass);
+  outline: 3px solid var(--color-brass-glow);
   outline-offset: 6px;
-  border-radius: 2px;
 }
 
 /* Top inline-end section eyebrow — quiet, no box. */
@@ -297,6 +305,12 @@ body {
   .rooms-hint {
     animation: none;
   }
+  /* Editorial back-pill: keep the fill (comprehension) but drop motion. */
+  .rooms-back:hover,
+  .rooms-back:focus-visible { transform: none; }
+  .rooms-back__arrow,
+  .rooms-back:hover .rooms-back__arrow,
+  .rooms-back:focus-visible .rooms-back__arrow { transition: none; transform: none; }
 }
 
 @keyframes rooms-hint-pulse {
@@ -308,18 +322,18 @@ body {
   }
 }
 
+/* LINE-LANGUAGE rev (2026-06-15): quiet text hint, no box/blur. A soft ink
+   shadow keeps it legible over the bright image wall; a thin brass underline
+   gives it the editorial line accent. */
 .rooms-hint__pill {
   font-family: var(--font-body);
   font-weight: 400; /* lightened from 500 — 2026-06-15 site-wide weight pass */
   font-size: 0.8rem;
   letter-spacing: 0.04em;
-  color: color-mix(in srgb, var(--color-ivory) 78%, transparent);
-  background: color-mix(in srgb, var(--color-ink-deep) 55%, transparent);
-  backdrop-filter: blur(6px);
-  border: 1px solid color-mix(in srgb, var(--color-brass) 28%, transparent);
-  border-radius: 9999px;
-  padding-block: 0.4rem;
-  padding-inline: 1rem;
+  color: color-mix(in srgb, var(--color-ivory) 88%, transparent);
+  text-shadow: 0 1px 10px rgba(26, 20, 16, 0.7);
+  border-block-end: 1px solid color-mix(in srgb, var(--color-brass-glow) 70%, transparent);
+  padding-block: 0.3rem;
 }
 
 /* =====================================================================
@@ -362,36 +376,53 @@ body {
   flex-direction: column;
 }
 
+/* LINE-LANGUAGE rev (2026-06-15): no box — X glyph + label, brass underline
+   grows on the label (the close has an inner <span>סגירה</span>). */
 .rooms-detail__close {
   align-self: flex-end;
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
   min-block-size: 44px;
   padding-block: 0.5rem;
-  padding-inline: 1.1rem;
   background: transparent;
-  border: 1px solid color-mix(in srgb, var(--color-ivory) 28%, transparent);
-  border-radius: 9999px;
+  border: 0;
   color: var(--color-ivory);
   font-family: var(--font-body);
   font-size: 0.85rem;
   font-weight: 400; /* lightened from 500 — 2026-06-15 site-wide weight pass */
   letter-spacing: 0.08em;
   cursor: pointer;
-  transition:
-    background 0.25s ease,
-    border-color 0.25s ease;
+  transition: color 0.25s ease;
+}
+.rooms-detail__close > span {
+  position: relative;
+  padding-block-end: 0.16em;
+}
+.rooms-detail__close > span::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  block-size: 1.5px;
+  background: var(--color-brass);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 0.25s ease;
 }
 .rooms-detail__close:hover,
 .rooms-detail__close:focus-visible {
-  background: color-mix(in srgb, var(--color-ivory) 12%, transparent);
-  border-color: var(--color-brass);
+  color: var(--color-brass);
   outline: none;
+}
+.rooms-detail__close:hover > span::after,
+.rooms-detail__close:focus-visible > span::after {
+  transform: scaleX(1);
 }
 .rooms-detail__close:focus-visible {
   outline: 2px solid var(--color-brass);
-  outline-offset: 4px;
+  outline-offset: 6px;
 }
 
 .rooms-detail__layout {
@@ -466,16 +497,16 @@ body {
   align-items: center;
   margin-block: 1rem 1.6rem;
 }
+/* LINE-LANGUAGE rev (2026-06-15): editorial tag — brass text + thin underline,
+   no filled box. (Detail view sits on a dark ink scrim → bright brass-glow.) */
 .rooms-detail__tag {
   font-family: var(--font-body);
   font-size: 0.8rem;
-  font-weight: 400; /* lightened from 500 — 2026-06-15 site-wide weight pass */
+  font-weight: 500;
   letter-spacing: 0.1em;
-  color: var(--color-ink-deep);
-  background: var(--color-brass);
-  padding-block: 0.35rem;
-  padding-inline: 0.9rem;
-  border-radius: 9999px;
+  color: var(--color-brass-glow);
+  border-block-end: 1.5px solid color-mix(in srgb, var(--color-brass-glow) 70%, transparent);
+  padding-block: 0.3rem;
 }
 .rooms-detail__year {
   font-family: var(--font-display);

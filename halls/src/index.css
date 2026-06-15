@@ -91,7 +91,7 @@ body {
  * (css/pages/press.css `.press-home-link` + the canonical `.btn` family in
  * css/utilities.css). Those files are NOT in this sub-app's bundle, so the look
  * is replicated here against the @theme tokens, using the exact press values:
- * pill radius (9999px), clamp() viewport insets, ivory/brass palette,
+ * sharp radius (0 — de-pill 2026-06-15), clamp() viewport insets, ivory/brass palette,
  * backdrop-blur, uppercase 0.18em tracking, hover-fill + translateY(-1px),
  * 3px --brass-glow focus ring (offset 4px), and the --ease-out-cinema curve
  * (cubic-bezier(0.2,0.8,0.2,1)) at --dur-base (240ms).
@@ -110,17 +110,18 @@ body {
  *   .hall-switch__pill: primary filled pill (press CTA language).
  * ===================================================================== */
 
-/* Shared pill geometry (press .press-home-link / .press-closer__btn). */
+/* Shared CTA geometry — LINE-LANGUAGE rev (2026-06-15): no box/border/blur.
+   Text + a brass underline that grows on hover (the .site-nav grammar). */
 .hall-home,
 .hall-switch__pill {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding-block: 0.7em;
-  padding-inline: 1.4em;
-  border-radius: 9999px; /* --radius-pill */
-  border: 1px solid transparent;
+  padding-block: 0.45em;
+  background: transparent;
+  border: 0;
   font-family: var(--font-body);
   font-size: 0.8125rem;
   font-weight: 500; /* lightened from 600 — 2026-06-15 site-wide weight pass */
@@ -130,11 +131,7 @@ body {
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
-  transition:
-    background 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    border-color 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    color 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: color 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .hall-home:focus-visible,
 .hall-switch__pill:focus-visible {
@@ -142,24 +139,38 @@ body {
   outline-offset: 4px;
 }
 
-/* "חזרה לאתר" ghost back-pill — top-inline-end (top-left in RTL), like press. */
+/* "חזרה לאתר" back link — top-inline-end (top-left in RTL). Ivory text over the
+   gallery + a soft shadow for legibility; brass underline grows on the label. */
 .hall-home {
   position: absolute;
   inset-block-start: clamp(20px, 3vh, 36px);
   inset-inline-end: clamp(20px, 3vw, 40px);
   z-index: 40;
-  background: color-mix(in srgb, var(--color-ink-deep) 38%, transparent);
   color: var(--color-ivory);
-  border-color: color-mix(in srgb, var(--color-ivory) 60%, transparent);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
+  text-shadow: 0 1px 8px rgba(26, 20, 16, 0.55);
+}
+.hall-home__label {
+  position: relative;
+  padding-block-end: 0.18em;
+}
+.hall-home__label::after {
+  content: "";
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  block-size: 1.5px;
+  background: var(--color-brass-glow);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .hall-home:hover,
 .hall-home:focus-visible {
-  background: var(--color-ivory);
-  border-color: var(--color-ivory);
-  color: var(--color-ink-deep);
-  transform: translateY(-1px);
+  color: var(--color-brass-glow);
+}
+.hall-home:hover .hall-home__label::after,
+.hall-home:focus-visible .hall-home__label::after {
+  transform: scaleX(1);
 }
 
 /* Mirrored "→" arrow (points OUT of the page in RTL), slides on hover. */
@@ -200,26 +211,44 @@ body {
   white-space: nowrap;
 }
 
-/* Primary filled switch pill (press CTA language: brass-glow → ivory on hover). */
+/* Primary switch CTA — LINE-LANGUAGE: brass-glow text + a thick underline lit
+   AT REST (anchors the primary action without a box). The text lives in a bare
+   <span> (arrow is a sibling Lucide icon), so the underline hangs on that span. */
 .hall-switch__pill {
+  color: var(--color-brass-glow);
+  text-shadow: 0 1px 8px rgba(26, 20, 16, 0.55);
+}
+.hall-switch__pill > span {
+  position: relative;
+  padding-block-end: 0.18em;
+}
+.hall-switch__pill > span::after {
+  content: "";
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  block-size: 2.5px;
   background: var(--color-brass-glow);
-  color: var(--color-ink-deep);
-  border-color: var(--color-brass-glow);
+  transform: scaleX(1);
+  transform-origin: right center;
+  transition: block-size 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              background 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .hall-switch__pill:hover,
 .hall-switch__pill:focus-visible {
+  color: var(--color-ivory);
+}
+.hall-switch__pill:hover > span::after,
+.hall-switch__pill:focus-visible > span::after {
+  block-size: 3.5px;
   background: var(--color-ivory);
-  border-color: var(--color-ivory);
-  color: var(--color-ink-deep);
-  transform: translateY(-1px);
 }
 
-/* Press parity ≤640px: home collapses to a 44×44 icon-only chip; eyebrow hidden. */
+/* Press parity ≤640px: home collapses to a 44×44 icon-only hit-area; eyebrow hidden. */
 @media (max-width: 640px) {
   .hall-home {
     inline-size: 44px;
     block-size: 44px;
-    padding: 0;
     justify-content: center;
   }
   .hall-home__label {
@@ -233,14 +262,15 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .hall-home,
   .hall-switch__pill,
-  .hall-home__arrow {
+  .hall-home__arrow,
+  .hall-home__label::after,
+  .hall-switch__pill > span::after {
     transition: none;
   }
-  .hall-home:hover,
-  .hall-home:focus-visible,
-  .hall-switch__pill:hover,
-  .hall-switch__pill:focus-visible {
-    transform: none;
+  /* Underlines appear statically instead of growing. */
+  .hall-home:hover .hall-home__label::after,
+  .hall-home:focus-visible .hall-home__label::after {
+    transform: scaleX(1);
   }
   .hall-home:hover .hall-home__arrow,
   .hall-home:focus-visible .hall-home__arrow {

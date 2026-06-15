@@ -222,6 +222,7 @@
   --radius-xl:     24px;
   --radius-pill:   9999px;
   --radius-circle: 50%;
+  --radius-btn:    0;       /* editorial CTA/chip/icon radius — sharp corners (de-pill 2026-06-15) */
 
   /* ===== 2.9b Component tokens ===== */
   --card-zoom:    1.04;   /* unified media-card hover zoom — single source of truth */

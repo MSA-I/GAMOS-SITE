@@ -16,16 +16,14 @@
   gap: var(--space-6);
 }
 
-/* ----- Origin tabs (segmented; native radios for a11y) ----- */
+/* ----- Origin tabs (line-language; native radios for a11y) -----
+   No segmented box — quiet text labels with a growing brass underline that
+   stays lit on the active tab (the .site-nav grammar). LINE-LANGUAGE rev. */
 
 .directions__tabs {
   display: inline-flex;
   align-self: center;
-  gap: var(--space-2, 0.5rem);
-  padding: var(--space-1, 0.25rem);
-  background: var(--ivory-warm);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-pill);
+  gap: var(--space-6, 1.5rem);
 }
 
 .directions__tab {
@@ -46,31 +44,53 @@
 }
 
 .directions__tab-label {
+  position: relative;
   display: block;
   font-family: var(--font-body);
   font-size: var(--text-base);
   font-weight: var(--fw-semibold);
   color: var(--fg-muted);
-  padding: var(--space-3) var(--space-6);
-  border-radius: var(--radius-pill);
-  transition: color var(--dur-base) var(--ease-out-cinema),
-              background var(--dur-base) var(--ease-out-cinema);
+  padding-block: var(--space-2);
+  transition: color var(--dur-base) var(--ease-out-cinema);
 }
 
-.directions__tab.is-active .directions__tab-label,
-.directions__tab input:checked ~ .directions__tab-label {
-  color: var(--ink-deep);
+/* Growing brass underline — verbatim the .site-nav link grammar (RTL-safe). */
+.directions__tab-label::after {
+  content: "";
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  block-size: 2px;
   background: var(--brass);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform var(--dur-base) var(--ease-out-cinema);
 }
 
 .directions__tab:hover .directions__tab-label {
   color: var(--ink-deep);
 }
+.directions__tab:hover .directions__tab-label::after {
+  transform: scaleX(1);
+}
+
+.directions__tab.is-active .directions__tab-label,
+.directions__tab input:checked ~ .directions__tab-label {
+  color: var(--ink-deep);
+}
+.directions__tab.is-active .directions__tab-label::after,
+.directions__tab input:checked ~ .directions__tab-label::after {
+  transform: scaleX(1);          /* active tab keeps its underline lit */
+}
 
 /* Visible keyboard focus ring on the active radio (§9). */
 .directions__tab input:focus-visible ~ .directions__tab-label {
-  outline: none;
-  box-shadow: var(--focus-ring);
+  outline: 3px solid var(--brass);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+@media (prefers-reduced-motion: reduce) {
+  .directions__tab-label::after { transition: none; }
 }
 
 /* ----- Stage (map + floating card) ----- */
@@ -234,33 +254,10 @@
   gap: var(--space-3);
 }
 
-.directions__cta {
-  font-family: var(--font-body);
-  font-size: var(--text-base);
-  font-weight: var(--fw-semibold);
-  padding: var(--space-3) var(--space-6);
-  background: transparent;
-  color: var(--cocoa);
-  border: 1px solid var(--accent);
-  border-radius: var(--radius-pill);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background var(--dur-base) var(--ease-out-cinema),
-              color var(--dur-base) var(--ease-out-cinema),
-              transform var(--dur-base) var(--ease-out-cinema);
-}
-
-.directions__cta:hover {
-  background: var(--accent);
-  color: var(--ink-deep);
-}
-
-.directions__cta:active { transform: scale(0.98); }
-
-.directions__cta:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
+/* .directions__cta skin removed 2026-06-15 (unify pass) — the Waze/Maps/WA
+   buttons now use the canonical `.btn` (secondary outline) from
+   css/components/buttons.css. The `--waze/--maps/--wa` modifiers carry no
+   CSS (JS hooks only); `.directions__cta-row` above still owns layout. */
 
 /* ----- Attribution + JS-off fallback ----- */
 
