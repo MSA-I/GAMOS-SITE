@@ -121,8 +121,17 @@ function buildDesktopTimeline(gsap, ScrollTrigger) {
     if (fig) fig.style.zIndex = String(imgs.length - i);
   });
 
-  // Initial state: all images fully visible, anchored top.
-  gsap.set(imgs, { clipPath: "inset(0px 0px 0px 0px)", objectPosition: "0% 0%" });
+  // Horizontal anchor for object-position. Desktop landscape photos sit in a
+  // wide stage so the left edge (0%) reads fine; but on a NARROW PORTRAIT phone
+  // a landscape image at `0% Y` shows only its left strip (user: "התמונות לא
+  // חתוכות בצורה שמותאמת למובייל — צריך למרכז"). Center horizontally on phones so
+  // the subject is framed; keep 0% on desktop (the established composition). The
+  // vertical Ken-Burns pan (the SECOND coordinate) is unchanged at every width.
+  // (§13 amendment 2026-06-11 sanctions core shabbat edits for mobile fidelity.)
+  const hx = window.matchMedia("(max-width: 768px)").matches ? "50%" : "0%";
+
+  // Initial state: all images fully visible, anchored top (centered-x on mobile).
+  gsap.set(imgs, { clipPath: "inset(0px 0px 0px 0px)", objectPosition: `${hx} 0%` });
 
   const tints = readTints();
 
@@ -153,13 +162,13 @@ function buildDesktopTimeline(gsap, ScrollTrigger) {
 
     sub.to(imgs[i], {
       clipPath: "inset(0px 0px 100% 0px)",
-      objectPosition: "0% 60%",
+      objectPosition: `${hx} 60%`,
       duration: 1.5,
       ease: "none",
     }, 0);
 
     sub.to(imgs[i + 1], {
-      objectPosition: "0% 40%",
+      objectPosition: `${hx} 40%`,
       duration: 1.5,
       ease: "none",
     }, 0);

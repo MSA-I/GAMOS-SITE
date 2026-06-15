@@ -1,33 +1,19 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="he">
+<!-- ============================================================
+     GENERATED FILE — DO NOT EDIT.
+     Produced by scripts/build-mobile-index.mjs from /index.html.
+     Edit index.html (the single source) + the /mobile/ layer
+     (mobile/loader.js, mobile/css/*), then re-run `npm run build:mobile`.
+     CLAUDE.md §13 amendment (2026-06-15).
+     ============================================================ -->
+<html dir="rtl" lang="he" data-view="mobile">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0E0E0C">
   <meta name="color-scheme" content="dark light">
 
-  <!-- MOBILE-REDIRECT:START — phones (≤768px) are sent to the dedicated mobile
-       build at /mobile/ BEFORE any CSS/JS/image loads, so they never download
-       the desktop assets. Desktop (≥769px) is a no-op. Must run AFTER the
-       viewport meta above (matchMedia width depends on it) and as early as
-       possible otherwise. The generated /mobile/index.html OMITS this whole
-       block — scripts/build-mobile-index.mjs strips everything between the
-       START/END markers — so the mobile page never bounces. The pathname guard
-       is a belt-and-suspenders backstop in case the strip is ever skipped.
-       sessionStorage 'gamos-force-desktop' lets a future "view desktop site"
-       link opt out. See CLAUDE.md §13 amendment (2026-06-15). -->
-  <script>
-    (function () {
-      try {
-        if (location.pathname.indexOf('/mobile') === 0) return;
-        if (sessionStorage.getItem('gamos-force-desktop') === '1') return;
-        if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
-          location.replace('/mobile/' + location.search + location.hash);
-        }
-      } catch (e) { /* never block the desktop site on a redirect error */ }
-    })();
-  </script>
-  <!-- MOBILE-REDIRECT:END -->
+
 
   <!-- SEO meta — copy verified from site-content-map.md (gamos.co.il scrape 2026-05-05) -->
   <title>גאמוס אירועים | אולם, ריזורט וגן אירועים במעלה אדומים</title>
@@ -982,7 +968,7 @@
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 0ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/01.half.webp">
-            <img src="/assets/images/gallery/01.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="רגע קידוש ההינומה תחת החופה על שטיח לבן בגן האירועים">
+            <img src="/assets/images/gallery/01.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="בר מרכזי עם נברשות קריסטל ותאורה אדומה בערב">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 100ms;">
@@ -1000,7 +986,7 @@
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 300ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/04.half.webp">
-            <img src="/assets/images/gallery/04.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="גזיבו אבן לבן בגן האירועים עם שטיח לבן ונרות וקיר ירק">
+            <img src="/assets/images/gallery/04.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="אולם אירועים עם נברשות קריסטל גדולות וחללי שולחנות ערוכים">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 400ms;">

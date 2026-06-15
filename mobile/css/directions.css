@@ -60,6 +60,25 @@
     font-size: var(--text-sm);
   }
 
+  /* §9 touch floor: the radio (inset:0, the real hit target) fills the tab,
+     so growing the tab to ≥44px tall grows the tappable area. The tighter
+     label padding above keeps 4 labels fitting; this just guarantees the
+     vertical hit floor without fattening the visible pill text.
+     (fidelity pass 2026-06-15) */
+  .directions__tab {
+    min-block-size: 44px;
+  }
+
+  /* Leaflet zoom +/− default to 30×30. Bump to the 44px touch floor; the
+     glyph stays centered by Leaflet's own line-height/text-align. The map
+     control is the one third-party UI on the page — recolor stays in the
+     base directions.css; here we only enforce the tap floor. */
+  .directions__map .leaflet-control-zoom a {
+    inline-size: 44px;
+    block-size: 44px;
+    line-height: 44px;
+  }
+
   /* ≥44px touch targets (§9 / touch-targets convention). */
   .directions__cta {
     min-block-size: 44px;

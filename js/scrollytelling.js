@@ -93,6 +93,12 @@ async function registerScene(canvas) {
   totalTotal += manifest.frameCount;
   updateLoaderPct();
 
+  // Optional start-trim: data-scrub-frame-start="0.4" skips the first 40% of
+  // the clip (a dead intro) so the whole scroll maps onto the meaningful
+  // remainder. Used by the culinary scrub (empty-conveyor opening). Absent /
+  // 0 → unchanged full-range scrub. (2026-06-15)
+  const frameStart = parseFloat(canvas.dataset.scrubFrameStart || "0") || 0;
+
   let prevLoaded = 0;
   const renderer = createRenderer({
     canvas,
@@ -102,6 +108,7 @@ async function registerScene(canvas) {
       parallax: true,
       parallaxStrength: 28,
       bgColor: "#0E0E0C",
+      frameStart,
       onProgress: (loaded, total) => {
         const delta = loaded - prevLoaded;
         prevLoaded = loaded;
@@ -172,10 +179,13 @@ export function init() {
     const preloads = scenes.map((s) => s.renderer.preload());
     Promise.all(preloads).then(() => {
       hideLoader();
-      // After preload, mark ready + draw frame 0 to flush any racing.
+      // After preload, mark ready + draw the scene's START frame (== the
+      // scrub's first frame; 0 for untrimmed scenes, the trim point for the
+      // culinary clip) so a trimmed scene doesn't flash its dead intro before
+      // the first scroll tick.
       scenes.forEach((s) => {
         s.canvas.classList.add("is-ready");
-        s.renderer.drawFrame(0);
+        s.renderer.drawFrame(s.renderer.startFrame || 0);
       });
     });
   });

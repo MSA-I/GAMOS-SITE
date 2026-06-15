@@ -122,6 +122,17 @@ export function createRenderer({ canvas, manifest, host, options }) {
   }
 
   const total = manifest.frameCount;
+
+  // Optional START-TRIM (2026-06-15): map the full 0..1 scroll progress onto
+  // a SUB-RANGE of frames [frameStart … last], skipping a dead intro. Used by
+  // the culinary scrub whose clip opens on a near-empty conveyor (~first 40%
+  // is dishes still arriving in the far distance) — wasted scroll. frameStart
+  // is a 0..1 fraction of the clip to skip; the scrub then spends the whole
+  // scroll on the dish-laden remainder. Clamped to [0, 0.95] so we never trim
+  // the entire clip. Default 0 = unchanged behaviour for hero/other scenes.
+  const frameStartFrac = Math.max(0, Math.min(0.95, Number(opts.frameStart) || 0));
+  const startFrame = Math.round(frameStartFrac * (total - 1));
+  const spanFrames = (total - 1) - startFrame; // frames covered by 0..1 scroll
   const frames = new Array(total); // sparse — populated as images decode
   const state = {
     loaded: 0,
@@ -306,7 +317,9 @@ export function createRenderer({ canvas, manifest, host, options }) {
     requestAnimationFrame(() => {
       state.rafPending = false;
       const p = computeProgress();
-      const idx = Math.floor(p * (total - 1));
+      // Map 0..1 scroll onto [startFrame … last] so a dead intro is trimmed
+      // (frameStart). With frameStart=0 this is the original p*(total-1).
+      const idx = startFrame + Math.floor(p * spanFrames);
       drawFrame(idx);
     });
   }
@@ -406,5 +419,8 @@ export function createRenderer({ canvas, manifest, host, options }) {
     bindResize,
     destroy,
     state,
+    // The frame the scrub starts on (== startFrame). Callers paint THIS for the
+    // first frame instead of 0 so a trimmed scene doesn't flash its dead intro.
+    startFrame,
   };
 }

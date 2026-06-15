@@ -32,15 +32,37 @@
      of the document origin. The user sees the whole page shifted left,
      hero CTAs appear in the "left half" of the screen, etc.
 
-     Fix: lock <html> to no horizontal overflow on phones too. Pinning
-     this only at ≤768px keeps desktop scroll behaviour pristine. */
+     Fix: clip <html> horizontal overflow on phones too. Pinning this only
+     at ≤768px keeps desktop scroll behaviour pristine.
+
+     ⚠️ overflow-x:CLIP, not HIDDEN (fix 2026-06-15, proven via Playwright):
+     `overflow:hidden` makes <html>/<body> a SCROLL CONTAINER, which by the
+     CSS spec becomes the containing block for `position:sticky` descendants
+     — that BROKE the culinary canvas pin (`.scroll-scene__sticky`): on mobile
+     the canvas scrolled away (canvasTop −1720 instead of 0) so the scroll-
+     scrub never appeared. `overflow-x:clip` clips the same overflow WITHOUT
+     establishing a scroll container, so sticky survives. Live toggle proved
+     clip restores canvasTop=0 AND still suppresses the RTL marquee overflow
+     (scrollWidth==viewport). Do NOT revert to `hidden`. */
   html {
-    overflow-x: hidden;
+    overflow-x: clip;
     /* Anchor links (#culinary, #shabbat-chatan, etc.) on mobile would
        otherwise land sections directly under the sticky 64px-tall nav,
        hiding the section heading. scroll-padding-top reserves a buffer
        so the section heading is visible the moment the user lands. */
     scroll-padding-block-start: 80px;
+  }
+
+  /* base.css sets `body{overflow-x:hidden}` (core, all viewports). On phones
+     that `hidden` computes overflow-y → `auto`, making <body> a SECOND scroll
+     container nested under <html> — the nested-scroll-container mismatch is
+     what actually breaks the culinary `position:sticky` pin on mobile (html
+     alone wasn't enough). Override body to `clip` too at ≤768px so neither
+     <html> nor <body> is a scroll container, restoring the pin while still
+     clipping the RTL marquee overflow. Desktop body stays `hidden` (base.css)
+     where the pin already works. Proven: html+body clip → canvasTop 0. */
+  body {
+    overflow-x: clip;
   }
 
   /* Submit + secondary CTAs in the contact form. The submit pill is
@@ -71,10 +93,12 @@
     gap: 0;
   }
   .testimonials__dots [data-slider-dot] {
-    /* Visible dot stays 10×10; padding makes the box 44×44. */
+    /* Visible dot stays 10×10; padding makes the box ≥44×44. 18px (was 17px)
+       gives 10+36=46px → clears the floor with a 1px buffer against sub-pixel
+       rounding that left the box at 43px on a 360px viewport. */
     inline-size: 10px;
     block-size: 10px;
-    padding: 17px;
+    padding: 18px;
     /* The padded area is transparent and outside the visible dot —
        background-clip:content-box ensures the dot's background only
        paints inside the 10px content box, not in the padded area.
@@ -92,5 +116,38 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  /* Contact channel values (tel: / mailto: / WhatsApp links). Desktop draws
+     them ~30px tall in a label-over-value stack; on touch that's under the
+     44px floor. Grow the LINK box to 44px (icon stays centered against the
+     row via .contact__channel's align-items:center). The visible text keeps
+     its size/position — only the hit box grows. (fidelity pass 2026-06-15) */
+  .contact__channel-value {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 44px;
+  }
+
+  /* Skip-link — first focusable (§9). Visible only on focus; desktop renders
+     it ~40px tall. Reaffirm the 44px floor + center the label. */
+  .skip-link {
+    min-block-size: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Hero scroll cue — a deliberately SLIM 24px-wide pill (its border IS the
+     visual). We must not widen the element itself (that would fatten the
+     visible pill), so expand the tappable area with a transparent ::before
+     overlay inset by -10px → ~44×76 hit box around the 24px pill. Canonical
+     "expand hit area without visible bloat" pattern. */
+  .hero-static__cue { position: absolute; }   /* reaffirm (base already sets it) */
+  .hero-static__cue::before {
+    content: "";
+    position: absolute;
+    /* 24px pill + (12px × 2) = 48px → comfortably clears the 44px floor on
+       the slim axis. Transparent — purely a larger pointer target. */
+    inset: -12px;
   }
 }

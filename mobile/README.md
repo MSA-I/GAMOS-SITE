@@ -172,8 +172,18 @@ npx serve . -l 5050
 - ✅ Phase 2C: culinary mobile-frames manifest swap (encoder + runtime).
 - ✅ Phase 3A: hero pill CTA buttons.
 - ✅ Phase 3B: WCAG ≥44×44 touch-targets + Hebrew descender clearance + kosher heading fix.
-- ⏳ User must run `node mobile/scripts/encode-frames-mobile.mjs` once
-  to populate `assets/frames/culinary-mobile/` (אחרת ה-canvas יציג רק
-  את ה-poster במובייל).
-- ⏳ Halls sub-app (`/halls/dist/oasis/`, `/halls/dist/lumina/`) — QA-בלבד
-  בשלב הזה. אם יידרש tuning, לפתוח tracker נפרד.
+- ✅ Phase 3C (fidelity pass 2026-06-15): closed remaining §9 touch-target gaps
+  found via Playwright settled-state audit — contact channel links (tel/mail/WA)
+  → 44px, directions origin tabs → 44px floor, Leaflet zoom controls → 44px,
+  skip-link → 44px, hero scroll-cue → transparent `::before` 48px hit box,
+  testimonials dots → 46px (sub-pixel buffer). Verified: at 390/360px the main
+  site has **zero horizontal overflow + zero console errors** and every section
+  reads as an equivalent of its desktop experience (settled-state, animations
+  disabled). The Leaflet attribution credit (216×18) is the only sub-44px
+  interactive element left — an essential inline map-license link (WCAG 2.5.5
+  exempt). `assets/frames/culinary-mobile/` is populated; the manifest swap in
+  `setupCulinaryMobileManifest()` serves it on ≤768px.
+- ⏳ Halls/Rooms sub-app mobile builds (`/halls/dist/oasis-mobile/`,
+  `/halls/dist/lumina-mobile/`, `/rooms/dist/mobile/`) — purpose-built phone
+  chrome (`HallChromeMobile`/`RoomsChromeMobile`); polished + rebuilt in the
+  same fidelity pass. Source under `halls/`+`rooms/` per §2.1 (not `/mobile/`).
