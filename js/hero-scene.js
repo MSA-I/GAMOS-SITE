@@ -29,6 +29,7 @@
  */
 
 import { playWhoosh } from "./audio.js";
+import { prefersReducedMotion } from "./utils/media-query.js";
 
 const NAV_DELAY_MS = 350;
 const LOGO_SVG_URL = "/assets/images/hero-scene/logo.svg";
@@ -49,11 +50,6 @@ const state = {
 
 const q = (sel) => document.querySelector(sel);
 const qa = (sel) => Array.from(document.querySelectorAll(sel));
-
-function prefersReducedMotion() {
-  return typeof window.matchMedia === "function" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
 
 /* Belt-and-braces: clear any leftover autoAlpha:0 GSAP left on the hero so a
    delayed/never-played entrance can't leave it invisible. */

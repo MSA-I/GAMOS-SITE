@@ -31,6 +31,8 @@
  *   machine, so callers can pick whichever feels cleaner.
  */
 
+import { prefersReducedMotion, onReducedMotionChange } from "./utils/media-query.js";
+
 // ----------------------------------------------------------------------------
 // Constants
 // ----------------------------------------------------------------------------
@@ -51,7 +53,7 @@ const state = {
   initialised:        false,
   el:                 null,    // root <div class="loading-overlay">
   visibilityState:    "hidden",// "hidden" | "showing" | "visible" | "hiding"
-  reducedMQ:          null,
+  unsubReduce:        null,    // unsubscribe fn from onReducedMotionChange
   reducedMotion:      false,
   hideTimer:          null,
   shownAt:            0,
@@ -60,7 +62,6 @@ const state = {
   bound: {
     onShowEvent:    null,
     onHideEvent:    null,
-    onMediaChange:  null,
   },
 };
 
@@ -97,19 +98,10 @@ function buildOverlayDom() {
 }
 
 function watchReducedMotion() {
-  if (typeof window === "undefined" || !window.matchMedia) return;
-  state.reducedMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
-  state.reducedMotion = state.reducedMQ.matches;
-
-  state.bound.onMediaChange = (e) => {
-    state.reducedMotion = e.matches;
-  };
-
-  if (typeof state.reducedMQ.addEventListener === "function") {
-    state.reducedMQ.addEventListener("change", state.bound.onMediaChange);
-  } else if (typeof state.reducedMQ.addListener === "function") {
-    state.reducedMQ.addListener(state.bound.onMediaChange);
-  }
+  state.reducedMotion = prefersReducedMotion();
+  state.unsubReduce = onReducedMotionChange((reduced) => {
+    state.reducedMotion = reduced;
+  });
 }
 
 function clearHideTimer() {
@@ -321,12 +313,9 @@ export function destroy() {
   if (state.bound.onHideEvent) {
     window.removeEventListener("gamos:loading-hide", state.bound.onHideEvent);
   }
-  if (state.reducedMQ && state.bound.onMediaChange) {
-    if (typeof state.reducedMQ.removeEventListener === "function") {
-      state.reducedMQ.removeEventListener("change", state.bound.onMediaChange);
-    } else if (typeof state.reducedMQ.removeListener === "function") {
-      state.reducedMQ.removeListener(state.bound.onMediaChange);
-    }
+  if (state.unsubReduce) {
+    state.unsubReduce();
+    state.unsubReduce = null;
   }
 
   // 3. Remove DOM.
@@ -343,13 +332,11 @@ export function destroy() {
   state.initialised        = false;
   state.el                 = null;
   state.visibilityState    = "hidden";
-  state.reducedMQ          = null;
   state.reducedMotion      = false;
   state.pendingShowResolve = null;
   state.pendingHideResolve = null;
   state.bound.onShowEvent  = null;
   state.bound.onHideEvent  = null;
-  state.bound.onMediaChange = null;
 }
 
 // Public, but advanced — useful for tests / debugging.

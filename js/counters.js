@@ -22,14 +22,15 @@
  *                    §10.3 (ESM).
  */
 
+import { prefersReducedMotion, onReducedMotionChange } from "./utils/media-query.js";
+
 const COUNTER_SELECTOR = ".stat-number[data-value]";
 const ROOT_MARGIN = "-15% 0px -15% 0px";
 const DEFAULT_DURATION_MS = 1600;
 
 let observer = null;
 let observed = new WeakSet();
-let mqlReduce = null;
-let mqlListener = null;
+let unsubReduce = null;
 
 /**
  * ease-out cubic: smooth deceleration toward the target.
@@ -120,15 +121,18 @@ function observeAll() {
 export function init() {
   if (typeof window === "undefined" || typeof document === "undefined") return;
 
-  mqlReduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-  if (mqlReduce.matches) {
-    document.querySelectorAll(COUNTER_SELECTOR).forEach(writeFinalImmediately);
-    mqlListener = (event) => {
-      if (!event.matches) observeAll();
-    };
-    if (mqlReduce.addEventListener) {
-      mqlReduce.addEventListener("change", mqlListener);
+  // React to live reduced-motion toggles in both directions: on → write final
+  // values immediately; off → (re)start the reveal observer.
+  unsubReduce = onReducedMotionChange((reduced) => {
+    if (reduced) {
+      document.querySelectorAll(COUNTER_SELECTOR).forEach(writeFinalImmediately);
+    } else if ("IntersectionObserver" in window) {
+      observeAll();
     }
+  });
+
+  if (prefersReducedMotion()) {
+    document.querySelectorAll(COUNTER_SELECTOR).forEach(writeFinalImmediately);
     return;
   }
 
@@ -139,17 +143,6 @@ export function init() {
   }
 
   observeAll();
-
-  mqlListener = (event) => {
-    if (event.matches) {
-      document.querySelectorAll(COUNTER_SELECTOR).forEach(writeFinalImmediately);
-    } else {
-      observeAll();
-    }
-  };
-  if (mqlReduce.addEventListener) {
-    mqlReduce.addEventListener("change", mqlListener);
-  }
 }
 
 /**
@@ -161,11 +154,10 @@ export function destroy() {
     observer = null;
   }
   observed = new WeakSet();
-  if (mqlReduce && mqlListener && mqlReduce.removeEventListener) {
-    mqlReduce.removeEventListener("change", mqlListener);
+  if (unsubReduce) {
+    unsubReduce();
+    unsubReduce = null;
   }
-  mqlReduce = null;
-  mqlListener = null;
 }
 
 export default { init, destroy };

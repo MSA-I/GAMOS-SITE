@@ -36,6 +36,8 @@
  *                    §9 (keyboard, ARIA labels), §10 (init/destroy contract).
  */
 
+import { prefersReducedMotion } from "./utils/media-query.js";
+
 const SWIPE_THRESHOLD_PX = 50;
 const DEFAULT_TRANSITION_MS = 600; // matches --dur-deluxe
 const DEFAULT_EASING = "cubic-bezier(0.2, 0.8, 0.2, 1)";
@@ -67,10 +69,7 @@ function createSliderInstance(root) {
       : "ltr";
   const isRTL = computedDir === "rtl";
 
-  const reduceMotion =
-    typeof window !== "undefined" &&
-    window.matchMedia &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduceMotion = prefersReducedMotion();
 
   // Optional: data-slider-initial-index="N" lets the section choose which
   // slide to land on at first paint. Useful when the first item is meant

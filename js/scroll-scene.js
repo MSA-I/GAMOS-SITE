@@ -46,12 +46,13 @@
    ========================================================================= */
 
 import { createRenderer } from "./canvas-frame-renderer.js";
+import { prefersReducedMotion } from "./utils/media-query.js";
 
 const SCENE_SELECTOR = "section[data-scrub]";
 const PROGRESS_THROTTLE_S = 0.04;
 const DEFAULT_SPACER_VH = 300;
 
-const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const reduceMotion = prefersReducedMotion();
 const isIOS =
   /iPad|iPhone|iPod/.test(navigator.userAgent) ||
   (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);

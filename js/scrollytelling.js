@@ -25,6 +25,7 @@
    ========================================================================= */
 
 import { createRenderer } from "./canvas-frame-renderer.js";
+import { prefersReducedMotion, isMobile } from "./utils/media-query.js";
 
 const LOADER_FADE_MS = 360;
 
@@ -141,8 +142,8 @@ export function init() {
   // unchanged (scrub off, poster shows). The matching mobile CSS
   // (mobile/css/culinary.css) re-shows the canvas + restores the scroll
   // spacer under RM≤768px. See CLAUDE.md §12.
-  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const mobile = matchMedia("(max-width: 768px)").matches;
+  const reduced = prefersReducedMotion();
+  const mobile = isMobile();
   if (reduced && !mobile) {
     // Just hide poster fallbacks etc. Caller's CSS handles it.
     return;
