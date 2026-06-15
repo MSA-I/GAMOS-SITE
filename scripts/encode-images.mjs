@@ -86,13 +86,17 @@ const SINGLE_WEBP = [
   // canonical font folder תמונות/פונט/ (CLAUDE.md §4.1). Token names below
   // describe the SURFACE the fill sits on — NOT the texture's own brightness.
   // WARNING: the source filenames are inverse to actual brightness. Re-sourced
-  // 2026-06-10 from the big full-texture files (2688×1520) per user request,
-  // mapping verified empirically by sharp stats() luma:
-  //   "טקסטורה בהירה.png" — luma 44  (DARK texture)  → typo-on-light → LIGHT surfaces
-  //   "טקסטורה כהה.png"   — luma 217 (LIGHT texture) → typo-on-dark  → DARK surfaces
-  // (Old typography-sample files kept as fallbacks so the encoder never skips.)
+  // 2026-06-15 to the new font-folder masters per user request (warm brown
+  // wood-grain on cream, matching the GAMOS reference mockup), mapping verified
+  // empirically by sharp stats() luma:
+  //   "טקסטורה בהירה 2.png" — luma 57 (DARK/brown texture) → typo-on-light → LIGHT surfaces
+  //   "טקסטורה כהה 3.png"   — luma 222 (LIGHT/cream texture) → typo-on-dark  → DARK surfaces
+  // Both new sources are fully opaque (no alpha) and already correctly toned,
+  // so NO flatten/modulate is applied to either. (Older texture files kept as
+  // fallbacks so the encoder never silently skips.)
   {
     srcCandidates: [
+      "תמונות לאנימציית האתר/פונט/טקסטורה בהירה 2.png",
       "תמונות לאנימציית האתר/פונט/טקסטורה בהירה.png",
       "תמונות לאנימציית האתר/פונט/טיפוגרפיה בהירה.png",
       "תמונות לאנימציית האתר/פונט/טקסטורה לטיפוגרפיה בהירה.png",
@@ -101,19 +105,17 @@ const SINGLE_WEBP = [
     width: 2000,
     quality: 92,
   },
-  // 2026-06-11: the LIGHT-text texture (fills cream headings on DARK
-  // surfaces — hero/halls/kosher/culinary/footer + every `.texture-text--light`)
-  // was re-sourced to the HERO desert photo `מדבר-2.png` per user request
-  // ("ליצור מחדש את הטקסטורה ששייכת לטקסט הבהיר ולהחיל על כל האתר"). The raw
-  // desert is DARK (opaque-pixel luma ≈ 72) with a transparent sky, so it is
-  // flattened onto a warm sand tone and brightened (modulate brightness 2.4 +
-  // saturation 1.15) to clear the §4.1 dark-surface invariant (luma > 153);
-  // the lift lands at ≈ 188 while keeping the warm desert character + the dark
-  // ridge lines that read as the gold/bronze flecks in the text fill. The old
-  // font-folder textures stay as fallbacks so the encoder never silently skips.
+  // 2026-06-15: the LIGHT-text texture (fills cream headings on DARK
+  // surfaces — hero/halls/kosher/culinary/footer/lounge + every `.texture-text--light`)
+  // re-sourced to the new font-folder master `טקסטורה כהה 3.png` per user request,
+  // replacing the 2026-06-11 HERO-desert source. The new file is already a LIGHT
+  // cream texture (opaque, luma ≈ 222) that clears the §4.1 dark-surface invariant
+  // (luma > 153) on its own, so the desert-era flatten/modulate are GONE (they
+  // would now blow the texture out to near-white). Older textures kept as
+  // fallbacks so the encoder never silently skips.
   {
     srcCandidates: [
-      "תמונות לאנימציית האתר/HERO/מדבר-2.png",
+      "תמונות לאנימציית האתר/פונט/טקסטורה כהה 3.png",
       "תמונות לאנימציית האתר/פונט/טקסטורה כהה.png",
       "תמונות לאנימציית האתר/פונט/טיפוגרפיה כהה.png",
       "תמונות לאנימציית האתר/פונט/טקסטורה לטיפוגרפיה בהירה.png",
@@ -121,8 +123,6 @@ const SINGLE_WEBP = [
     out: "assets/images/brand/typo-on-dark.webp",
     width: 2000,
     quality: 92,
-    flatten: "#D9C4A3",
-    modulate: { brightness: 2.4, saturation: 1.15 },
   },
   {
     srcCandidates: [

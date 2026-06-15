@@ -2,10 +2,13 @@
 
 /* Self-hosted fonts — root-absolute URLs resolve under the same `npx serve` of
    GAMOS-SITE that serves /rooms/dist/ (identical convention to halls). */
+/* Rubik + Heebo are VARIABLE fonts (wght 300–900 / 100–900); each face is a
+   font-weight RANGE so the VF renders the exact requested weight. Lightened
+   site-wide 2026-06-15 to match the main site. */
 @font-face {
   font-family: "Rubik";
   font-style: normal;
-  font-weight: 700;
+  font-weight: 300 900;
   font-display: swap;
   src: url("/assets/fonts/rubik-hebrew.woff2") format("woff2");
   unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
@@ -13,23 +16,7 @@
 @font-face {
   font-family: "Rubik";
   font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("/assets/fonts/rubik-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Rubik";
-  font-style: normal;
-  font-weight: 900;
-  font-display: swap;
-  src: url("/assets/fonts/rubik-hebrew.woff2") format("woff2");
-  unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
-}
-@font-face {
-  font-family: "Rubik";
-  font-style: normal;
-  font-weight: 900;
+  font-weight: 300 900;
   font-display: swap;
   src: url("/assets/fonts/rubik-latin.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
@@ -37,25 +24,9 @@
 @font-face {
   font-family: "Heebo";
   font-style: normal;
-  font-weight: 400;
+  font-weight: 100 900;
   font-display: swap;
   src: url("/assets/fonts/heebo-400.woff2") format("woff2");
-  unicode-range: U+0020-007E, U+00A0-00FF, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
-}
-@font-face {
-  font-family: "Heebo";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("/assets/fonts/heebo-500.woff2") format("woff2");
-  unicode-range: U+0020-007E, U+00A0-00FF, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
-}
-@font-face {
-  font-family: "Heebo";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("/assets/fonts/heebo-600.woff2") format("woff2");
   unicode-range: U+0020-007E, U+00A0-00FF, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
 }
 @font-face {
@@ -82,8 +53,8 @@
 
 /* Texture-fill URLs — mirror of css/tokens.css §2.2b (see halls/src/index.css). */
 :root {
-  --typo-on-light: url("/assets/images/brand/typo-on-light.webp?v=2026-06-10");
-  --typo-on-dark: url("/assets/images/brand/typo-on-dark.webp?v=2026-06-10");
+  --typo-on-light: url("/assets/images/brand/typo-on-light.webp?v=2026-06-15-brown");
+  --typo-on-dark: url("/assets/images/brand/typo-on-dark.webp?v=2026-06-15-brown");
 }
 
 /* Body baseline — DARK phantom backdrop. Unlike halls (which traded dark for an
@@ -177,7 +148,7 @@ body {
   text-decoration: none;
   font-family: var(--font-body);
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 500; /* lightened from 600 — 2026-06-15 site-wide weight pass */
   letter-spacing: 0.02em;
   color: color-mix(in srgb, var(--color-ivory) 90%, transparent);
   transition: color 0.3s ease;
@@ -241,7 +212,7 @@ body {
 .rooms-heading__eyebrow {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 500; /* lightened from 600 — 2026-06-15 site-wide weight pass */
   font-size: 0.72rem;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -252,7 +223,7 @@ body {
   margin: 0.15rem 0 0;
   font-family: var(--font-body);
   font-size: 0.82rem;
-  font-weight: 500;
+  font-weight: 400; /* lightened from 500 — 2026-06-15 site-wide weight pass */
   color: color-mix(in srgb, var(--color-ivory) 72%, transparent);
 }
 
@@ -278,7 +249,7 @@ body {
 .rooms-title {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 900;
+  font-weight: 700; /* lightened from 900 — 2026-06-15 site-wide weight pass */
   line-height: 1.1;
   letter-spacing: 0.01em;
   font-size: clamp(1.35rem, 2.6vw, 2.25rem);
@@ -289,7 +260,7 @@ body {
 .rooms-title__index {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 600; /* lightened from 700 — 2026-06-15 site-wide weight pass */
   font-size: clamp(0.72rem, 0.9vw, 0.85rem);
   letter-spacing: 0.32em;
   font-variant-numeric: tabular-nums;
@@ -299,7 +270,7 @@ body {
 
 .rooms-title__type {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 500; /* lightened from 600 — 2026-06-15 site-wide weight pass */
   font-size: clamp(0.6rem, 0.72vw, 0.72rem);
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -339,7 +310,7 @@ body {
 
 .rooms-hint__pill {
   font-family: var(--font-body);
-  font-weight: 500;
+  font-weight: 400; /* lightened from 500 — 2026-06-15 site-wide weight pass */
   font-size: 0.8rem;
   letter-spacing: 0.04em;
   color: color-mix(in srgb, var(--color-ivory) 78%, transparent);
@@ -405,7 +376,7 @@ body {
   color: var(--color-ivory);
   font-family: var(--font-body);
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 400; /* lightened from 500 — 2026-06-15 site-wide weight pass */
   letter-spacing: 0.08em;
   cursor: pointer;
   transition:
@@ -462,7 +433,7 @@ body {
 .rooms-detail__index {
   margin: 0 0 0.75rem;
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 600; /* lightened from 700 — 2026-06-15 site-wide weight pass */
   font-size: clamp(0.72rem, 0.9vw, 0.85rem);
   letter-spacing: 0.32em;
   font-variant-numeric: tabular-nums;
@@ -472,7 +443,7 @@ body {
 .rooms-detail__title {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 900;
+  font-weight: 700; /* lightened from 900 — 2026-06-15 site-wide weight pass */
   line-height: 1.05;
   letter-spacing: 0.01em;
   font-size: clamp(2rem, 5vw, 4rem);
@@ -488,7 +459,7 @@ body {
 .rooms-detail__tag {
   font-family: var(--font-body);
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 400; /* lightened from 500 — 2026-06-15 site-wide weight pass */
   letter-spacing: 0.1em;
   color: var(--color-ink-deep);
   background: var(--color-brass);
@@ -498,7 +469,7 @@ body {
 }
 .rooms-detail__year {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 500; /* lightened from 600 — 2026-06-15 site-wide weight pass */
   font-size: 0.9rem;
   letter-spacing: 0.18em;
   font-variant-numeric: tabular-nums;

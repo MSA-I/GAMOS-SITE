@@ -71,7 +71,7 @@
 /* Latin/numeric variant: switch to luxury Bodoni for English flourishes */
 .marquee__text--luxury {
   font-family: var(--font-display-luxury);
-  font-weight: 900;
+  font-weight: 700; /* lightened from 900 with the 2026-06-15 site-wide weight pass */
 }
 
 @media (max-width: 767px) {

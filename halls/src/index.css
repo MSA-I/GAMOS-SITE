@@ -1,9 +1,13 @@
 @import "tailwindcss";
 
+/* Rubik + Heebo are VARIABLE fonts (wght 300–900 / 100–900). Each face is a
+   font-weight RANGE so the VF renders the exact requested weight (pinning to
+   discrete 700/900 made lighter requests snap back up). Lightened site-wide
+   2026-06-15 to match the main site. */
 @font-face {
   font-family: "Rubik";
   font-style: normal;
-  font-weight: 700;
+  font-weight: 300 900;
   font-display: swap;
   src: url("/assets/fonts/rubik-hebrew.woff2") format("woff2");
   unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
@@ -11,23 +15,7 @@
 @font-face {
   font-family: "Rubik";
   font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("/assets/fonts/rubik-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Rubik";
-  font-style: normal;
-  font-weight: 900;
-  font-display: swap;
-  src: url("/assets/fonts/rubik-hebrew.woff2") format("woff2");
-  unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
-}
-@font-face {
-  font-family: "Rubik";
-  font-style: normal;
-  font-weight: 900;
+  font-weight: 300 900;
   font-display: swap;
   src: url("/assets/fonts/rubik-latin.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
@@ -35,25 +23,9 @@
 @font-face {
   font-family: "Heebo";
   font-style: normal;
-  font-weight: 400;
+  font-weight: 100 900;
   font-display: swap;
   src: url("/assets/fonts/heebo-400.woff2") format("woff2");
-  unicode-range: U+0020-007E, U+00A0-00FF, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
-}
-@font-face {
-  font-family: "Heebo";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("/assets/fonts/heebo-500.woff2") format("woff2");
-  unicode-range: U+0020-007E, U+00A0-00FF, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
-}
-@font-face {
-  font-family: "Heebo";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("/assets/fonts/heebo-600.woff2") format("woff2");
   unicode-range: U+0020-007E, U+00A0-00FF, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
 }
 @font-face {
@@ -87,8 +59,8 @@
    exactly like the /assets/fonts/ faces above. (Standalone `vite dev` for
    halls won't find them — that's the established convention here.) */
 :root {
-  --typo-on-light: url("/assets/images/brand/typo-on-light.webp?v=2026-06-10");
-  --typo-on-dark: url("/assets/images/brand/typo-on-dark.webp?v=2026-06-10");
+  --typo-on-light: url("/assets/images/brand/typo-on-light.webp?v=2026-06-15-brown");
+  --typo-on-dark: url("/assets/images/brand/typo-on-dark.webp?v=2026-06-15-brown");
 }
 
 /* Body baseline — applies to both /halls/oasis/ and /halls/lumina/ entry pages.
@@ -151,7 +123,7 @@ body {
   border: 1px solid transparent;
   font-family: var(--font-body);
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: 500; /* lightened from 600 — 2026-06-15 site-wide weight pass */
   line-height: 1;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -220,7 +192,7 @@ body {
 .hall-switch__eyebrow {
   font-family: var(--font-display);
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 500; /* lightened from 600 — 2026-06-15 site-wide weight pass */
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--color-ivory) 78%, transparent);
@@ -345,7 +317,7 @@ body {
 .hall-label__title {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 900;
+  font-weight: 700; /* lightened from 900 — 2026-06-15 site-wide weight pass */
   line-height: 1.1;
   letter-spacing: 0.01em;
   font-size: clamp(1.35rem, 2.6vw, 2.25rem);
@@ -360,7 +332,7 @@ body {
 .hall-label__index {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 600; /* lightened from 700 — 2026-06-15 site-wide weight pass */
   font-size: clamp(0.72rem, 0.9vw, 0.85rem);
   letter-spacing: 0.32em;
   font-variant-numeric: tabular-nums;
@@ -378,7 +350,7 @@ body {
 
 .hall-label__spec-key {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 500; /* lightened from 600 — 2026-06-15 site-wide weight pass */
   font-size: clamp(0.6rem, 0.72vw, 0.72rem);
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -390,7 +362,7 @@ body {
 
 .hall-label__spec-val {
   font-family: var(--font-body);
-  font-weight: 500;
+  font-weight: 400; /* lightened from 500 — 2026-06-15 site-wide weight pass */
   font-size: clamp(0.78rem, 0.95vw, 0.95rem);
   letter-spacing: 0.01em;
   color: var(--color-ivory);

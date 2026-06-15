@@ -27,13 +27,17 @@
    Replaces Frank Ruhl Libre as the display family per user direction
    (2026-06-02): the literary serif read too "writerly"; Rubik is a modern
    geometric humanist that flows in Hebrew without losing premium weight.
-   Same WOFF2 file serves 700 + 900 (Google Fonts ships a variable cut).
+   The WOFF2 is a VARIABLE font (wght axis 300–900, verified via fvar). Each
+   face is declared as a `font-weight` RANGE (not a discrete value) so the
+   browser renders the exact requested weight from the variable file — pinning
+   to 700/900 made any lighter token snap back to 700. Lightened site-wide
+   2026-06-15 per user request (text felt too bold/heavy).
    Loaded for both Hebrew + Latin so eyebrows like "GAMOS EVENTS" use the
    same family as the Hebrew titles. */
 @font-face {
   font-family: "Rubik";
   font-style: normal;
-  font-weight: 700;
+  font-weight: 300 900;
   font-display: swap;
   src: url("../assets/fonts/rubik-hebrew.woff2") format("woff2");
   unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
@@ -41,51 +45,23 @@
 @font-face {
   font-family: "Rubik";
   font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("../assets/fonts/rubik-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Rubik";
-  font-style: normal;
-  font-weight: 900;
-  font-display: swap;
-  src: url("../assets/fonts/rubik-hebrew.woff2") format("woff2");
-  unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
-}
-@font-face {
-  font-family: "Rubik";
-  font-style: normal;
-  font-weight: 900;
+  font-weight: 300 900;
   font-display: swap;
   src: url("../assets/fonts/rubik-latin.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* ---- Heebo (Hebrew + Latin body) ---- */
+/* ---- Heebo (Hebrew + Latin body) ----
+   Variable font (wght axis 100–900, verified via fvar); the 400/500/600 files
+   are byte-identical, so one face with a `font-weight` RANGE serves the whole
+   body-weight span from the single VF — the browser renders the exact token
+   weight (incl. the lighter 350 default set 2026-06-15). */
 @font-face {
   font-family: "Heebo";
   font-style: normal;
-  font-weight: 400;
+  font-weight: 100 900;
   font-display: swap;
   src: url("../assets/fonts/heebo-400.woff2") format("woff2");
-  unicode-range: U+0020-007E, U+00A0-00FF, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
-}
-@font-face {
-  font-family: "Heebo";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("../assets/fonts/heebo-500.woff2") format("woff2");
-  unicode-range: U+0020-007E, U+00A0-00FF, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
-}
-@font-face {
-  font-family: "Heebo";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("../assets/fonts/heebo-600.woff2") format("woff2");
   unicode-range: U+0020-007E, U+00A0-00FF, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
 }
 
@@ -175,8 +151,8 @@
                          culinary, footer).
      Legacy --typo-light/--typo-dark aliases removed; texture-text.css now
      references the new names directly. */
-  --typo-on-light:  url("/assets/images/brand/typo-on-light.webp?v=2026-06-10");
-  --typo-on-dark:   url("/assets/images/brand/typo-on-dark.webp?v=2026-06-11-desert");
+  --typo-on-light:  url("/assets/images/brand/typo-on-light.webp?v=2026-06-15-brown");
+  --typo-on-dark:   url("/assets/images/brand/typo-on-dark.webp?v=2026-06-15-brown");
   --texture-light:  url("/assets/images/brand/texture-light.webp");
   --texture-dark:   url("/assets/images/brand/texture-dark.webp");
 
@@ -204,10 +180,14 @@
   --text-hero:  clamp(3.5rem, 9vw, 8rem); /* 56–128px */
 
   /* ===== 2.5 Weights ===== */
-  --fw-regular:  400;
-  --fw-medium:   500;
-  --fw-semibold: 600;
-  --fw-bold:     700;
+  /* Lightened ~one half-step site-wide 2026-06-15 (text felt too bold/heavy).
+     Rubik + Heebo are variable fonts (see @font-face range blocks above), so
+     these render exactly — no font files added. Revert to 400/500/600/700 to
+     undo. */
+  --fw-regular:  350;
+  --fw-medium:   400;
+  --fw-semibold: 500;
+  --fw-bold:     600;
 
   /* ===== 2.6 Line heights ===== */
   --lh-tight:   1.05;
