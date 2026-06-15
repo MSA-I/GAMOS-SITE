@@ -83,21 +83,10 @@ const MOBILE_BREAKPOINT = 768;
 // pushed to the side, NOT bleeding off-frame (matches the user's pink mark).
 //
 // Mobile: a landscape card on a narrow PORTRAIT screen can't open a real centre
-// channel without pushing part of the photo off the side — but the user
-// explicitly wants cards to PASS ACROSS the periphery and NOT enter the lens
-// ("התמונה לא אמורה להיכנס לי לתוך המצלמה… חולפות על פני המבט אך לא נכנסות").
-// A partial off-edge bleed on a phone is the lesser evil vs. a card smearing
-// through screen-centre, so mobile now also uses a CLEARING offset.
-//
-// 2026-06-15 retune — clear the inner edge past x=0 with real margin at BOTH
-// tiers (was 1.8 / 0.3, which left desktop barely clearing and mobile straddling
-// centre by ~0.77 so the camera plowed straight through the card). Half-widths:
-// desktop card ≈1.66 → 2.6 gives ~0.94 inner clearance; mobile card ≈1.07 →
-// 1.6 gives ~0.53. Camera still dollies straight down x=0; cards now sweep the
-// sides and slide off the frame edge before the camera reaches their depth,
-// instead of passing through the lens. Verified visually at multiple depths.
-const SIDE_OFFSET = 2.6;
-const MOBILE_SIDE_OFFSET = 1.6;
+// channel without pushing most of the photo off-screen, so mobile keeps the
+// small near-centred offset (accepts a softer "approach" rather than a corridor).
+const SIDE_OFFSET = 1.8;
+const MOBILE_SIDE_OFFSET = 0.3;
 
 // Sample one gap ahead so the label/mood/fade lands on the plane the camera is
 // approaching (reference planeFadeSampleOffset = moodSampleOffset = 1).
