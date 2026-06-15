@@ -19,6 +19,8 @@
  * idempotent, no-ops when the door is absent.
  */
 
+import { prefersReducedMotion } from "./utils/media-query.js";
+
 const VIDEO_MP4 = "/assets/images/rooms/door.mp4";
 const VIDEO_POSTER = "/assets/images/rooms/door-poster.webp";
 const VEIL_MS = 560; // ink-deep veil fade before navigation
@@ -31,14 +33,6 @@ let skipBtn = null;
 let onKeyDown = null;
 let navTimer = null;
 let done = false; // single-fire guard for ended/skip → navigate
-
-function prefersReducedMotion() {
-  return Boolean(
-    typeof window !== "undefined" &&
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
-}
 
 export function init() {
   link = document.getElementById("rooms-door");

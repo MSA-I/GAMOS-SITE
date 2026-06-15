@@ -24,6 +24,8 @@
  *                    §10 (init/destroy contract, no globals).
  */
 
+import { prefersReducedMotion } from "./utils/media-query.js";
+
 const SELECTOR = "details[data-accordion]";
 const ANIMATION_DURATION = 320; // ms — matches --dur-base..--dur-slow band
 const EASING = "cubic-bezier(0.2, 0.8, 0.2, 1)"; // --ease-out-cinema literal
@@ -41,14 +43,6 @@ function detectInterpolateSize() {
     supportsInterpolateSize = false;
   }
   return supportsInterpolateSize;
-}
-
-function prefersReducedMotion() {
-  return (
-    typeof window !== "undefined" &&
-    window.matchMedia &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
 }
 
 /**

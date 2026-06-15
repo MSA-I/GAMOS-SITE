@@ -36,6 +36,8 @@
  * - §10 — module-scoped state, init/destroy.
  */
 
+import { prefersReducedMotion } from "./utils/media-query.js";
+
 // ----------------------------------------------------------------------------
 // Constants
 // ----------------------------------------------------------------------------
@@ -248,9 +250,7 @@ function onKeyDown(event) {
 
 function smoothScrollTo(target) {
   if (!target) return;
-  const reduced = typeof window !== "undefined"
-    && window.matchMedia
-    && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduced = prefersReducedMotion();
 
   // Prefer GSAP ScrollToPlugin (already self-hosted at /assets/vendor/) for
   // a single smooth animation that won't fight the hero's RAF loop.

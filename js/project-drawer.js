@@ -16,6 +16,7 @@
 
 import { getProjectById } from "./projects-data.js";
 import { playClick }       from "./audio.js";
+import { prefersReducedMotion } from "./utils/media-query.js";
 
 // ---------------------------------------------------------------------------
 // Module state
@@ -320,8 +321,7 @@ export function init() {
   if (state.initialised) return;
   if (typeof document === "undefined") return;
 
-  state.reducedMotion = window.matchMedia &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  state.reducedMotion = prefersReducedMotion();
 
   state.bound.onKeyDown = (e) => {
     if (!state.isOpen) return;

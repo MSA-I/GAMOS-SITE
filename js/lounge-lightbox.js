@@ -36,6 +36,8 @@
  * Public API: init(), destroy()
  */
 
+import { prefersReducedMotion } from "./utils/media-query.js";
+
 // A gesture counts as a tap only if the pointer moved less than this many CSS
 // pixels between down and up. Above it, lounge-selector treats it as a drag and
 // this module ignores it.
@@ -273,14 +275,6 @@ function closeLightbox() {
     try { state.lastFocus.focus(); } catch { /* ignore */ }
   }
   state.lastFocus = null;
-}
-
-function prefersReducedMotion() {
-  return Boolean(
-    typeof window !== "undefined" &&
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
 }
 
 // ----------------------------------------------------------------------------

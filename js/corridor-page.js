@@ -24,6 +24,7 @@
 import * as corridor      from "./corridor.js";
 import * as projectDrawer from "./project-drawer.js";
 import { playClick, playWhoosh } from "./audio.js";
+import { prefersReducedMotion } from "./utils/media-query.js";
 
 const SLIDE_DURATION = 0.7;
 const SLIDE_EASE     = "back.out(1.05)";  // gsap approximation of motion/react spring(220, 28)
@@ -35,8 +36,7 @@ function boot() {
   if (!page) return;
 
   // Reduced motion handling — skip animations.
-  const reducedMotion = window.matchMedia &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reducedMotion = prefersReducedMotion();
 
   // 1. Pick initial hall from URL.
   const params = new URLSearchParams(location.search);
