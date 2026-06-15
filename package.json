@@ -1,7 +1,7 @@
 {
   "name": "gamos-site",
   "version": "1.0.0",
-  "description": "אתר עברית-RTL יוקרתי — מתחם אירועים גאמוס. HTML/CSS/JS וונילה (Constitution §2: no framework, no bundler).",
+  "description": "אתר עברית-RTL יוקרתי למתחם האירועים והריזורט גאמוס (מעלה אדומים) — HTML/CSS/JS וונילה עם hero קולנועי scroll-pinned (GSAP v10), פלוס תת-אפליקציות React/Vite לאולמות ולחדרים (Constitution §2.1). אין framework/bundler בליבה.",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,6 +14,9 @@
     "build:rooms": "cd rooms && npm install && npm run build",
     "build:mobile": "node scripts/build-mobile-index.mjs",
     "build": "npm run build:mobile && npm run build:halls && npm run build:rooms",
+    "deploy:cf": "node scripts/deploy-cloudflare.mjs",
+    "deploy:cf:prod": "node scripts/deploy-cloudflare.mjs --prod",
+    "deploy:cf:stage": "node scripts/deploy-cloudflare.mjs --stage-only",
     "encode:hero": "node scripts/encode-frames.mjs hero",
     "encode:culinary": "node scripts/encode-frames.mjs culinary",
     "encode:all": "node scripts/encode-frames.mjs hero culinary",
