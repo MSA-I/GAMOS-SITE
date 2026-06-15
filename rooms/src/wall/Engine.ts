@@ -24,6 +24,13 @@ export interface DragMetrics {
 
 const INTRO_MS = 1200; // intro bloom duration
 
+const BASE_CAM_Z = 16.5; // camera rest distance (single source for the dolly math)
+// Phantom-style velocity dolly ("zoom-out on scroll") — MEDIUM intensity.
+const DOLLY_PER_SPEED = 3.5; // world-units pull-back per (world-unit/frame) of pan speed
+const DOLLY_MAX = 2.0; // max pull-back (~12% of BASE_CAM_Z) — clamps a hard fling
+const DOLLY_ATTACK = 0.2; // ease toward target while zooming OUT (quick)
+const DOLLY_RELEASE = 0.06; // ease back toward rest while settling IN (slower, luxe)
+
 /**
  * Engine — owns the Three.js Scene / Camera / Renderer + the group the pooled
  * cards live in, and drives the render loop. This is the phantom "lens" model:
@@ -79,6 +86,11 @@ export default class Engine {
   private introStart = 0; // perf timestamp of first frame
   private introT = 0;
 
+  // Velocity dolly state (zoom-out on scroll).
+  private dollyZ = 0; // current pull-back added to BASE_CAM_Z (eased)
+  private prevPanX = 0; // pan last frame — for the per-frame speed signal
+  private prevPanY = 0;
+
   // Reduced-motion idle short-circuit.
   private lastPanX = Number.NaN;
   private lastPanY = Number.NaN;
@@ -104,7 +116,7 @@ export default class Engine {
       0.1,
       200,
     );
-    this.camera.position.set(0, 0, 16.5);
+    this.camera.position.set(0, 0, BASE_CAM_Z);
     this.camera.lookAt(0, 0, 0);
 
     this.renderer = new THREE.WebGLRenderer({
@@ -177,7 +189,9 @@ export default class Engine {
   /** Input→world scale for Drag (the pan is infinite, so there are no bounds). */
   public getInitialMetrics(): DragMetrics {
     const { clientWidth } = this.getViewportSize();
-    const dist = this.camera.position.z;
+    // Always map against the REST distance, never a mid-dolly z, so the drag→world
+    // 1:1 mapping stays stable while the velocity dolly is pulling the camera back.
+    const dist = BASE_CAM_Z;
     const vFov = (this.camera.fov * Math.PI) / 180;
     const visibleHeight = 2 * Math.tan(vFov / 2) * dist;
     const visibleWidth = visibleHeight * this.camera.aspect;
@@ -229,7 +243,12 @@ export default class Engine {
   public freeze(v: boolean): void {
     this.frozen = v;
     if (this.drag) this.drag.enabled = !v;
-    if (v) this.wall.setHovered(null);
+    if (v) {
+      this.wall.setHovered(null);
+      // Snap the camera to rest so the FLIP detail morph projects against BASE_CAM_Z.
+      this.dollyZ = 0;
+      this.camera.position.z = BASE_CAM_Z;
+    }
     // Resume the idle short-circuit accounting so a thaw repaints.
     this.lastPanX = Number.NaN;
     this.lastPanY = Number.NaN;
@@ -271,6 +290,25 @@ export default class Engine {
       const offset = this.drag.update();
       this.panX = offset.x;
       this.panY = offset.y;
+    }
+
+    // Phantom-style velocity dolly: pull the camera back while the wall is moving,
+    // settle it back to rest as the pan speed decays. Disabled under reduced motion.
+    if (!this.quality.reducedMotion) {
+      // Speed = how far the EASED pan moved this frame (reflects on-screen motion:
+      // drag, fling-coast, wheel, and keyboard pan all flow through panX/panY).
+      const speed = Math.hypot(
+        this.panX - this.prevPanX,
+        this.panY - this.prevPanY,
+      );
+      this.prevPanX = this.panX;
+      this.prevPanY = this.panY;
+
+      const target = Math.min(speed * DOLLY_PER_SPEED, DOLLY_MAX);
+      // Asymmetric ease: quick to zoom out, slower to settle back in.
+      const k = target > this.dollyZ ? DOLLY_ATTACK : DOLLY_RELEASE;
+      this.dollyZ += (target - this.dollyZ) * k;
+      this.camera.position.z = BASE_CAM_Z + this.dollyZ;
     }
 
     // Reduced-motion idle short-circuit: under reduce, with the intro done and

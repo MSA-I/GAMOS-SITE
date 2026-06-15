@@ -26,7 +26,7 @@
  * Existing encoded images are kept (overwrites only if --force flag passed).
  */
 
-import { existsSync, mkdirSync, readdirSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join, resolve, basename, extname } from "node:path";
 
@@ -251,6 +251,15 @@ const NAMED_PAIRS = [
   },
 ];
 
+// 2026-06-15: FLAT single-webp encodes for the rooms React sub-app.
+// Unlike MAPPINGS (which emit .full/.half × .webp/.jpg pairs for the main site's
+// <picture> srcset), the rooms wall loads one flat WebP per card via Three's
+// TextureLoader. Reads numbered JPGs from an in-repo staging dir and writes
+// `NN.webp` into rooms/public/images/ (so Vite copies them on build).
+const FLAT_WEBP = [
+  { srcDir: "assets/_src/rooms", outDir: "rooms/public/images", prefix: "", width: 1000, quality: 80 },
+];
+
 async function loadSharp() {
   try {
     const sharp = (await import("sharp")).default;
@@ -277,7 +286,7 @@ function listSources(srcDir, exts, skipSubdirs, srcBase) {
   return result.sort();
 }
 
-async function encodePair(srcPath, outDir, basenameNoExt, sharp) {
+async function encodePair(srcPath, outDir, basenameNoExt, sharp, opts = {}) {
   mkdirSync(outDir, { recursive: true });
   const outFullWebp = join(outDir, `${basenameNoExt}.full.webp`);
   const outHalfWebp = join(outDir, `${basenameNoExt}.half.webp`);
@@ -288,12 +297,22 @@ async function encodePair(srcPath, outDir, basenameNoExt, sharp) {
     return { skipped: true };
   }
 
+  // Per-mapping overrides (default to the §8 section budget). Detail-dense
+  // sources (e.g. the 2026-06-15 pro-photo set) need smaller dims / lower q to
+  // stay within budget; lighter sources keep the original defaults.
+  const fw = opts.fullWidth   ?? 1920;
+  const fq = opts.fullQuality ?? 82;
+  const hw = opts.halfWidth   ?? 960;
+  const hq = opts.halfQuality ?? 78;
+  const fjq = opts.fullJpgQuality ?? 80;
+  const hjq = opts.halfJpgQuality ?? 78;
+
   const pipeline = sharp(srcPath, { failOn: "warning" });
 
-  await pipeline.clone().resize({ width: 1920, withoutEnlargement: true }).webp({ quality: 82, effort: 6 }).toFile(outFullWebp);
-  await pipeline.clone().resize({ width: 960,  withoutEnlargement: true }).webp({ quality: 78, effort: 6 }).toFile(outHalfWebp);
-  await pipeline.clone().resize({ width: 1920, withoutEnlargement: true }).jpeg({ quality: 80, mozjpeg: true }).toFile(outFullJpg);
-  await pipeline.clone().resize({ width: 960,  withoutEnlargement: true }).jpeg({ quality: 78, mozjpeg: true }).toFile(outHalfJpg);
+  await pipeline.clone().resize({ width: fw, withoutEnlargement: true }).webp({ quality: fq, effort: 6 }).toFile(outFullWebp);
+  await pipeline.clone().resize({ width: hw, withoutEnlargement: true }).webp({ quality: hq, effort: 6 }).toFile(outHalfWebp);
+  await pipeline.clone().resize({ width: fw, withoutEnlargement: true }).jpeg({ quality: fjq, mozjpeg: true }).toFile(outFullJpg);
+  await pipeline.clone().resize({ width: hw, withoutEnlargement: true }).jpeg({ quality: hjq, mozjpeg: true }).toFile(outHalfJpg);
 
   return { skipped: false };
 }
@@ -320,7 +339,7 @@ async function main() {
     for (let i = 0; i < sources.length; i++) {
       const src = sources[i];
       const baseName = basenameNoExtNumeric(src, i);
-      const result = await encodePair(src, join(ROOT, m.outDir), baseName, sharp);
+      const result = await encodePair(src, join(ROOT, m.outDir), baseName, sharp, m.encode);
       if (result.skipped) totalSkipped++; else totalEncoded++;
     }
   }
@@ -446,6 +465,40 @@ async function main() {
     const formats = np.webpOnly ? "{full,half}.webp" : "{full,half}.{webp,jpg}";
     console.log(`[named] ${np.src} → ${np.outDir}/${np.name}.${formats}`);
     totalEncoded++;
+  }
+
+  // Flat single-webp encodes for the React sub-apps (halls + rooms). Sources are
+  // numbered JPGs in an in-repo staging dir; output is `<prefix>NN.webp`. To keep
+  // the sub-app's projects/rooms dir free of stale numbers, when --force is set we
+  // first remove any prior `<prefix>NN.webp` for that prefix before re-encoding.
+  for (const fw of FLAT_WEBP) {
+    const sources = listSources(fw.srcDir, [".jpg", ".jpeg", ".png"], false, "root");
+    if (sources.length === 0) {
+      console.log(`[flat] ${fw.srcDir} no sources found, skipping`);
+      continue;
+    }
+    const outDirAbs = join(ROOT, fw.outDir);
+    mkdirSync(outDirAbs, { recursive: true });
+    if (FORCE) {
+      const stalePrefix = `${fw.prefix}`;
+      for (const f of readdirSync(outDirAbs)) {
+        // Only clear files matching this prefix + numeric + .webp (e.g. events-03.webp,
+        // or for empty prefix the bare NN.webp), never other assets in the dir.
+        const re = new RegExp(`^${stalePrefix.replace(/[-]/g, "\\$&")}\\d+\\.webp$`);
+        if (re.test(f)) rmSync(join(outDirAbs, f));
+      }
+    }
+    console.log(`[flat] ${fw.srcDir} ${sources.length} sources → ${fw.outDir}/${fw.prefix}NN.webp`);
+    for (let i = 0; i < sources.length; i++) {
+      const num = String(i + 1).padStart(2, "0");
+      const outPath = join(outDirAbs, `${fw.prefix}${num}.webp`);
+      if (!FORCE && existsSync(outPath)) { totalSkipped++; continue; }
+      await sharp(sources[i], { failOn: "warning" })
+        .resize({ width: fw.width, withoutEnlargement: true })
+        .webp({ quality: fw.quality, effort: 6 })
+        .toFile(outPath);
+      totalEncoded++;
+    }
   }
 
   console.log(`\nDone. Encoded: ${totalEncoded}, Skipped (already exist): ${totalSkipped}.`);

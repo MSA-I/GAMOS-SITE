@@ -450,6 +450,16 @@ body {
   color: var(--color-ivory);
 }
 
+/* Specific room title — quieter line under the prominent category heading. */
+.rooms-detail__subtitle {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: clamp(1rem, 1.8vw, 1.4rem);
+  letter-spacing: 0.01em;
+  color: color-mix(in srgb, var(--color-ivory) 80%, transparent);
+}
+
 .rooms-detail__meta {
   display: flex;
   gap: 0.9rem;

@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 import { animate, motion, useReducedMotion } from "motion/react";
 import { X } from "lucide-react";
 import type { RoomCard } from "../roomsData";
+import { getRooms } from "../roomsData";
 import type { CardScreenRect } from "../wall/Engine";
 
 interface Props {
@@ -167,14 +168,16 @@ export default function RoomDetail({ card, measureFrom, onClose }: Props) {
 
   const items = [
     <p key="idx" className="rooms-detail__index">
-      <bdi>{card.number} / 20</bdi>
+      <bdi>{card.number} / {String(getRooms().length).padStart(2, "0")}</bdi>
     </p>,
     <h1 key="title" id="rooms-detail-title" className="rooms-detail__title">
-      {card.titleHe}
+      {card.category}
     </h1>,
+    <p key="subtitle" className="rooms-detail__subtitle">
+      {card.titleHe}
+    </p>,
     <div key="meta" className="rooms-detail__meta">
       <span className="rooms-detail__tag">{card.tag}</span>
-      <span className="rooms-detail__year">{card.year}</span>
     </div>,
     <p key="body" className="rooms-detail__body">
       {card.body}

@@ -74,10 +74,10 @@ export default function RoomsChrome({ activeCard }: Props) {
           <bdi>{`${activeCard?.number ?? "01"} / ${totalLabel}`}</bdi>
         </p>
         <h1 className="rooms-title texture-text texture-text--light">
-          {activeCard?.titleHe ?? ""}
+          {activeCard?.category ?? ""}
         </h1>
-        {activeCard?.type ? (
-          <p className="rooms-title__type m-0">{activeCard.type}</p>
+        {activeCard?.titleHe ? (
+          <p className="rooms-title__type m-0">{activeCard.titleHe}</p>
         ) : null}
       </section>
 

@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { clamp } from "./utils";
 import type { QualityProfile } from "./quality";
 import type { RoomCard } from "../roomsData";
+import { COLS_PER_ROW, CATEGORIES } from "../roomsData";
 
 /**
  * Wall — the phantom.land "infinite pan grid through a concave lens".
@@ -152,10 +153,13 @@ export default class Wall {
     this.cards = cards;
     this.quality = quality;
 
-    // Catalogue period: fixed 5×4 = 20 (matches the card count), constant across
-    // breakpoints so content never jumps at the mobile boundary.
-    this.catCols = 5;
-    this.catRows = 4;
+    // Catalogue period: ONE ROW PER CATEGORY (2026-06-15). The card array is a
+    // balanced grid of CATEGORIES.length rows × COLS_PER_ROW cols (roomsData pads
+    // each row with placeholders), so catN === cards.length and the catalogue
+    // cell id maps 1:1 to a card. Row r of the wall = category r, every row the
+    // same width → rooms read horizontally, category by category.
+    this.catCols = COLS_PER_ROW;
+    this.catRows = CATEGORIES.length;
     this.catN = this.catCols * this.catRows;
 
     // Pool sized to cover the viewport + a wrap margin; smaller on mobile. Each
@@ -226,7 +230,7 @@ export default class Wall {
       ctx.drawImage(img, dx, dy, dw, dh);
     }
 
-    // legibility scrim along the bottom for the title/tag/year over a photo
+    // legibility scrim along the bottom for the title/tag over a photo
     const grad = ctx.createLinearGradient(0, POSTER.y + POSTER.h * 0.55, 0, POSTER.y + POSTER.h);
     grad.addColorStop(0, "rgba(26,20,16,0)");
     grad.addColorStop(1, hot ? "rgba(26,20,16,0.72)" : "rgba(26,20,16,0.58)");
@@ -234,13 +238,7 @@ export default class Wall {
     ctx.fillRect(POSTER.x, POSTER.y, POSTER.w, POSTER.h);
     ctx.restore();
 
-    // thin frame; brass on the highlighted real cards, hairline otherwise
-    ctx.strokeStyle = card.isReal
-      ? `rgba(207,174,131,${hot ? 0.95 : 0.8})`
-      : `rgba(245,239,230,${hot ? 0.22 : 0.12})`;
-    ctx.lineWidth = card.isReal ? 3 : 2;
-    roundRect(ctx, POSTER.x, POSTER.y, POSTER.w, POSTER.h, 8);
-    ctx.stroke();
+    // (no grid lattice / no per-image frame — reverted 2026-06-15 per request)
 
     // text colour: cream over the photo body works regardless of tone; the
     // top index uses the on-tone colour only when there's no photo, but cream
@@ -248,26 +246,33 @@ export default class Wall {
     const meta = hot ? "#FFFFFF" : "rgba(245,239,230,0.78)";
     const dim = hot ? "rgba(245,239,230,0.92)" : "rgba(245,239,230,0.55)";
 
-    // ---- index marker (top-end, RTL → drawn at the right; year scale echoes it) ----
+    // ---- index marker (in the gutter above the poster, end-aligned = right) ----
     ctx.textBaseline = "alphabetic";
     ctx.font = `600 ${Math.round(CELL_W * 0.05)}px "Rubik", "Heebo", Arial, sans-serif`;
     ctx.textAlign = "right";
     ctx.fillStyle = dim;
-    ctx.fillText(`${card.number} / 20`, POSTER.x + POSTER.w - 4, POSTER.y - 12);
+    const total = String(this.cards.length).padStart(2, "0");
+    ctx.fillText(`${card.number} / ${total}`, POSTER.x + POSTER.w - 4, POSTER.y - 12);
 
-    // ---- title (top-start = right edge in RTL) ----
+    // ---- MAIN heading = room category (top-start = right edge in RTL) ----
+    // The category (room type) is the prominent heading per the rooms taxonomy;
+    // the specific room title sits beneath it as a quieter subtitle.
     ctx.textAlign = "right";
-    ctx.fillStyle = meta;
-    ctx.font = `700 ${Math.round(CELL_W * 0.07)}px "Rubik", "Heebo", Arial, sans-serif`;
-    // title sits just below the poster top, inside, over the photo
     ctx.textBaseline = "top";
-    ctx.fillStyle = hot ? "#FFFFFF" : IVORY;
     ctx.shadowColor = "rgba(0,0,0,0.55)";
     ctx.shadowBlur = 8;
-    ctx.fillText(card.titleHe, POSTER.x + POSTER.w - 22, POSTER.y + 18);
+    // category — large, bold, ivory/white
+    ctx.fillStyle = hot ? "#FFFFFF" : IVORY;
+    ctx.font = `700 ${Math.round(CELL_W * 0.075)}px "Rubik", "Heebo", Arial, sans-serif`;
+    ctx.fillText(card.category, POSTER.x + POSTER.w - 22, POSTER.y + 18);
+    // specific title — smaller, muted, just below the category
+    ctx.fillStyle = hot ? "rgba(245,239,230,0.92)" : "rgba(245,239,230,0.74)";
+    ctx.font = `500 ${Math.round(CELL_W * 0.05)}px "Heebo", Arial, sans-serif`;
+    ctx.fillText(card.titleHe, POSTER.x + POSTER.w - 22, POSTER.y + 18 + Math.round(CELL_W * 0.095));
     ctx.shadowBlur = 0;
 
-    // ---- tag pill (bottom-start = right) + year (bottom-end = left) ----
+    // ---- tag pill (bottom-start = right) ----
+    // (year removed 2026-06-15 — not relevant for room cards)
     const by = POSTER.y + POSTER.h - 44;
     ctx.font = `600 ${Math.round(CELL_W * 0.045)}px "Heebo", Arial, sans-serif`;
     ctx.textBaseline = "middle";
@@ -283,14 +288,6 @@ export default class Wall {
     ctx.fillStyle = card.isReal ? INK_DEEP : IVORY;
     ctx.textAlign = "right";
     ctx.fillText(card.tag, POSTER.x + POSTER.w - 22 - padX, by + 18);
-    // year (bottom-left)
-    ctx.fillStyle = hot ? "#FFFFFF" : "rgba(245,239,230,0.82)";
-    ctx.textAlign = "left";
-    ctx.font = `700 ${Math.round(CELL_W * 0.05)}px "Rubik", "Heebo", Arial, sans-serif`;
-    ctx.shadowColor = "rgba(0,0,0,0.5)";
-    ctx.shadowBlur = 6;
-    ctx.fillText(card.year, POSTER.x + 22, by + 18);
-    ctx.shadowBlur = 0;
 
     // reset alignment defaults
     ctx.textAlign = "left";
@@ -303,7 +300,7 @@ export default class Wall {
     const base = import.meta.env.BASE_URL;
 
     for (let id = 0; id < this.catN; id++) {
-      const card = this.cards[id % this.cards.length];
+      const card = this.cards[id] ?? this.cards[id % this.cards.length];
 
       const n = this.makeCanvas();
       const h = this.makeCanvas();
@@ -359,7 +356,7 @@ export default class Wall {
   private redrawCell(id: number): void {
     const entry = this.cellTex[id];
     if (!entry) return;
-    const card = this.cards[id % this.cards.length];
+    const card = this.cards[id] ?? this.cards[id % this.cards.length];
     const nctx = entry.normalCanvas.getContext("2d")!;
     const hctx = entry.hotCanvas.getContext("2d")!;
     this.drawCard(nctx, card, false, entry.img);
@@ -496,7 +493,7 @@ export default class Wall {
   public getCardForMesh(mesh: THREE.Mesh): RoomCard | null {
     const u = mesh.userData as PoolUserData | undefined;
     if (!u || u.cellId < 0) return null;
-    return this.cards[u.cellId % this.cards.length] ?? null;
+    return this.cards[u.cellId] ?? this.cards[u.cellId % this.cards.length] ?? null;
   }
 
   /** The card nearest the viewport centre (smallest |x|+|y|), for the active feed. */
@@ -517,7 +514,7 @@ export default class Wall {
       }
     }
     if (best < 0) return null;
-    return this.cards[best % this.cards.length] ?? null;
+    return this.cards[best] ?? this.cards[best % this.cards.length] ?? null;
   }
 
   public dispose(): void {
