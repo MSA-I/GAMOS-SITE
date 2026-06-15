@@ -293,8 +293,9 @@ export default class Engine {
     }
 
     // Phantom-style velocity dolly: pull the camera back while the wall is moving,
-    // settle it back to rest as the pan speed decays. Disabled under reduced motion.
-    if (!this.quality.reducedMotion) {
+    // settle it back to rest as the pan speed decays. MOBILE-ONLY (matches the
+    // phantom.land mobile gallery); disabled on desktop and under reduced motion.
+    if (this.quality.isMobile && !this.quality.reducedMotion) {
       // Speed = how far the EASED pan moved this frame (reflects on-screen motion:
       // drag, fling-coast, wheel, and keyboard pan all flow through panX/panY).
       const speed = Math.hypot(
