@@ -1,9 +1,37 @@
 # GAMOS-SITE — מצב נוכחי
 
-**עודכן:** 2026-06-04 (halls/ React sub-app shipped)
+**עודכן:** 2026-06-15 (v10 cinematic scroll-hero + #hall-portal composer)
 **Branch:** `main` — מסונכרן עם `origin/main` (https://github.com/MSA-I/GAMOS-SITE)
 **מקור-אמת לתוכנית הראשית:** [`PLANS/research/2026-05-28_master-rebuild-plan.md`](PLANS/research/2026-05-28_master-rebuild-plan.md)
 **מקור-אמת לחוקה:** [`CLAUDE.md`](CLAUDE.md)
+
+---
+
+## ⭐ NEW (2026-06-15) — v10 cinematic scroll-hero (replaces v9 static composition)
+
+ההירו של גאמוס הוחלף לחלוטין בהירו הקולנועי שפותח ב-sandbox
+`D:\משה פרוייקטים\פיתוח אתרים\findrealestate-clone - עותק` (בקשת המשתמש). זה **הופך
+את החלטת §3 v9** (2026-06-10, שבה ה-scroll-rise בוטל) — ה-sandbox הוא הגרסה הנקייה של
+אותו אפקט. הפורט הוא **re-implementation וונילה** (ה-sandbox React; §2 אוסר framework),
+דרך ה-skill `scroll-hero-effect`.
+
+**מה נבנה:**
+- `assets/images/hero-scene/{sky.jpg,subject.png,clouds.png,smoke.png,logo.svg,base.png}` — שכבות ההירו (הועתקו כמו-שהן מה-sandbox).
+- `css/sections/hero-scene.css` — 500vh sticky-pin scene + composer `.hall-portal` (tokenized, namespaced, scoped rem-base).
+- `js/hero-scene.js` — GSAP entrance + ScrollTrigger scrub, logo outline+mask injection, `window.gamosHero` stub (over 500vh), `#hall-portal` CTA→halls routing (whoosh + loading overlay).
+- `index.html` — `#hero.hero-scene` החליף את `#hero.hero-static`; **סקציה חדשה `#hall-portal`** בין ההירו ל-`#lounge`; preload + CSS link עודכנו.
+- `js/main.js` — `hero-scene` החליף את `hero-static` ב-MODULES (rank-3).
+- `mobile/css/hero-scene.css` + `mobile/loader.js` — overrides + route-rewrite ל-`.hall-portal__cta--*`. `npm run build:mobile` הורץ.
+- `css/tokens.css` — `--brass-olive:#857147` (accent הכותרת). `CLAUDE.md` §2/§3 עודכנו.
+
+**Legacy v9 נשמר** (§2.1 כלל 6): `js/hero-static.js` + `css/sections/hero-static.css` +
+`mobile/css/hero-static.css` על-מקום, מנותקים. חזרה = החלפת markup+link+entry אחת.
+
+**⚠️ Follow-up חובה לפני go-live (§8 perf + §14):** `subject.png` הוא PNG ~20MB
+(הועתק כמו-שהוא לפי החלטת המשתמש). לפני דיפלוי — לקודד מחדש את 4 השכבות דרך
+`scripts/encode-images.mjs` `NAMED_PAIRS` (`keepAlpha:true, webpOnly:true` ל-subject/clouds/smoke;
+`flatten:#F5EFE6` ל-sky) → `assets/images/hero-scene/*.{full,half}.webp`, ולהחליף `<img src>`
+ב-`<picture>`. ראה `DEPLOYMENT-COSTS.md`.
 
 ---
 
@@ -158,11 +186,11 @@ HTML5 + CSS3 (custom properties, container queries, logical props)
 ❌ אין framework / bundler / 3D / Tailwind runtime
 ```
 
-**JS modules (20):** `accordions, canvas-frame-renderer, contact-form, counters, hero-video-scrub, lenis, loading-overlay, lounge-selector, main, marquee, portals, reveals, rooms-gallery, scroll-orchestrator, scroll-scene, scroll-spy, scrollytelling, side-dot-nav, site-nav, slider`
+**JS modules (32):** `accordions, audio, canvas-frame-renderer, contact-form, corridor, corridor-page, counters, directions-map, hero-scene, hero-static, loading-overlay, lounge-lightbox, lounge-selector, main, main-press, marquee, portals, press-shader, project-drawer, projects-data, reveals, rooms-door, rooms-gallery, scroll-orchestrator, scroll-scene, scroll-spy, scrollytelling, shabbat-gallery, side-dot-nav, site-nav, site-nav-hover-reveal, slider` (+ `utils/media-query`). `hero-static` נשאר כ-seam מנותק (§3). `lenis`/`hero-video-scrub` נמחקו מזמן.
 
-**CSS sections (20):** `about, contact, culinary, events, gallery, hall-resort, hall-venue, hero, kosher, lounge, motion-accordions, motion-reveals, motion-slider, portals, rooms, scroll-scene, section-header, site-footer, site-nav, testimonials`
+**CSS sections (23):** `about, contact, corridor, culinary, directions, events, gallery, hero, hero-scene, hero-static, kosher, lounge, motion-accordions, motion-reveals, motion-slider, portals, rooms, scroll-scene, section-header, shabbat-chatan, site-footer, site-nav, testimonials`. `hall-venue`/`hall-resort` נמחקו 2026-06-15 (יתומים — האולמות עברו ל-sub-app React §2.1).
 
-**CSS components (5):** `loading-overlay, side-dot-nav, marquee, scrollytelling-loader, texture-text`
+**CSS components (10):** `buttons, loading-overlay, lounge-lightbox, marquee, media-caption, project-drawer, scrollytelling-loader, side-dot-nav, site-nav-hover, texture-text`
 
 ---
 
@@ -170,7 +198,7 @@ HTML5 + CSS3 (custom properties, container queries, logical props)
 
 | תיקייה | גודל | מספר | הערה |
 |--------|------|------|------|
-| `assets/frames/hero/` | 27MB | 528 frames + manifest | 30fps × 1280×720 × WebP q65 |
+| ~~`assets/frames/hero/`~~ | 155MB | 529 frames | **untracked 2026-06-15** — יתום (hero v10 = scroll scene, לא frames). local-only, gitignored. |
 | `assets/frames/culinary/` | 5.0MB | 180 frames + manifest | 30fps × 1280×720 × WebP q65 |
 | `assets/images/halls/` | 49MB | venue 14 / resort 17 / lounge 5 / rooms 11 | full+half × WebP+JPG |
 | `assets/images/culinary/` | 6.7MB | 13 dishes × 4 variants | full+half × WebP+JPG |

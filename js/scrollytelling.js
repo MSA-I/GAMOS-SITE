@@ -1,11 +1,10 @@
 /* ===========================================================================
    scrollytelling.js — orchestrates 4 cinematic scroll-driven canvas scenes
    ---------------------------------------------------------------------------
-   Implements user spec "Cinematic Scrollytelling with Canvas & GSAP" across
-   the project's 4 anchored scenes:
-       #hero          → /assets/frames/hero/manifest.json
-       #hall-venue    → /assets/frames/venue/manifest.json     (when ready)
-       #hall-resort   → /assets/frames/resort/manifest.json    (when ready)
+   Implements user spec "Cinematic Scrollytelling with Canvas & GSAP".
+   As of the v10 hero migration (§3, 2026-06-15) the only live canvas-frames
+   scene is #culinary; the hero now uses the GSAP scroll scene (js/hero-scene.js)
+   with layered images, not canvas frames.
        #culinary      → /assets/frames/culinary/manifest.json
 
    Loader: a single shared overlay shows the cumulative percentage of all

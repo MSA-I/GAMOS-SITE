@@ -57,12 +57,19 @@ assets/video/
 # here and writes to assets/images/ — only the encoded outputs ship.
 assets/_src/
 
+# Orphaned hero frame sequence (155MB). The hero migrated to the v10 cinematic
+# scroll scene (§3, LOCKED 2026-06-15) which paints layered PNG/WebP from
+# assets/images/hero-scene/ — it no longer uses canvas frames. These frames
+# have zero live references; untracked 2026-06-15 to keep the deploy lean.
+# Re-encode locally with `npm run encode:hero` only if v9 canvas hero returns.
+assets/frames/hero/
+
 # IMPORTANT — the following directories ARE tracked in git (do NOT ignore):
 #   assets/images/   brand mark, hero static, halls, lounge, gallery, maps
 #   assets/img/      additional section graphics + icons
-#   assets/frames/   30fps WebP frame sequences for canvas scrub (Hero +
-#                    Culinary; sizes have been bumped 2026-06-02 per user
-#                    direction — Hero ≈ 60MB, Culinary ≈ 22MB)
+#   assets/frames/   30fps WebP frame sequences for canvas scrub. Only
+#                    assets/frames/culinary + culinary-mobile remain in use
+#                    (the #culinary scrub); hero frames untracked above.
 #   assets/fonts/    self-hosted WOFF2 (Rubik + Heebo + Playfair)
 #   assets/vendor/   GSAP + ScrollToPlugin (self-hosted, no CDN)
 # These are the production payload. If git ever starts ignoring them, the

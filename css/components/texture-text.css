@@ -48,10 +48,6 @@
   .section-header__title,
   .lounge__title,
   .rooms__name,
-  .hall-venue h1,
-  .hall-venue h2,
-  .hall-resort h1,
-  .hall-resort h2,
   .feature h3,
   .marquee__text,
   .about__stat dd {
@@ -65,8 +61,7 @@
   }
 
   /* ---- Default: DARK texture (gold flecks on near-black) for headings on
-     light/ivory surfaces — the dominant case across the site. Hall venue
-     and hall resort features sit on ivory too; they share the default.
+     light/ivory surfaces — the dominant case across the site.
      Gallery + kosher titles also live on ivory and want the dark fill
      (corrected 2026-06-03 — they were previously forced to the light
      cream texture which disappears on ivory).
@@ -78,10 +73,6 @@
   .texture-text--dark,
   .section-header__title,
   .rooms__name,
-  .hall-venue h1,
-  .hall-venue h2,
-  .hall-resort h1,
-  .hall-resort h2,
   .feature h3,
   .marquee__text,
   .gallery .section-header__title,
