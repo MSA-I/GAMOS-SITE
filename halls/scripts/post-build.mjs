@@ -6,11 +6,11 @@ const here = dirname(fileURLToPath(import.meta.url));
 const dist = resolve(here, "..", "dist");
 
 const pairs = [
-  ["index.html",  "oasis/index.html"],
-  ["lumina.html", "lumina/index.html"],
-  // Mobile-only mirrors (additive) → /halls/dist/oasis-mobile/ + /halls/dist/lumina-mobile/.
-  ["oasis-mobile.html",  "oasis-mobile/index.html"],
-  ["lumina-mobile.html", "lumina-mobile/index.html"],
+  ["index.html",  "events/index.html"],
+  ["resort.html", "resort/index.html"],
+  // Mobile-only mirrors (additive) → /halls/dist/events-mobile/ + /halls/dist/resort-mobile/.
+  ["events-mobile.html",  "events-mobile/index.html"],
+  ["resort-mobile.html", "resort-mobile/index.html"],
 ];
 
 for (const [src, dst] of pairs) {

@@ -35,8 +35,8 @@ async function subapp(url, tag, canvasSel, chromeSel) {
   await ctx.close();
 }
 
-await subapp("/halls/dist/oasis-mobile/", "oasis-mobile", "canvas", ".hallm-home,.hallm-switch,.hallm-label,.hallm-title");
-await subapp("/halls/dist/lumina-mobile/", "lumina-mobile", "canvas", ".hallm-home,.hallm-switch,.hallm-label,.hallm-title");
+await subapp("/halls/dist/events-mobile/", "events-mobile", "canvas", ".hallm-home,.hallm-switch,.hallm-label,.hallm-title");
+await subapp("/halls/dist/resort-mobile/", "resort-mobile", "canvas", ".hallm-home,.hallm-switch,.hallm-label,.hallm-title");
 await subapp("/rooms/dist/mobile/", "rooms-mobile", "canvas", ".roomsm-back,.roomsm-heading,.roomsm-active,.roomsm-title");
 
 // Homepage phone routing: hrefs rewritten on ≤768px, desktop untouched.
@@ -52,12 +52,12 @@ async function routing(tag, w, expectMobile) {
     tapEvents: document.querySelector(".hero-static__tap--events")?.getAttribute("href"),
   }));
   console.log(`\n=== routing @ ${tag} (${w}px) ===`);
-  const wantE = expectMobile ? "/halls/dist/oasis-mobile/" : "/halls/dist/oasis/";
+  const wantE = expectMobile ? "/halls/dist/events-mobile/" : "/halls/dist/events/";
   const wantD = expectMobile ? "/rooms/dist/mobile/" : "/rooms/dist/";
   log(`${tag}/events-href`, r.events === wantE, `${r.events}`);
-  log(`${tag}/resort-href`, r.resort === (expectMobile ? "/halls/dist/lumina-mobile/" : "/halls/dist/lumina/"), `${r.resort}`);
+  log(`${tag}/resort-href`, r.resort === (expectMobile ? "/halls/dist/resort-mobile/" : "/halls/dist/resort/"), `${r.resort}`);
   log(`${tag}/door-href`, r.door === wantD, `${r.door}`);
-  if (expectMobile) log(`${tag}/tap-overlay-cloned-mobile`, r.tapEvents === "/halls/dist/oasis-mobile/", `tap=${r.tapEvents}`);
+  if (expectMobile) log(`${tag}/tap-overlay-cloned-mobile`, r.tapEvents === "/halls/dist/events-mobile/", `tap=${r.tapEvents}`);
   await ctx.close();
 }
 await routing("mobile", 390, true);

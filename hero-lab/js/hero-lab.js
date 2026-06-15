@@ -100,17 +100,29 @@ async function main() {
     },
   });
 
-  // keep ST honest if fonts/images resize the layout late.
-  // The SVG <text> mask (L3) + outline (L5) are geometry-LOAD-BEARING on Cinzel:
-  // until the woff2 swaps in, the letters render in the fallback serif at a
-  // different width, so the mask window + outline shift. The SVG re-rasterizes
-  // the mask automatically on font swap (no blank risk — the fill just snaps to
-  // the final glyphs), and we refresh ScrollTrigger so the 500vh mapping matches
-  // the settled layout.
-  window.addEventListener("load", () => ScrollTrigger.refresh());
+  // RF3 — per-path stroke length for the outline draw. Each outline <path> gets
+  // its TRUE perimeter (getTotalLength) written to a `--len` CSS var, so the
+  // dasharray/dashoffset draw is even across every glyph (instead of a shared
+  // 300 approximation). The CSS falls back to 300 if this never runs.
+  measureOutlinePaths();
+
+  // keep ST honest if images resize the layout late, and re-measure path lengths
+  // after load (layout settled).
+  window.addEventListener("load", () => { measureOutlinePaths(); ScrollTrigger.refresh(); });
   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(() => ScrollTrigger.refresh());
+    document.fonts.ready.then(() => { measureOutlinePaths(); ScrollTrigger.refresh(); });
   }
+}
+
+/** Write each outline path's true length to a `--len` CSS var for an even draw. */
+function measureOutlinePaths() {
+  const paths = document.querySelectorAll(".layer--outline .wordmark-svg path");
+  paths.forEach((p) => {
+    try {
+      const len = p.getTotalLength();
+      if (len > 0) p.style.setProperty("--len", String(Math.ceil(len)));
+    } catch { /* getTotalLength unsupported — CSS fallback (300) applies */ }
+  });
 }
 
 main().catch((e) => {

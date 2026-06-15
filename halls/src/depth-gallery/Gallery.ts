@@ -195,7 +195,7 @@ export default class Gallery {
 
     // Vite serves the `public/` folder at import.meta.env.BASE_URL
     // (configured to "/halls/dist/" in vite.config.ts). Each project.image
-    // is "images/projects/oasis-NN.webp" — concatenating with BASE_URL
+    // is "images/projects/events-NN.webp" — concatenating with BASE_URL
     // yields an absolute path that resolves the same way on every page.
     const base = import.meta.env.BASE_URL;
 

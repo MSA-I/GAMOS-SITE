@@ -5,7 +5,7 @@ import { getProjectsByHall } from "../projectsData";
 import type { ProjectWithColors } from "../types";
 
 interface Props {
-  hallId: "oasis" | "lumina";
+  hallId: "events" | "resort";
   /** Blend-aware active project (Engine flips it at the crossfade midpoint). */
   activeProject: ProjectWithColors | null;
   /**
@@ -16,9 +16,9 @@ interface Props {
   frameDark?: boolean;
 }
 
-const HALL_LABEL_HE: Record<"oasis" | "lumina", string> = {
-  oasis: "אולם",
-  lumina: "ריזורט",
+const HALL_LABEL_HE: Record<"events" | "resort", string> = {
+  events: "אולם",
+  resort: "ריזורט",
 };
 
 export default function HallChrome({ hallId, activeProject, frameDark = false }: Props) {
@@ -27,7 +27,7 @@ export default function HallChrome({ hallId, activeProject, frameDark = false }:
   if (activeProject) lastKnownProjectRef.current = activeProject;
   const display = activeProject ?? lastKnownProjectRef.current;
 
-  const otherHallId = hallId === "oasis" ? "lumina" : "oasis";
+  const otherHallId = hallId === "events" ? "resort" : "events";
   const otherHallLabel = HALL_LABEL_HE[otherHallId];
   const currentHallLabel = HALL_LABEL_HE[hallId];
 
@@ -90,7 +90,7 @@ export default function HallChrome({ hallId, activeProject, frameDark = false }:
           aria-label={`עבור ל${otherHallLabel}`}
           className="hall-switch__pill"
         >
-          {hallId === "oasis" ? (
+          {hallId === "events" ? (
             <>
               <span>{otherHallLabel}</span>
               <ArrowLeft size={16} aria-hidden="true" />

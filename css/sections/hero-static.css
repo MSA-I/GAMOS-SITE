@@ -15,8 +15,8 @@
    Layer z-order (bottom → top):
      1. base    (שכבה 2.png)   z=1   ivory + bottom wave (full-viewport)
      2. gamos   (GAMOS 1.png)  z=2   brand mark, top-left
-     3. events  (EVENT 1.png)  z=3   CTA → /halls/dist/oasis/  (covered)
-     4. resort  (RESORT 2.png) z=4   CTA → /halls/dist/lumina/ (covered)
+     3. events  (EVENT 1.png)  z=3   CTA → /halls/dist/events/  (covered)
+     4. resort  (RESORT 2.png) z=4   CTA → /halls/dist/resort/ (covered)
      5. desert  (מדבר.png)     z=10  TOPMOST — visually obscures EVENTS/RESORT
 
    RTL note: physical `left:` / `right:` instead of inset-inline-* because the

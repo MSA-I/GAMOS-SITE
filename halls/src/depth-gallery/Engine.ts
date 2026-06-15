@@ -4,7 +4,7 @@ import { detectQuality, type QualityProfile } from "./quality";
 import type Scroll from "./Scroll";
 import type { ProjectWithColors } from "../types";
 
-export type HallId = "oasis" | "lumina";
+export type HallId = "events" | "resort";
 
 export interface EngineOptions {
   hallId: HallId;

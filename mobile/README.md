@@ -183,7 +183,7 @@ npx serve . -l 5050
   interactive element left — an essential inline map-license link (WCAG 2.5.5
   exempt). `assets/frames/culinary-mobile/` is populated; the manifest swap in
   `setupCulinaryMobileManifest()` serves it on ≤768px.
-- ⏳ Halls/Rooms sub-app mobile builds (`/halls/dist/oasis-mobile/`,
-  `/halls/dist/lumina-mobile/`, `/rooms/dist/mobile/`) — purpose-built phone
+- ⏳ Halls/Rooms sub-app mobile builds (`/halls/dist/events-mobile/`,
+  `/halls/dist/resort-mobile/`, `/rooms/dist/mobile/`) — purpose-built phone
   chrome (`HallChromeMobile`/`RoomsChromeMobile`); polished + rebuilt in the
   same fidelity pass. Source under `halls/`+`rooms/` per §2.1 (not `/mobile/`).

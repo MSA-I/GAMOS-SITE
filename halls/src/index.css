@@ -63,7 +63,7 @@
   --typo-on-dark: url("/assets/images/brand/typo-on-dark.webp?v=2026-06-15-brown");
 }
 
-/* Body baseline — applies to both /halls/oasis/ and /halls/lumina/ entry pages.
+/* Body baseline — applies to both /halls/events/ and /halls/resort/ entry pages.
    Warm ivory ground (Wave 5 LOCKED): the GLSL Background paints the live mood
    colors over the canvas, but the page must read warm-luxury for the
    split-second before WebGL boots and behind any transparent clear — so the

@@ -5,7 +5,7 @@ import { getProjectsByHall } from "../projectsData";
 import type { ProjectWithColors } from "../types";
 
 interface Props {
-  hallId: "oasis" | "lumina";
+  hallId: "events" | "resort";
   /** Fired with the blend-aware active project (or null) when it changes. */
   onActiveChange?: (project: ProjectWithColors | null) => void;
   /**

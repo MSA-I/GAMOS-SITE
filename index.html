@@ -213,8 +213,8 @@
       </a>
 
       <ul class="site-nav__links" role="list">
-        <li><a href="/halls/dist/oasis/">אולם</a></li>
-        <li><a href="/halls/dist/lumina/">ריזורט</a></li>
+        <li><a href="/halls/dist/events/">אולם</a></li>
+        <li><a href="/halls/dist/resort/">ריזורט</a></li>
         <li><a href="#culinary">קולינריה</a></li>
         <li><a href="#shabbat-chatan">שבתות חתן</a></li>
         <li><a href="#rooms">חדרי נופש</a></li>
@@ -257,8 +257,8 @@
          Layers (z-order bottom→top, see hero-static.css):
            1. base   (שכבה 2.png)   z=1   ivory + bottom wave
            2. gamos  (GAMOS 1.png)  z=2   decorative, top-left
-           3. events (EVENT 1.png)  z=3   CTA → /halls/dist/oasis/  (covered by desert)
-           4. resort (RESORT 2.png) z=4   CTA → /halls/dist/lumina/ (covered by desert)
+           3. events (EVENT 1.png)  z=3   CTA → /halls/dist/events/  (covered by desert)
+           4. resort (RESORT 2.png) z=4   CTA → /halls/dist/resort/ (covered by desert)
            5. desert (מדבר.png)     z=10  TOPMOST — covers EVENTS / RESORT typography
 
          No data-scrub attributes → js/scroll-scene.js does not register the
@@ -285,7 +285,7 @@
              decoding="async" fetchpriority="high">
 
         <a class="hero-static__layer hero-static__layer--events hero-static__cta"
-           href="/halls/dist/oasis/"
+           href="/halls/dist/events/"
            data-hero-link="venue"
            aria-label="כניסה לאולם האירועים">
           <img src="/assets/images/hero/events.webp"
@@ -294,7 +294,7 @@
         </a>
 
         <a class="hero-static__layer hero-static__layer--resort hero-static__cta"
-           href="/halls/dist/lumina/"
+           href="/halls/dist/resort/"
            data-hero-link="resort"
            aria-label="כניסה לריזורט">
           <img src="/assets/images/hero/resort.webp"
@@ -526,7 +526,7 @@
               <img src="/assets/images/culinary/07.full.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="מאפה פילו פריך בפיזור פיסטוק על מצע לבן">
             </picture>
             <figcaption class="culinary__item-caption">
-              <span class="culinary__item-tag">קינוח</span>
+              <span class="culinary__item-tag">פתיחה</span>
               <h3 class="culinary__item-name">פילו ופיסטוק</h3>
               <p class="culinary__item-desc">מאפה פריך, סירופ חם ופיסטוק קצוץ.</p>
             </figcaption>
@@ -982,19 +982,19 @@
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 0ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/01.half.webp">
-            <img src="/assets/images/gallery/01.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="רגע קידוש ההינומה תחת החופה על שטיח לבן בגן האירועים">
+            <img src="/assets/images/gallery/01.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="שולחן ארוך ערוך בחלל המתחם עם פרחי קלה ורדים ונרות">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 100ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/02.half.webp">
-            <img src="/assets/images/gallery/02.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="עריכת שולחן יוקרתית עם פרחי קלה לבנים בכלי זכוכית">
+            <img src="/assets/images/gallery/02.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן וכלה מתחבקים עם זר כלה על רקע הרי המדבר של מישור אדומים">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 200ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/03.half.webp">
-            <img src="/assets/images/gallery/03.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן וכלה מתחבקים עם זר כלה על רקע הרי המדבר של מישור אדומים">
+            <img src="/assets/images/gallery/03.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="שולחן ערב מעוצב עם פמוטי קריסטל גבוהים ונרות">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 300ms;">
@@ -1006,7 +1006,7 @@
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 400ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/05.half.webp">
-            <img src="/assets/images/gallery/05.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חופת פרחים לבנה על עמוד בכניסה לאירוע">
+            <img src="/assets/images/gallery/05.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="שולחן ערב ערוך עם פמוט קריסטל ונרות צפים באווירה חמה">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 500ms;">
@@ -1018,13 +1018,37 @@
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 600ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/07.half.webp">
-            <img src="/assets/images/gallery/07.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="כניסת חתן וכלה בין האורחים המריעים על שטיח לבן">
+            <img src="/assets/images/gallery/07.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חופת פרחים לבנה על עמוד בכניסה לאירוע">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 700ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/08.half.webp">
-            <img src="/assets/images/gallery/08.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן וכלה מתנשקים על דרך מתפתלת במדבר, צילום שחור-לבן">
+            <img src="/assets/images/gallery/08.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="כניסת חתן וכלה בין האורחים המריעים על שטיח לבן">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 800ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/09.half.webp">
+            <img src="/assets/images/gallery/09.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="שולחנות ערב ערוכים בחלל המתחם עם פמוטי קריסטל ותאורה חמה">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 900ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/10.half.webp">
+            <img src="/assets/images/gallery/10.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן וכלה מתנשקים על דרך מתפתלת במדבר, צילום שחור-לבן">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1000ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/11.half.webp">
+            <img src="/assets/images/gallery/11.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="שולחנות ערוכים עם פרחי קלה על רקע הבריכה ונוף המדבר בשקיעה">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1100ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/12.half.webp">
+            <img src="/assets/images/gallery/12.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="שולחן ערוך עם פרחי קלה לבנים מול הבריכה ונוף השקיעה המדברי">
           </picture>
         </li>
       </ul>

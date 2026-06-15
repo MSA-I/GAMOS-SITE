@@ -1,6 +1,6 @@
 /* =====================================================================
  * Hall chrome — PHONE-FIRST overlay (loaded ONLY by main.mobile.tsx via the
- * oasis-mobile / lumina-mobile entries; never by the desktop bundle).
+ * events-mobile / resort-mobile entries; never by the desktop bundle).
  *
  * Scope/isolation: every selector is prefixed `.hallm-` so it CANNOT collide
  * with the desktop `.hall-*` rules in index.css (which still loads first under

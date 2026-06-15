@@ -5,7 +5,7 @@ import { getProjectsByHall } from "./projectsData";
 import type { ProjectWithColors } from "./types";
 
 interface Props {
-  initialHall: "oasis" | "lumina";
+  initialHall: "events" | "resort";
 }
 
 export default function App({ initialHall }: Props) {

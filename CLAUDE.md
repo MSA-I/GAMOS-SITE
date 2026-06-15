@@ -14,7 +14,7 @@
 לבנות מחדש את אתר Gamos (gamos.co.il — מתחם אירועים יוקרתי, גנים וריזורט) כאתר
 **HTML/CSS/JS וונילה** עם חוויית גלילה ייחודית: hero של קומפוזיציית-תמונות סטטית
 (ראה §3) ובו שני CTAs (EVENTS / RESORT) המובילים לשני דפי האולמות
-(`/halls/dist/oasis/` + `/halls/dist/lumina/` — sub-app React נפרד, §2.1), ואחריו
+(`/halls/dist/events/` + `/halls/dist/resort/` — sub-app React נפרד, §2.1), ואחריו
 סקציות סטטיות עשירות באנימציה (אקורדיונים, סליידרים, parallax, reveal-on-scroll).
 
 - **הישג:** Premium feel המעולה על האתר הקיים, חוויית גלילה קולנועית בלי 3D models.
@@ -64,9 +64,16 @@
 
 ---
 
-## §2.1 Halls + Rooms sub-app exception (NEW 2026-06-04, AMENDED 2026-06-11)
+## §2.1 Halls + Rooms sub-app exception (NEW 2026-06-04, AMENDED 2026-06-11, RENAMED 2026-06-15)
 
-שלושת הנתיבים `/halls/dist/oasis/`, `/halls/dist/lumina/` ו-`/rooms/dist/`
+> **RENAME 2026-06-15 (אישר המשתמש):** מזהי שני האולמות שונו ל-`events`/`resort`
+> (היו `oasis`/`lumina` — שמות שירשו מפרויקט-מקור אחר ולא תאמו לפרויקט). השינוי
+> רוחבי: ה-`hallId` בקוד React/TS, שמות קבצי התמונות (`events-NN.webp`/`resort-NN.webp`),
+> מפתחות `extractedColors.json`, קבצי ה-entry (`resort.html`, `events-mobile.html`,
+> `resort-mobile.html`), `vite.config.ts`/`post-build.mjs`, וה-URLs עצמם. ה-CTAs בהירו
+> (EVENTS/RESORT) כבר תאמו — כעת גם ה-routing תואם.
+
+שלושת הנתיבים `/halls/dist/events/`, `/halls/dist/resort/` ו-`/rooms/dist/`
 (ושלושתם בלבד) מותרים להריץ
 **React 19 + TypeScript + Vite 6 + Tailwind v4 + Motion + Lucide + Three.js**
 בזמן ריצה, כ-sub-apps נפרדים תחת `halls/` ו-`rooms/`. **המימוש הנוכחי (2026-06-10):** פורט
@@ -103,8 +110,9 @@ pass-through; ראה `rooms/src/intro/README.md`).
    (→ `halls/dist/`) ו-`npm run build:rooms` (משדרגת לתוך
    `cd rooms && npm install && npm run build` → `rooms/dist/`). הפלט סטטי
    לחלוטין — `npx serve` של GAMOS-SITE מגיש אותו ככל קובץ אחר.
-3. **URLs.** Halls: שני נתיבים `/halls/dist/oasis/` + `/halls/dist/lumina/`
-   (HTML נפרד עם `<html data-initial-hall="…">`). Rooms: נתיב יחיד
+3. **URLs.** Halls: שני נתיבים `/halls/dist/events/` + `/halls/dist/resort/`
+   (HTML נפרד עם `<html data-initial-hall="…">` — הערכים `events`/`resort`).
+   Rooms: נתיב יחיד
    `/rooms/dist/` (entry אחד, ללא `data-initial-hall` — קיר בודד). המסלול כולל
    `dist/` כי כל `vite.config.ts` מגדיר `base` תואם.
 4. **Asset prefix.** `vite.config.ts` של כל sub-app חייב להגדיר `base` תואם
@@ -145,8 +153,8 @@ pass-through; ראה `rooms/src/intro/README.md`).
 
 1. **base** (`שכבה 2.png`) — full-viewport, רקע שמנת + קצה גלי תחתון. **z=1**.
 2. **gamos** (`GAMOS 1.png`) — decorative, top-left. brand mark, לא ניווט. **z=2**.
-3. **events** (`EVENT 1.png`) — `<a>` interactive → `/halls/dist/oasis/`. **z=3** (מתחת למדבר).
-4. **resort** (`RESORT 2.png`) — `<a>` interactive → `/halls/dist/lumina/`. **z=4** (מתחת למדבר).
+3. **events** (`EVENT 1.png`) — `<a>` interactive → `/halls/dist/events/`. **z=3** (מתחת למדבר).
+4. **resort** (`RESORT 2.png`) — `<a>` interactive → `/halls/dist/resort/`. **z=4** (מתחת למדבר).
 5. **desert** (`מדבר.png`) — hill silhouettes anchored to pin bottom. **z=10 — TOPMOST** — מכסה ויזואלית את ה-EVENTS / RESORT typography.
 
 כל שכבה מקודדת ל-WebP עם אלפא משומר (q=88 לתמונות הגדולות, q=92 לטקסטים).

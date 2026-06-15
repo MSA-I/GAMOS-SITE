@@ -233,8 +233,8 @@
   // 7. Route phones to the mobile sub-app builds  (2026-06-11)
   // ---------------------------------------------------------------------------
   // The external React sub-apps now have dedicated phone builds whose chrome is
-  // re-laid-out for small screens (same WebGL): /halls/dist/oasis-mobile/,
-  // /halls/dist/lumina-mobile/, /rooms/dist/mobile/. On ≤768px we rewrite the
+  // re-laid-out for small screens (same WebGL): /halls/dist/events-mobile/,
+  // /halls/dist/resort-mobile/, /rooms/dist/mobile/. On ≤768px we rewrite the
   // hard-coded desktop hrefs IN PLACE so the phone lands on the mobile build:
   //   - the real hero EVENTS/RESORT anchors → -mobile (injectHeroTapZones runs
   //     AFTER this and clones the already-rewritten href onto its overlay, so the
@@ -249,8 +249,8 @@
       return;
     }
     const rewrites = [
-      ['.hero-static__layer--events', "/halls/dist/oasis/",  "/halls/dist/oasis-mobile/"],
-      ['.hero-static__layer--resort', "/halls/dist/lumina/", "/halls/dist/lumina-mobile/"],
+      ['.hero-static__layer--events', "/halls/dist/events/",  "/halls/dist/events-mobile/"],
+      ['.hero-static__layer--resort', "/halls/dist/resort/", "/halls/dist/resort-mobile/"],
       ['#rooms-door',                 "/rooms/dist/",        "/rooms/dist/mobile/"],
     ];
     for (const [sel, fromHref, toHref] of rewrites) {

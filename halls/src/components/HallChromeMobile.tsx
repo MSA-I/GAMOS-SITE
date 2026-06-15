@@ -5,7 +5,7 @@ import { getProjectsByHall } from "../projectsData";
 import type { ProjectWithColors } from "../types";
 
 interface Props {
-  hallId: "oasis" | "lumina";
+  hallId: "events" | "resort";
   /** Blend-aware active project (Engine flips it at the crossfade midpoint). */
   activeProject: ProjectWithColors | null;
   /**
@@ -16,9 +16,9 @@ interface Props {
   frameDark?: boolean;
 }
 
-const HALL_LABEL_HE: Record<"oasis" | "lumina", string> = {
-  oasis: "אולם",
-  lumina: "ריזורט",
+const HALL_LABEL_HE: Record<"events" | "resort", string> = {
+  events: "אולם",
+  resort: "ריזורט",
 };
 
 /**
@@ -53,7 +53,7 @@ export default function HallChromeMobile({
   if (activeProject) lastKnownProjectRef.current = activeProject;
   const display = activeProject ?? lastKnownProjectRef.current;
 
-  const otherHallId = hallId === "oasis" ? "lumina" : "oasis";
+  const otherHallId = hallId === "events" ? "resort" : "events";
   const otherHallLabel = HALL_LABEL_HE[otherHallId];
 
   // Total plane count for this hall → the denominator of the "NN / TT" index.
@@ -111,7 +111,7 @@ export default function HallChromeMobile({
           aria-label={`עבור ל${otherHallLabel}`}
           className="hallm-switch__pill"
         >
-          {hallId === "oasis" ? (
+          {hallId === "events" ? (
             <>
               <span>{otherHallLabel}</span>
               <ArrowLeft size={18} aria-hidden="true" />

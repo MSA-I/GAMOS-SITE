@@ -5,8 +5,8 @@ import "./index.css";
 import "./index.mobile.css";
 
 const raw = document.documentElement.dataset.initialHall;
-const initialHall: "oasis" | "lumina" =
-  raw === "lumina" ? "lumina" : "oasis";
+const initialHall: "events" | "resort" =
+  raw === "resort" ? "resort" : "events";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

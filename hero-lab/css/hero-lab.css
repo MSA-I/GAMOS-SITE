@@ -70,6 +70,23 @@
      two timelines never fight over inline transforms. */
   --enter: 1;
 
+  /* ---- FIND staging (the choreography fix, 2026-06-15 round 3) ------------
+     A single scrub var (--p, 0..1) drives everything, but each phase owns a
+     sub-range of the scroll so the motion is SEQUENCED, not simultaneous —
+     faithful to FIND's real GSAP timeline. Each remap clamps --p to its window
+     (0..1 within it). Reference these instead of raw --p where a layer belongs
+     to a phase. The DESERT RISE + the maskfill IMAGE PARALLAX stay on full --p
+     (they move across the whole scroll, like FIND's shared [house,composite] tween).
+       --p1   headline sinks behind the desert                  (0.00→0.18)
+       --draw outline strokes draw on, continuously, most-scroll (0.06→0.68)
+       --p3   outline fades + desert image FILLS the letters    (0.45→0.80)
+       --p4   clouds fade, smoke rises, cream dissolve          (0.74→1.00)
+     (CSS clamp form is clamp(MIN, VAL, MAX) → here clamp(0, expr, 1).) */
+  --p1: clamp(0, calc(var(--p) / 0.18), 1);              /* Beat 1: headline sink (0→0.18) */
+  --draw: clamp(0, calc((var(--p) - 0.06) / 0.62), 1);   /* outline strokes BUILD continuously (0.06→0.68) */
+  --p3: clamp(0, calc((var(--p) - 0.45) / 0.35), 1);     /* Beat 3: mask fill + outline fade (0.45→0.80) */
+  --p4: clamp(0, calc((var(--p) - 0.74) / 0.26), 1);     /* Beat 4: smoke rise + veil dissolve (0.74→1.0) */
+
   --ease-cinema: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -151,8 +168,9 @@ body {
 /* ---- L1 · sky (FIND hero_back) ---- */
 .layer--sky {
   z-index: 1;
-  /* gradient sits behind the photo so the frame is never empty before decode */
-  background: linear-gradient(180deg, #efe4d2 0%, #ecdcc6 32%, var(--mist) 70%, var(--ivory) 100%);
+  /* warm sunset gradient sits behind the photo so the frame is never empty
+     before decode — matches the orange שמיים אחוריים.png backdrop */
+  background: linear-gradient(180deg, #b9c2cf 0%, #e9cfa6 46%, #f4c282 74%, #f9b25a 100%);
   transform: scale(calc(1 + var(--p) * 0.05));
   transform-origin: 50% 50%;
   will-change: transform;
@@ -168,24 +186,35 @@ body {
 
 /* ---- L2 · subject: rising cut-out ridge (FIND hero_house: y:-40% scale:1.3) ---- */
 .layer--subject {
-  z-index: 2;
+  z-index: 3; /* ABOVE content (z2) so the sinking headline recedes behind the desert (FIND) */
   /* anchored to the bottom of the stage; rises + grows on scroll */
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  inset-block-start: 60vh; /* FIND: top:60vh — starts low, sweeps up */
+  inset-block-start: 42vh; /* starts lower-in-frame so the enlarged ridge reads big */
   height: 100vh;
   transform-origin: bottom center;
-  /* scroll (--p): drift up + zoom in (FIND y:-40%, scale:1.3).
-     entrance (--enter): a touch more zoom that settles on load (FIND scale 1.1→1). */
+  /* scroll (--p): rise ONLY — the desert keeps its size, NO scroll zoom
+     (user 2026-06-15: "תשאיר בגודל הנוכחי, אל תעשה סקייל"). FIND scales its
+     building 1.3 but we override that here.
+     entrance (--enter): a touch of zoom that settles on load (kept). */
   transform: translate3d(0, calc(var(--p) * -40%), 0)
-             scale(calc(1 + var(--p) * 0.3 + (1 - var(--enter)) * 0.1));
-  opacity: calc(0.2 + 0.8 * var(--enter));
+             scale(calc(1 + (1 - var(--enter)) * 0.1));
+  /* THE KEY FIND FIX (round 4): the VISIBLE desert FADES OUT during beat 3 as
+     the letters fill — so by mid-scroll only the wordmark (filled with the
+     desert via the mask) remains over the sky, exactly like FIND where
+     hero_house fades to 0 and only the masked copy survives. Without this the
+     desert stays full-screen and there's no "only inside the letters" effect. */
+  opacity: calc((0.2 + 0.8 * var(--enter)) * (1 - var(--p3)));
   will-change: transform, opacity;
 }
 .layer--subject picture,
 .layer--subject img {
-  width: 100%;
+  /* the desert ridge is a wide, short panorama — blow it past the viewport
+     width so it reads as a DOMINANT landform (user: "להגדיל את תמונת המדבר")
+     rather than a thin strip. anchored to the bottom, so the extra height
+     fills upward into frame. */
+  width: 150%;
   height: auto;
   display: block;
   object-fit: contain;
@@ -193,27 +222,46 @@ body {
   filter: drop-shadow(0 12px 40px rgba(26, 20, 16, 0.32));
 }
 
-/* ---- L3 · maskfill: the subject seen ONLY through the letters
-        (FIND hero_composite — opacity 0→1, y:20% scale:.9) ---- */
+/* ---- maskfill: the subject seen ONLY through the letters — BEAT 3
+        (FIND hero_composite — opacity 0→1 only in the mask-fill beat) ---- */
 .layer--maskfill {
-  z-index: 3;
+  z-index: 4;
   display: grid;
   place-items: center;
-  /* hidden at rest, revealed across scroll (the letters "fill" with the image) */
-  opacity: var(--p);
-  transform: translate3d(0, calc(var(--p) * 6%), 0) scale(calc(1 - var(--p) * 0.1));
+  /* hidden until BEAT 3 (--p3), then the letters "fill" with the desert image —
+     it does NOT start filling at scroll 0 (that was the linear-everything bug). */
+  opacity: var(--p3);
+  transform: translate3d(0, calc(var(--p3) * 6%), 0) scale(calc(1 - var(--p3) * 0.1));
   will-change: transform, opacity;
 }
 
-/* ---- L5 · outline wordmark (crisp hollow letters, on top of the fill;
-        FIND hero_logo — fades out as the fill rises) ---- */
+/* RF2 — PARALLAX FILL: the desert image MOVES inside the fixed letter-mask, in
+   lockstep with the L2 desert behind it (FIND applies the same y/scale tween to
+   both the visible building AND the masked copy). The mask <g> (letters) stays
+   fixed; only the <image> transforms. Units are the mask's userSpaceOnUse
+   (viewBox 219.78×79.53): the image is scaled up a touch to give vertical
+   headroom, then panned UP across the FULL scroll (--p, not --p3) so different
+   desert regions read through the glyphs the whole way down. transform-box +
+   transform-origin keep the scale anchored to the image box. */
+.layer--maskfill image {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transform: translateY(calc(var(--p) * -9px)) scale(1.18);
+  will-change: transform;
+}
+
+/* ---- outline wordmark (crisp hollow letters) — BEAT 2 draw-in, BEAT 3 fade-out
+        (FIND hero_logo: drawSVG strokes on, then fades as the fill rises) ---- */
 .layer--outline {
-  z-index: 5;
+  z-index: 6;
   display: grid;
   place-items: center;
-  /* same geometry as L3 so the outline + fill register perfectly (no drift) */
-  transform: translate3d(0, calc(var(--p) * 6%), 0) scale(calc(1 - var(--p) * 0.1));
-  opacity: calc(1 - var(--p) * 0.85);
+  /* same geometry as the maskfill so outline + fill register perfectly (no drift),
+     keyed to --p3 so they share the beat-3 motion. */
+  transform: translate3d(0, calc(var(--p3) * 6%), 0) scale(calc(1 - var(--p3) * 0.1));
+  /* visible the whole time the strokes are building (--draw), then fades out as
+     the fill takes over (--p3). The strokes themselves draw via dashoffset below. */
+  opacity: calc(clamp(0, calc(var(--draw) * 6), 1) * (1 - var(--p3)));
   will-change: transform, opacity;
 }
 
@@ -224,24 +272,38 @@ body {
   display: block;
   overflow: visible;
 }
-/* outline letters: hollow stroke, no fill */
+/* outline letters: hollow stroke, no fill. The exported wordmark is a set of
+   <path>s in a 219.78×79.53 viewBox, so stroke-width is in those small user
+   units (≈0.5 reads like the old 2 in the 1000-wide placeholder).
+   drawSVG emulation (RF3): each path's TRUE length is measured in JS
+   (getTotalLength) and written to a per-path `--len` CSS var; the stroke draws
+   continuously across MOST of the scroll via `--draw` (0.06→0.68). The
+   `--len` fallback (300) covers the pre-JS / no-getTotalLength frame so the
+   letters are never stuck hidden. No paid GSAP DrawSVGPlugin needed. */
+.layer--outline .wordmark-svg path,
 .layer--outline .wordmark-svg text {
   fill: transparent;
   stroke: var(--ivory);
-  stroke-width: 2;
+  stroke-width: 0.5;
   paint-order: stroke;
-  filter: drop-shadow(0 1px 6px rgba(26, 20, 16, 0.35));
+  stroke-dasharray: var(--len, 300);
+  stroke-dashoffset: calc(var(--len, 300) * (1 - var(--draw)));
+  filter: drop-shadow(0 0.4px 2px rgba(26, 20, 16, 0.35));
 }
 
 /* ---- L4 · clouds: two DISTINCT cut-outs spreading to the sides
         (FIND hero_clouds: left x:-15%, right x:+15%) ---- */
-.layer--clouds { z-index: 4; }
+.layer--clouds { z-index: 5; }
 .cloud {
   position: absolute;
   inset-block-end: 8%;
   width: 52%;
   height: auto;
-  opacity: 0.92;
+  /* RF5 — clouds fade OUT as the smoke takes over (FIND tweens hero_clouds
+     opacity→0). Fade window 0.58→0.86 so they're GONE before the final frame,
+     exactly when the smoke rises (user: "the clouds disappear and the smoke
+     appears"). */
+  opacity: calc(0.92 * (1 - clamp(0, calc((var(--p) - 0.58) / 0.28), 1)));
   will-change: transform, opacity;
 }
 .cloud--start { /* RTL start = right edge */
@@ -255,47 +317,79 @@ body {
 }
 
 /* ---- L6 · smoke rising (FIND hero_smoke: translateY 70% → up) ---- */
+/* RF5 — smoke z8 sits ABOVE the veil (z7) so the rising smoke COVERS the veil's
+   top edge: no visible hard separation line between the white veil and the smoke
+   (the user's pink-marked seam). */
 .layer--smoke {
-  z-index: 6;
+  z-index: 8;
   display: flex;
   align-items: flex-end;
   overflow: hidden;
 }
 .smoke__img {
-  width: 130%;
-  margin-inline-start: -15%;
+  /* BIGGER smoke band so it densely covers the WHOLE bottom of the stage and
+     blankets the seam between the hero and the next section (round 4 — the
+     user marked a visible hard line with no smoke over it). */
+  width: 200%;
+  margin-inline-start: -50%;
   height: auto;
-  opacity: calc(0.6 + var(--p) * 0.4);
-  transform: translate3d(0, calc(70% - var(--p) * 60%), 0);
+  /* BEAT 4 — the DENSE bottom of the smoke image settles flush onto the stage
+     bottom (translateY 30%→0%) so its solid part blankets the seam to the next
+     section, with wisps rising over the wordmark. opacity floor 0.55 keeps the
+     band solid through beat 4. */
+  opacity: calc(0.55 + var(--p4) * 0.45);
+  transform: translate3d(0, calc(30% - var(--p4) * 30%), 0);
   will-change: transform, opacity;
 }
 
-/* ---- L7 · cream veil dissolving into the next section (FIND hero_overlay) ---- */
+/* ---- cream veil dissolving into the next section (FIND hero_overlay) — BEAT 4 ---- */
+/* RF5 / round 4 — the seam to the next section was a HARD line because the veil
+   kept its top 62% transparent (showing sky) while the cream `.after` rose from
+   below. Fix: the veil ramps to SOLID ivory across the BOTTOM HALF of the stage
+   (so the hero's lower half becomes the same cream as `.after` → no line), with
+   a soft fade through the upper half. Sits z7 (below the z8 smoke, which adds
+   texture over the dissolve). Opacity rides --p4 so it only appears at the end. */
 .layer--veil {
   z-index: 7;
+  /* ramps to SOLID ivory high in the stage (by ~32%) so that wherever the rising
+     `.after` section's top edge meets the hero, BOTH sides are already cream —
+     no sky-above-cream-below hard line. Only the top ~14% stays soft so the
+     filled wordmark still reads through during the dissolve. */
   background: linear-gradient(
     180deg,
     transparent 0%,
-    transparent 45%,
-    rgba(245, 239, 230, 0.6) 70%,
+    transparent 14%,
+    rgba(245, 239, 230, 0.6) 24%,
+    var(--ivory) 34%,
     var(--ivory) 100%
   );
-  /* whole hero fades to cream over the last third of the scroll */
-  opacity: calc(0.5 + var(--p) * 0.5);
+  /* dissolve only in the last beat, but reach FULL opacity FAST (by ~--p4 0.55,
+     i.e. scroll ≈0.88) so the hero's lower band is solid ivory — matching the
+     `.after` section it clips against — well before the very end. That kills the
+     hard seam at the hero_top bottom edge during the transition frames. */
+  opacity: clamp(0, calc(var(--p4) * 1.8), 1);
 }
 
-/* ---- L8 · content (FIND hero_content) ---- */
+/* ---- content (FIND hero_content) — BEAT 1 ----
+   z-index 2 keeps it BELOW the desert (z3) so as it sinks + fades it recedes
+   BEHIND the rising desert, exactly like FIND's headline goes behind the
+   building. The fade/sink finishes by p≈0.22 (--p1=1), before the desert tops
+   out, so the buttons are reachable early then the desert covers the space. */
 .layer--content {
-  z-index: 8;
+  z-index: 2;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
-  padding-block-end: clamp(2.5rem, 8vh, 7rem);
+  /* headline sits at the VERTICAL CENTER of the screen (RF1, like FIND's
+     "Find What Moves You"). It still sinks behind the rising desert (z3) via
+     the --p1 beat-1 transform below. */
   text-align: center;
-  /* entrance: rises + fades in. scroll: lifts away + fades out. composed. */
-  opacity: calc((1 - var(--p) * 1.15) * var(--enter));
-  transform: translate3d(0, calc(var(--p) * -8% + (1 - var(--enter)) * 24px), 0);
+  /* entrance (--enter): rises + fades in on load.
+     scroll BEAT 1 (--p1): fades out + sinks DOWN + shrinks (FIND y:+20% scale:0.9). */
+  opacity: calc((1 - var(--p1)) * var(--enter));
+  transform: translate3d(0, calc(var(--p1) * 18% + (1 - var(--enter)) * 24px), 0)
+             scale(calc(1 - var(--p1) * 0.1));
   will-change: transform, opacity;
 }
 .hero-content {
@@ -444,36 +538,39 @@ body {
    FALLBACKS — never blank, never half-revealed (avoid FIND's white-screen bug)
    ========================================================================= */
 
-/* No-JS: collapse the 500vh track to a single 100vh frozen composition so the
-   page is a finished hero. The letters are filled (maskfill on), a faint outline
-   sits over them, the subject + clouds + smoke sit in a settled mid-state. */
+/* No-JS: collapse the 500vh track to a single 100vh frozen ENTRY composition so
+   the page is a finished, readable hero — sky + desert + clouds + the Hebrew
+   headline (letters not yet filled, just like the start of the scroll scene). */
 .no-js .hero_root {
   height: 100vh;
   margin-block-end: 0;
 }
 .no-js .hero_top { position: relative; }
-.no-js .layer--subject { transform: none; opacity: 1; inset-block-start: 0; }
-.no-js .layer--maskfill { opacity: 1; transform: none; }
-.no-js .layer--outline { opacity: 0.18; transform: none; }
-.no-js .smoke__img { transform: translateY(20%); opacity: 0.85; }
-.no-js .layer--veil { opacity: 0.7; }
+.no-js .layer--content { opacity: 1; transform: none; } /* headline readable */
+.no-js .layer--subject { transform: none; opacity: 1; }
+.no-js .layer--maskfill { opacity: 0; }       /* letters empty in the entry frame */
+.no-js .layer--outline { opacity: 0; }
+.no-js .smoke__img { transform: translateY(60%); opacity: 0.5; }
+.no-js .layer--veil { opacity: 0; }
 .no-js .scroll-cue { display: none; }
 /* clouds: --enter defaults to 1 so the (1-enter)*40% term is 0 → both in frame */
 
-/* Reduced motion: keep the layered look, kill the scrub + idle loops.
-   The scene renders at a tasteful mid-state and simply scrolls away. */
+/* Reduced motion: kill the scrub + idle loops and show ONE tasteful finished
+   frame — the entry composition (sky + desert + clouds + the readable Hebrew
+   headline), letters not yet filled. JS early-returns so --p stays 0; we just
+   collapse the 500vh track to 100vh and neutralise the entrance transforms. */
 @media (prefers-reduced-motion: reduce) {
   .hero_root { height: 100vh; margin-block-end: 0; }
   .hero_top { position: relative; }
   .layer--sky { transform: none; }
-  .layer--subject { transform: none; opacity: 1; inset-block-start: 0; }
-  .layer--maskfill { opacity: 1; transform: none; }
-  .layer--outline { transform: none; opacity: 0.2; }
+  .layer--subject { transform: none; opacity: 1; }
+  .layer--maskfill { opacity: 0; }              /* letters empty in the entry frame */
+  .layer--outline { transform: none; opacity: 0; }
   .cloud--start, .cloud--end { transform: none; }
   .cloud--end { transform: scaleX(-1); }
-  .smoke__img { transform: translateY(20%); opacity: 0.85; }
-  .layer--veil { opacity: 0.7; }
-  .layer--content { opacity: 1; transform: none; }
+  .smoke__img { transform: translateY(60%); opacity: 0.5; }
+  .layer--veil { opacity: 0; }
+  .layer--content { opacity: 1; transform: none; } /* headline readable */
   .scroll-cue { display: none; }
   .btn { transition: none; }
 }

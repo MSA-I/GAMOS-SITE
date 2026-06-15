@@ -107,8 +107,8 @@ async function testPress(page, label) {
 }
 
 async function testHalls(page, label) {
-  console.log(`\n=== HALLS oasis @ ${label} (touch) ===`);
-  await page.goto(BASE + "/halls/dist/oasis/", { waitUntil: "domcontentloaded" });
+  console.log(`\n=== HALLS events @ ${label} (touch) ===`);
+  await page.goto(BASE + "/halls/dist/events/", { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(1800);
   const h = await page.evaluate(() => { const c = document.querySelector("canvas"); return { canvas: !!c, w: c ? c.width : 0, h: c ? c.height : 0 }; });
   log(`halls/webgl-canvas/${label}`, h.canvas && h.w > 0, `canvas ${h.w}x${h.h}`);

@@ -5,7 +5,7 @@ import { getProjectsByHall } from "./projectsData";
 import type { ProjectWithColors } from "./types";
 
 interface Props {
-  initialHall: "oasis" | "lumina";
+  initialHall: "events" | "resort";
 }
 
 // Mobile twin of App.tsx — IDENTICAL DepthGallery usage (same WebGL, same
