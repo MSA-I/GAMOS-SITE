@@ -25,11 +25,12 @@
      5. wrangler pages deploy _site  (preview by default; --prod → production)
 
    Decisions locked with the user:
-     • Culinary scrub (REVERSED 2026-06-16): the canvas-frames scrub (361×4K WebP)
-       eager-preloaded on page load → tab OOM + connection-pool starvation. It is
-       now a single H.264 1080p clip (assets/video/culinary-h264-1080.mp4) driven by
-       scroll-scene.js video-mode. The 209MB culinary + 11MB culinary-mobile frames
-       are DROPPED from the deploy (frames-walk skip set below).
+     • Culinary scrub (2026-06-16): canvas-frames scrub RESTORED after a brief
+       <video> detour. The OOM (361×4K frames eager-preloaded → ~11GB) is fixed by
+       SLIDING-WINDOW decode in js/canvas-frame-renderer.js (~9 desktop / ~17 mobile
+       frames held at once), not by dropping the effect. Desktop frames re-encoded
+       4K→1080p (~42MB), mobile 960×540 (~11MB) — both SHIPPED. canvas-frames is also
+       the only scrub that works on iOS. (culinary-h264-1080.mp4 left on disk, unused.)
      • Map tiles stay on CARTO keyless for now; MapTiler key is a follow-up
        before a real public custom-domain launch.
      • subject.png (20MB) ships as-is — it's only the no-WebP <img> fallback,
@@ -146,37 +147,38 @@ for (const entry of readdirSync(assetsSrc)) {
     continue;
   }
   if (entry === "frames") {
-    // Skip orphan/dead frame sequences:
-    //   hero            — orphan (hero is layered PNG/WebP now, §3)
-    //   culinary,       — 2026-06-16: culinary moved to <video> scrub (the 361×4K
-    //   culinary-mobile   eager-preload caused tab OOM + connection-pool starvation),
-    //                     so these ~220MB of frames are no longer referenced.
-    const FRAMES_SKIP = new Set(["hero", "culinary", "culinary-mobile"]);
+    // Skip only the orphan hero frame sequence (hero is layered PNG/WebP now,
+    // §3). culinary + culinary-mobile are SHIPPED again (2026-06-16): the
+    // scrub was restored to canvas-frames with sliding-window decode, so those
+    // frames are referenced. Desktop set re-encoded 4K→1080p (~42MB); mobile
+    // 960×540 (~11MB).
+    const FRAMES_SKIP = new Set(["hero"]);
     const framesSrc = join(assetsSrc, "frames");
     const framesDst = join(assetsDst, "frames");
     mkdirSync(framesDst, { recursive: true });
     for (const sub of readdirSync(framesSrc)) {
       if (FRAMES_SKIP.has(sub)) {
-        log(`- assets/frames/${sub}/ (excluded — unreferenced)`);
+        log(`- assets/frames/${sub}/ (excluded — orphan)`);
         continue;
       }
       cpSync(join(framesSrc, sub), join(framesDst, sub), { recursive: true });
     }
-    log("+ assets/frames/ (minus hero, culinary, culinary-mobile)");
+    log("+ assets/frames/ (minus hero)");
     continue;
   }
   cpSync(join(assetsSrc, entry), join(assetsDst, entry), { recursive: true });
 }
-log("+ assets/ (minus _src, video, dead frames)");
+log("+ assets/ (minus _src, video, frames/hero)");
 
-/* Re-add the gitignored video files the site needs. The culinary scrub uses the
-   re-encoded H.264 1080p clip (the original culinary-1080.mp4 is HEVC/4K, which
-   Chrome/Firefox/Edge cannot decode — verified 2026-06-16). ------------------- */
+/* Re-add the gitignored video files the site needs. The culinary scrub is back
+   on canvas-frames (sliding-window decode), so it no longer needs an MP4 — but
+   culinary-poster.jpg is still the <picture> poster shown before frames decode.
+   (culinary-h264-1080.mp4 stays on disk as an unused fallback asset.) --------- */
 const videoDst = join(assetsDst, "video");
 mkdirSync(videoDst, { recursive: true });
-for (const v of ["culinary-h264-1080.mp4", "culinary-poster.jpg"]) {
+for (const v of ["culinary-poster.jpg"]) {
   const src = join(assetsSrc, "video", v);
-  if (!existsSync(src)) fail(`expected assets/video/${v} on disk — not found (it's gitignored; must exist locally${v.startsWith("culinary-h264") ? " — run the ffmpeg re-encode from the plan" : ""})`);
+  if (!existsSync(src)) fail(`expected assets/video/${v} on disk — not found (it's gitignored; must exist locally)`);
   cpSync(src, join(videoDst, v));
   log(`+ assets/video/${v} (${human(statSync(src).size)}, gitignored — copied from disk)`);
 }

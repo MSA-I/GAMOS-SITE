@@ -72,9 +72,19 @@ const DEFAULTS = {
   parallax: true,
   parallaxStrength: 24,
   bgColor: "#0E0E0C", // --ink-deep
+  // Sliding-window decode (2026-06-16): only keep `window` frames decoded in
+  // memory around the current scroll index; fetch-on-demand as the index
+  // moves, evict (bitmap.close) frames outside the window. This replaced the
+  // old eager "decode all N frames" preload that OOM-crashed the tab on the
+  // 361×4K culinary scrub (~11GB of ImageBitmaps). null → auto-pick by tier.
+  window: null,
 };
 
-const PHASE1_COUNT = 10; // first frames eager-decoded for fast first paint
+// Sliding-window sizes. Desktop frames are bigger (more bytes/frame) so the
+// window is smaller; mobile frames are tiny (960×540) so a wider window is
+// cheap and smooths fast flicks. half = floor(window/2) frames each side.
+const WINDOW_DESKTOP = 9;
+const WINDOW_MOBILE = 17;
 
 function pad4(n) {
   return String(n + 1).padStart(4, "0");
@@ -157,77 +167,157 @@ export function createRenderer({ canvas, manifest, host, options }) {
     typeof window !== "undefined" &&
     typeof window.createImageBitmap === "function";
 
-  function loadFrame(idx) {
-    return new Promise((resolve) => {
-      const url = buildFrameUrl(manifest.frameUrl, idx);
+  // --- Sliding-window state -------------------------------------------------
+  // `frames[idx]` holds a decoded ImageBitmap/HTMLImageElement for in-window
+  // frames only. `pending` maps idx → AbortController so a frame that scrolls
+  // out of the window mid-fetch can be cancelled. `windowSize` is the total
+  // number of frames kept decoded around the current index.
+  const pending = new Map(); // idx → AbortController
+  const half = Math.max(
+    1,
+    Math.floor(((opts.window || pickWindowSize()) - 1) / 2)
+  );
 
-      const finish = (asset) => {
-        frames[idx] = asset;
-        state.loaded++;
-        if (typeof opts.onProgress === "function") {
-          try { opts.onProgress(state.loaded, total); } catch (_) {}
-        }
-        resolve(asset);
-      };
-
-      // Preferred path — fetch + createImageBitmap. Decoded once, painted
-      // many times without re-decoding.
-      if (supportsImageBitmap) {
-        fetch(url, { mode: "same-origin" })
-          .then((r) => (r.ok ? r.blob() : Promise.reject(r.status)))
-          .then((blob) => createImageBitmap(blob))
-          .then((bitmap) => finish(bitmap))
-          .catch(() => {
-            // Fallback to <img> on fetch/decode failure.
-            const img = new Image();
-            img.decoding = "async";
-            img.onload = () => {
-              if (typeof img.decode === "function") {
-                img.decode().then(() => finish(img)).catch(() => finish(img));
-              } else {
-                finish(img);
-              }
-            };
-            img.onerror = () => finish(null);
-            img.src = url;
-          });
-        return;
-      }
-
-      // ImageBitmap unavailable — pre-decode the <img> so subsequent draws are cheap.
-      const img = new Image();
-      img.decoding = "async";
-      img.onload = () => {
-        if (typeof img.decode === "function") {
-          img.decode().then(() => finish(img)).catch(() => finish(img));
-        } else {
-          finish(img);
-        }
-      };
-      img.onerror = () => finish(null);
-      img.src = url;
-    });
+  function pickWindowSize() {
+    // Mobile (small frames) can afford a wider window; desktop frames are
+    // heavier so we keep fewer. Viewport width is the cheap proxy the rest of
+    // the site already uses (mobile manifest swap is gated at 768px).
+    const isNarrow =
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(max-width: 768px)").matches;
+    return isNarrow ? WINDOW_MOBILE : WINDOW_DESKTOP;
   }
 
-  /** Preload all frames. Resolves when all are decoded (or errored).
-      The two-phase split is implicit: first 10 launched first, kicks paint;
-      remaining are fired in parallel right after, and the awaited promise
-      yields when ALL settle. */
-  async function preload() {
-    if (state.destroyed) return;
-    const phase1 = [];
-    for (let i = 0; i < Math.min(PHASE1_COUNT, total); i++) {
-      phase1.push(loadFrame(i));
-    }
-    await Promise.all(phase1); // first paint can happen now
-    if (state.destroyed) return;
+  /** Decode a single frame into frames[idx]. Tracks an AbortController in
+      `pending` so eviction can cancel an in-flight fetch. No-op if already
+      decoded or already pending. */
+  function loadFrame(idx) {
+    if (idx < 0 || idx >= total) return;
+    if (frames[idx] || pending.has(idx)) return; // already decoded / in-flight
 
-    // Phase 2: remaining frames in parallel
-    const phase2 = [];
-    for (let i = PHASE1_COUNT; i < total; i++) {
-      phase2.push(loadFrame(i));
+    const url = buildFrameUrl(manifest.frameUrl, idx);
+    const ac = typeof AbortController === "function" ? new AbortController() : null;
+    pending.set(idx, ac);
+
+    const finish = (asset) => {
+      pending.delete(idx);
+      if (state.destroyed) {
+        // Decoded after destroy / eviction — release immediately.
+        if (asset && typeof asset.close === "function") { try { asset.close(); } catch (_) {} }
+        return;
+      }
+      // If this frame fell outside the window while decoding, drop it.
+      if (asset && !inWindow(idx)) {
+        if (typeof asset.close === "function") { try { asset.close(); } catch (_) {} }
+        return;
+      }
+      frames[idx] = asset;
+      state.loaded++;
+      if (typeof opts.onProgress === "function") {
+        try { opts.onProgress(state.loaded, total); } catch (_) {}
+      }
+      // Repaint if the newly-decoded frame is the one we currently want.
+      if (idx === state.currentFrame) drawFrame(idx);
+    };
+
+    // Preferred path — fetch + createImageBitmap. Decoded once, painted
+    // many times without re-decoding.
+    if (supportsImageBitmap) {
+      fetch(url, { mode: "same-origin", signal: ac ? ac.signal : undefined })
+        .then((r) => (r.ok ? r.blob() : Promise.reject(r.status)))
+        .then((blob) => createImageBitmap(blob))
+        .then((bitmap) => finish(bitmap))
+        .catch((err) => {
+          if (err && err.name === "AbortError") { pending.delete(idx); return; }
+          // Fallback to <img> on fetch/decode failure.
+          const img = new Image();
+          img.decoding = "async";
+          img.onload = () => {
+            if (typeof img.decode === "function") {
+              img.decode().then(() => finish(img)).catch(() => finish(img));
+            } else {
+              finish(img);
+            }
+          };
+          img.onerror = () => { pending.delete(idx); };
+          img.src = url;
+        });
+      return;
     }
-    await Promise.all(phase2);
+
+    // ImageBitmap unavailable — pre-decode the <img> so subsequent draws are cheap.
+    const img = new Image();
+    img.decoding = "async";
+    img.onload = () => {
+      if (typeof img.decode === "function") {
+        img.decode().then(() => finish(img)).catch(() => finish(img));
+      } else {
+        finish(img);
+      }
+    };
+    img.onerror = () => { pending.delete(idx); };
+    img.src = url;
+  }
+
+  /** Is idx within the live window around the current frame? */
+  function inWindow(idx) {
+    return idx >= state.currentFrame - half && idx <= state.currentFrame + half;
+  }
+
+  /** Ensure the [center-half … center+half] window is decoded; evict + cancel
+      everything outside it. This is the heart of the memory fix — at most
+      `windowSize` frames are ever held decoded, regardless of total count. */
+  function ensureWindow(center) {
+    const lo = Math.max(0, center - half);
+    const hi = Math.min(total - 1, center + half);
+
+    // Evict decoded frames outside the window (free GPU/raster memory).
+    for (let i = 0; i < frames.length; i++) {
+      if (frames[i] && (i < lo || i > hi)) {
+        const asset = frames[i];
+        if (typeof asset.close === "function") { try { asset.close(); } catch (_) {} }
+        else if ("src" in asset) { asset.src = ""; }
+        frames[i] = null;
+        state.loaded = Math.max(0, state.loaded - 1);
+      }
+    }
+    // Cancel in-flight fetches that fell outside the window.
+    for (const [i, ac] of pending) {
+      if (i < lo || i > hi) {
+        if (ac) { try { ac.abort(); } catch (_) {} }
+        pending.delete(i);
+      }
+    }
+    // Decode frames now inside the window (load center-out so the visible
+    // frame and its nearest neighbours arrive first).
+    loadFrame(center);
+    for (let d = 1; d <= half; d++) {
+      loadFrame(center + d);
+      loadFrame(center - d);
+    }
+  }
+
+  /** "Preload" now means: prime the window around the start frame so the
+      money-shot is ready on first paint. Resolves once the center frame is
+      decoded (or immediately if it errors) — NOT after all N frames. */
+  function preload() {
+    if (state.destroyed) return Promise.resolve();
+    state.currentFrame = startFrame;
+    ensureWindow(startFrame);
+    // Resolve as soon as the start frame is decoded so the caller can mark
+    // the scene ready and hide any loader without waiting for the whole clip.
+    return new Promise((resolve) => {
+      let tries = 0;
+      const check = () => {
+        if (state.destroyed || frames[startFrame] || tries++ > 200) {
+          resolve();
+          return;
+        }
+        setTimeout(check, 25);
+      };
+      check();
+    });
   }
 
   // -------------------------------------------------------------------------
@@ -320,7 +410,14 @@ export function createRenderer({ canvas, manifest, host, options }) {
       // Map 0..1 scroll onto [startFrame … last] so a dead intro is trimmed
       // (frameStart). With frameStart=0 this is the original p*(total-1).
       const idx = startFrame + Math.floor(p * spanFrames);
-      drawFrame(idx);
+      const clamped = Math.max(0, Math.min(total - 1, idx));
+      state.currentFrame = clamped;
+      // Slide the decode window to follow the scroll position (fetch the new
+      // frames, evict the ones we scrolled away from), then paint. drawFrame
+      // walks backward to the nearest decoded frame if `clamped` isn't ready
+      // yet, so a fast flick shows the closest available frame, not a gap.
+      ensureWindow(clamped);
+      drawFrame(clamped);
     });
   }
 
@@ -391,6 +488,9 @@ export function createRenderer({ canvas, manifest, host, options }) {
     if (state.bound.resize) window.removeEventListener("resize", state.bound.resize);
     if (state.bound.mousemove) host.removeEventListener("mousemove", state.bound.mousemove);
     state.bound = { scroll: null, resize: null, mousemove: null };
+    // Abort any in-flight frame fetches (sliding-window decode).
+    for (const [, ac] of pending) { if (ac) { try { ac.abort(); } catch (_) {} } }
+    pending.clear();
     // Release frame refs / bitmaps to encourage GC. ImageBitmap has its own
     // close() to free GPU memory; HTMLImageElement gets src=""
     for (let i = 0; i < frames.length; i++) {

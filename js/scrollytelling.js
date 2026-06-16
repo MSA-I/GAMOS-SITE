@@ -2,17 +2,17 @@
    scrollytelling.js — orchestrates 4 cinematic scroll-driven canvas scenes
    ---------------------------------------------------------------------------
    Implements user spec "Cinematic Scrollytelling with Canvas & GSAP".
+   The live canvas-frames scene is #culinary (the hero uses js/hero-scene.js,
+   not canvas frames).
 
-   LEGACY AS OF 2026-06-16: there are now ZERO live canvas-frames scenes.
-   #culinary — the last one — was switched to scroll-scene.js VIDEO mode
-   (assets/video/culinary-h264-1080.mp4) because eager-preloading its 361×4K
-   WebP frames crashed the tab (OOM) and starved every other lazy image
-   (connection-pool saturation). This module's canvas pipeline now no-ops
-   (the `canvases.length === 0` early-return fires), but it is retained per
-   Constitution §6 for any future canvas-frames scene. The smooth-scroll
-   helpers (scroll-to-top + side-dot-nav anchor smoothing) were moved ABOVE
-   that early-return so they keep working with no canvas present.
-   The hero uses the GSAP scroll scene (js/hero-scene.js), not canvas frames.
+   2026-06-16: #culinary briefly moved to <video> scrub to stop a tab-OOM, then
+   restored to canvas-frames once the renderer gained SLIDING-WINDOW decode
+   (js/canvas-frame-renderer.js — only ~9 desktop / ~17 mobile frames held at
+   once instead of eager-loading all 361). Canvas-frames is the only scrub that
+   works on iOS (video.currentTime can't be scrubbed there), so this is also
+   the mobile path. The smooth-scroll helpers (scroll-to-top + side-dot-nav
+   anchor smoothing) are registered ABOVE the canvas early-return so they keep
+   working regardless of how many canvas scenes exist.
 
    Loader: a single shared overlay shows the cumulative percentage of all
    scenes' frames as they decode. Hides once 100% decoded (with a 240ms

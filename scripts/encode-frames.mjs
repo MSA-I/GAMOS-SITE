@@ -49,19 +49,17 @@ const SCENES = {
   },
   culinary: {
     src: "assets/video/culinary-1080.mp4",
-    // 2026-06-04 (second bump): user asked for MAX quality on the displayed
-    // scrub clip. Source 1.4_reversed.mp4 is 3840×2160 @ 24fps HEVC. We keep
-    // native resolution + native fps, and now push WebP to q100 with
-    // smartSubsample (disables 4:2:0 chroma subsampling — preserves color
-    // edges in plate textures, sauce drizzles, herb microgreens). Effort 6
-    // already maxed in encoder body. Per-frame size grows roughly q92 → q100
-    // (~300 → ~550KB), total dir size lands around 180–200MB across 361
-    // frames. Two-phase preloader (canvas-frame-renderer.js) still gates
-    // LCP at the first 10 frames; phase-2 streams fetchpriority=low. Above
-    // §8 6MB-per-scene budget — accepted exemption per user direction.
+    // 2026-06-16 — DOWNSCALED 3840→1920. The canvas paints at viewport CSS
+    // size (≤~1440px on desktop, less on mobile) and the renderer now uses a
+    // SLIDING-WINDOW decode (canvas-frame-renderer.js — only ~9 frames held at
+    // once) instead of eager-loading all 361, which OOM-crashed the tab at 4K.
+    // At 1080p each decoded frame is ~4× lighter (8.3MP→2.1MP RGBA), so the
+    // window peaks ~70MB instead of ~290MB, with NO visible loss (the source
+    // detail beyond viewport pixels was never displayed). q90 + smartSubsample
+    // keeps plate/sauce/herb color edges crisp. ~150–200KB/frame, ~60MB total.
     fps: 24,
-    width: 3840,
-    quality: 100,
+    width: 1920,
+    quality: 90,
     smartSubsample: true,
   },
   // resort:   { src: "assets/video/resort-1080.mp4",   fps: 30, width: 1920, quality: 88 },

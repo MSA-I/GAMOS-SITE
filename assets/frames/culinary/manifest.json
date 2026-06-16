@@ -2,12 +2,12 @@
   "scene": "culinary",
   "frameCount": 361,
   "frameUrl": "/assets/frames/culinary/frame_{NNNN}.webp",
-  "width": 3840,
-  "height": 2160,
+  "width": 1920,
+  "height": 1080,
   "sourceVideo": "culinary-1080.mp4",
   "sourceMtime": "2026-06-04T12:21:53.117Z",
-  "encoded": "2026-06-04T13:17:23.749Z",
+  "encoded": "2026-06-16T11:31:26.350Z",
   "fpsExtracted": 24,
-  "scaleWidthPx": 3840,
-  "webpQuality": 100
+  "scaleWidthPx": 1920,
+  "webpQuality": 90
 }
