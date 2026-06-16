@@ -6,7 +6,7 @@
 
 .section-header {
   margin-block-end: var(--space-12);
-  max-width: 64ch;
+  max-inline-size: 64ch;
 }
 
 .section-header--center {
@@ -16,7 +16,9 @@
 
 .section-header__eyebrow {
   font-family: var(--font-body);
-  font-size: var(--text-xs);
+  /* 2026-06-16: was --text-xs (12px) — user reported "נורא קטן". Bumped to a
+     clamp that scales with the title yet stays subordinate to the lede. */
+  font-size: clamp(0.95rem, 1.1vw, 1.125rem);
   font-weight: var(--fw-semibold);
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
@@ -39,7 +41,7 @@
   overflow-wrap: break-word;
 }
 
-.section-header--center .section-header__title { max-width: none; }
+.section-header--center .section-header__title { max-inline-size: none; }
 
 .section-header__lede {
   font-family: var(--font-body);
@@ -47,7 +49,7 @@
   line-height: var(--lh-snug);
   color: var(--fg-muted);
   margin: 0;
-  max-width: 56ch;
+  max-inline-size: 56ch;
 }
 
 .section-header--on-dark .section-header__title { color: var(--fg-on-dark); }

@@ -120,7 +120,12 @@
    controls/pin/route/labels live above and stay true-color. Single knob for
    the whole map's tone. */
 .directions__map .leaflet-tile-pane {
-  filter: saturate(1.04) brightness(1.01) contrast(0.99);
+  /* 2026-06-16: the old saturate(1.04) brightness(1.01) contrast(0.99) washed
+     land/water/roads into the same pale gray (low contrast, a11y issue). This
+     chain saturates the warm beige + blue apart, stops the lightening, and
+     restores tonal hierarchy — still warm/branded, not default OSM. Single
+     knob: bump contrast→1.18 / saturate→1.25 if still flat. */
+  filter: saturate(1.18) brightness(0.97) contrast(1.12);
 }
 
 /* ----- Venue pin (brass divIcon + gentle pulse) ----- */

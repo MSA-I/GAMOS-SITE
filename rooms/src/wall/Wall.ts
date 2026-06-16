@@ -238,7 +238,25 @@ export default class Wall {
     ctx.fillRect(POSTER.x, POSTER.y, POSTER.w, POSTER.h);
     ctx.restore();
 
-    // (no grid lattice / no per-image frame — reverted 2026-06-15 per request)
+    // ---- per-category colour frame (2026-06-16, user request) ----
+    // Each room category owns a §5 tone; a frame in that tone lets the eye
+    // group the wall's many tiles at a glance. Always visible (thin); the
+    // hovered card gets a thicker, glowing frame for emphasis. Stroke is
+    // drawn after the clip is restored and inset by half its width so the
+    // whole line sits inside the poster's rounded bounds.
+    const frameW = hot ? 10 : 6;
+    const inset = frameW / 2;
+    ctx.save();
+    if (hot) {
+      ctx.shadowColor = bg;
+      ctx.shadowBlur = 18;
+    }
+    roundRect(ctx, POSTER.x + inset, POSTER.y + inset, POSTER.w - frameW, POSTER.h - frameW, 8);
+    ctx.lineWidth = frameW;
+    ctx.strokeStyle = bg;
+    ctx.globalAlpha = hot ? 1 : 0.85;
+    ctx.stroke();
+    ctx.restore();
 
     // text colour: cream over the photo body works regardless of tone; the
     // top index uses the on-tone colour only when there's no photo, but cream

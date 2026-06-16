@@ -144,9 +144,11 @@
      subtitle → --fg-muted,         --fw-medium   (was #716657 / 500)
    §10.2: no hard-coded hex — all via tokens. */
 .hero_eyebrow {
-  margin: 0 0 calc(1.2 * var(--rem)); text-align: center;
+  /* 2026-06-16: was 1.8·rem solid brass — user reported it tiny + wanted the
+     brand dark texture. Bumped + texture-filled (fill applied in @supports). */
+  margin: 0 0 calc(1.6 * var(--rem)); text-align: center;
   font-family: "Heebo", sans-serif; font-weight: var(--fw-semibold);
-  font-size: calc(1.8 * var(--rem)); letter-spacing: 0.18em; color: var(--accent);
+  font-size: calc(2.6 * var(--rem)); letter-spacing: 0.18em; color: var(--fg);
 }
 .hero_title h1 {
   margin: 0; font-family: "Heebo", sans-serif; font-weight: var(--fw-bold);
@@ -154,7 +156,42 @@
   text-align: center; color: var(--fg); max-inline-size: none;
 }
 @media (min-width: 768px) { .hero_title h1 { font-size: calc(14 * var(--rem)); } }
-.hero_title .accent { color: var(--brass-deep); }
+/* 2026-06-16: line 1 → brand DARK texture; line 2 (.accent) → brand LIGHT
+   texture (cream+gold typo-on-dark). Both applied in @supports below. The
+   solid `color` is the graceful-degradation fallback when background-clip:text
+   is unsupported (line 1 → ink, line 2 → brass). */
+.hero_title .accent { color: var(--brass); }
+
+/* ---- Texture fill (graceful-degradation; mirrors texture-text.css) ----
+   Eyebrow + title line 1 take the DARK gold-flecked brand texture; line 2
+   (.accent) takes the LIGHT cream+gold texture. SplitText wraps each title
+   word in a .hero_word span that renders ON TOP of the h1, so the fill must
+   live on the SPANS too (a transparent span over the h1 shows nothing — the
+   "invisible but selectable" bug). Same multi-span technique as
+   .marquee__text. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero_eyebrow,
+  .hero_title h1,
+  .hero_title h1 .hero_word,
+  .hero_title .accent,
+  .hero_title .accent .hero_word {
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero_eyebrow,
+  .hero_title h1,
+  .hero_title h1 .hero_word {
+    background-image: var(--typo-on-light);
+  }
+  .hero_title .accent,
+  .hero_title .accent .hero_word {
+    background-image: var(--typo-on-dark);
+  }
+}
 .hero_text {
   margin: calc(1.5 * var(--rem)) 0 0; text-align: center; text-wrap: balance;
   font-family: "Heebo", sans-serif; font-weight: var(--fw-medium);

@@ -36,7 +36,11 @@
 .marquee__track {
   display: flex;
   align-items: center;
-  gap: var(--space-16);
+  /* Spacing lives on each item's padding-inline-end (NOT flex `gap`): `gap`
+     adds a slot between every item including across the midpoint, so the
+     0 → -50% keyframe lands half a gap short of the seamless wrap and the
+     loop visibly jumps. Per-item padding makes the duplicated half a
+     pixel-exact copy → -50% wraps seamlessly. */
   inline-size: max-content;
   animation: marquee-scroll var(--marquee-duration) linear infinite;
   will-change: transform;
@@ -64,6 +68,7 @@
   white-space: nowrap;
   flex-shrink: 0;
   margin: 0;
+  padding-inline-end: var(--space-16); /* loop spacing — see .marquee__track */
 }
 
 .marquee--cocoa .marquee__text { color: var(--brass); }
@@ -80,9 +85,7 @@
   }
   .marquee__text {
     font-size: clamp(1.4rem, 5.5vw, 2.4rem);
-  }
-  .marquee__track {
-    gap: var(--space-8);
+    padding-inline-end: var(--space-8);
   }
 }
 
