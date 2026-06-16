@@ -60,7 +60,14 @@
   font-family: "Heebo";
   font-style: normal;
   font-weight: 100 900;
-  font-display: swap;
+  /* `optional` (not `swap`) — Heebo is the above-the-fold hero text + body face,
+     so a swap-in mid-view = the letter flicker the user reported (FOUT metric
+     shift). `optional` gives a ~100ms block then locks the choice for the view:
+     with the head preload (index.html) Heebo wins that race → real font, zero
+     flash; on a cold/slow link it shows a STABLE fallback with no late swap.
+     Deliberate deviation from the "swap" convention noted above — FOUC fix
+     2026-06-16. Other faces keep `swap`. */
+  font-display: optional;
   src: url("../assets/fonts/heebo-400.woff2") format("woff2");
   unicode-range: U+0020-007E, U+00A0-00FF, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
 }

@@ -1,9 +1,46 @@
 # GAMOS-SITE — מצב נוכחי
 
-**עודכן:** 2026-06-15 (v10 cinematic scroll-hero + #hall-portal composer)
+**עודכן:** 2026-06-16 (FOUC fix: nav + text flash; hero mobile-stability pass)
 **Branch:** `main` — מסונכרן עם `origin/main` (https://github.com/MSA-I/GAMOS-SITE)
 **מקור-אמת לתוכנית הראשית:** [`PLANS/research/2026-05-28_master-rebuild-plan.md`](PLANS/research/2026-05-28_master-rebuild-plan.md)
 **מקור-אמת לחוקה:** [`CLAUDE.md`](CLAUDE.md)
+
+---
+
+## ⭐ NEW (2026-06-16) — FOUC fix (nav + text flash) + hero mobile-stability pass
+
+תוקנו שתי בעיות שדיווח המשתמש: הבהוב ה-nav + הבהוב האותיות בטעינה, וחוסר-יציבות
+ההירו במובייל. דרך הסקילים `scroll-hero-effect` / `fixing-motion-performance` /
+`systematic-debugging` / `mobile-design`. אומת ב-Playwright (16/16 desktop+mobile-emul).
+
+**הבהוב ה-nav — שני שורשים:**
+1. `index.html` נטען בלי `data-hero-mode` → ה-`.site-nav` נצבע נראה ואז ה-JS הסתיר אותו
+   עם transition = הבהוב. תוקן: זרע סטטי `<html data-hero-mode="true">` (המצב המוסתר
+   הוא הפריים הראשון, בלי transition) + `<noscript>` שמחזיר את הבר ב-JS-off (§9).
+2. **באג עומק שנחשף בבדיקה אמפירית:** `js/site-nav-hover-reveal.js` קבע hero-mode לפי
+   `intersectionRatio > 0.30` — אבל ההירו הוא 500vh, אז ה-ratio מקסימום ~0.2 ו-hero-mode
+   **לעולם לא הופעל** מאז מעבר ל-v10. כלומר פיצ'ר ה"nav מוסתר בהירו, נחשף ב-hover" (§3)
+   היה מת, וה-JS הפך את הזרע ל-`false` תוך 150ms = ההבהוב. תוקן ל-בדיקת rect ישירה
+   (`top<=1 && bottom>vh`) + re-eval על scroll (rAF-throttled).
+
+**הבהוב האותיות (FOUT + texture-pop):** Heebo (טקסט ההירו) לא היה ב-preload + `swap`.
+תוקן: preload ל-`heebo-400.woff2` + Heebo `font-display: optional` (סטייה מודעת מ-`swap`,
+מתועדת ב-`tokens.css:63`). הטקסטורות (`typo-on-light/-dark.webp`) לא היו ב-preload →
+כותרת ה-lounge שקופה→קופצת. תוקן: preload לשתיהן עם `?v=2026-06-15-brown` (חייב לתאום
+ל-`tokens.css`).
+
+**הירו מובייל (suspect: vh לא-יציב מול toolbar דינמי + scrub נעוץ):** `js/hero-scene.js`
+— `ScrollTrigger.config({ignoreMobileResize:true})` + `ScrollTrigger.refresh()` על
+`load` (תופס את ה-mobile CSS שמוזרק async) ועל `orientationchange`. `mobile/css/hero-scene.css`
+— `.hero_top{block-size:100svh}`. **טרם אומת על טלפון אמיתי** — המשתמש לבדוק scrub/pin
+על מכשיר; אם נותרים באגים, ראה השערות B0 בתוכנית.
+
+**נלווה (גישה במגע):** במכשירי `(hover:none)` ה-nav נשאר חשוף ב-hero-mode (ההמבורגר
+נגיש — אין mousemove לחשיפה), מאזיני העכבר מדולגים.
+
+**קבצים:** `index.html`, `css/tokens.css`, `js/site-nav-hover-reveal.js`, `js/hero-scene.js`,
+`mobile/css/hero-scene.css`. `npm run build:mobile` הורץ. תוכנית:
+`C:\Users\art1\.claude\plans\skill-orchestrator-kind-dream.md`.
 
 ---
 
