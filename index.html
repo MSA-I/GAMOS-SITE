@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="he">
+<html dir="rtl" lang="he" data-hero-mode="true">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -74,11 +74,27 @@
         href="/assets/images/shabbat-chatan/01.half.webp"
         media="(max-width: 768px)">
 
+  <!-- Performance: preload the texture-fill images for background-clip:text
+       headings (the lounge title sits just below the hero and is TRANSPARENT
+       until its fill image loads → it pops in without these). The ?v= query
+       MUST stay in lockstep with css/tokens.css --typo-on-light/--typo-on-dark
+       (lines ~185-186) or the preload won't match the CSS request and is wasted. -->
+  <link rel="preload" as="image" type="image/webp"
+        href="/assets/images/brand/typo-on-light.webp?v=2026-06-15-brown">
+  <link rel="preload" as="image" type="image/webp"
+        href="/assets/images/brand/typo-on-dark.webp?v=2026-06-15-brown">
+
   <!-- Performance: preload critical fonts (Rubik display, Hebrew + Latin) -->
   <link rel="preload" as="font" type="font/woff2" crossorigin
         href="/assets/fonts/rubik-hebrew.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin
         href="/assets/fonts/rubik-latin.woff2">
+  <!-- Heebo is the hero eyebrow/title/body + site body face. Preloading the
+       single VF file (12KB; 400/500/600 are byte-identical per tokens.css)
+       lets it win the font-display:optional block window → no FOUT metric-shift
+       on the above-the-fold hero text. -->
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="/assets/fonts/heebo-400.woff2">
 
   <!-- DNS / preconnect (only if external resources confirmed) -->
   <!-- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> -->
@@ -171,6 +187,20 @@
   <link rel="stylesheet" href="/css/components/scrollytelling-loader.css">
   <link rel="stylesheet" href="/css/components/texture-text.css">
   <link rel="stylesheet" href="/css/components/site-nav-hover.css">
+  <!-- JS-off fallback (§9): index.html ships <html data-hero-mode="true"> so the
+       nav paints already-hidden (kills the load flash — no transition from a
+       visible state). site-nav-hover-reveal.js then re-owns the attribute. But
+       if JS never runs, the static attribute would leave the nav permanently
+       hidden — this <noscript> un-hides it so the bar stays reachable. Token-
+       based (§10.2); JS-off only. -->
+  <noscript><style>
+    html[data-hero-mode="true"] .site-nav {
+      transform: none; pointer-events: auto;
+      background: color-mix(in srgb, var(--ivory) 86%, transparent);
+      backdrop-filter: saturate(140%) blur(12px);
+      -webkit-backdrop-filter: saturate(140%) blur(12px);
+    }
+  </style></noscript>
   <link rel="stylesheet" href="/css/components/lounge-lightbox.css">
   <!-- Canonical button + caption systems. UNLAYERED + loaded LAST among the
        component sheets so they win equal-specificity ties over the unlayered
@@ -544,7 +574,6 @@
     <section id="culinary"
              class="culinary scroll-scene"
              data-scrub="culinary"
-             data-scrub-mode="canvas-frames"
              data-scrub-spacer-vh="320"
              aria-labelledby="culinary-title">
 
@@ -555,11 +584,21 @@
                loading="lazy" decoding="async">
         </picture>
 
-        <canvas class="scroll-scene__canvas"
-                data-manifest-url="/assets/frames/culinary/manifest.json"
-                data-scrollytelling
-                data-scrub-frame-start="0.5"
-                aria-hidden="true"></canvas>
+        <!-- 2026-06-16: switched from canvas-frames (361×4K WebP, eager-preloaded
+             on load → tab OOM + connection-pool starvation that froze every other
+             lazy image) to scroll-scene VIDEO mode. scroll-scene.js makeVideoProgress()
+             scrubs video.currentTime to scroll progress — same scrub effect, one
+             H.264 clip (~5MB) instead of 209MB of frames. muted+playsinline so iOS
+             can autoplay-loop inline (it can't scrub currentTime); preload=metadata
+             so the clip isn't fetched on page load. The presence of
+             <video class="scroll-scene__video"> + no data-scrub-mode auto-selects
+             "video" mode in pickMode(). -->
+        <video class="scroll-scene__video"
+               muted playsinline preload="metadata"
+               poster="/assets/video/culinary-poster.jpg"
+               aria-hidden="true">
+          <source src="/assets/video/culinary-h264-1080.mp4" type="video/mp4">
+        </video>
 
         <div class="scroll-scene__overlay">
           <header class="section-header">

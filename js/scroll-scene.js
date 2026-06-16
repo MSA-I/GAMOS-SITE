@@ -264,9 +264,24 @@ export function init() {
       if (videoEl.readyState >= 1 && Number.isFinite(videoEl.duration)) {
         scene.duration = videoEl.duration || 0;
       } else {
-        videoEl.addEventListener("loadedmetadata", () => {
-          scene.duration = videoEl.duration || 0;
-        }, { once: true });
+        // Cache duration as soon as it is known. `durationchange` fires before
+        // `loadedmetadata` in some engines and also re-fires if the source
+        // changes, so listen to both (not `once` on durationchange).
+        const cacheDuration = () => {
+          if (Number.isFinite(videoEl.duration) && videoEl.duration > 0) {
+            scene.duration = videoEl.duration;
+          }
+        };
+        videoEl.addEventListener("loadedmetadata", cacheDuration);
+        videoEl.addEventListener("durationchange", cacheDuration);
+        // CRITICAL (2026-06-16): a muted, never-.play()-ed, initially-offscreen
+        // <video preload="metadata"> does NOT reliably fetch its metadata on
+        // desktop — the browser defers it, so scene.duration stays 0 and
+        // makeVideoProgress() bails on every tick (the scrub never moves).
+        // Force the metadata fetch explicitly. load() is cheap with
+        // preload="metadata" (headers + moov atom only, not the whole file)
+        // and is a no-op if the media is already loading.
+        try { videoEl.load(); } catch { /* ignore */ }
       }
     }
 

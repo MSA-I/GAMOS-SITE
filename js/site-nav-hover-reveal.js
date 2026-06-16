@@ -25,6 +25,16 @@ const HERO_SELECTOR    = "#hero";   // class-agnostic — the rebuilt hero is #h
 const REVEAL_BAND_VH   = 14;           // top 14% of viewport reveals the bar
 const HIDE_GRACE_MS    = 220;          // small grace period before re-hiding
 
+// Touch devices have no hover affordance, so the cursor-band reveal never
+// fires — the hamburger (which lives INSIDE the hidden .site-nav) would be
+// unreachable while in the hero. On such devices we keep the bar REVEALED
+// throughout hero-mode so the toggle is always tappable. Desktop (fine pointer)
+// keeps the hover-reveal behaviour. (§9 keyboard/touch reachability; §13 rule 8
+// — equivalent experience on touch, not a degraded one.)
+const isTouch = typeof window !== "undefined"
+  && window.matchMedia
+  && window.matchMedia("(hover: none)").matches;
+
 const state = {
   initialised: false,
   hero: null,
@@ -44,7 +54,11 @@ function setHeroMode(value) {
   if (!value && !state.inHero) return;
   state.inHero = !!value;
   document.documentElement.setAttribute("data-hero-mode", value ? "true" : "false");
-  if (!value) {
+  // On touch, mirror reveal to hero-mode so the hamburger is always reachable
+  // (no mousemove will ever reveal it). On desktop, leave reveal to the cursor.
+  if (isTouch) {
+    setRevealed(!!value);
+  } else if (!value) {
     setRevealed(false);
   }
 }
@@ -70,23 +84,54 @@ export function init() {
   if (!hero) return;
   state.hero = hero;
 
-  // IntersectionObserver gates hero-mode by whether the hero's TOP is at
-  // the viewport top. Once the user has scrolled past the hero, the
-  // sticky-nav (native) takes over — no more hover-mode.
-  state.io = new IntersectionObserver((entries) => {
-    for (const entry of entries) {
-      // entry.intersectionRatio > 0.05 means the hero is still visible
-      // somewhere in the viewport. We use top boundary detection instead
-      // for a sharper switch.
-      const r = entry.boundingClientRect;
-      // Active when at least 30% of the hero is in view.
-      const visible = entry.isIntersecting && entry.intersectionRatio > 0.30;
-      setHeroMode(visible);
-    }
-  }, {
-    threshold: [0, 0.3, 0.6, 1],
+  // index.html ships a static `data-hero-mode="true"` on <html> so the nav
+  // paints already-hidden — no first-paint flash (no visible→hidden transition).
+  // Sync our state flag to that painted seed so the IntersectionObserver becomes
+  // the single owner WITHOUT a transient removeAttribute (which would briefly
+  // re-show the nav before the first async IO callback fires). With inHero=true:
+  //   • hero visible at boot (normal) → setHeroMode(true) is a no-op → attribute
+  //     stays "true", nav stays hidden, zero flash.
+  //   • loaded scrolled past the hero → setHeroMode(false) writes "false" → nav
+  //     reverts to its native sticky bar. Correct either way.
+  state.inHero = document.documentElement.getAttribute("data-hero-mode") === "true";
+
+  // On touch we mirror reveal→hero-mode inside setHeroMode, but the first IO
+  // callback (visible===true) early-returns because inHero is already true, so
+  // setRevealed would never run. Seed the reveal here so the hamburger is
+  // tappable from the first frame on touch.
+  if (isTouch && state.inHero) setRevealed(true);
+
+  // hero-mode is active while the hero still OWNS the viewport, i.e. its 100vh
+  // sticky pin is filling the screen (top has reached/passed the viewport top
+  // AND its bottom is still below the fold). Once the user scrolls past the
+  // 500vh track, the native sticky bar takes over.
+  //
+  // NOTE: an intersectionRatio threshold is WRONG here — the hero is 500vh, so
+  // even pinned-and-filling it only ever intersects ~innerHeight/offsetHeight
+  // (~20%) of its own box; a `ratio > 0.30` test (the old code) was NEVER true,
+  // so hero-mode stayed off and the nav was never hidden. We test the hero's
+  // top/bottom rect against the viewport directly instead. The observer just
+  // wakes us on the relevant boundary crossings; the rect read is the source of
+  // truth, so we also recompute on scroll.
+  const evalHeroMode = () => {
+    const r = state.hero.getBoundingClientRect();
+    const vh = window.innerHeight || 1;
+    // pinned-and-filling: top at/above 0, bottom still past the last screen.
+    setHeroMode(r.top <= 1 && r.bottom > vh);
+  };
+  state.io = new IntersectionObserver(() => evalHeroMode(), {
+    threshold: [0, 0.05, 0.3, 0.6, 1],
   });
   state.io.observe(hero);
+  // The IO fires on threshold crossings only; while pinned, the ratio barely
+  // changes, so also re-evaluate on scroll (cheap rect read, rAF-throttled).
+  state.bound.onScroll = () => {
+    if (state._navTick) return;
+    state._navTick = true;
+    requestAnimationFrame(() => { state._navTick = false; evalHeroMode(); });
+  };
+  window.addEventListener("scroll", state.bound.onScroll, { passive: true });
+  evalHeroMode();
 
   // Mouse tracking — reveal when cursor enters top band.
   state.bound.onMouseMove = (e) => {
@@ -113,8 +158,12 @@ export function init() {
     state.hideTimer = setTimeout(() => setRevealed(false), HIDE_GRACE_MS);
   };
 
-  document.addEventListener("mousemove", state.bound.onMouseMove, { passive: true });
-  document.addEventListener("mouseleave", state.bound.onMouseLeave);
+  // Cursor tracking only matters with a fine pointer. On touch the bar is
+  // already reveal-pinned by setHeroMode, so skip the listeners entirely.
+  if (!isTouch) {
+    document.addEventListener("mousemove", state.bound.onMouseMove, { passive: true });
+    document.addEventListener("mouseleave", state.bound.onMouseLeave);
+  }
 
   state.initialised = true;
 }
@@ -137,6 +186,9 @@ export function destroy() {
   if (state.bound.onMouseLeave) {
     document.removeEventListener("mouseleave", state.bound.onMouseLeave);
   }
+  if (state.bound.onScroll) {
+    window.removeEventListener("scroll", state.bound.onScroll);
+  }
   clearHide();
   document.documentElement.removeAttribute("data-hero-mode");
   document.documentElement.removeAttribute("data-nav-revealed");
@@ -147,4 +199,5 @@ export function destroy() {
   state.inBand = false;
   state.bound.onMouseMove = null;
   state.bound.onMouseLeave = null;
+  state.bound.onScroll = null;
 }

@@ -6,6 +6,10 @@ dist/
 build/
 .cache/
 
+# Cloudflare Pages staging dir — assembled fresh by scripts/deploy-cloudflare.mjs
+# on every `npm run deploy:cf*`. Never committed; rebuilt each run.
+_site/
+
 # Halls sub-app (Constitution §2.1) — track its build output so static
 # deploy works after `git clone` without requiring a build step on the
 # server. To re-build locally: `npm run build:halls` from repo root.

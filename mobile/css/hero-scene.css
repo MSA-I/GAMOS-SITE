@@ -24,6 +24,16 @@
 
 @media (max-width: 768px) {
 
+  /* ----- PIN STABILITY: small-viewport height so the dynamic browser toolbar
+     doesn't resize the pinned scene mid-scroll ------------------------------
+     `100vh` on a phone is the LARGE viewport (toolbar collapsed); as the URL bar
+     shows/hides during scroll the real height changes under the sticky pin, so
+     the scene jumps and the GSAP scrub desyncs. `100svh` (small viewport) is the
+     stable minimum height → the pin box stays constant regardless of toolbar
+     state. Pairs with ScrollTrigger.config({ignoreMobileResize:true}) in
+     js/hero-scene.js. (§13 mobile-only override; desktop ≥769px keeps 100vh.) */
+  #hero.hero_root .hero_top { block-size: 100svh; }
+
   /* ----- COMPOSER: give the landscape box real portrait height -------------
      aspect-ratio:auto cancels the 2048/1360 landscape ratio; min-block-size
      gives the absolutely-positioned children room to spread without overlap.

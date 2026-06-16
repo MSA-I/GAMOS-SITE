@@ -41,6 +41,7 @@ const state = {
   lastP: -1,
   ticking: false,
   scrollHandler: null,
+  refreshHandler: null,
   revealFallback: null,
   tweens: [],
   triggers: [],
@@ -166,6 +167,18 @@ function buildTimelines() {
   if (plugins.length) gsap.registerPlugin(...plugins);
   const hasDrawSVG = !!DrawSVGPlugin;
 
+  // Mobile stability: the dynamic browser toolbar (iOS Safari / Chrome-Android)
+  // resizes innerHeight on EVERY scroll. Unchecked, ScrollTrigger re-measures and
+  // the pinned hero "jumps" while the scrub desyncs — the "everything feels broken
+  // on a real phone" report. ignoreMobileResize tells ScrollTrigger to skip those
+  // toolbar-driven refreshes (a genuine orientationchange still re-measures), and
+  // it pairs with the mobile `.hero_top{height:100svh}` override (mobile/css/
+  // hero-scene.css) so the pin height itself is toolbar-stable. (fixing-motion-
+  // performance §4 — scroll-linked motion must not thrash on resize.)
+  if (ScrollTrigger && typeof ScrollTrigger.config === "function") {
+    ScrollTrigger.config({ ignoreMobileResize: true });
+  }
+
   if (prefersReducedMotion()) {
     // Show final composition statically (logo filled), no scrub. (§8/§9)
     hero.style.visibility = "visible";
@@ -203,6 +216,23 @@ function buildTimelines() {
   });
   state.tweens.push(A);
   state.triggers.push(st);
+
+  // Re-measure once the layout is final. The mobile pass injects /mobile/css/
+  // hero-scene.css as a runtime <link> (async), so at trigger-build time the
+  // composer/pin geometry can still be the desktop layout; and a real
+  // orientationchange changes the box. Both must re-pin the start/end, or the
+  // scrub maps against stale offsets (composer overlap / desync). We refresh on
+  // window load (covers the async mobile CSS) and on orientationchange — NOT on
+  // every resize (ignoreMobileResize already filters toolbar churn).
+  if (ScrollTrigger && typeof ScrollTrigger.refresh === "function") {
+    state.refreshHandler = () => { try { ScrollTrigger.refresh(); } catch { /* ignore */ } };
+    if (document.readyState === "complete") {
+      requestAnimationFrame(state.refreshHandler);
+    } else {
+      window.addEventListener("load", state.refreshHandler, { once: true });
+    }
+    window.addEventListener("orientationchange", state.refreshHandler, { passive: true });
+  }
 
   // ---- entrance timeline (VERBATIM from sandbox; paused → play() after 200ms) ----
   // r.fromTo(root,{autoAlpha:0},{autoAlpha:1,d:.6},0);
@@ -297,6 +327,11 @@ export function destroy() {
   if (state.scrollHandler) {
     window.removeEventListener("scroll", state.scrollHandler);
     state.scrollHandler = null;
+  }
+  if (state.refreshHandler) {
+    window.removeEventListener("load", state.refreshHandler);
+    window.removeEventListener("orientationchange", state.refreshHandler);
+    state.refreshHandler = null;
   }
   state.hotspots.forEach(([el, handler]) => el.removeEventListener("click", handler));
   state.hotspots = [];

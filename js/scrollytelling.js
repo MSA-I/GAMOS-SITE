@@ -2,10 +2,17 @@
    scrollytelling.js — orchestrates 4 cinematic scroll-driven canvas scenes
    ---------------------------------------------------------------------------
    Implements user spec "Cinematic Scrollytelling with Canvas & GSAP".
-   As of the v10 hero migration (§3, 2026-06-15) the only live canvas-frames
-   scene is #culinary; the hero now uses the GSAP scroll scene (js/hero-scene.js)
-   with layered images, not canvas frames.
-       #culinary      → /assets/frames/culinary/manifest.json
+
+   LEGACY AS OF 2026-06-16: there are now ZERO live canvas-frames scenes.
+   #culinary — the last one — was switched to scroll-scene.js VIDEO mode
+   (assets/video/culinary-h264-1080.mp4) because eager-preloading its 361×4K
+   WebP frames crashed the tab (OOM) and starved every other lazy image
+   (connection-pool saturation). This module's canvas pipeline now no-ops
+   (the `canvases.length === 0` early-return fires), but it is retained per
+   Constitution §6 for any future canvas-frames scene. The smooth-scroll
+   helpers (scroll-to-top + side-dot-nav anchor smoothing) were moved ABOVE
+   that early-return so they keep working with no canvas present.
+   The hero uses the GSAP scroll scene (js/hero-scene.js), not canvas frames.
 
    Loader: a single shared overlay shows the cumulative percentage of all
    scenes' frames as they decode. Hides once 100% decoded (with a 240ms
@@ -160,35 +167,12 @@ export function init() {
 
   ensureLoader();
 
-  // Only canvases that opt in (data-scrollytelling). Hero canvas keeps its
-  // own renderer (hero-video-scrub.js) because it has 4-stage logic that
-  // would conflict with this module's pure scroll → frame mapping.
-  const canvases = document.querySelectorAll(
-    "canvas[data-manifest-url][data-scrollytelling]"
-  );
-  if (canvases.length === 0) {
-    hideLoader();
-    return;
-  }
-
-  const work = Array.from(canvases).map((c) => registerScene(c));
-  Promise.all(work).then((registered) => {
-    scenes = registered.filter(Boolean);
-
-    // Kick off all preloads in parallel.
-    const preloads = scenes.map((s) => s.renderer.preload());
-    Promise.all(preloads).then(() => {
-      hideLoader();
-      // After preload, mark ready + draw the scene's START frame (== the
-      // scrub's first frame; 0 for untrimmed scenes, the trim point for the
-      // culinary clip) so a trimmed scene doesn't flash its dead intro before
-      // the first scroll tick.
-      scenes.forEach((s) => {
-        s.canvas.classList.add("is-ready");
-        s.renderer.drawFrame(s.renderer.startFrame || 0);
-      });
-    });
-  });
+  // Smooth-scroll helpers — registered FIRST, before the canvas early-return.
+  // These are global navigation aids (scroll-to-top + side-dot-nav anchor
+  // smoothing), independent of any canvas-frames scene. They MUST register even
+  // when there are zero data-scrollytelling canvases (2026-06-16: the culinary
+  // canvas was replaced by a <video> scrub, so the early-return below now fires
+  // on every page — keeping these before it preserves smooth-scroll nav).
 
   // "Scroll to top" helpers — any [data-scroll-to-top] button uses GSAP if available.
   document.addEventListener("click", (e) => {
@@ -220,6 +204,38 @@ export function init() {
     });
     // Update URL hash without jump.
     history.pushState(null, "", "#" + id);
+  });
+
+  // Only canvases that opt in (data-scrollytelling). Hero canvas keeps its
+  // own renderer (hero-video-scrub.js) because it has 4-stage logic that
+  // would conflict with this module's pure scroll → frame mapping.
+  // As of 2026-06-16 there are normally ZERO such canvases (culinary moved to
+  // <video> scrub) — this pipeline is retained for §6 legacy / future scenes.
+  const canvases = document.querySelectorAll(
+    "canvas[data-manifest-url][data-scrollytelling]"
+  );
+  if (canvases.length === 0) {
+    hideLoader();
+    return;
+  }
+
+  const work = Array.from(canvases).map((c) => registerScene(c));
+  Promise.all(work).then((registered) => {
+    scenes = registered.filter(Boolean);
+
+    // Kick off all preloads in parallel.
+    const preloads = scenes.map((s) => s.renderer.preload());
+    Promise.all(preloads).then(() => {
+      hideLoader();
+      // After preload, mark ready + draw the scene's START frame (== the
+      // scrub's first frame; 0 for untrimmed scenes, the trim point for the
+      // culinary clip) so a trimmed scene doesn't flash its dead intro before
+      // the first scroll tick.
+      scenes.forEach((s) => {
+        s.canvas.classList.add("is-ready");
+        s.renderer.drawFrame(s.renderer.startFrame || 0);
+      });
+    });
   });
 }
 
