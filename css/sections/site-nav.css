@@ -76,9 +76,16 @@
    covers the GAMOS brand mark (top:4%, ~95px tall → ~140px from top).
    The opaque-ivory + box-shadow treatment lives in
    css/components/site-nav-hover.css under the same selector. */
-html[data-hero-mode="true"][data-nav-revealed="true"] .site-nav__inner {
-  padding-block: var(--space-10);
-  min-block-size: 160px;
+/* Desktop-only: reveal-grow is a CURSOR-hover affordance (cover the brand mark
+   when the bar slides in). On touch there's no hover, and the mobile pass keeps
+   the bar revealed for hamburger reachability — so 160px there is just a giant
+   bar. Scoping this to ≥769px makes it self-document as desktop-only; the mobile
+   compact cap lives in mobile/css/touch-targets.css. */
+@media (min-width: 769px) {
+  html[data-hero-mode="true"][data-nav-revealed="true"] .site-nav__inner {
+    padding-block: var(--space-10);
+    min-block-size: 160px;
+  }
 }
 
 /* Brand -------------------------------------------------------------------- */

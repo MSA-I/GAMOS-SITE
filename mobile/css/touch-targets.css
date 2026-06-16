@@ -118,6 +118,21 @@
     justify-content: center;
   }
 
+  /* NAV reveal-grow cap (touch) — on touch, site-nav-hover-reveal.js keeps the
+     bar revealed (data-hero-mode + data-nav-revealed both true) so the hamburger
+     stays tappable in the hero. But that fires the DESKTOP reveal-grow rule
+     (css/sections/site-nav.css: 160px tall, to cover the brand on cursor reveal),
+     which has no meaning on touch and made the phone bar ~160px. Cap it to a
+     normal compact mobile bar: 64px (same padding token as .is-scrolled) with a
+     48px logo. The 44px hamburger stays fully inside. (§13 mobile override.) */
+  html[data-hero-mode="true"][data-nav-revealed="true"] .site-nav__inner {
+    padding-block: var(--space-3);
+    min-block-size: 64px;
+  }
+  html[data-hero-mode="true"][data-nav-revealed="true"] .site-nav__brand-logo {
+    height: 48px;
+  }
+
   /* Contact channel values (tel: / mailto: / WhatsApp links). Desktop draws
      them ~30px tall in a label-over-value stack; on touch that's under the
      44px floor. Grow the LINK box to 44px (icon stays centered against the

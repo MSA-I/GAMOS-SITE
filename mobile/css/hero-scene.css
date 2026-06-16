@@ -34,6 +34,15 @@
      js/hero-scene.js. (§13 mobile-only override; desktop ≥769px keeps 100vh.) */
   #hero.hero_root .hero_top { block-size: 100svh; }
 
+  /* ----- SCRUB PACING: lengthen the hero scroll track on mobile -------------
+     Desktop hero is 500vh; the mobile base (css/sections/hero-scene.css:37) is
+     350vh. On a tall phone that 350vh compresses the whole cinematic sequence
+     (desert rise → letters fill → smoke → composer) into a short, rushed scrub.
+     460vh gives the same beats more scroll distance → a slower, more cinematic
+     reveal (paired with the reduced desert amplitude in js/hero-scene.js so the
+     desert stays in frame the whole time). Desktop ≥769px keeps 500vh. */
+  #hero.hero_root { block-size: 460vh; }
+
   /* ----- COMPOSER: give the landscape box real portrait height -------------
      aspect-ratio:auto cancels the 2048/1360 landscape ratio; min-block-size
      gives the absolutely-positioned children room to spread without overlap.
@@ -73,4 +82,13 @@
 
   /* The dim-siblings :has() hover is desktop-only by nature; on touch the CTAs
      stay at full opacity. Nothing to override — left here as a note. */
+
+  /* SINGLE CUE on mobile. The shared `:not([data-hero-mode]) .hero_top .gamos-cue`
+     rule (css/sections/hero-scene.css) hides the hero cue once the hero releases
+     — but on a phone the 460vh hero stays "hero-mode true" until ~99% scrolled,
+     and the composer (margin-bottom:-100vh) overlaps into the last frame BEFORE
+     that flips, so both cues briefly show together (measured pf 0.95-1.0). The
+     composer cue sits right below and serves the same "scroll on" purpose, so on
+     mobile we simply retire the hero cue — one clean cue throughout. */
+  #hero .hero_top .gamos-cue { display: none; }
 }

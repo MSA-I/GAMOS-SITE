@@ -254,6 +254,20 @@
 }
 .gamos-cue:hover, .gamos-cue:focus-visible { border-color: #8B6F46; }
 .gamos-cue:focus-visible { outline: 3px solid #CFAE83; outline-offset: 4px; }
+
+/* Single-cue invariant. The hero's `margin-bottom:-100vh` (+ z-index:110) tucks
+   the #hall-portal composer under the hero's last pinned frame, so the HERO cue
+   (in .hero_top, → #hall-portal) and the COMPOSER cue (in .gamos-hero, → #lounge)
+   render in the same bottom band → two cues at once. Once the hero no longer owns
+   the viewport, its cue has served its "scroll into the composer" purpose — hide
+   it, leaving only the composer cue. `data-hero-mode` is already maintained every
+   scroll frame by js/site-nav-hover-reveal.js (true only while the pin fills the
+   screen), so no new JS. Fixes desktop too (the overlap exists at both widths). */
+html:not([data-hero-mode="true"]) .hero_top .gamos-cue {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease-out-cinema);
+}
 .gamos-cue__track { position: relative; display: block; inline-size: 1px; block-size: 34px; background: rgba(139, 111, 70, .4); }
 .gamos-cue__dot {
   position: absolute; inset-inline-start: -2.5px; inset-block-start: 0;

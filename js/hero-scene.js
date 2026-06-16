@@ -194,11 +194,23 @@ function buildTimelines() {
   // A.to(x,{y:"20%",scale:.9,d:1},0); A.to(x,{opacity:0,d:.2},0);
   // A.to(b,{opacity:1,d:.01},.1); A.fromTo("svg path",{drawSVG:"0%"},{drawSVG:"100%",d:.3},.1);
   // A.to(b,{opacity:0,d:.2},.28); A.to(c,{opacity:1,d:.1},.3); A.to(s,{opacity:0,d:.1},.3); A.add(()=>{},1);
+  //
+  // MOBILE AMPLITUDE BRANCH (§13 sanctioned core edit — like the shabbat pin;
+  // a GSAP inline transform can't be overridden from CSS): the sandbox's
+  // -40%/scale1.3 desert rise assumes a WIDE viewport. On a tall, narrow phone
+  // that lifts the desert off-screen long before the logo letters finish filling
+  // (composite op→1 by ~0.3), so the letters fill against empty sky. Reducing the
+  // rise + cloud drift on ≤768px keeps the desert in frame through the reveal.
+  // Desktop (≥769px) stays byte-identical (ternaries collapse to the originals).
+  const isNarrow = window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
+  const HOUSE_Y     = isNarrow ? "-18%" : "-40%";
+  const HOUSE_SCALE = isNarrow ? 1.18   : 1.3;
+  const CLOUD_X     = isNarrow ? "9%"   : "15%";
   const A = gsap.timeline();
-  A.to([house, compHouse], { y: "-40%", scale: 1.3, duration: 1 }, 0);
+  A.to([house, compHouse], { y: HOUSE_Y, scale: HOUSE_SCALE, duration: 1 }, 0);
   A.to(smoke,   { y: "0%",  duration: 1 }, 0);
-  A.to(cloudL,  { x: "-15%", duration: 1 }, 0);
-  A.to(cloudR,  { x: "15%",  duration: 1 }, 0);
+  A.to(cloudL,  { x: "-" + CLOUD_X, duration: 1 }, 0);
+  A.to(cloudR,  { x: CLOUD_X,       duration: 1 }, 0);
   A.to(content, { y: "20%", scale: 0.9, duration: 1 }, 0);
   A.to(content, { opacity: 0, duration: 0.2 }, 0);
   A.to(logo,    { opacity: 1, duration: 0.01 }, 0.1);
