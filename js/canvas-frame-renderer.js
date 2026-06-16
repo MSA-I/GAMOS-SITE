@@ -72,19 +72,37 @@ const DEFAULTS = {
   parallax: true,
   parallaxStrength: 24,
   bgColor: "#0E0E0C", // --ink-deep
-  // Sliding-window decode (2026-06-16): only keep `window` frames decoded in
-  // memory around the current scroll index; fetch-on-demand as the index
-  // moves, evict (bitmap.close) frames outside the window. This replaced the
-  // old eager "decode all N frames" preload that OOM-crashed the tab on the
-  // 361×4K culinary scrub (~11GB of ImageBitmaps). null → auto-pick by tier.
+  // Decode strategy (2026-06-16, rev2). Two modes:
+  //  • DECODE-ALL (default for light scenes): decode every frame ONCE up front
+  //    and keep them — zero eviction, so scrolling (esp. reverse) never has to
+  //    re-decode a frame that was just thrown away. This is what kills the
+  //    flicker: drawFrame always finds the exact frame already decoded.
+  //  • SLIDING-WINDOW (fallback for heavy scenes): keep only `window` frames
+  //    around the index, evicting the rest, to bound memory. This was the
+  //    2026-06-16 OOM fix for the old 361×4K culinary clip (~11GB bitmaps);
+  //    but it under-decodes during fast scroll → stale-frame flicker.
+  // We auto-pick: scenes whose total decoded footprint is small enough use
+  // DECODE-ALL; only genuinely heavy scenes fall back to the window. Override
+  // with options.decodeAll (bool) or options.window (number).
   window: null,
+  decodeAll: null, // null → auto by estimated footprint
 };
 
-// Sliding-window sizes. Desktop frames are bigger (more bytes/frame) so the
-// window is smaller; mobile frames are tiny (960×540) so a wider window is
-// cheap and smooths fast flicks. half = floor(window/2) frames each side.
-const WINDOW_DESKTOP = 9;
-const WINDOW_MOBILE = 17;
+// Sliding-window sizes (fallback path only). half = floor(window/2) per side.
+// Wider than the old 9/17 so that even in window mode a fast flick has more
+// already-decoded neighbours before it shows a stale frame.
+const WINDOW_DESKTOP = 41;
+const WINDOW_MOBILE = 61;
+
+// DECODE-ALL footprint guard. Estimated decoded RAM = frameCount × W × H × 4
+// bytes (RGBA, the worst case for ImageBitmap). Above this ceiling we refuse
+// decode-all and fall back to the sliding window. 1.5GB leaves headroom on a
+// typical laptop. The current culinary clip (361 × 1920×1080 × 4 ≈ 3.0GB at
+// full res, but ImageBitmaps of 1080p WebP decode to ~1080p → well under once
+// the browser keeps them GPU-backed) — we additionally cap by frameCount so a
+// pathological huge-count scene still uses the window.
+const DECODE_ALL_MAX_BYTES = 1.5 * 1024 * 1024 * 1024;
+const DECODE_ALL_MAX_FRAMES = 600;
 
 function pad4(n) {
   return String(n + 1).padStart(4, "0");
@@ -148,6 +166,7 @@ export function createRenderer({ canvas, manifest, host, options }) {
     loaded: 0,
     total,
     currentFrame: 0,
+    lastDrawnIdx: -1, // last frame index actually painted (anti-flicker hold)
     destroyed: false,
     bound: { scroll: null, resize: null, mousemove: null },
     rafPending: false,
@@ -173,6 +192,19 @@ export function createRenderer({ canvas, manifest, host, options }) {
   // out of the window mid-fetch can be cancelled. `windowSize` is the total
   // number of frames kept decoded around the current index.
   const pending = new Map(); // idx → AbortController
+
+  // DECODE-ALL vs SLIDING-WINDOW decision (see DEFAULTS). Auto unless the caller
+  // forced it. Estimate the decoded footprint from the manifest dimensions.
+  function decideDecodeAll() {
+    if (typeof opts.decodeAll === "boolean") return opts.decodeAll;
+    const w = manifest.width || 1920;
+    const h = manifest.height || 1080;
+    const estBytes = total * w * h * 4; // RGBA worst-case
+    return total <= DECODE_ALL_MAX_FRAMES && estBytes <= DECODE_ALL_MAX_BYTES;
+  }
+  const decodeAll = decideDecodeAll();
+
+  // half-window only matters in sliding-window (fallback) mode.
   const half = Math.max(
     1,
     Math.floor(((opts.window || pickWindowSize()) - 1) / 2)
@@ -260,8 +292,11 @@ export function createRenderer({ canvas, manifest, host, options }) {
     img.src = url;
   }
 
-  /** Is idx within the live window around the current frame? */
+  /** Is idx within the live window around the current frame? In decode-all mode
+      every frame is "in window" (we keep them all), so a frame that finishes
+      decoding is never discarded. */
   function inWindow(idx) {
+    if (decodeAll) return true;
     return idx >= state.currentFrame - half && idx <= state.currentFrame + half;
   }
 
@@ -269,6 +304,20 @@ export function createRenderer({ canvas, manifest, host, options }) {
       everything outside it. This is the heart of the memory fix — at most
       `windowSize` frames are ever held decoded, regardless of total count. */
   function ensureWindow(center) {
+    if (decodeAll) {
+      // DECODE-ALL: no eviction, ever. Decode the whole clip center-out from
+      // `center` so the visible frame + neighbours arrive first, then the rest
+      // fills in the background. Frames already decoded/pending are no-ops, so
+      // repeated calls just keep priming until everything is in memory.
+      loadFrame(center);
+      const maxR = Math.max(center, total - 1 - center);
+      for (let d = 1; d <= maxR; d++) {
+        loadFrame(center + d);
+        loadFrame(center - d);
+      }
+      return;
+    }
+
     const lo = Math.max(0, center - half);
     const hi = Math.min(total - 1, center + half);
 
@@ -329,26 +378,40 @@ export function createRenderer({ canvas, manifest, host, options }) {
     const i = Math.max(0, Math.min(total - 1, idx | 0));
     state.currentFrame = i;
 
-    let img = frames[i];
-    // Fallback: walk backward to last decoded frame.
-    if (!img) {
-      for (let j = i; j >= 0; j--) {
-        if (frames[j]) {
-          img = frames[j];
-          break;
-        }
-      }
-    }
-
     const cw = canvas.clientWidth;
     const ch = canvas.clientHeight;
     if (cw === 0 || ch === 0) return;
 
-    // Clear with solid bg (cinematic black).
+    let img = frames[i];
+
+    // ANTI-FLICKER: if the requested frame isn't decoded yet, do NOT clear to
+    // black and do NOT jump to a far-away decoded frame — both read as a flash.
+    // Instead HOLD the last frame we actually painted: the picture simply stops
+    // advancing for the few ms until the real frame's async decode lands (then
+    // loadFrame()'s finish() repaints exactly this index). The decoded frame is
+    // requested by ensureWindow() in onScroll, so the hold is brief. Only when
+    // we have never drawn anything yet do we fall back to nearest-decoded so the
+    // very first paint isn't blank.
+    if (!img) {
+      if (state.lastDrawnIdx >= 0 && frames[state.lastDrawnIdx]) {
+        return; // keep the current canvas pixels — no repaint, no flicker
+      }
+      for (let j = i; j >= 0; j--) {
+        if (frames[j]) { img = frames[j]; break; }
+      }
+      if (!img) {
+        for (let j = i + 1; j < total; j++) {
+          if (frames[j]) { img = frames[j]; break; }
+        }
+      }
+    }
+
+    // Clear with solid bg (cinematic black) only when we are actually painting
+    // a frame (so a held canvas above is never wiped).
     ctx.fillStyle = opts.bgColor;
     ctx.fillRect(0, 0, cw, ch);
 
-    if (!img) return; // nothing decoded yet
+    if (!img) return; // nothing decoded anywhere yet
 
     // Manual object-fit: cover (max ratio) + ZOOM_FACTOR overshoot.
     // ImageBitmap exposes width/height; HTMLImageElement uses naturalWidth/Height.
@@ -361,6 +424,9 @@ export function createRenderer({ canvas, manifest, host, options }) {
     const dy = (ch - dh) / 2;
 
     ctx.drawImage(img, dx, dy, dw, dh);
+    // Record what's actually on the canvas now (only when we painted the
+    // exact requested frame — that's what we'll hold against future gaps).
+    if (frames[i]) state.lastDrawnIdx = i;
   }
 
   // -------------------------------------------------------------------------

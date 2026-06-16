@@ -21,6 +21,36 @@
    (data-manifest-url-mobile + canvas-frames-mobile.js) handles that.
    ========================================================================== */
 
+/* ---------------------------------------------------------------------------
+   Culinary scrub OVERLAY text on phones (2026-06-16). The shared
+   .scroll-scene__overlay (css/sections/scroll-scene.css) is desktop-tuned:
+   flex-end + --gutter (16px) padding + section-header clamp() minimums that
+   bottom out small on a 390px portrait. Over the dark conveyor canvas the
+   eyebrow/title/lede then read cramped against the right edge and a touch too
+   small. Give the text real breathing room from the edges, lift it clear of
+   the bottom, and bump the type one notch. (§13 mobile override; tokens only.)
+   --------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .culinary .scroll-scene__overlay {
+    padding-inline: clamp(20px, 6vw, 28px);
+    padding-block-end: clamp(var(--space-12), 12vh, var(--space-16));
+    /* keep the column from stretching full-bleed so lines wrap pleasantly */
+  }
+  .culinary .scroll-scene__overlay > * {
+    max-inline-size: 30rem;
+  }
+  .culinary .scroll-scene__overlay .section-header__eyebrow {
+    font-size: var(--text-sm);   /* 14px (was 12px) */
+  }
+  .culinary .scroll-scene__overlay .section-header__title {
+    font-size: clamp(2.4rem, 9vw, 3rem);   /* larger, fills the wide portrait */
+  }
+  .culinary .scroll-scene__overlay .section-header__lede {
+    font-size: var(--text-md);   /* 20px (was ~18px), more legible over media */
+    line-height: var(--lh-loose);
+  }
+}
+
 @media (min-width: 360px) and (max-width: 559.98px) {
   .culinary__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
