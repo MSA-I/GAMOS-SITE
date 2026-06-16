@@ -1,21 +1,66 @@
 /* =============================================================================
-   mobile/css/hero-scene.css — scroll hero (REBUILT 2026-06-15)
+   mobile/css/hero-scene.css — scroll hero + composer, PORTRAIT pass (2026-06-15)
    ---------------------------------------------------------------------------
-   INTENTIONALLY (almost) EMPTY. The hero is a verbatim 1:1 port of the
-   findrealestate sandbox, whose every dimension is driven by a viewport-
-   responsive rem-base (`--rem: 2.6666666667vw` < 768px, scoped on #hero.hero_root
-   in css/sections/hero-scene.css). That means the WHOLE composition already
-   scales proportionally on phones exactly as it does in the source — the
-   sandbox itself ships NO separate mobile hero stylesheet. So there are no
-   @media overrides to add here; adding fixed sizes would only fight the
-   responsive rem math and break fidelity (§13 rule 8 — preserve the experience).
+   The v10 hero (commit 51ce64a, "verbatim 1:1 sandbox port") shipped WITHOUT a
+   mobile re-layout. The scroll-pinned INTRO (sky/desert/clouds/logo/smoke +
+   title) does scale correctly on phones — every dimension is driven by the
+   viewport-responsive `--rem` base scoped on #hero.hero_root (2.6667vw < 768px)
+   in css/sections/hero-scene.css, exactly as the sandbox shipped it — so it
+   needs no override here.
 
-   This file stays registered in /mobile/loader.js (MOBILE_CSS) as the seam for
-   any future phone-only hero tweak; keep all such rules inside the @media below.
+   But the INTERACTIVE COMPOSER (#hall-portal > .gamos-hero) was authored for a
+   LANDSCAPE box (`aspect-ratio:2048/1360`) with its two wordmark CTAs hard-pinned
+   at top:42% / top:51% and a `white-space:nowrap` prompt. In portrait that box
+   collapses to ~259px tall at 390px wide, so EVENTS and RESORT overlap into an
+   illegible garble and the prompt bleeds off the edge. This file gives the
+   composer a portrait-friendly layout: real vertical room + cleanly stacked,
+   finger-sized CTAs + a prompt that fits.
+
+   §13: @media (max-width:768px) overrides ONLY — no general rules. The desktop
+   composition (≥769px) is untouched. §1/§13-rule-8: this is an EQUIVALENT of the
+   desktop experience (same backdrop + logo + prompt + EVENTS/RESORT choice +
+   cue), re-flowed for the phone — not a flat fallback.
    ========================================================================= */
 
 @media (max-width: 768px) {
-  /* No overrides — the viewport-responsive --rem base handles phone scaling.
-     (The composer EVENTS/RESORT routing to -mobile sub-app builds is handled in
-     /mobile/loader.js applyMobileRoutes against .gamos-hero__cta--*.) */
+
+  /* ----- COMPOSER: give the landscape box real portrait height -------------
+     aspect-ratio:auto cancels the 2048/1360 landscape ratio; min-block-size
+     gives the absolutely-positioned children room to spread without overlap.
+     The base image stays object-fit:cover (a soft centre crop of the GAMOS
+     scene reads fine); the ivory background fills any remainder. */
+  #hall-portal .gamos-hero {
+    aspect-ratio: auto;
+    min-block-size: 92vh;
+  }
+
+  /* Brand logo (top-inline-start). Slightly smaller so it doesn't crowd the
+     narrow column; position unchanged (still the top corner mark). */
+  #hall-portal .gamos-hero__logo {
+    inline-size: clamp(116px, 34vw, 150px);
+  }
+
+  /* Prompt: the desktop nowrap + .32em tracking overflows 390px. Tighten the
+     type + tracking so the single line fits the phone width, and lift it above
+     the (now lower) EVENTS wordmark. */
+  #hall-portal .gamos-hero__prompt {
+    top: 28%;
+    gap: .7rem;
+  }
+  #hall-portal .gamos-hero__prompt-text {
+    font-size: clamp(1rem, 3.6vw, 1.3rem);
+    letter-spacing: .14em;
+  }
+
+  /* CTAs: re-stack with generous vertical spacing so the two wordmarks never
+     touch. Each image is ~0.4× its width tall → at this width ≈85px, and the
+     ~17% gap (≈130px on a 92vh box) keeps them clearly separate + ≥44px tap. */
+  #hall-portal .gamos-hero__cta {
+    inline-size: clamp(196px, 56vw, 260px);
+  }
+  #hall-portal .gamos-hero__cta--events { top: 44%; }
+  #hall-portal .gamos-hero__cta--resort { top: 64%; }
+
+  /* The dim-siblings :has() hover is desktop-only by nature; on touch the CTAs
+     stay at full opacity. Nothing to override — left here as a note. */
 }
