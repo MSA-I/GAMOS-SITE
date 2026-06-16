@@ -68,8 +68,19 @@
   position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; opacity: 0;
   -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
   -webkit-mask-position: center center; mask-position: center center;
-  -webkit-mask-size: calc(97.7 * var(--rem)) calc(35.4 * var(--rem));
-  mask-size: calc(97.7 * var(--rem)) calc(35.4 * var(--rem));
+  /* mask-size MUST equal the .hero_logo box at every width — the composite is the
+     SAME logo letters, filled with desert. It was desktop-only (97.7×35.4rem) while
+     .hero_logo got a mobile base (23.5×10.2rem) + desktop override; that asymmetry
+     made the filled letters render ~1016px wide on a 390px phone (×2.6 overflow —
+     the "אורח bleeds off both edges" bug). Now desktop-first, mirroring .hero_logo. */
+  -webkit-mask-size: calc(23.5 * var(--rem)) calc(10.2 * var(--rem));
+  mask-size: calc(23.5 * var(--rem)) calc(10.2 * var(--rem));
+}
+@media (min-width: 768px) {
+  .hero_composite {
+    -webkit-mask-size: calc(97.7 * var(--rem)) calc(35.4 * var(--rem));
+    mask-size: calc(97.7 * var(--rem)) calc(35.4 * var(--rem));
+  }
 }
 
 .hero_clouds { top: 0; left: 0; right: 0; bottom: 0; }
