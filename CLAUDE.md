@@ -173,7 +173,7 @@ console errors, שאר צרכני GSAP (shabbat pin, scroll-scene) תקינים.
 1. **composite** (`subject.png`) — עותק שני של המדבר, **ממוסך ע"י אותיות הלוגו** (CSS mask
    מ-`logo.svg`, data-URI מוזרק ב-JS) → האותיות "מתמלאות" בטקסטורת המדבר. **z=1**.
 2. **clouds** (`clouds.png`) ×2 — מתפזרים שמאלה/ימינה בגלילה. **z=2**.
-1. **logo** (`logo.svg`, 12 paths, viewBox `0 0 219.78 79.53`) — outline לבן (stroke)
+1. **logo** (`logo.svg`, 12 paths, viewBox `0 0 205.7 82.46`) — outline לבן (stroke)
    שמתחלף ב-crossfade ל-composite הממולא. **z=1**.
 3. **smoke** (`smoke.png`) — עשן עולה מהתחתית. **z=3**.
 3. **overlay** — gradient דועך ל-`--ivory` לחיבור חלק. **z=3**.

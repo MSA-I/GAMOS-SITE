@@ -153,26 +153,23 @@
 .hero_title h1 {
   margin: 0; font-family: "Heebo", sans-serif; font-weight: var(--fw-bold);
   font-size: calc(5.4 * var(--rem)); line-height: 100%; letter-spacing: -0.02em;
-  text-align: center; color: var(--fg); max-inline-size: none;
+  text-align: center; color: var(--brass); max-inline-size: none;
 }
 @media (min-width: 768px) { .hero_title h1 { font-size: calc(14 * var(--rem)); } }
-/* 2026-06-16: line 1 → brand DARK texture; line 2 (.accent) → brand LIGHT
-   texture (cream+gold typo-on-dark). Both applied in @supports below. The
-   solid `color` is the graceful-degradation fallback when background-clip:text
-   is unsupported (line 1 → ink, line 2 → brass). */
-.hero_title .accent { color: var(--brass); }
+/* 2026-06-16 (swapped): line 1 → solid brass, NO texture; line 2 (.accent) →
+   brand DARK texture (typo-on-light). The solid `color`s are the
+   graceful-degradation fallback when background-clip:text is unsupported
+   (line 1 → brass, line 2 → ink). */
+.hero_title .accent { color: var(--fg); }
 
 /* ---- Texture fill (graceful-degradation; mirrors texture-text.css) ----
-   Eyebrow + title line 1 take the DARK gold-flecked brand texture; line 2
-   (.accent) takes the LIGHT cream+gold texture. SplitText wraps each title
-   word in a .hero_word span that renders ON TOP of the h1, so the fill must
-   live on the SPANS too (a transparent span over the h1 shows nothing — the
-   "invisible but selectable" bug). Same multi-span technique as
-   .marquee__text. */
+   Eyebrow + title line 2 (.accent) take the DARK gold-flecked brand texture.
+   SplitText wraps each title word in a .hero_word span that renders ON TOP
+   of the h1, so the fill must live on the SPANS too (a transparent span over
+   the h1 shows nothing — the "invisible but selectable" bug). Same multi-span
+   technique as .marquee__text. Line 1 (h1 words) stays solid brass. */
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
   .hero_eyebrow,
-  .hero_title h1,
-  .hero_title h1 .hero_word,
   .hero_title .accent,
   .hero_title .accent .hero_word {
     background-repeat: no-repeat;
@@ -181,15 +178,12 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-  }
-  .hero_eyebrow,
-  .hero_title h1,
-  .hero_title h1 .hero_word {
     background-image: var(--typo-on-light);
   }
-  .hero_title .accent,
-  .hero_title .accent .hero_word {
-    background-image: var(--typo-on-dark);
+  .hero_title h1,
+  .hero_title h1 .hero_word {
+    -webkit-text-fill-color: var(--brass);
+    background: none;
   }
 }
 .hero_text {

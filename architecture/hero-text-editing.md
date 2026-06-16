@@ -31,9 +31,9 @@ In `index.html`, inside `<section id="hero">` → `<div class="hero_content">`:
 All hero text styling lives in `css/sections/hero-scene.css` (search
 `.hero_eyebrow` / `.hero_title`). Tokens only — **no hard-coded hex** (§5/§10.2).
 
-Current scheme (2026-06-16):
-- **Eyebrow + title line 1** → DARK brand texture `var(--typo-on-light)`.
-- **Title line 2 (`.accent`)** → LIGHT brand texture `var(--typo-on-dark)` (cream+gold).
+Current scheme (2026-06-16, after the line swap):
+- **Eyebrow + title line 2 (`.accent`)** → DARK brand texture `var(--typo-on-light)`.
+- **Title line 1 (`.hero_title h1`)** → solid **brass** (`var(--brass)`), no texture.
 - **Subtitle** → `var(--fg-muted)`, no texture.
 
 **THE TRAP:** `js/hero-scene.js` runs **SplitText** on `.hero_title h1`, wrapping
@@ -44,26 +44,29 @@ transparent with no fill of their own, so **the text looks invisible while still
 being selectable** (you can drag-select it). This bit us twice.
 
 **THE RULE:** any `background-clip:text` texture (or solid color) for the title
-**must be set on `.hero_word` too**, not just the h1/accent. The working block:
+**must be set on `.hero_word` too**, not just the h1/accent. The working block
+(current swapped scheme — eyebrow + line 2 textured, line 1 solid brass):
 
 ```css
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
   .hero_eyebrow,
-  .hero_title h1,           .hero_title h1 .hero_word,
   .hero_title .accent,      .hero_title .accent .hero_word {
     background-repeat: no-repeat; background-size: 100% 100%;
     background-position: center;
     -webkit-background-clip: text; background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-image: var(--typo-on-light);   /* eyebrow + line 2 → dark texture */
   }
-  .hero_eyebrow, .hero_title h1, .hero_title h1 .hero_word {
-    background-image: var(--typo-on-light);   /* line 1 + eyebrow */
-  }
-  .hero_title .accent, .hero_title .accent .hero_word {
-    background-image: var(--typo-on-dark);    /* line 2 */
+  .hero_title h1, .hero_title h1 .hero_word {
+    -webkit-text-fill-color: var(--brass);    /* line 1 → solid brass, no texture */
+    background: none;
   }
 }
 ```
+
+To put the texture back on line 1 instead (or swap which line is textured), move
+the `background-image` selectors accordingly — always keep the matching
+`.hero_word` selector beside each line's selector.
 
 - It's inside `@supports` for graceful degradation — the solid `color:` rules
   outside the block are the fallback when `background-clip:text` is unsupported.
@@ -91,3 +94,7 @@ final composition is shown statically. Don't rely on the entrance running.
 3. `npm run build:mobile` ran.
 4. Eyeball at desktop **and** ≤768px; confirm the text is actually visible
    (not just selectable) — the SplitText trap above.
+
+## See also
+- `architecture/hero-logo-swap.md` — replacing the animated wordmark SVG (the
+  drawSVG outline + desert-fill composite).
