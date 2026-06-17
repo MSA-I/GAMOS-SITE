@@ -1,0 +1,139 @@
+/* ============================================================================
+   /404.html — editorial error hero (press grammar, golden-desert skin)
+   ----------------------------------------------------------------------------
+   Rebuilt 2026-06-17. Mirrors `.press-hero`: a full-bleed photograph with a
+   DIRECTIONAL scrim (not a global tint) + an editorial text stack on top.
+   Standalone page — owns its own mobile breakpoint (§13 /mobile/ rule does not
+   apply to standalone error/press pages). Pure HTML + CSS, zero JS.
+   ========================================================================== */
+
+.error-404 {
+  position: relative;
+  min-block-size: 100svh;
+  overflow: hidden;
+  isolation: isolate;            /* own stacking context for the layered scrim */
+  background: var(--ink-deep);   /* under-photo base while the image decodes */
+}
+
+/* ---- Layer 0: the photograph, full-bleed cover. No global tint. ---- */
+.error-404__picture {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  margin: 0;
+}
+.error-404__picture img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: center 42%;            /* keep the footpath + horizon in frame */
+  filter: brightness(1.06) saturate(1.04); /* press grammar — lift, no wash */
+}
+
+/* ---- Layer 1: directional scrim (verbatim .press-hero__overlay grammar).
+   Right-anchored = RTL reading start; fades to clear over the open desert so
+   the photo reads clean with no gray wash. ---- */
+.error-404__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(to left,
+      rgba(26, 20, 16, 0.50) 0%,
+      rgba(26, 20, 16, 0.18) 38%,
+      rgba(26, 20, 16, 0.00) 60%),
+    linear-gradient(180deg,
+      rgba(26, 20, 16, 0.32) 0%,
+      rgba(26, 20, 16, 0.06) 24%,
+      rgba(26, 20, 16, 0.00) 46%,
+      rgba(26, 20, 16, 0.06) 62%,
+      rgba(26, 20, 16, 0.46) 100%);
+}
+
+/* ---- Floating home link: top reading-end corner, balances the text stack. ---- */
+.error-404__home-float {
+  position: absolute;
+  z-index: 3;
+  inset-block-start: clamp(20px, 4vh, 44px);
+  inset-inline-end: clamp(24px, 5vw, 64px);
+}
+
+/* ---- Layer 2: the editorial text stack. ---- */
+.error-404__content {
+  position: relative;
+  z-index: 2;
+  min-block-size: 100svh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  justify-items: start;
+  align-items: stretch;
+  text-align: start;
+  gap: clamp(1.5rem, 4vh, 3rem);
+  padding-block: clamp(96px, 14vh, 180px) clamp(96px, 14vh, 160px);
+  padding-inline: clamp(24px, 5vw, 64px);
+  max-inline-size: 1400px;
+  margin-inline: auto;
+}
+
+.error-404__eyebrow {
+  margin: 0;
+  align-self: start;
+  color: var(--brass);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 8px rgba(26, 20, 16, 0.45);
+}
+
+.error-404__title {
+  margin: 0;
+  align-self: center;
+  max-inline-size: 16ch;
+  font-family: var(--font-display-he);
+  font-weight: var(--fw-regular);
+  font-size: clamp(3.5rem, 9vw, 7.5rem);
+  line-height: 0.96;
+  letter-spacing: -0.025em;
+}
+
+.error-404__cta {
+  margin: 0;
+  align-self: end;
+}
+
+/* ---- Entrance: a quiet fade + rise, staggered top→bottom. ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .error-404__eyebrow,
+  .error-404__title,
+  .error-404__cta,
+  .error-404__home-float {
+    animation: error-404-rise 900ms var(--ease-out-cinema) both;
+  }
+  .error-404__home-float { animation-delay: 60ms; }
+  .error-404__eyebrow    { animation-delay: 120ms; }
+  .error-404__title      { animation-delay: 220ms; }
+  .error-404__cta        { animation-delay: 360ms; }
+}
+
+@keyframes error-404-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Mobile: tighten rhythm, keep the headline ≤3 lines, no overflow. ---- */
+@media (max-width: 768px) {
+  .error-404__content {
+    gap: clamp(1rem, 3vh, 2rem);
+    padding-block: clamp(72px, 12vh, 120px) clamp(64px, 10vh, 104px);
+  }
+  .error-404__title {
+    max-inline-size: 100%;
+    font-size: clamp(2.75rem, 13vw, 4.5rem);
+  }
+  .error-404__picture img {
+    object-position: center 38%;
+  }
+}
