@@ -1,6 +1,6 @@
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
 import { getProjectsByHall } from "../projectsData";
 import type { ProjectWithColors } from "../types";
 
@@ -34,6 +34,24 @@ export default function HallChrome({ hallId, activeProject, frameDark = false }:
   // Total plane count for this hall → the denominator of the "NN / TT" index.
   const planeCount = useMemo(() => getProjectsByHall(hallId).length, [hallId]);
   const totalLabel = String(planeCount).padStart(2, "0");
+
+  // First-load scroll hint — invites the visitor to scroll down through the
+  // gallery; auto-dismisses on the first scroll/wheel/touch/key input.
+  const [cueVisible, setCueVisible] = useState(true);
+  useEffect(() => {
+    const dismiss = () => setCueVisible(false);
+    const opts = { once: true, passive: true } as const;
+    window.addEventListener("wheel", dismiss, opts);
+    window.addEventListener("touchmove", dismiss, opts);
+    window.addEventListener("scroll", dismiss, opts);
+    window.addEventListener("keydown", dismiss, opts);
+    return () => {
+      window.removeEventListener("wheel", dismiss);
+      window.removeEventListener("touchmove", dismiss);
+      window.removeEventListener("scroll", dismiss);
+      window.removeEventListener("keydown", dismiss);
+    };
+  }, []);
 
   const transition = reducedMotion
     ? { duration: 0 }
@@ -103,6 +121,35 @@ export default function HallChrome({ hallId, activeProject, frameDark = false }:
           )}
         </a>
       </motion.div>
+
+      {/* Scroll-down cue — tells the visitor to scroll to move through the
+          gallery. Fades out on the first scroll/touch input. */}
+      <AnimatePresence>
+        {cueVisible ? (
+          <motion.div
+            key="scrollcue"
+            className="hall-scrollcue"
+            aria-hidden="true"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={transition}
+          >
+            <span className="hall-scrollcue__text">גללו לצפייה בתמונות</span>
+            <motion.span
+              className="hall-scrollcue__arrow"
+              animate={reducedMotion ? undefined : { y: [0, 6, 0] }}
+              transition={
+                reducedMotion
+                  ? { duration: 0 }
+                  : { duration: 1.6, repeat: Infinity, ease: "easeInOut" }
+              }
+            >
+              <ChevronDown size={18} aria-hidden="true" />
+            </motion.span>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
 
       {/* ── Editorial color-chip label (folds reference Label.js into chrome) ──
           A bottom-anchored bar spanning the viewport (logical insets). Two

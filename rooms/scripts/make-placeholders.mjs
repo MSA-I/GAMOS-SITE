@@ -45,13 +45,16 @@ const FG_ON = {
 
 // Mirror src/roomsData.ts: COLS_PER_ROW, CATEGORIES order + tone, and how many
 // REAL photos each category currently has (the rest of the row = placeholders).
+// 2026-06-18: every category row now has 5 real photos (full 5×5 grid), so NO
+// placeholders are generated. Kept as a no-op generator (real:5 → 0 tiles) so
+// the prebuild step stays wired; if a row ever goes short again, drop its count.
 const COLS_PER_ROW = 5;
 const ROWS = [
-  { label: "חדר זוגי", tone: "cocoa", real: 3 },
-  { label: "חדר משפחה", tone: "brass", real: 3 },
+  { label: "חדר זוגי", tone: "cocoa", real: 5 },
+  { label: "חדר משפחה", tone: "brass", real: 5 },
   { label: "סוויטה", tone: "rose", real: 5 },
-  { label: "חדר נוף", tone: "mist", real: 4 },
-  { label: "סאונה רטובה ויבשה", tone: "ivory", real: 4 },
+  { label: "חדר נוף", tone: "mist", real: 5 },
+  { label: "סאונה רטובה ויבשה", tone: "ivory", real: 5 },
 ];
 
 const W = 800;

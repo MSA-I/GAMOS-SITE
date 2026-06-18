@@ -420,10 +420,9 @@ body {
 .rooms-detail__close:focus-visible > span::after {
   transform: scaleX(1);
 }
-.rooms-detail__close:focus-visible {
-  outline: 2px solid var(--color-brass);
-  outline-offset: 6px;
-}
+/* 2026-06-18: removed the 2px brass outline box — it appeared as a stray frame
+   when the dialog auto-focuses the close button on open (user). Focus stays
+   indicated by the brass colour shift + animated underline above (§9). */
 
 .rooms-detail__layout {
   flex: 1;

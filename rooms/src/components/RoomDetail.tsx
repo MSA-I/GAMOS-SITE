@@ -2,7 +2,6 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 import { animate, motion, useReducedMotion } from "motion/react";
 import { X } from "lucide-react";
 import type { RoomCard } from "../roomsData";
-import { getRooms } from "../roomsData";
 import type { CardScreenRect } from "../wall/Engine";
 
 interface Props {
@@ -167,9 +166,7 @@ export default function RoomDetail({ card, measureFrom, onClose }: Props) {
       : { duration: 0.5, delay: 0.42 + i * 0.06, ease: [0.16, 1, 0.3, 1] as const };
 
   const items = [
-    <p key="idx" className="rooms-detail__index">
-      <bdi>{card.number} / {String(getRooms().length).padStart(2, "0")}</bdi>
-    </p>,
+    // 2026-06-18: "NN / total" index removed per user (numbers were confusing).
     <h1 key="title" id="rooms-detail-title" className="rooms-detail__title">
       {card.category}
     </h1>,

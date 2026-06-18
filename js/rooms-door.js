@@ -24,6 +24,7 @@ import { prefersReducedMotion } from "./utils/media-query.js";
 const VIDEO_MP4 = "/assets/images/rooms/door.mp4";
 const VIDEO_POSTER = "/assets/images/rooms/door-poster.webp";
 const VEIL_MS = 560; // ink-deep veil fade before navigation
+const RETURN_FLAG = "gamos-return-rooms"; // set on entry → scroll back to #rooms
 
 let link = null;
 let onClick = null;
@@ -38,6 +39,12 @@ export function init() {
   link = document.getElementById("rooms-door");
   if (!link) return; // no door on this page → no-op
 
+  // Returning from the rooms sub-app? Scroll back to the door instead of the
+  // page top. The sub-app back-link lands us on "/#rooms"; the flag was set on
+  // entry below. We scroll explicitly because the pinned (GSAP) sections above
+  // shift offsets, so native hash-scroll lands wrong.
+  restoreScrollToRooms();
+
   onClick = (e) => {
     // Let the browser handle modified / non-primary clicks (open in new tab).
     if (
@@ -50,6 +57,9 @@ export function init() {
     ) {
       return;
     }
+    // Remember to land back on the door when the user returns (covers both the
+    // animated path and the reduced-motion plain-nav early-return below).
+    try { sessionStorage.setItem(RETURN_FLAG, "1"); } catch { /* private mode */ }
     // Reduced motion → plain navigation (no clip), as the <a href> would.
     if (prefersReducedMotion()) return;
 
@@ -58,6 +68,27 @@ export function init() {
   };
 
   link.addEventListener("click", onClick);
+}
+
+function restoreScrollToRooms() {
+  let flagged = false;
+  try {
+    flagged = sessionStorage.getItem(RETURN_FLAG) === "1";
+    if (flagged) sessionStorage.removeItem(RETURN_FLAG);
+  } catch { /* private mode → skip */ }
+  if (!flagged) return;
+
+  const jump = () => {
+    const target = document.getElementById("rooms");
+    if (!target) return;
+    // Instant (not smooth) — a smooth scroll through the 500vh hero + pinned
+    // sections is long and janky. Land directly on the door.
+    target.scrollIntoView({ block: "start" });
+  };
+  // Wait for layout + GSAP pins to settle so the offset is correct, then jump.
+  const run = () => requestAnimationFrame(() => window.setTimeout(jump, 350));
+  if (document.readyState === "complete") run();
+  else window.addEventListener("load", run, { once: true });
 }
 
 function navigate(href) {

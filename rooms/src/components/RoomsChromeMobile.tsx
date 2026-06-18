@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { getRooms } from "../roomsData";
 import type { RoomCard } from "../roomsData";
 
 interface Props {
@@ -30,8 +29,6 @@ interface Props {
  */
 export default function RoomsChromeMobile({ activeCard }: Props) {
   const reducedMotion = useReducedMotion();
-  const cards = useMemo(() => getRooms(), []);
-  const totalLabel = String(cards.length).padStart(2, "0");
 
   // First-load drag hint — auto-dismisses on the first pointer/wheel/key input.
   const [hintVisible, setHintVisible] = useState(true);
@@ -93,9 +90,7 @@ export default function RoomsChromeMobile({ activeCard }: Props) {
         aria-atomic="true"
         className="roomsm-active"
       >
-        <p className="roomsm-active__index">
-          <bdi>{`${activeCard?.number ?? "01"} / ${totalLabel}`}</bdi>
-        </p>
+        {/* 2026-06-18: "NN / total" index removed per user (confusing numbers). */}
         <h1 className="roomsm-active__title texture-text texture-text--light">
           {activeCard?.category ?? ""}
         </h1>

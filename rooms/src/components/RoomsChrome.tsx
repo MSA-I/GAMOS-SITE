@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { getRooms } from "../roomsData";
 import type { RoomCard } from "../roomsData";
 
 interface Props {
@@ -10,8 +9,6 @@ interface Props {
 
 export default function RoomsChrome({ activeCard }: Props) {
   const reducedMotion = useReducedMotion();
-  const cards = useMemo(() => getRooms(), []);
-  const totalLabel = String(cards.length).padStart(2, "0");
 
   // First-load drag hint — auto-dismisses on the first pointer/wheel/key input.
   const [hintVisible, setHintVisible] = useState(true);
@@ -67,12 +64,9 @@ export default function RoomsChrome({ activeCard }: Props) {
       </motion.div>
 
       {/* Active-card editorial title — bottom, aria-live announces the centre-most
-          room as the wall pans (§9). Tight stack: index → texture-text title →
+          room as the wall pans (§9). Tight stack: texture-text title →
           optional type, centered. */}
       <section aria-live="polite" aria-atomic="true" className="rooms-active">
-        <p className="rooms-title__index">
-          <bdi>{`${activeCard?.number ?? "01"} / ${totalLabel}`}</bdi>
-        </p>
         <h1 className="rooms-title texture-text texture-text--light">
           {activeCard?.category ?? ""}
         </h1>

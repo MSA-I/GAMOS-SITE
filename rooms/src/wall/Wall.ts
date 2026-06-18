@@ -258,19 +258,8 @@ export default class Wall {
     ctx.stroke();
     ctx.restore();
 
-    // text colour: cream over the photo body works regardless of tone; the
-    // top index uses the on-tone colour only when there's no photo, but cream
-    // reads on the dark cell ground above the poster — keep cream for consistency.
-    const meta = hot ? "#FFFFFF" : "rgba(245,239,230,0.78)";
-    const dim = hot ? "rgba(245,239,230,0.92)" : "rgba(245,239,230,0.55)";
-
-    // ---- index marker (in the gutter above the poster, end-aligned = right) ----
-    ctx.textBaseline = "alphabetic";
-    ctx.font = `600 ${Math.round(CELL_W * 0.05)}px "Rubik", "Heebo", Arial, sans-serif`;
-    ctx.textAlign = "right";
-    ctx.fillStyle = dim;
-    const total = String(this.cards.length).padStart(2, "0");
-    ctx.fillText(`${card.number} / ${total}`, POSTER.x + POSTER.w - 4, POSTER.y - 12);
+    // 2026-06-18: the "NN / total" index marker was removed per user — numbers
+    // on the cards are confusing. The gutter above the poster stays clean.
 
     // ---- MAIN heading = room category (top-start = right edge in RTL) ----
     // The category (room type) is the prominent heading per the rooms taxonomy;

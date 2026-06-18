@@ -28,9 +28,9 @@ const root = resolve(here, "..");
 const imgDir = resolve(root, "assets", "images", "shabbat-chatan");
 const tokensFile = resolve(root, "css", "tokens.css");
 
-// Panel N ↔ image N. 2026-06-16: re-curated to a sequential 01-05 set
-// (staging assets/_src/shabbat → encoded 01-05), matching index.html.
-const IMAGES = ["01", "02", "03", "04", "05"];
+// Panel N ↔ image N. 2026-06-18: expanded to an 8-image set (staging
+// assets/_src/shabbat → encoded 01-08), matching index.html (8 panels).
+const IMAGES = ["01", "02", "03", "04", "05", "06", "07", "08"];
 const FALLBACK_TINT = "#F2ECE2"; // warm ivory pastel — if extraction is unavailable.
 
 // Tint targets: keep only a HINT of the image's hue over a warm, brand-aligned
@@ -175,7 +175,7 @@ async function main() {
     return;
   }
   writeFileSync(tokensFile, next, "utf8");
-  console.log("[shabbat-tints] wrote 5 tints to css/tokens.css");
+  console.log(`[shabbat-tints] wrote ${tints.length} tints to css/tokens.css`);
 }
 
 main().catch((err) => {

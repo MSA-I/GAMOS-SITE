@@ -15,6 +15,14 @@
   --marquee-duration: 30s;
   inline-size: 100%;
   overflow: hidden;
+  /* Force LTR on the WHOLE band (not just the track). The document is dir="rtl",
+     which anchors the wider-than-viewport track to the RIGHT edge and lets the
+     0 → -50% keyframe scroll it off and reveal an empty gap on the right (the
+     bug the user reported — twice). LTR anchors the track to the LEFT so the
+     duplicated half wraps in seamlessly from the right. Each .marquee__text
+     still renders its Hebrew RTL internally; only phrase left↔right order
+     (decorative) is normalised. */
+  direction: ltr;
   background: var(--bg);
   border-block: 1px solid var(--border);
   padding-block: var(--space-8);
@@ -36,6 +44,14 @@
 .marquee__track {
   display: flex;
   align-items: center;
+  /* Force LTR track flow even though the document is dir="rtl". In RTL the flex
+     track anchors to the RIGHT, so the 0 → -50% keyframe scrolls the content
+     fully off to the left and reveals an empty white gap on the right (the bug
+     the user reported). LTR anchors the track left, so -50% wraps onto the
+     duplicated half seamlessly. Each .marquee__text still renders its Hebrew
+     RTL internally — only the left↔right order of the (decorative) phrases is
+     normalised. */
+  direction: ltr;
   /* Spacing lives on each item's padding-inline-end (NOT flex `gap`): `gap`
      adds a slot between every item including across the midpoint, so the
      0 → -50% keyframe lands half a gap short of the seamless wrap and the
