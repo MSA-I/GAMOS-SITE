@@ -26,17 +26,11 @@
      desktop text column (clamp(240px,30vw,360px)) + media stage
      (clamp(320px,45vw,540px)) overflow — narrow the text column to free width
      for the pinnable media stage. NO display:contents, NO column-stack: the
-     stage must stay a 100vh pinnable block. */
+     stage must stay a 100vh pinnable block. (Per-panel .shabbat__heading is
+     hidden in core 2026-06-18; only the .shabbat__sub line shows here.) */
   .shabbat__panels {
     min-inline-size: 8rem;
     max-inline-size: 40vw;
-  }
-
-  /* Scale the large display heading down so it wraps in the narrow column. */
-  .shabbat__heading {
-    font-size: clamp(1.4rem, 6vw, 2rem);
-    line-height: 1.08;
-    max-inline-size: 14ch;
   }
 
   /* Let the stage take the remaining width; block-size:100vh is inherited from

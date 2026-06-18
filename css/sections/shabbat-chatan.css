@@ -66,15 +66,26 @@
   min-inline-size: clamp(240px, 30vw, 360px);
 }
 
+/* Per-panel headings removed (user 2026-06-18: the big titles "jam" the
+   gallery's visibility). Only the heading goes — the descriptive .shabbat__sub
+   line stays. */
+.shabbat__heading {
+  display: none;
+}
+
 /* 2026-06-18: 8 panels now. To keep the scroll FASTER (not 8×100vh = 800vh of
    drag), each panel is shorter — the pinned stage advances through more images
    over less scroll. ~64vh × 8 ≈ 512vh total, snappier per-image than the old
    5×100vh. */
+/* One panel per viewport (100vh): with shorter panels a neighbouring panel's
+   text bled into the same image. At 100vh exactly one sub is on screen, centered
+   level with the pinned image (user 2026-06-18: text must not cross images). */
 .shabbat__panel {
-  min-block-size: 64vh;
-  display: grid;
-  place-items: center;
-  padding-block: var(--space-8, 2rem);
+  min-block-size: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: 0;
 }
 
 .shabbat__heading {
@@ -92,7 +103,7 @@
    Plain ink-deep body text (the tints are all light pastels, so it stays
    readable); not texture-filled, for legibility at body size. */
 .shabbat__sub {
-  margin: var(--space-4, 1rem) 0 0;
+  margin: 0;
   font-family: var(--font-body);
   font-size: clamp(var(--text-md, 1rem), 1.4vw, var(--text-lg, 1.125rem));
   font-weight: var(--fw-regular);
