@@ -1,61 +1,113 @@
 /* =============================================================================
-   mobile/css/shabbat-chatan.css — the SAME pinned mask-reveal on phones (v2)
+   mobile/css/shabbat-chatan.css — the SAME pinned mask-reveal on phones (v3)
    ---------------------------------------------------------------------------
-   2026-06-11 mobile-fidelity pass (replaces the 2026-06-09 "drop-the-pin,
-   interleave one flex column" branch).
+   2026-06-18 mobile-fidelity fix (replaces the v2 narrow-side-strip tuning).
 
-   Mandate: mobile must run the IDENTICAL desktop pinned mask-reveal. The core
-   js/shabbat-gallery.js was changed so buildDesktopTimeline (the pin +
-   clip-path wipe + Ken-Burns + bg cross-fade) now runs at ALL widths; the old
-   per-image mobile branch and the mobile/js interleave module were retired. So
-   on phones GSAP now pins .shabbat__stage over .shabbat__layout exactly as on
-   desktop.
+   THE BUG v2 left: the desktop layout is a flex ROW — text column
+   (.shabbat__panels) beside the pinned image stage (.shabbat__stage). On a
+   ~390px phone that row split the width into a 156px text column + a ~178px
+   image stage, so each landscape/portrait photo was cropped to a TALL NARROW
+   ~178px strip (user: "the images don't show — just a strip, looks very bad").
+   No amount of width-tuning fixes a side-by-side row on a portrait phone: the
+   image can never dominate while a text column eats half the row.
 
-   This file therefore must NOT flatten that layout. The previous version set
-   display:contents on the layout/columns + clip-path:none + position:relative
-   on the media — which would break the pin (GSAP can't pin a display:contents
-   element) and disable the mask channel. ALL of that is removed. What remains
-   is pure narrow-viewport TUNING of the desktop two-column pinned stage.
+   THE FIX: collapse the row to a single-cell GRID OVERLAP on phones. Both the
+   panels and the stage are placed in the SAME grid cell (grid-area 1/1), so:
+     • .shabbat__panels stays IN FLOW (full width, 8 × 100vh tall) — it still
+       generates the scroll height the ScrollTrigger pin needs, so the pin
+       fires exactly as before (this is why we DON'T flex-column-stack them —
+       that would push the stage below 800vh of panels and break the pin).
+     • .shabbat__stage overlays the panels full-bleed and is pinned by GSAP
+       exactly as on desktop — now FULL WIDTH, so the mask-reveal image reads
+       large/prominent (equivalent of the desktop experience, §13 rule 8).
+     • the image (.shabbat__media) is moved to the TOP of the pinned viewport
+       and made large; the bottom band of the (transparent) stage is left clear
+       so each panel's .shabbat__sub line shows through BELOW the image —
+       restoring the desktop "big image + caption" relationship, re-stacked for
+       portrait. One sub per image (the 100vh panel keeps the recent single-sub
+       behaviour).
 
-   §4 logical props. §5 no new colors. §13 self-contained.
+   WHAT WE DO NOT TOUCH: the GSAP-driven channels — clip-path, object-position,
+   background-color, z-index — stay owned by js/shabbat-gallery.js. We only set
+   layout (grid placement, the figure's inset/transform/size — which GSAP never
+   writes) so the mask-reveal animation is preserved verbatim.
+
+   §4 logical props. §5 no new colors. §13 self-contained (§13 amendment
+   2026-06-11 already sanctioned the core shabbat edits this rides on).
    ========================================================================== */
 
 @media (max-width: 768px) {
 
-  /* Keep the two-column flex row (inherited from core). On a 360px screen the
-     desktop text column (clamp(240px,30vw,360px)) + media stage
-     (clamp(320px,45vw,540px)) overflow — narrow the text column to free width
-     for the pinnable media stage. NO display:contents, NO column-stack: the
-     stage must stay a 100vh pinnable block. (Per-panel .shabbat__heading is
-     hidden in core 2026-06-18; only the .shabbat__sub line shows here.) */
-  .shabbat__panels {
-    min-inline-size: 8rem;
-    max-inline-size: 40vw;
+  /* Collapse the desktop flex ROW to a single-column grid so the panels and the
+     stage can OVERLAP in one cell (full width) instead of splitting the row. */
+  .shabbat__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
   }
 
-  /* Let the stage take the remaining width; block-size:100vh is inherited from
-     core so it pins full-height. Do NOT override position/inset/clip-path —
-     those are the absolute-stack + mask channels GSAP drives. */
+  /* Text panels: full width, in flow (they carry the 8 × 100vh scroll height the
+     pin rides on). Placed in the shared cell. Each 100vh panel pushes its sub
+     line to the BOTTOM band so it sits clear of the top-anchored image. */
+  .shabbat__panels {
+    grid-column: 1;
+    grid-row: 1;
+    min-inline-size: 0;
+    max-inline-size: none;
+    inline-size: 100%;
+  }
+  .shabbat__panel {
+    justify-content: flex-end;
+    /* Bottom breathing room so the sub clears the screen edge; the top-anchored
+       image (below) occupies roughly the upper ~62vh, leaving this band free. */
+    padding-block-end: clamp(var(--space-6, 1.5rem), 8vh, var(--space-12, 3rem));
+  }
+  .shabbat__sub {
+    /* Centre the caption under the full-width image; widen it from the desktop
+       34ch column now that it owns the whole width. */
+    max-inline-size: 60ch;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  /* Pinned image stage: same cell, full width, full-height (100vh inherited from
+     core so the pin spans the viewport). max-inline-size:none lifts the desktop
+     clamp(320px,45vw,540px) cap that was throttling it to ~175px. */
   .shabbat__stage {
+    grid-column: 1;
+    grid-row: 1;
+    inline-size: 100%;
     max-inline-size: none;
   }
 
-  /* Fill the narrow stage cleanly. object-fit:cover keeps the masked image
-     framed; clip-path / object-position stay untouched (GSAP owns them). */
+  /* The image: anchor it to the TOP of the pinned viewport (not vertically
+     centred) and make it large + full width, so it dominates the screen and
+     leaves the lower band of the transparent stage clear for the caption that
+     shows through from the panel behind. GSAP never writes inset/transform/size
+     — only clip-path + object-position — so overriding these is safe and keeps
+     the mask-reveal intact. */
   .shabbat__media {
+    inset-block-start: clamp(72px, 11vh, 120px);
+    inset-inline: 0;
     inline-size: 100%;
+    max-inline-size: none;
+    block-size: clamp(360px, 58vh, 560px);
+    transform: none;
   }
+
   .shabbat__media img {
     object-fit: cover;
     /* Keep the pinned clip-path scrub on the compositor (per
-       fixing-motion-performance — promote only the 5 images, not everything). */
+       fixing-motion-performance — promote only the images, not everything). */
     will-change: clip-path;
   }
 }
 
 /* Reduced-motion (mobile): the JS bails entirely under RM and the core
-   css/sections/shabbat-chatan.css RM block supplies the static stack. Make
-   sure our tuning can't promote a layer or fight that static read. */
+   css/sections/shabbat-chatan.css RM block supplies the static stack (it sets
+   display:contents on layout/panels/stage, overriding our grid here — so our
+   grid placement is inert under RM and the static read wins). Make sure our
+   tuning can't promote a layer or fight that static read. */
 @media (max-width: 768px) and (prefers-reduced-motion: reduce) {
   .shabbat__media img {
     will-change: auto;
