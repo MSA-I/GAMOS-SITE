@@ -49,6 +49,12 @@ const LEGAL_TARGETS = [
   { name: "17-accessibility",   url: `${BASE}/legal/accessibility.html` },
 ];
 
+// Hero scrub states for Figma export (figma-export/README.md). The hero is a
+// 500vh pinned scene (§3); scrolling to each fraction of its OWN scroll range
+// (not the whole page) freezes a scrub state the designer reconstructs with
+// Smart Animate. Mirrors hero-lab/scripts/qa-hero-lab.mjs's p-loop.
+const HERO_PROGRESS = [0, 0.2, 0.4, 0.6, 0.8, 1];
+
 async function ensureDir(dir) { await mkdir(dir, { recursive: true }); }
 async function chromeReachable() {
   try { await access(CHROME, FS.X_OK); return true; } catch { return false; }
@@ -153,6 +159,18 @@ async function scrollTo(cdp, target) {
   }
 }
 
+async function scrollToHeroProgress(cdp, p) {
+  return evalJs(cdp, `
+    (() => {
+      const el = document.querySelector('#hero');
+      if (!el) return false;
+      const range = Math.max(1, el.offsetHeight - window.innerHeight);
+      window.scrollTo(0, Math.round(el.offsetTop + range * ${p}));
+      return true;
+    })()
+  `);
+}
+
 async function capture(cdp, name) {
   process.stdout.write(`  → ${name} ... `);
   const { data } = await cdp.send("Page.captureScreenshot", { format: "png", captureBeyondViewport: false }, 30_000);
@@ -210,6 +228,18 @@ async function main() {
         await scrollTo(cdp, t.scrollTo);
         await new Promise(r => setTimeout(r, 1500)); // animate-on-enter, IO reveal
         await capture(cdp, t.name);
+      } catch (e) { process.stdout.write(`FAIL: ${e.message}\n`); }
+    }
+
+    // Phase 1b: hero scrub states (HERO_PROGRESS_SHOTS) — still on the home page.
+    console.log("\nPhase 1b: hero scrub states");
+    for (const p of HERO_PROGRESS) {
+      const name = `hero-p${String(Math.round(p * 100)).padStart(3, "0")}`;
+      try {
+        const ok = await scrollToHeroProgress(cdp, p);
+        if (!ok) { process.stdout.write(`  → ${name} ... SKIP (#hero not found)\n`); continue; }
+        await new Promise(r => setTimeout(r, 700)); // scrub settle (scrub:0.6)
+        await capture(cdp, name);
       } catch (e) { process.stdout.write(`FAIL: ${e.message}\n`); }
     }
 
