@@ -37,16 +37,8 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 // Scene catalog — add new scenes (resort, venue) here when their MP4s arrive.
 // -----------------------------------------------------------------------------
 const SCENES = {
-  // 2026-06-02 — quality bumped per user direction ("max quality, exceed the
-  // previous limit"). Width 1920 (was 1280); WebP q=88 (was 65); effort=6.
-  // The two-phase preloader in canvas-frame-renderer.js hides total weight
-  // from LCP — only first 10 frames block, the rest stream async low-priority.
-  hero: {
-    src: "assets/video/hero-master-1080.mp4",
-    fps: 30,
-    width: 1920,
-    quality: 88,
-  },
+  // hero scene REMOVED 2026-06-18 (user): the hero video (hero-master-*.mp4) is
+  // gone — the hero is the v10 PNG-layer scroll scene (§3), no canvas frames.
   culinary: {
     src: "assets/video/culinary-1080.mp4",
     // 2026-06-16 — DOWNSCALED 3840→1920. The canvas paints at viewport CSS

@@ -6,7 +6,6 @@
  * README.md, step 5) under figma-export/media/:
  *   - hero scene layers (sky/subject/clouds/smoke/logo) — one Figma frame each
  *   - culinary video (video-fill) + 8 still keyframes (posters)
- *   - legacy hero + portal-loop videos (optional video-fills)
  *
  * Keyframes are COPIED from the already-extracted assets/frames/culinary/ WebP
  * sequence (encode-frames.mjs output) — same source, no re-decode. Only if that
@@ -35,8 +34,6 @@ const HERO_LAYERS = [
 
 const VIDEOS = [
   ["assets/video/culinary-h264-1080.mp4", "culinary.mp4"],
-  ["assets/video/hero-master-1080.mp4",   "hero-legacy.mp4"],
-  ["assets/video/portal-loop.mp4",        "portal-loop.mp4"],
 ];
 
 const KEYFRAME_COUNT = 8;

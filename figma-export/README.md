@@ -19,7 +19,7 @@ npm run export:figma
 | סקריפט | פלט |
 |--------|-----|
 | `scripts/export-figma-tokens.mjs --self-check` | `figma-export/tokens.json` — כל הטוקנים מ-`css/tokens.css` בפורמט Tokens Studio / W3C (`$value`/`$type`), עם aliases ל-`var()` semantic |
-| `scripts/export-figma-media.mjs` | `figma-export/media/` — 5 שכבות-הירו, וידאו קולינריה + 8 keyframes, וידאו hero-legacy + portal-loop |
+| `scripts/export-figma-media.mjs` | `figma-export/media/` — 5 שכבות-הירו (PNG), וידאו קולינריה + 8 keyframes |
 
 ה-screenshots פר-סקציה + מצבי-הירו נוצרים בנפרד (דורש שרת רץ):
 
@@ -32,6 +32,10 @@ node scripts/export-screenshots.mjs   # → D:\GAMOS-screenshots-tmp\
 
 > `figma-export/tokens.json` ו-`figma-export/media/` מוחרגים מ-git (פלט מחושב + כבד).
 > הקובץ הזה (`README.md`) כן נשמר.
+
+> **חבילת GAMOS-DOCS\FIGMA-EXPORT\** (לעיצוב, מחוץ ל-git) כוללת בנוסף תיקיית
+> `site-images/` עם **כל התמונות שבשימוש באתר** (`assets/images/` + תמונות ה-sub-apps
+> halls/rooms תחת `_halls-app`/`_rooms-app` + `_misc`). זהו כל מאגר הוויזואל לייבוא ל-Figma.
 
 ---
 
@@ -56,7 +60,6 @@ node scripts/export-screenshots.mjs   # → D:\GAMOS-screenshots-tmp\
    - הרכבת **שכבות-ההירו** כ-frame לפי סדר z (מלמטה למעלה):
      `hero-layer-0-sky` → `1-subject` → `2-clouds` → `3-smoke`, ו-`4-logo` כ-outline.
      בנו prototype עם **Smart Animate** בין מצבי ה-scrub (`hero-p000…p100`) כדי לדמות את העלייה.
-   - `hero-legacy.mp4` / `portal-loop.mp4` — video-fills אופציונליים.
    - **מעבר הדלת (`#rooms`):** אין וידאו — זו אנימציית CSS. השתמשו ב-screenshot הסטטי.
      ה-seam לסרטון עתידי מתועד ב-`rooms/src/intro/README.md`.
 
