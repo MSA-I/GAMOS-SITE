@@ -23,7 +23,7 @@
   position: relative;
   background-color: var(--bg);
   color: var(--fg);
-  padding-block: var(--space-32);
+  padding-block: var(--section-pad);
   padding-inline: var(--gutter);
   isolation: isolate;
   overflow: clip;
@@ -83,9 +83,9 @@
     background-color var(--dur-base) var(--ease-out-cinema);
 }
 
-/* Press feedback: subtle scale-down confirms the tap/click registered. */
+/* Press feedback: unified site-wide press-scale (2026-06-15 — was 0.99). */
 .rooms__trigger:active {
-  transform: scale(0.99);
+  transform: scale(0.98);
 }
 
 .rooms__trigger:last-child {
@@ -364,8 +364,11 @@
 }
 
 .rooms__door:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: 4px;
+  /* Was `outline: var(--focus-ring)` — invalid (the token is a box-shadow,
+     not an outline shorthand), so the door had NO visible focus ring. Fixed
+     to the unified offset ring token (2026-06-15 unify pass). */
+  outline: none;
+  box-shadow: var(--focus-ring-offset);
 }
 
 .rooms__door-cue {

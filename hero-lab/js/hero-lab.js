@@ -93,7 +93,10 @@ async function main() {
     trigger: hero,
     start: "top top",
     end: "bottom bottom", // full 500vh
-    scrub: 0.6,
+    // scrub 0.1 matches FIND's main ScrollTrigger (was 0.6) — the animation
+    // tracks the scroll wheel tighter/more responsively, less lag. (Compared
+    // against findrealestate-clone via hero-lab/scripts/compare-find-vs-lab.mjs.)
+    scrub: 0.1,
     onUpdate: (self) => {
       scrubState.v = self.progress;
       root.style.setProperty("--p", self.progress.toFixed(4));

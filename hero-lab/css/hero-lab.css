@@ -78,13 +78,26 @@
      to a phase. The DESERT RISE + the maskfill IMAGE PARALLAX stay on full --p
      (they move across the whole scroll, like FIND's shared [house,composite] tween).
        --p1   headline sinks behind the desert                  (0.00→0.18)
-       --draw outline strokes draw on, continuously, most-scroll (0.06→0.68)
-       --p3   outline fades + desert image FILLS the letters    (0.45→0.80)
+       --draw outline strokes draw on FAST (FIND: drawn by p≈0.15)  (0.04→0.30)
+       --p3   outline fades + desert image FILLS the letters    (0.32→0.54)
        --p4   clouds fade, smoke rises, cream dissolve          (0.74→1.00)
-     (CSS clamp form is clamp(MIN, VAL, MAX) → here clamp(0, expr, 1).) */
-  --p1: clamp(0, calc(var(--p) / 0.18), 1);              /* Beat 1: headline sink (0→0.18) */
-  --draw: clamp(0, calc((var(--p) - 0.06) / 0.62), 1);   /* outline strokes BUILD continuously (0.06→0.68) */
-  --p3: clamp(0, calc((var(--p) - 0.45) / 0.35), 1);     /* Beat 3: mask fill + outline fade (0.45→0.80) */
+     (CSS clamp form is clamp(MIN, VAL, MAX) → here clamp(0, expr, 1).)
+
+     CHOREOGRAPHY RETIME (2026-06-15 round 5 — Playwright compare vs LIVE
+     findrealestate.com via compare-find-vs-lab.mjs): the live FIND draws its
+     outline by p≈0.15, HOLDS it as a crisp hollow outline through p≈0.35, then
+     FILLS the letters between p≈0.35→0.55 and HOLDS the filled-logo climax all
+     the way to p≈0.9. LAB previously filled far too late (maskfill only ~0.29 at
+     p=0.55, full at 0.9) — at p=0.55 the lab read as a muddy half-fill while FIND
+     showed a crisp filled logo. Fix: draw FAST (0.04→0.30), fill EARLY+TIGHT
+     (0.32→0.54) so the filled wordmark becomes the climax and HOLDS 0.54→0.74
+     before the smoke/veil close it out — matching FIND beat-for-beat. NOTE: this
+     touches ONLY the maskfill (L3) + outline (L5) layers; the content/text layer
+     (--p1 / --enter) is deliberately UNTOUCHED (user: "the text animation is
+     perfect, don't touch it"). */
+  --p1: clamp(0, calc(var(--p) / 0.18), 1);              /* Beat 1: headline sink (0→0.18) — UNCHANGED (text layer) */
+  --draw: clamp(0, calc((var(--p) - 0.04) / 0.26), 1);   /* outline strokes draw FAST, done by p≈0.30 (FIND-matched) */
+  --p3: clamp(0, calc((var(--p) - 0.32) / 0.22), 1);     /* Beat 3: mask fill + outline fade, filled by p≈0.54 (FIND-matched) */
   --p4: clamp(0, calc((var(--p) - 0.74) / 0.26), 1);     /* Beat 4: smoke rise + veil dissolve (0.74→1.0) */
 
   --ease-cinema: cubic-bezier(0.16, 1, 0.3, 1);
@@ -267,7 +280,10 @@ body {
 
 /* shared wordmark SVG sizing — one geometry feeds both the mask and the outline */
 .wordmark-svg {
-  width: min(78vw, 1000px);
+  /* FRAME-DIFF FIX (round 6): widened 78vw→88vw. FIND's wordmark spans nearly
+     edge-to-edge; ours sat smaller with big margins. Bigger = closer presence to
+     FIND. (Geometry only — the text/font is untouched per the user's rule.) */
+  width: min(88vw, 1180px);
   height: auto;
   display: block;
   overflow: visible;
@@ -296,14 +312,22 @@ body {
 .layer--clouds { z-index: 5; }
 .cloud {
   position: absolute;
-  inset-block-end: 8%;
-  width: 52%;
+  inset-block-end: 4%;
+  /* FRAME-DIFF FIX (round 6 — vs LIVE findrealestate.com): the clouds were 52%
+     wide at 0.92 opacity, which rendered as tall OPAQUE WHITE MASSES climbing
+     ~60% up the frame and washing out the whole hero (the "whitening" the user
+     flagged — the wordmark sat in a milk bath). FIND's clouds are LOW, thin,
+     semi-transparent wisps with clean sky above. Lowered footprint (52%→44%),
+     anchored lower (8%→4%), and dropped peak opacity (0.92→0.62) so the upper
+     frame stays clear and the filled wordmark reads against open sky like FIND.
+     Geometry/opacity only — no text touched. */
+  width: 44%;
   height: auto;
   /* RF5 — clouds fade OUT as the smoke takes over (FIND tweens hero_clouds
      opacity→0). Fade window 0.58→0.86 so they're GONE before the final frame,
      exactly when the smoke rises (user: "the clouds disappear and the smoke
      appears"). */
-  opacity: calc(0.92 * (1 - clamp(0, calc((var(--p) - 0.58) / 0.28), 1)));
+  opacity: calc(0.62 * (1 - clamp(0, calc((var(--p) - 0.58) / 0.28), 1)));
   will-change: transform, opacity;
 }
 .cloud--start { /* RTL start = right edge */
@@ -335,9 +359,15 @@ body {
   height: auto;
   /* BEAT 4 — the DENSE bottom of the smoke image settles flush onto the stage
      bottom (translateY 30%→0%) so its solid part blankets the seam to the next
-     section, with wisps rising over the wordmark. opacity floor 0.55 keeps the
-     band solid through beat 4. */
-  opacity: calc(0.55 + var(--p4) * 0.45);
+     section, with wisps rising over the wordmark.
+     FRAME-DIFF FIX (2026-06-15 round 6 — vs LIVE findrealestate.com): the floor
+     was 0.55, which kept the haze at 55% opacity across the ENTIRE first 74% of
+     scroll (--p4 is 0 until p=0.74). The frame-by-frame diff showed this fogged
+     the wordmark at p=0.08–0.42 while FIND keeps the early smoke minimal & low —
+     its filled letters read crisp on a clean sky. Lowered the floor to 0.18 so
+     the early band is a faint low haze (wordmark stays readable), still ramping
+     to full in beat 4 to blanket the seam (z8-over-veil function preserved). */
+  opacity: calc(0.18 + var(--p4) * 0.82);
   transform: translate3d(0, calc(30% - var(--p4) * 30%), 0);
   will-change: transform, opacity;
 }
@@ -577,7 +607,7 @@ body {
 
 /* Mobile tuning */
 @media (max-width: 768px) {
-  .wordmark-svg { width: 86vw; }
+  .wordmark-svg { width: 92vw; } /* round 6: match the wider desktop wordmark */
   /* tighten EVENTS tracking so it doesn't overflow the narrow viewport */
   .wordmark-svg__sm { letter-spacing: 20px; }
   .cloud { width: 78%; }

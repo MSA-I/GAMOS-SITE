@@ -85,6 +85,9 @@ function human(bytes) {
 /* Allow-list of root files (copied only if they exist). ───────────────────── */
 const ROOT_FILES = [
   "index.html",
+  // 2026-06-18: 404.html shelved to legacy/404.html per user ("לא צריך אותו
+  // כרגע") — disconnected from the active deploy so Cloudflare serves its
+  // default 404. Re-enable by moving it back to root + restoring this entry.
   "corridor.html", // legacy halls exhibit page (§2.1 rule 6 — preserved)
   "_headers", // Cloudflare cache + security headers (already correct)
   "robots.txt",

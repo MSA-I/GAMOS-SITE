@@ -6,7 +6,7 @@
 
 
 .gallery {
-  padding-block: var(--space-32);
+  padding-block: var(--section-pad);
   padding-inline: var(--gutter);
   background: var(--bg-alt);
 }

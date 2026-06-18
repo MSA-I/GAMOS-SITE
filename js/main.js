@@ -13,7 +13,7 @@
 
 // Section modules — placeholder shells. Each exposes `init()`.
 import * as scrollOrchestrator from "./scroll-orchestrator.js";
-import * as heroStatic          from "./hero-static.js";    // 2026-06-08 — static-image hero with hotspots
+import * as heroScene           from "./hero-scene.js";     // 2026-06-15 — v10 cinematic scroll-pinned hero (replaces hero-static; that file kept as legacy)
 import * as scrollScene         from "./scroll-scene.js";
 import * as portals             from "./portals.js";
 import * as reveals             from "./reveals.js";
@@ -38,8 +38,9 @@ import * as directionsMap      from "./directions-map.js";  // 2026-06-10 — #r
 // Order matters:
 // - scroll-orchestrator MUST init before any scene (hero or non-hero) that
 //   registers via window.gamosScroll.register(...).
-// - hero-video-scrub registers itself with the orchestrator and installs
-//   window.gamosHero.onProgress (consumed by portals + side-dot-nav).
+// - hero-scene (v10) builds its own GSAP ScrollTrigger and installs
+//   window.gamosHero.onProgress (consumed by portals + side-dot-nav), and wires
+//   the #hall-portal EVENTS/RESORT CTAs to the halls sub-apps.
 // - scroll-scene auto-discovers other [data-scrub] sections AFTER hero so
 //   priority handling and DOM-order tie-breaking are deterministic.
 // - portals init waits internally for the hero hook, so its placement here is benign.
@@ -50,7 +51,7 @@ import * as directionsMap      from "./directions-map.js";  // 2026-06-10 — #r
 const MODULES = [
   ["scroll-orchestrator", scrollOrchestrator],
   ["loading-overlay",     loadingOverlay],   // window.gamosLoading must be ready before hero hotspot clicks
-  ["hero-static",         heroStatic],       // 2026-06-08: static-image hero + gamosHero progress stub (releases side-dot-nav dominance gate)
+  ["hero-scene",          heroScene],        // 2026-06-15: v10 scroll hero — GSAP timeline + gamosHero progress stub (over 500vh) + #hall-portal CTA routing
   ["site-nav-hover-reveal", siteNavHoverReveal], // 2026-06-04: hide site-nav while in hero (revealed only on cursor in top band)
   ["shabbat-gallery",     shabbatGallery],   // 2026-06-09: GSAP pinned mask-reveal; 2026-06-11: pin runs at all widths (mobile-fidelity)
   ["scroll-scene",        scrollScene],

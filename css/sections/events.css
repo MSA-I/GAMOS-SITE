@@ -7,7 +7,7 @@
 
 
 .events {
-  padding-block: var(--space-32);
+  padding-block: var(--section-pad);
   background: var(--bg);
 }
 

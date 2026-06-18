@@ -8,7 +8,7 @@
 
 
 .testimonials {
-  padding-block: var(--space-32);
+  padding-block: var(--section-pad);
   padding-inline: var(--gutter);
   background: var(--bg-tint);
   /* Clip slider overflow so off-screen slides don't expand the layout. */
@@ -17,7 +17,7 @@
 
 /* The section-header inside #testimonials lives in the gutter-padded zone */
 .testimonials > .section-header {
-  max-width: var(--container-narrow);
+  max-inline-size: var(--container-narrow);
   margin-inline: auto;
 }
 
@@ -26,7 +26,7 @@
      RTL is auto-handled by flex; slider.js applies translate3d(±N%, 0, 0).
      Section-level `overflow-x: clip` keeps off-screen slides from expanding
      layout. */
-  max-width: var(--container-narrow);
+  max-inline-size: var(--container-narrow);
   margin-inline: auto;
   margin-block-start: var(--space-12);
   display: flex;
@@ -89,31 +89,11 @@
   margin-block-start: var(--space-8);
 }
 
-.testimonials__btn {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-circle);
-  border: 1px solid var(--border-strong);
-  background: transparent;
-  color: var(--fg);
-  cursor: pointer;
-  font-size: var(--text-lg);
-  display: grid;
-  place-items: center;
-  transition: background var(--dur-base) var(--ease-out-cinema),
-              border-color var(--dur-base) var(--ease-out-cinema),
-              transform var(--dur-base) var(--ease-out-cinema);
-}
-
-.testimonials__btn:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-
-/* Press feedback — consistency with the site's pressable grammar. */
-.testimonials__btn:active {
-  transform: scale(0.97);
-}
+/* .testimonials__btn skin removed 2026-06-15 (unify pass) — the prev/next
+   arrows now use the canonical `.btn .btn--icon` (css/components/buttons.css):
+   44×44 circle, one focus ring, unified press-scale(0.98). Only the arrow
+   glyph size is section-specific layout. */
+.testimonials__btn { font-size: var(--text-lg); }
 
 /* Slider dots (rendered programmatically by js/slider.js) ---------------- */
 .testimonials__dots {
@@ -150,9 +130,9 @@
   .testimonial { padding: var(--space-8); }
 }
 
-/* Honor reduced-motion: null the press/scale transforms on slider controls. */
+/* Honor reduced-motion: null the dot transforms. (The arrow buttons' press
+   feedback is nulled in css/components/buttons.css alongside .btn.) */
 @media (prefers-reduced-motion: reduce) {
-  .testimonials__btn:active { transform: none; }
   .testimonials__dots [data-slider-dot] { transition: none; }
   .testimonials__dots [data-slider-dot].is-active { transform: none; }
 }

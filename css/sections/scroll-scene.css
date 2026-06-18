@@ -129,15 +129,9 @@
   padding-inline: var(--gutter);
   z-index: 1;
   pointer-events: none;
-  /* Subtle dark wash so light type stays legible over light frames. */
-  background:
-    linear-gradient(
-      to top,
-      rgba(14, 14, 12, 0.72) 0%,
-      rgba(14, 14, 12, 0.45) 30%,
-      rgba(14, 14, 12, 0.10) 65%,
-      rgba(14, 14, 12, 0)    100%
-    );
+  /* Unified ink-deep wash so light type stays legible over light frames
+     (2026-06-15 unify pass — was a bespoke rgba(14,14,12,…) gradient). */
+  background: var(--scrim-overlay);
 }
 
 .scroll-scene__overlay > * {
@@ -152,7 +146,7 @@
 }
 
 .scroll-scene__overlay .section-header__lede {
-  opacity: 0.92;
+  color: var(--fg-on-dark-muted);   /* one translucent-ivory method site-wide */
 }
 
 .scroll-scene__overlay .section-header__eyebrow {

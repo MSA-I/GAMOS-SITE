@@ -7,14 +7,14 @@
 
 
 .contact {
-  padding-block: var(--space-32);
+  padding-block: var(--section-pad);
   background: var(--bg);
 }
 
 /* When .contact uses a section-rail, gutter is handled by the rail. */
 .contact > :not(.section-rail--start):not(.section-rail--end) {
   padding-inline: var(--gutter);
-  max-width: var(--container-max);
+  max-inline-size: var(--container-max);
   margin-inline: auto;
 }
 
@@ -91,34 +91,10 @@
   flex-wrap: wrap;
 }
 
-/* Primary submit CTA. Aligned to the canonical .btn--filled (css/utilities.css):
-   brass fill, --radius-pill, --ease-out-cinema, hover → --accent-hover / --ivory,
-   :active press + brass :focus-visible. The deliberate divergence is the LARGER
-   padding (--space-4 --space-12) + --text-md size — intentional primary-CTA
-   emphasis, kept rather than reduced to the .btn base. */
-.contact__submit {
-  font-family: var(--font-body);
-  font-size: var(--text-md);
-  font-weight: var(--fw-semibold);
-  padding: var(--space-4) var(--space-12);
-  background: var(--accent);
-  color: var(--ink-deep);
-  border: 0;
-  border-radius: var(--radius-pill);
-  cursor: pointer;
-  transition: background var(--dur-base) var(--ease-out-cinema),
-              color var(--dur-base) var(--ease-out-cinema),
-              transform var(--dur-base) var(--ease-out-cinema);
-}
-
-.contact__submit:hover { background: var(--accent-hover); color: var(--ivory); }
-
-.contact__submit:active { transform: scale(0.98); }
-
-.contact__submit:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
+/* .contact__submit skin removed 2026-06-15 (unify pass) — the primary submit
+   CTA now uses the canonical `.btn .btn--filled .btn--primary-lg`
+   (css/components/buttons.css): brass fill, larger padding + --text-md size,
+   one focus ring + one press-scale. `.contact__submit-wrap` above owns layout. */
 
 .contact__feedback {
   font-size: var(--text-sm);
@@ -331,7 +307,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .contact__scroll-cue-arrow { animation: none; }
-  .contact__submit:active { transform: none; }
+  /* .contact__submit:active press feedback is now nulled by the canonical
+     .btn reduced-motion rule (css/components/buttons.css). */
 }
 
 /* NOTE: the generic Google Maps iframe (.contact__map) was removed 2026-06-10
@@ -348,7 +325,7 @@
 
 .routes {
   background: var(--bg);
-  padding-block: var(--space-32);
+  padding-block: var(--section-pad);
 }
 
 .routes__container {

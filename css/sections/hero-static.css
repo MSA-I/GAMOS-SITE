@@ -84,7 +84,8 @@ img.hero-static__layer--gamos {
   pointer-events: auto;
   cursor: pointer;
   text-decoration: none;
-  transition: filter 280ms ease, opacity 280ms ease;
+  transition: filter var(--dur-slow) var(--ease-out-cinema),
+              opacity var(--dur-slow) var(--ease-out-cinema);
   outline: 0 solid transparent;
 }
 .hero-static__layer--events { top: 26%; z-index: 3; }
@@ -95,7 +96,8 @@ img.hero-static__layer--gamos {
   display: block;
   width: 100%;
   height: auto;
-  transition: filter 280ms ease, transform 320ms var(--ease-out-cinema);
+  transition: filter var(--dur-slow) var(--ease-out-cinema),
+              transform var(--dur-slow) var(--ease-out-cinema);
 }
 
 /* Hover / focus glow. The visual lift rides on the inner <img> so it never
@@ -103,12 +105,15 @@ img.hero-static__layer--gamos {
 .hero-static__cta:hover img,
 .hero-static__cta:focus-visible img {
   transform: scale(1.06);
-  filter: brightness(1.10) drop-shadow(0 0 28px rgba(207, 174, 131, 0.55));
+  filter: brightness(1.10)
+          drop-shadow(0 0 28px color-mix(in srgb, var(--brass) 55%, transparent));
 }
 
+/* Unified offset focus ring for image CTAs (2026-06-15 unify pass — was a
+   bespoke outline:3px + offset:6px with a hard-coded #CFAE83 fallback). */
 .hero-static__cta:focus-visible {
-  outline: 3px solid var(--brass, #CFAE83);
-  outline-offset: 6px;
+  outline: none;
+  box-shadow: var(--focus-ring-offset);
   border-radius: var(--radius-sm);
 }
 
@@ -153,7 +158,7 @@ img.hero-static__layer--gamos {
   justify-content: center;
   inline-size: 24px;
   block-size: 56px;
-  border: 1px solid rgba(245, 239, 230, 0.55);
+  border: 1px solid color-mix(in srgb, var(--ivory) 55%, transparent);
   border-radius: var(--radius-pill);
   text-decoration: none;
   pointer-events: auto;
@@ -165,8 +170,8 @@ img.hero-static__layer--gamos {
   border-color: var(--brass-glow);
 }
 .hero-static__cue:focus-visible {
-  outline: 3px solid var(--brass, #CFAE83);
-  outline-offset: 4px;
+  outline: none;
+  box-shadow: var(--focus-ring-offset);
 }
 
 .hero-static__cue-track {

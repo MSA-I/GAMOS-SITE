@@ -28,8 +28,9 @@ const root = resolve(here, "..");
 const imgDir = resolve(root, "assets", "images", "shabbat-chatan");
 const tokensFile = resolve(root, "css", "tokens.css");
 
-// Panel N ↔ image N (odd-numbered set used in index.html).
-const IMAGES = ["01", "03", "05", "07", "09"];
+// Panel N ↔ image N. 2026-06-16: re-curated to a sequential 01-05 set
+// (staging assets/_src/shabbat → encoded 01-05), matching index.html.
+const IMAGES = ["01", "02", "03", "04", "05"];
 const FALLBACK_TINT = "#F2ECE2"; // warm ivory pastel — if extraction is unavailable.
 
 // Tint targets: keep only a HINT of the image's hue over a warm, brand-aligned

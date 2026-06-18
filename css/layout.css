@@ -32,16 +32,16 @@
   /* ----- Section ----- */
 
   .section {
-    padding-block: var(--space-32);
+    padding-block: var(--section-pad);   /* shared section rhythm token */
     position: relative;
   }
 
   .section--tight {
-    padding-block: var(--space-16);
+    padding-block: var(--section-pad-tight);
   }
 
   .section--loose {
-    padding-block: calc(var(--space-32) + var(--space-16));
+    padding-block: calc(var(--section-pad) + var(--space-16));
   }
 
   .section--flush {

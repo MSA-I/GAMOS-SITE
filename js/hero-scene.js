@@ -43,6 +43,7 @@ const state = {
   scrollHandler: null,
   refreshHandler: null,
   revealFallback: null,
+  entranceStarted: false,
   tweens: [],
   triggers: [],
   splits: [],
@@ -181,7 +182,9 @@ function buildTimelines() {
 
   if (prefersReducedMotion()) {
     // Show final composition statically (logo filled), no scrub. (§8/§9)
-    hero.style.visibility = "visible";
+    // init() seeds the hero at autoAlpha:0 for the entrance fade; with no entrance
+    // here we must restore it to fully visible, not leave it invisible.
+    gsap.set(hero, { autoAlpha: 1 });
     gsap.set([logo], { opacity: 0 });
     gsap.set([comp], { opacity: 1 });
     if (house) gsap.set(house, { opacity: 1 });
@@ -260,7 +263,7 @@ function buildTimelines() {
   // the start-states are applied only when the timeline plays → the hero stays
   // at its natural VISIBLE state until the entrance actually runs.
   const NR = { immediateRender: false };
-  const r = gsap.timeline({ paused: true });
+  const r = gsap.timeline({ paused: true, onStart: () => { state.entranceStarted = true; } });
   r.fromTo(hero, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, immediateRender: false }, 0);
 
   // SplitText word-stagger on the title (the sandbox's z4 helper). Falls back to
@@ -311,15 +314,19 @@ export function init() {
   installGamosHeroStub();
 
   // The sandbox leaves the section visibility:hidden and reveals it solely via
-  // the GSAP entrance autoAlpha (0→1). That's fragile: if GSAP is slow/absent —
-  // or the play() is delayed past first paint — the hero stays invisible. We
-  // reveal up-front so it can NEVER get stuck hidden; the entrance timeline's
-  // `fromTo(autoAlpha:0→1)` still re-hides → fades in when it plays (same beat),
-  // and a 600ms fallback force-reveals if the timeline never ran at all.
-  hero.style.visibility = "visible";
+  // the GSAP entrance autoAlpha (0→1). That's fragile (stuck-invisible if GSAP
+  // is slow/absent), but force-revealing to FULL opacity up-front was worse: the
+  // entrance only plays after an async logo fetch + a 200ms setTimeout, so the
+  // hero painted opaque for ~260ms and then snapped to autoAlpha:0 and faded back
+  // in — a visible blink-off on every load. Instead we SEED the entrance start
+  // state (autoAlpha:0 = laid-out but invisible) so the hero never paints at full
+  // opacity before the fade; the entrance's fromTo(autoAlpha:0→1) starts from the
+  // identical state → one seamless fade, no snap. The 600ms fallback still
+  // force-reveals — but ONLY if the entrance never started (the real stuck case),
+  // so it can't collide with an in-progress fade.
+  if (window.gsap) { try { window.gsap.set(hero, { autoAlpha: 0 }); } catch { hero.style.visibility = "visible"; } }
   state.revealFallback = setTimeout(() => {
-    if (hero.style.visibility !== "visible") hero.style.visibility = "visible";
-    gsapForceVisible(hero);
+    if (!state.entranceStarted) gsapForceVisible(hero);
   }, 600);
 
   fetch(LOGO_SVG_URL)

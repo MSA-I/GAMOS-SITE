@@ -209,8 +209,8 @@
 }
 
 .portal:focus-visible {
-  outline: 3px solid var(--brass);
-  outline-offset: 4px;
+  outline: none;
+  box-shadow: var(--focus-ring-offset);   /* unified offset ring (2026-06-15) */
   border-radius: 50%;
 }
 

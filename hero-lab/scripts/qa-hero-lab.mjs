@@ -116,9 +116,10 @@ async function run() {
   await dp.goto(URL, { waitUntil: "load" });
   await dp.waitForTimeout(1800); // entrance timeline + fonts
 
-  console.log("=== desktop 1440×900 (FIND staging, round 3 windows) ===");
-  // Sample points aligned to the round-3 windows: p1 0→0.18, draw 0.06→0.68,
-  // p3 0.45→0.80, p4 0.74→1.0. Lets us assert the SEQUENCE + the round-3 fixes.
+  console.log("=== desktop 1440×900 (FIND staging, round 5 windows) ===");
+  // Sample points aligned to the round-5 (FIND-matched) windows: p1 0→0.18,
+  // draw 0.04→0.30, p3 0.32→0.54, p4 0.74→1.0. Lets us assert the SEQUENCE +
+  // that the fill crossover completes by p≈0.55 and holds (like findrealestate.com).
   const snap = {};
   for (const p of [0, 0.15, 0.35, 0.55, 0.75, 0.9, 1]) {
     snap[p] = await readAt(dp, p);
@@ -130,13 +131,16 @@ async function run() {
     "B1·headline fades first, fill not started",
     `content p0=${snap[0].contentOpacity?.toFixed(2)} p.15=${snap[0.15].contentOpacity?.toFixed(2)} maskfill@.15=${snap[0.15].maskOpacity?.toFixed(2)}`);
 
-  // RF3 — outline strokes draw CONTINUOUSLY across most of the scroll: the
-  // dashoffset must DECREASE monotonically from p.15→p.35→p.55 (not snap in a
-  // tiny window). Each glyph has a per-path --len, so check the first path.
-  const off = [0.15, 0.35, 0.55].map((p) => snap[p].outlineDashoffset);
-  log(off[0] > off[1] && off[1] > off[2] && off[0] > 0,
-    "RF3·outline draws continuously (dashoffset decreases across scroll)",
-    `dashoffset p.15=${off[0]?.toFixed(0)} p.35=${off[1]?.toFixed(0)} p.55=${off[2]?.toFixed(0)}`);
+  // RF3 — outline strokes draw FAST then settle (FIND-matched, round 5). The
+  // live FIND draws its hollow outline by p≈0.15 and HOLDS it crisp through
+  // p≈0.35; it does NOT keep drawing across the whole scroll. So the dashoffset
+  // must DECREASE from p0→p0.15 (drawing) and be fully drawn (≈0) by p0.35.
+  // (Was: monotonic decrease p.15→.35→.55 — that encoded the old slow-draw
+  // timing replaced to match findrealestate.com.)
+  const offEarly = [0, 0.15, 0.35].map((p) => snap[p].outlineDashoffset);
+  log(offEarly[0] > offEarly[1] && offEarly[1] >= offEarly[2] && offEarly[2] <= 2,
+    "RF3·outline draws fast then holds (drawn by p≈0.35, FIND-matched)",
+    `dashoffset p0=${offEarly[0]?.toFixed(0)} p.15=${offEarly[1]?.toFixed(0)} p.35=${offEarly[2]?.toFixed(0)}`);
 
   // RF2 — PARALLAX FILL: the masked image's transform must CHANGE between p.35
   // and p.75 (it pans inside the letters). Static fill would be identical.
@@ -145,10 +149,18 @@ async function run() {
     "RF2·masked image MOVES inside the letters (parallax, not static)",
     `t@.35≠t@.75 → ${snap[0.35].maskImgTransform !== snap[0.75].maskImgTransform}`);
 
-  // BEAT 3 — crossover: fill rises late (last third) as the outline fades.
-  log(snap[0.55].maskOpacity > 0.1 && snap[0.9].maskOpacity > 0.85 && snap[0.9].outlineOpacity < snap[0.55].outlineOpacity,
-    "B3·fill rises in the last third as outline fades",
-    `maskfill p.55=${snap[0.55].maskOpacity?.toFixed(2)} p.9=${snap[0.9].maskOpacity?.toFixed(2)} outline .55→.9=${snap[0.55].outlineOpacity?.toFixed(2)}→${snap[0.9].outlineOpacity?.toFixed(2)}`);
+  // BEAT 3 — crossover: fill rises as the outline fades, COMPLETING by p≈0.55
+  // and HOLDING the filled wordmark as the climax (FIND-matched, round 5). The
+  // live FIND has composite(fill)=1.0 and logo(outline)=0 by p≈0.55, held to
+  // p≈0.9. So we assert: mid-crossover at p0.35 (fill rising, outline still
+  // partly there), then fully filled + outline gone by p0.55, still filled at
+  // p0.9. (Was: "fill rises in the LAST THIRD" — the old late-fill timing that
+  // read as a muddy half-fill at p0.55 vs FIND's crisp filled logo.)
+  log(snap[0.35].maskOpacity > 0.05 && snap[0.35].maskOpacity < 0.95 &&
+      snap[0.55].maskOpacity > 0.9 && snap[0.55].outlineOpacity < 0.15 &&
+      snap[0.9].maskOpacity > 0.9,
+    "B3·fill completes the crossover by p≈0.55 then holds (FIND-matched)",
+    `maskfill .35=${snap[0.35].maskOpacity?.toFixed(2)} .55=${snap[0.55].maskOpacity?.toFixed(2)} .9=${snap[0.9].maskOpacity?.toFixed(2)} | outline .55=${snap[0.55].outlineOpacity?.toFixed(2)}`);
 
   // BEAT 4 + RF5 — smoke rises ABOVE the veil (z), clouds fade out, veil dissolves last.
   log(snap[0.55].veilOpacity < 0.1 && snap[1].veilOpacity > 0.8 && snap[0.9].smoke.y < snap[0.55].smoke.y - 5,
