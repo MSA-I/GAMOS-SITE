@@ -500,6 +500,16 @@ export function createRenderer({ canvas, manifest, host, options }) {
 
   function bindMouseParallax() {
     if (!opts.parallax) return;
+    // Coarse-pointer (touch) devices have no hovering cursor: a synthesized
+    // `mousemove` (or the first tap) fires once and leaves a stale GSAP x/y
+    // transform on the canvas that never resets — which drags the centered
+    // frame off-axis and reads as a stuttery, off-center scrub. Skip parallax
+    // entirely on coarse pointers; `pointer: fine` (desktop mouse / trackpad)
+    // is unchanged. (2026-06-18 mobile scrub fix.)
+    if (typeof window.matchMedia === "function" &&
+        !window.matchMedia("(pointer: fine)").matches) {
+      return;
+    }
     if (!window.gsap) {
       console.warn("[canvas-frame-renderer] gsap not loaded; parallax disabled");
       return;

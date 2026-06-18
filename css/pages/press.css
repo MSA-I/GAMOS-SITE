@@ -141,7 +141,12 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
 
 .press-hero {
   position: relative;
-  block-size: 100vh;
+  /* dvh (was 100vh): on phones `vh` resolves to the LARGE viewport (URL bar
+     hidden), so when the dynamic toolbar is showing the hero overshoots the
+     visible area and a band of the page below peeks at the bottom. `dvh`
+     tracks the live viewport so the hero fills exactly what's visible — no
+     bottom band, no clip — as the toolbar shows/hides. */
+  block-size: 100dvh;
   min-block-size: 640px;
   inline-size: 100%;
   overflow: hidden;
@@ -318,7 +323,11 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
 .press-intro {
   background: var(--ivory);
   color: var(--ink-deep);
-  min-block-size: 70vh;
+  /* svh (was 70vh): a min-height floor should never exceed the STABLE minimum
+     viewport, otherwise an expanded toolbar inflates `vh` and the section grows
+     taller than the visible area → bottom band. svh pins the floor to the small
+     viewport; the flex content still grows the section naturally past it. */
+  min-block-size: 70svh;
   display: flex;
   align-items: center;
   padding-block: clamp(96px, 14vh, 200px);
@@ -370,7 +379,7 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
 
 
 /* ---------------------------------------------------------------------------
-   5. PRESS CARDS — 7 image-led full-bleed cards, each 100vh
+   5. PRESS CARDS — 7 image-led full-bleed cards, each 100dvh
    --------------------------------------------------------------------------- */
 
 .press-list {
@@ -382,7 +391,10 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
   display: block;
   position: relative;
   inline-size: 100%;
-  block-size: 100vh;
+  /* dvh (was 100vh): each card is a full-bleed scroll panel — track the live
+     viewport so the image fills exactly what's on screen with no bottom band as
+     the mobile toolbar collapses/expands. */
+  block-size: 100dvh;
   min-block-size: 640px;
   overflow: hidden;
   isolation: isolate;
@@ -649,7 +661,9 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
 
 .press-closer {
   position: relative;
-  block-size: 80vh;
+  /* dvh (was 80vh): full-bleed closer — track the live viewport so the shader
+     fills the visible area without a bottom band under the mobile toolbar. */
+  block-size: 80dvh;
   min-block-size: 560px;
   inline-size: 100%;
   overflow: hidden;
@@ -857,11 +871,14 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
 
 @media (max-width: 900px) {
   .press-hero {
-    block-size: 90vh;
+    /* dvh (was 90vh) — track the live viewport, no bottom band under the
+       mobile toolbar. */
+    block-size: 90dvh;
     min-block-size: 560px;
   }
   .press-card {
-    block-size: 78vh;
+    /* dvh (was 78vh) — same live-viewport tracking as the hero. */
+    block-size: 78dvh;
     min-block-size: 520px;
   }
   .press-card__topline {

@@ -24,7 +24,13 @@ export interface DragMetrics {
 
 const INTRO_MS = 1200; // intro bloom duration
 
-const BASE_CAM_Z = 16.5; // camera rest distance (single source for the dolly math)
+const BASE_CAM_Z = 16.5; // desktop camera rest distance (single source for the dolly math)
+// Mobile camera pull-back: at a 390px width the desktop distance only fits ~2.5
+// cards across, so the barrel curve can't be perceived (too few cards to read a
+// bend). Pulling the camera back shrinks the apparent card size → ~4-5 cards span
+// the width → the curve reads, exactly like desktop. MOBILE-ONLY (gated by
+// quality.isMobile); desktop is left at BASE_CAM_Z untouched.
+const MOBILE_CAM_Z_MULT = 1.6;
 // Phantom-style velocity dolly ("zoom-out on scroll") — MEDIUM intensity.
 const DOLLY_PER_SPEED = 3.5; // world-units pull-back per (world-unit/frame) of pan speed
 const DOLLY_MAX = 2.0; // max pull-back (~12% of BASE_CAM_Z) — clamps a hard fling
@@ -58,6 +64,10 @@ export default class Engine {
   public readonly camera: THREE.PerspectiveCamera;
   public readonly renderer: THREE.WebGLRenderer;
   public readonly quality: QualityProfile;
+  /** Camera rest distance: BASE_CAM_Z on desktop, pulled back on mobile so the
+   *  barrel curve reads across more visible cards. Single source for all rest-z
+   *  uses (constructor placement, drag metrics, freeze snap, dolly base). */
+  private readonly restCamZ: number;
 
   public readonly group: THREE.Group;
   public readonly wall: Wall;
@@ -104,6 +114,9 @@ export default class Engine {
   constructor(canvas: HTMLCanvasElement, opts: EngineOptions) {
     this.canvas = canvas;
     this.quality = detectQuality();
+    this.restCamZ = this.quality.isMobile
+      ? BASE_CAM_Z * MOBILE_CAM_Z_MULT
+      : BASE_CAM_Z;
 
     this.scene = new THREE.Scene();
 
@@ -116,7 +129,7 @@ export default class Engine {
       0.1,
       200,
     );
-    this.camera.position.set(0, 0, BASE_CAM_Z);
+    this.camera.position.set(0, 0, this.restCamZ);
     this.camera.lookAt(0, 0, 0);
 
     this.renderer = new THREE.WebGLRenderer({
@@ -191,7 +204,7 @@ export default class Engine {
     const { clientWidth } = this.getViewportSize();
     // Always map against the REST distance, never a mid-dolly z, so the drag→world
     // 1:1 mapping stays stable while the velocity dolly is pulling the camera back.
-    const dist = BASE_CAM_Z;
+    const dist = this.restCamZ;
     const vFov = (this.camera.fov * Math.PI) / 180;
     const visibleHeight = 2 * Math.tan(vFov / 2) * dist;
     const visibleWidth = visibleHeight * this.camera.aspect;
@@ -245,9 +258,9 @@ export default class Engine {
     if (this.drag) this.drag.enabled = !v;
     if (v) {
       this.wall.setHovered(null);
-      // Snap the camera to rest so the FLIP detail morph projects against BASE_CAM_Z.
+      // Snap the camera to rest so the FLIP detail morph projects against the rest z.
       this.dollyZ = 0;
-      this.camera.position.z = BASE_CAM_Z;
+      this.camera.position.z = this.restCamZ;
     }
     // Resume the idle short-circuit accounting so a thaw repaints.
     this.lastPanX = Number.NaN;
@@ -309,7 +322,7 @@ export default class Engine {
       // Asymmetric ease: quick to zoom out, slower to settle back in.
       const k = target > this.dollyZ ? DOLLY_ATTACK : DOLLY_RELEASE;
       this.dollyZ += (target - this.dollyZ) * k;
-      this.camera.position.z = BASE_CAM_Z + this.dollyZ;
+      this.camera.position.z = this.restCamZ + this.dollyZ;
     }
 
     // Reduced-motion idle short-circuit: under reduce, with the intro done and

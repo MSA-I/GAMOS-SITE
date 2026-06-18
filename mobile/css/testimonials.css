@@ -1,0 +1,76 @@
+/* =============================================================================
+   mobile/css/testimonials.css — #testimonials ("מה מספרים על האירוע אצלנו")
+   phone re-layout (§13 mobile-only override pass 2026-06-18)
+   ---------------------------------------------------------------------------
+   Two problems surfaced via Playwright at 360–390px:
+
+   1. CONTROLS ROW BLEW APART. `.testimonials__controls` is a single flex row
+      [ prev · dots · next ]. The dots row carries 8 dots whose tappable boxes
+      are 46px each (the §9 floor lives in touch-targets.css). 8 × 46 = 368px,
+      which is WIDER than the 328–358px controls row — so the dots overflowed
+      to the full viewport width, shoved the ‹ › arrows into a cramped cluster,
+      and spilled the dots onto a second full-bleed band below the card. Fix:
+      let the controls WRAP (dots get their own centred row, arrows on their
+      own row) and cap the dots row so it never exceeds the content width.
+
+   2. ACTIVE DOT RENDERED AS A GIANT BRASS BLOB once touch-targets.css pads the
+      box to 46px (full root-cause + fix in the .is-active rule comment below).
+      The active dot is meant to be a small brass pill (the intended slider
+      indicator from css/sections/motion-slider.css) — we keep that, just stop
+      it flooding the padded tap box.
+
+   Heading descender clearance is already handled in mobile/css/headings.css;
+   here we only add a little extra top breathing room so the title never reads
+   as crowding the card on a narrow column. Card padding is fine (core drops to
+   --space-8 ≤600px); we keep that.
+
+   §4 logical props · §5 token colors only · §13 self-contained, @media only.
+   The 46px dot hit area stays owned by touch-targets.css — NOT duplicated here.
+   ========================================================================= */
+
+@media (max-width: 768px) {
+
+  /* A touch more space below the section header so the large texture-fill
+     title sits clear of the card on the narrow column. (Descender clearance
+     itself lives in headings.css.) */
+  .testimonials > .section-header {
+    margin-block-end: var(--space-10);
+  }
+
+  /* Let the controls wrap: the dots take their own centred line below the
+     ‹ › arrows, so a too-wide dots row can never push the arrows off-axis. */
+  .testimonials__controls {
+    flex-wrap: wrap;
+    row-gap: var(--space-4);
+  }
+
+  /* Eight dots each carry a 46px tap box (touch-targets.css) → 8 × 46 = 368px,
+     which overflows a 360px phone. They can't all fit one row while honouring
+     the §9 tap floor, so the dots take their own full-width line and lay out as
+     a fixed 4-column GRID → a BALANCED, even 4 + 4 block, centred. Grid (not
+     flex-wrap) keeps the columns even regardless of the active dot being a wider
+     brass pill (which threw the flex-wrap onto uneven 3 + 4 + 1 lines). */
+  .testimonials__dots {
+    order: 1;
+    flex-basis: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 46px);
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    row-gap: var(--space-2, 0.5rem);
+    margin-inline: auto;
+  }
+
+  /* The active dot's brass fill comes from a `background` SHORTHAND (in both
+     testimonials.css and motion-slider.css) which RESETS background-clip back
+     to border-box — so on mobile, where touch-targets.css pads the box to 46px,
+     the brass floods the whole 46px padded box into a giant blob. Re-assert the
+     content-box clip so the active fill stays inside its small content box and
+     reads as the intended brass pill, not a blob. (Both this and the inactive
+     dots inherit the 46px tap box from touch-targets.css unchanged.) */
+  .testimonials__dots [data-slider-dot].is-active {
+    background-clip: content-box;
+    -webkit-background-clip: content-box;
+  }
+}

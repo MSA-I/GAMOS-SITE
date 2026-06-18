@@ -68,6 +68,7 @@
     "/mobile/css/headings.css",
     "/mobile/css/kosher.css",
     "/mobile/css/directions.css",
+    "/mobile/css/testimonials.css",
   ];
 
   function injectStylesheets () {

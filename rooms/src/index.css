@@ -296,15 +296,32 @@ body {
   transform: translateY(-50%);
   z-index: 25;
   display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 0.6rem;
   pointer-events: none;
   animation: rooms-hint-pulse 2.4s ease-in-out infinite;
 }
 
+/* The ‹ › arrows that flank the label — they drift outward then settle, a gentle
+   left-right nudge that reads as "drag to the sides". Each side animates toward
+   its own edge (logical: start drifts to inline-start, end to inline-end). */
+.rooms-hint__arrow {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  line-height: 1;
+  color: var(--color-brass-glow);
+  text-shadow: 0 1px 10px rgba(26, 20, 16, 0.7);
+  animation: rooms-hint-drift 2.4s ease-in-out infinite;
+}
+.rooms-hint__arrow--start { animation-name: rooms-hint-drift-start; }
+.rooms-hint__arrow--end { animation-name: rooms-hint-drift-end; }
+
 @media (prefers-reduced-motion: reduce) {
-  .rooms-hint {
-    animation: none;
-  }
+  .rooms-hint,
+  .rooms-hint--static { animation: none; }
+  .rooms-hint__arrow,
+  .rooms-hint--static .rooms-hint__arrow { animation: none; }
   /* Editorial back-pill: keep the fill (comprehension) but drop motion. */
   .rooms-back:hover,
   .rooms-back:focus-visible { transform: none; }
@@ -312,6 +329,9 @@ body {
   .rooms-back:hover .rooms-back__arrow,
   .rooms-back:focus-visible .rooms-back__arrow { transition: none; transform: none; }
 }
+/* JS-detected reduced-motion (motion/react) also pins it static. */
+.rooms-hint--static,
+.rooms-hint--static .rooms-hint__arrow { animation: none; }
 
 @keyframes rooms-hint-pulse {
   0%, 100% {
@@ -320,6 +340,14 @@ body {
   50% {
     opacity: 1;
   }
+}
+@keyframes rooms-hint-drift-start {
+  0%, 100% { transform: translateX(0); opacity: 0.55; }
+  50% { transform: translateX(0.35rem); opacity: 1; }
+}
+@keyframes rooms-hint-drift-end {
+  0%, 100% { transform: translateX(0); opacity: 0.55; }
+  50% { transform: translateX(-0.35rem); opacity: 1; }
 }
 
 /* LINE-LANGUAGE rev (2026-06-15): quiet text hint, no box/blur. A soft ink

@@ -35,9 +35,9 @@ export interface QualityProfile {
   isMobile: boolean;
   /** Renderer pixelRatio cap: desktop ≤ 2, mobile ≤ 1.5 (§8). */
   pixelRatioCap: number;
-  /** Grid columns: desktop 6 → mobile 3. */
+  /** Grid columns: desktop 6 → mobile 4. */
   columns: number;
-  /** Curve amplitude multiplier: desktop 1 → mobile 0.55 (calmer barrel). */
+  /** Curve amplitude multiplier: desktop 1 → mobile 0.78 (deeper barrel so the 3D reads on phones). */
   curveScale: number;
 }
 
@@ -46,9 +46,9 @@ const MOBILE_BREAKPOINT_PX = 768;
 const DESKTOP_PIXEL_RATIO_CAP = 2;
 const MOBILE_PIXEL_RATIO_CAP = 1.5;
 const DESKTOP_COLUMNS = 6;
-const MOBILE_COLUMNS = 3;
+const MOBILE_COLUMNS = 4;
 const DESKTOP_CURVE_SCALE = 1;
-const MOBILE_CURVE_SCALE = 0.55;
+const MOBILE_CURVE_SCALE = 0.78;
 
 /** Safe `matchMedia` read (guards SSR / very old engines without it). */
 function matches(query: string): boolean {

@@ -30,7 +30,23 @@
    small. Give the text real breathing room from the edges, lift it clear of
    the bottom, and bump the type one notch. (§13 mobile override; tokens only.)
    --------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------
+   Stabilize the pinned scrub stage on phones (2026-06-18). The core
+   .scroll-scene__sticky (css/sections/scroll-scene.css) is `block-size: 100vh`.
+   On mobile, `100vh` is the LARGE viewport (toolbar hidden); the dynamic
+   browser toolbar then shrinks the actual visible area mid-scroll, so the
+   sticky stage is taller than what's on screen and the canvas — which the
+   renderer centers via dx/dy — appears pushed toward the BOTTOM / off-screen.
+   Pin to `100svh` (small viewport height = toolbar-visible, the stable floor)
+   so the stage matches the always-visible area and the frame re-centers.
+   Mirrors the hero pin fix. Desktop is untouched (gated ≤768px). The canvas
+   inset:0 fill (block-size:100%) follows the stage automatically. (§13 mobile
+   override; tokens/logical only.)
+   --------------------------------------------------------------------------- */
 @media (max-width: 768px) {
+  .culinary .scroll-scene__sticky {
+    block-size: 100svh;
+  }
   .culinary .scroll-scene__overlay {
     padding-inline: clamp(20px, 6vw, 28px);
     padding-block-end: clamp(var(--space-12), 12vh, var(--space-16));

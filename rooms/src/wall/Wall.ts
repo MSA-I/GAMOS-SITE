@@ -71,13 +71,26 @@ const INTRO_STAGGER = 0.4; // fraction of introT reserved for the centre→rim s
 
 const mod = (n: number, m: number): number => ((n % m) + m) % m;
 
-// §5 palette — tone background + a text colour that reads on it.
+// §5 palette — tone background (the wash under each poster / on placeholder tiles).
 const TONE_BG: Record<string, string> = {
   brass: "#CFAE83",
   cocoa: "#534133",
   ivory: "#F5EFE6",
   mist: "#E8DFD3",
   rose: "#B8576F",
+};
+// Per-category FRAME colour (2026-06-18, user request) — delicate, low-saturation
+// hues so each room category reads as its own family without shouting. Keyed by
+// the same tone slug (CATEGORY_TONE in roomsData), so the category→colour mapping
+// is: סוויטה(rose)→turquoise · חדר זוגי(cocoa)→dark green · חדר משפחה(brass)→
+// muted lavender · סאונה(ivory)→soft white · חדר נוף(mist)→desert-orange. This is
+// frame-only; the poster wash above keeps the §5 tones.
+const TONE_FRAME: Record<string, string> = {
+  cocoa: "#51614C", // חדר זוגי — dark green
+  brass: "#A99AAE", // חדר משפחה — muted lavender/mauve
+  rose: "#93BDB4", // סוויטה — turquoise
+  mist: "#C9A079", // חדר נוף — desert-orange
+  ivory: "#ECE7DD", // סאונה — soft white
 };
 const INK_DEEP = "#1A1410";
 const IVORY = "#F5EFE6";
@@ -244,16 +257,17 @@ export default class Wall {
     // hovered card gets a thicker, glowing frame for emphasis. Stroke is
     // drawn after the clip is restored and inset by half its width so the
     // whole line sits inside the poster's rounded bounds.
+    const frameColor = TONE_FRAME[card.tone] ?? TONE_FRAME.brass;
     const frameW = hot ? 10 : 6;
     const inset = frameW / 2;
     ctx.save();
     if (hot) {
-      ctx.shadowColor = bg;
+      ctx.shadowColor = frameColor;
       ctx.shadowBlur = 18;
     }
     roundRect(ctx, POSTER.x + inset, POSTER.y + inset, POSTER.w - frameW, POSTER.h - frameW, 8);
     ctx.lineWidth = frameW;
-    ctx.strokeStyle = bg;
+    ctx.strokeStyle = frameColor;
     ctx.globalAlpha = hot ? 1 : 0.85;
     ctx.stroke();
     ctx.restore();

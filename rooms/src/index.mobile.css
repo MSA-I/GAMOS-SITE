@@ -208,17 +208,37 @@
   inset-block-end: calc(max(env(safe-area-inset-bottom), 1rem) + 5.5rem);
   z-index: 25;
   display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   pointer-events: none;
   animation: roomsm-hint-pulse 2.4s ease-in-out infinite;
 }
 
+/* ‹ › arrows flanking the label — gentle outward drift = "swipe to the sides". */
+.roomsm-hint__arrow {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1;
+  color: var(--color-brass-glow);
+  text-shadow: 0 1px 10px rgba(26, 20, 16, 0.7);
+  animation: roomsm-hint-drift 2.4s ease-in-out infinite;
+}
+.roomsm-hint__arrow--start { animation-name: roomsm-hint-drift-start; }
+.roomsm-hint__arrow--end { animation-name: roomsm-hint-drift-end; }
+
 @media (prefers-reduced-motion: reduce) {
-  .roomsm-hint {
+  .roomsm-hint,
+  .roomsm-hint--static {
     animation: none;
     opacity: 0.85;
   }
+  .roomsm-hint__arrow,
+  .roomsm-hint--static .roomsm-hint__arrow { animation: none; }
 }
+/* JS-detected reduced-motion (motion/react) also pins it static. */
+.roomsm-hint--static,
+.roomsm-hint--static .roomsm-hint__arrow { animation: none; }
 
 @keyframes roomsm-hint-pulse {
   0%,
@@ -228,6 +248,14 @@
   50% {
     opacity: 1;
   }
+}
+@keyframes roomsm-hint-drift-start {
+  0%, 100% { transform: translateX(0); opacity: 0.55; }
+  50% { transform: translateX(0.3rem); opacity: 1; }
+}
+@keyframes roomsm-hint-drift-end {
+  0%, 100% { transform: translateX(0); opacity: 0.55; }
+  50% { transform: translateX(-0.3rem); opacity: 1; }
 }
 
 /* LINE-LANGUAGE rev (2026-06-15): quiet text hint, no box/blur — soft ink

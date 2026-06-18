@@ -69,14 +69,16 @@
     min-block-size: 44px;
   }
 
-  /* Leaflet zoom +/− default to 30×30. Bump to the 44px touch floor; the
-     glyph stays centered by Leaflet's own line-height/text-align. The map
+  /* Leaflet zoom +/− default to 30×30. The default 44px sizing made the
+     controls look oversized against the branded map on phones; trim to 36px
+     — still a comfortable tap target while reading as part of the map UI.
+     The glyph stays centered by Leaflet's own line-height/text-align. The map
      control is the one third-party UI on the page — recolor stays in the
-     base directions.css; here we only enforce the tap floor. */
+     base directions.css; here we only set the size. */
   .directions__map .leaflet-control-zoom a {
-    inline-size: 44px;
-    block-size: 44px;
-    line-height: 44px;
+    inline-size: 36px;
+    block-size: 36px;
+    line-height: 36px;
   }
 
   /* ≥44px touch targets (§9 / touch-targets convention). */
