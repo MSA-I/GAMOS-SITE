@@ -27,6 +27,7 @@ _site/
 # artifact, never committed; the runbook (figma-export/README.md) IS tracked.
 figma-export/tokens.json
 figma-export/media/
+figma-export/site-images/
 
 # Workbench
 .tmp/

@@ -14,12 +14,18 @@
 npm run export:figma
 ```
 
-מריץ שני סקריפטים (אפס תלויות npm, vanilla Node):
+מריץ שלושה סקריפטים (אפס תלויות npm, vanilla Node):
 
 | סקריפט | פלט |
 |--------|-----|
 | `scripts/export-figma-tokens.mjs --self-check` | `figma-export/tokens.json` — כל הטוקנים מ-`css/tokens.css` בפורמט Tokens Studio / W3C (`$value`/`$type`), עם aliases ל-`var()` semantic |
 | `scripts/export-figma-media.mjs` | `figma-export/media/` — 5 שכבות-הירו (PNG), וידאו קולינריה + 8 keyframes |
+| `scripts/export-figma-images.mjs` | `figma-export/site-images/` — **מראָה** של כל תמונות האתר; **ואז מסנכרן את כל החבילה** (README + tokens + media + site-images) ל-`..\GAMOS-DOCS\FIGMA-EXPORT\` |
+
+**רענון = מראָה מלאה:** כל הרצה בונה את `site-images/` מאפס ומסנכרנת ל-GAMOS-DOCS עם
+prune — כך תמונה שמחקת מהאתר נעלמת אוטומטית מהחבילה, ותמונות חדשות נכנסות. אין צורך
+בהעתקה ידנית. ⚠️ תמונות תת-האפליקציות נשאבות מ-`halls/dist/images` + `rooms/dist/images`
+(הפלט הבנוי) — אם שינית תמונות-מקור שלהן, הרץ `npm run build:halls` / `build:rooms` **לפני** הרענון.
 
 ה-screenshots פר-סקציה + מצבי-הירו נוצרים בנפרד (דורש שרת רץ):
 
@@ -30,12 +36,13 @@ node scripts/export-screenshots.mjs   # → D:\GAMOS-screenshots-tmp\
 
 מפיק 14 סקציות + 3 דפי legal + מצבי scrub של ההירו `hero-p000…hero-p100`.
 
-> `figma-export/tokens.json` ו-`figma-export/media/` מוחרגים מ-git (פלט מחושב + כבד).
+> `figma-export/tokens.json`, `media/` ו-`site-images/` מוחרגים מ-git (פלט מחושב + כבד).
 > הקובץ הזה (`README.md`) כן נשמר.
 
-> **חבילת GAMOS-DOCS\FIGMA-EXPORT\** (לעיצוב, מחוץ ל-git) כוללת בנוסף תיקיית
-> `site-images/` עם **כל התמונות שבשימוש באתר** (`assets/images/` + תמונות ה-sub-apps
-> halls/rooms תחת `_halls-app`/`_rooms-app` + `_misc`). זהו כל מאגר הוויזואל לייבוא ל-Figma.
+> **חבילת GAMOS-DOCS\FIGMA-EXPORT\** (לעיצוב, מחוץ ל-git) היא היעד הסופי שאליו
+> `npm run export:figma` מסנכרן הכל. היא כוללת את `site-images/` עם **כל התמונות
+> שבשימוש באתר**: `assets/images/` (root), אייקונים תחת `_misc`, ותמונות ה-sub-apps
+> halls/rooms תחת `_halls-app`/`_rooms-app`. זהו כל מאגר הוויזואל לייבוא ל-Figma.
 
 ---
 

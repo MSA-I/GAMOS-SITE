@@ -22,7 +22,7 @@
     "encode:images": "node scripts/encode-images.mjs",
     "encode:rooms-door": "node scripts/encode-rooms-door.mjs",
     "extract:shabbat-tints": "node scripts/extract-shabbat-tints.mjs",
-    "export:figma": "node scripts/export-figma-tokens.mjs --self-check && node scripts/export-figma-media.mjs",
+    "export:figma": "node scripts/export-figma-tokens.mjs --self-check && node scripts/export-figma-media.mjs && node scripts/export-figma-images.mjs",
     "lighthouse": "npx --yes lighthouse http://localhost:8000 --view --preset=desktop"
   },
   "repository": {
