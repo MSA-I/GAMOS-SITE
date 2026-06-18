@@ -43,8 +43,11 @@ export interface RoomCard {
   body: string; // Hebrew detail-page copy (2–3 sentences)
 }
 
-/** Cards per row — the grid is CATEGORIES.length rows × COLS_PER_ROW cols. */
-export const COLS_PER_ROW = 4;
+/** Cards per row — the grid is CATEGORIES.length rows × COLS_PER_ROW cols.
+ *  2026-06-16: widened 4→5 so the suite row (5 real photos) fills without
+ *  dropping any; shorter rows pad with placeholders. Keep in sync with
+ *  rooms/scripts/make-placeholders.mjs (COLS_PER_ROW + per-row real counts). */
+export const COLS_PER_ROW = 5;
 
 /** Row order = category order on the wall (top→bottom). */
 export const CATEGORIES: RoomCategory[] = [
@@ -92,50 +95,114 @@ interface RealSlot {
 
 // Real photos available per category (in grouped staging order). Each category
 // row is then padded with placeholders up to COLS_PER_ROW.
+// 2026-06-17: re-curated from the full "חדרים" source pool (user: add/update,
+// don't delete). Per-category counts kept ≥ prior (זוגי 2→3) so no room type
+// lost coverage; rotated/weak/duplicate frames dropped. imageNo → encoded
+// rooms/public/images/NN.webp (assets/_src/rooms grouped staging order).
 const REAL_BY_CATEGORY: Record<RoomCategory, RealSlot[]> = {
   "חדר זוגי": [
     {
-      imageNo: "01", // 1-27 — clean bed, rolled towels, warm pendants
-      titleHe: "חדר זוגי קלאסי",
-      body: "חדר זוגי חם ומוקפד לאורחים שנשארים ללון — מיטה רחבה, מצעים פריכים ותאורה רכה בגווני הפליז של המתחם. מנוחה שלווה במרחק צעדים מן האירוע.",
+      imageNo: "01", // wide: bed + coat-stand + bar stools + blue armchair
+      titleHe: "חדר זוגי מרווח",
+      body: "חדר זוגי רחב ומואר עם מיטה זוגית, פינת ישיבה וכורסה רכה. מרחב מנוחה חם לאורחים שנשארים ללון, במרחק צעדים מן האירוע.",
     },
     {
-      imageNo: "02", // 1-34 — wood-wardrobe wall, calmer palette
-      titleHe: "חדר זוגי עם ארון עץ",
-      body: "חדר זוגי בגוון שמנת ועץ, עם קיר ארון מלא ופינת לילה מוארת. מרחב נקי ושקט שמזמין להתארגן בנחת ולנוח לפני הערב הגדול.",
+      imageNo: "02", // front-on bed, wood wardrobe, orange nightstands
+      titleHe: "חדר זוגי קלאסי",
+      body: "חדר זוגי מוקפד עם מיטה רחבה, ארון עץ ושידות בגוון חם לצד קיר אמנות. מצעים פריכים ותאורה רכה למנוחה שלווה לפני הערב הגדול ואחריו.",
+    },
+    {
+      imageNo: "03", // detail: pale-blue tie-dye poufs / sitting corner
+      titleHe: "פינת הישיבה בחדר הזוגי",
+      body: "פינת ישיבה רכה בגוונים תכולים בלב החדר הזוגי, מקום שקט להתארגן בו בנחת ולשבת לרגע לפני שיורדים אל האירוע.",
     },
   ],
   "חדר משפחה": [
     {
-      imageNo: "03", // 1-22 — living suite, curved sofa + blue chairs + bar cart
-      titleHe: "חדר משפחה מרווח",
-      body: "מרחב אירוח רחב עם פינת ישיבה רכה — ספה מעוגלת, כורסאות קטיפה ועגלת כיבוד — שמזמין את המשפחה כולה להתכנס יחד בין רגעי האירוע ולחגוג בנוחות.",
+      imageNo: "04", // wide: bed + TV console + green armchairs + seating
+      titleHe: "חדר משפחה עם אזור מנוחה",
+      body: "מרחב אירוח רחב עם מיטה, פינת מסך וכורסאות בגוון ירוק — חדר שמזמין את המשפחה כולה להתכנס יחד בין רגעי האירוע ולנוח בנוחות.",
+    },
+    {
+      imageNo: "05", // beige lounge: curved sofa, bouclé chair, lattice
+      titleHe: "סלון המשפחה",
+      body: "סלון רך בגווני שמנת עם ספה מעוגלת, כורסת בוקלה ומחיצת עץ מסורגת. פינת התכנסות אינטימית ומוארת לקרובים.",
+    },
+    {
+      imageNo: "06", // green leather armchair detail
+      titleHe: "פינת המנוחה הירוקה",
+      body: "פינת מנוחה ירוקה ורכה בחדר המשפחה, מקום שקט להירגע בו לרגע הרחק משאון הערב.",
     },
   ],
   "סוויטה": [
     {
-      imageNo: "04", // 1-37 — vaulted suite, blue poufs + champagne
-      titleHe: "סוויטת הכלה",
-      body: "המרחב הפרטי של הכלה ביום החתונה — סוויטה מעוצבת תחת תקרה משופעת, עם פינת ישיבה רכה, עגלת שמפניה ופרטיות מלאה. נקודת המוצא השלווה אל הערב הגדול.",
+      imageNo: "07", // full suite: bed + lounge chairs + bar cart + drapes
+      titleHe: "סוויטת היוקרה",
+      body: "המרחב הפרטי של הכלה ביום החתונה — סוויטה מרווחת עם מיטה, פינת ישיבה, עגלת כיבוד ווילונות גבוהים. נקודת המוצא השלווה אל הערב הגדול.",
+    },
+    {
+      imageNo: "08", // wide living area: curved sofa + blue chairs + bar cart
+      titleHe: "סלון הסוויטה",
+      body: "אזור מגורים רחב בסוויטה עם ספה מעוגלת חומה, כורסאות תכולות ועגלת כיבוד, באור חם ועוטף לכל אורך השהות.",
+    },
+    {
+      imageNo: "09", // lounge corner with TV, sofa, bar cart
+      titleHe: "אזור הישיבה בסוויטה",
+      body: "פינת ישיבה אינטימית בסוויטה, מרחב פרטי להירגע בו ולספוג את אווירת היום הגדול בנחת.",
+    },
+    {
+      imageNo: "10", // stone bathroom: backlit mirror, copper tap, tub + shower
+      titleHe: "חדר הרחצה של הסוויטה",
+      body: "חדר רחצה מאבן עם מראה מוארת, ברז נחושת, אמבט ומקלחת הליכה. פינה מפנקת ושלווה להתרעננות לפני הערב.",
+    },
+    {
+      imageNo: "11", // travertine bathroom: backlit mirror, floating vanity, WC
+      titleHe: "חדר הרחצה הפרטי",
+      body: "חדר רחצה בטרברטין חם עם מראה עגולה מוארת, ברז נחושת ושיש מרחף — מרחב נקי ומעוצב בלב הסוויטה.",
     },
   ],
   "חדר נוף": [
     {
-      imageNo: "05", // 1-108 — desert-view suite, floor-to-ceiling window
-      titleHe: "חדר נוף אל המדבר",
-      body: "חדר שכל כולו ממוסגר בחלון רצפה-תקרה אל מרחבי המדבר של מישור אדומים. האור הרך של בין-הערביים נכנס פנימה, וכל הריהוט מכוון אל קו האופק הרחוק.",
+      imageNo: "12", // two woven chairs at floor-to-ceiling desert window
+      titleHe: "מרפסת הנוף אל המדבר",
+      body: "שתי כורסאות קלועות מול חלון מקיר-לקיר הממסגר את מרחבי המדבר. פינת צפייה שקטה אל קו האופק הפתוח.",
+    },
+    {
+      imageNo: "13", // two bucket chairs at corner window + lattice screen
+      titleHe: "פינת נוף עם כורסאות",
+      body: "שתי כורסאות מרופדות מול חלון פינתי אל גבעות המדבר ומחיצת סריג. חדר נקי ובהיר שכל כולו פונה אל הנוף.",
+    },
+    {
+      imageNo: "14", // bed + wardrobe + desk + dusk window + pouf
+      titleHe: "חדר נוף בשעת בין הערביים",
+      body: "חדר נוף עם מיטה, פינת עבודה ופוף לצד חלון פינתי הנפתח אל המדבר באור הדמדומים הרך.",
+    },
+    {
+      imageNo: "15", // stone bathroom, backlit mirror, shower window to desert
+      titleHe: "חדר רחצה עם נוף",
+      body: "חדר רחצה מאבן עם מראה מוארת ומקלחת הליכה שחלונה נפתח אל נוף המדבר — רגע של רוגע מול קו האופק.",
     },
   ],
   "סאונה רטובה ויבשה": [
     {
-      imageNo: "06", // 1-41 — wet room, rain shower + bench, warm wood
-      titleHe: "מקלחת הגשם",
-      body: "פינת רחצה רטובה בחיפוי עץ חם, עם מקלחת גשם רחבה וספסל אבן. מרחב להאט בו את הקצב ולהתרענן לפני הערב או למחרת בבוקר.",
+      imageNo: "16", // hero: dry cedar sauna + brass signage + wet entry
+      titleHe: "מתחם הסאונות — יבשה ורטובה",
+      body: "מתחם הסאונה המלא — סאונה יבשה בחיפוי עץ ארז לצד כניסה לסאונה הרטובה ושילוט פליז. מרחב להאט בו את הקצב ולהתרענן לפני הערב או למחרת בבוקר.",
     },
     {
-      imageNo: "07", // 1-53 — hammam mosaic niche, back-lit arch, stone basin
-      titleHe: "מתחם החמאם",
-      body: "גומחת חמאם מרוצפת פסיפס עם קשת מוארת וקערת אבן — פינה של רוגע אינטימי בלב מתחם הסאונה הרטובה והיבשה.",
+      imageNo: "17", // arched mosaic wet sauna: backlit niche, stone basin
+      titleHe: "הסאונה הרטובה",
+      body: "סאונה רטובה מקושתת בחיפוי פסיפס, נישה מוארת וכיור אבן. הפינה האטמוספרית ביותר במתחם ההתחדשות.",
+    },
+    {
+      imageNo: "18", // clean cedar dry sauna interior: tiered benches, heater
+      titleHe: "הסאונה היבשה",
+      body: "פנים הסאונה היבשה בחיפוי עץ ארז, ספסלים מדורגים ותנור אבנים. חום יבש ושקט להירגע בו בשלווה.",
+    },
+    {
+      imageNo: "19", // dark mosaic wet-sauna tunnel, lit arch
+      titleHe: "חלל הסאונה הרטובה",
+      body: "מבט אל חלל הסאונה הרטובה הכהה עם קשת מוארת בקצה — פינה דרמטית ועוטפת של רוגע והתחדשות.",
     },
   ],
 };

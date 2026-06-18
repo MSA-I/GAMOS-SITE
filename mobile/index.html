@@ -19,6 +19,13 @@
   <title>גאמוס אירועים | אולם, ריזורט וגן אירועים במעלה אדומים</title>
   <meta name="description" content="גאמוס, קומפלקס אירועים יוקרתי בפארק ישראל, מעלה אדומים. שני מתחמים: אולם זכוכית עד 1000 מוזמנים וריזורט עם בריכה, חדרי אירוח וקולינריה. חתונות, בר-מצווה ואירועי חברה.">
 
+  <!-- Canonical + indexing directives. Self-canonical to the desktop root; the
+       generated /mobile/ mirror inherits this (it's built from this file, §13)
+       so it canonicalises to / — exactly right. max-image-preview:large lets
+       Google show large thumbnails for this visual venue brand. -->
+  <link rel="canonical" href="https://gamos.co.il/">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:locale" content="he_IL">
@@ -34,8 +41,12 @@
   <meta name="twitter:description" content="קומפלקס אירועים יוקרתי בפארק ישראל. אולם זכוכית, ריזורט וחדרי אירוח.">
   <meta name="twitter:image" content="https://gamos.co.il/assets/video/hero-poster.jpg">
 
-  <!-- Favicon — SVG primary; Agent 03 ships the rasterized 16/32/180 set later. -->
+  <!-- Favicon — SVG primary; rasterized set (rebuilt from favicon.svg via sharp)
+       for older clients + iOS home-screen. -->
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="manifest" href="/assets/site.webmanifest">
 
   <!-- Performance: preload LCP candidates (v10 scroll hero — sky + desert subject).
        subject is the LCP element; re-encoded from a 20MB PNG to responsive WebP
@@ -109,6 +120,7 @@
       "latitude": "31.7700",
       "longitude": "35.2900"
     },
+    "hasMap": "https://www.google.com/maps/dir/?api=1&destination=31.7878076,35.3371583",
     "contactPoint": [
       {
         "@type": "ContactPoint",
@@ -444,11 +456,11 @@
               <source type="image/webp" srcset="/assets/images/halls/lounge/01.full.webp">
               <img src="/assets/images/halls/lounge/01.full.jpg" width="900" height="1200"
                    loading="eager" decoding="async"
-                   alt="לאונג' גאמוס, ספות קטיפה ירוקות ופסנתר כנף ליד סמל המותג">
+                   alt="מבט פנורמי על טרקלין קבלת הפנים — ספות קטיפה ירוקות, לוגו הזהב ופסנתר כנף בעומק">
             </picture>
             <figcaption>
-              <h3>הלאונג'</h3>
-              <p>ספות קטיפה, פסנתר כנף וסמל הבית על הקיר.</p>
+              <h3>קבלת הפנים</h3>
+              <p>ספות קטיפה ירוקות, לוגו הזהב ופסנתר כנף בעומק.</p>
             </figcaption>
           </figure>
 
@@ -457,11 +469,11 @@
               <source type="image/webp" srcset="/assets/images/halls/lounge/02.full.webp">
               <img src="/assets/images/halls/lounge/02.full.jpg" width="900" height="1200"
                    loading="lazy" decoding="async"
-                   alt="חלל הלאונג' הרחב עם קיר סריג מואר ופינות ישיבה בקטיפה">
+                   alt="ספת קטיפה ירוקה מול קיר עץ כהה, מדליון הזהב של גאמוס ומסך אמנות">
             </picture>
             <figcaption>
-              <h3>החלל הרחב</h3>
-              <p>קיר סריג מואר, שטיחים רכים ופינות לשבת בנחת.</p>
+              <h3>פינת הלאונג'</h3>
+              <p>ספת קטיפה ירוקה ומדליון הזהב על קיר עץ כהה.</p>
             </figcaption>
           </figure>
 
@@ -470,11 +482,11 @@
               <source type="image/webp" srcset="/assets/images/halls/lounge/03.full.webp">
               <img src="/assets/images/halls/lounge/03.full.jpg" width="900" height="1200"
                    loading="lazy" decoding="async"
-                   alt="פינת ישיבה בלאונג' עם כורסאות שמנת וספה מעוגלת בגוון מרווה">
+                   alt="ספות קרם וירוק-מרווה סביב שולחנות פליז, על שטיח אבן מעוצב">
             </picture>
             <figcaption>
-              <h3>פינת הישיבה</h3>
-              <p>כורסאות שמנת וספה מעוגלת סביב שולחנות נמוכים.</p>
+              <h3>טרקלין הישיבה</h3>
+              <p>ספות קרם וירוק-מרווה סביב שולחנות פליז.</p>
             </figcaption>
           </figure>
 
@@ -483,11 +495,11 @@
               <source type="image/webp" srcset="/assets/images/halls/lounge/04.full.webp">
               <img src="/assets/images/halls/lounge/04.full.jpg" width="900" height="1200"
                    loading="lazy" decoding="async"
-                   alt="פסנתר כנף וספת קטיפה ירוקה מול וילונות נשפכים בלאונג'">
+                   alt="פסנתר כנף לצד ספת קטיפה ירוקה ופופים, על רקע וילונות אווריריים">
             </picture>
             <figcaption>
-              <h3>פינת הפסנתר</h3>
-              <p>פסנתר כנף וספה ירוקה מול וילונות גבוהים.</p>
+              <h3>פסנתר הכנף</h3>
+              <p>פסנתר כנף וספת קטיפה ירוקה על רקע וילונות אווריריים.</p>
             </figcaption>
           </figure>
 
@@ -496,11 +508,11 @@
               <source type="image/webp" srcset="/assets/images/halls/lounge/05.full.webp">
               <img src="/assets/images/halls/lounge/05.full.jpg" width="900" height="1200"
                    loading="lazy" decoding="async"
-                   alt="עמדת קפה ותה בלאונג' בתוך נישת עץ כהה עם תאורה רכה">
+                   alt="מושבי קטיפה תכולים סביב הפסנתר, על רקע קיר לבנים מואר">
             </picture>
             <figcaption>
-              <h3>עמדת הקפה והתה</h3>
-              <p>נישת עץ כהה עם פינת חמים לאורך כל הערב.</p>
+              <h3>פינת הפסנתר</h3>
+              <p>מושבי קטיפה תכולים סביב הפסנתר מול קיר הלבנים המואר.</p>
             </figcaption>
           </figure>
 
@@ -509,11 +521,11 @@
               <source type="image/webp" srcset="/assets/images/halls/lounge/06.full.webp">
               <img src="/assets/images/halls/lounge/06.full.jpg" width="900" height="1200"
                    loading="lazy" decoding="async"
-                   alt="פרט עיצוב בלאונג', מגשי פליז וקקטוסים בכלי חרס מעוצבים">
+                   alt="נישה מוארת עם עציצים, פינת תה וקפה אלגנטית בגוון עץ כהה">
             </picture>
             <figcaption>
-              <h3>פרטים קטנים</h3>
-              <p>מגשי פליז, כלי חרס וקקטוסים בכל פינה.</p>
+              <h3>פינת הכיבוד</h3>
+              <p>נישת עץ כהה עם פינת תה וקפה אלגנטית.</p>
             </figcaption>
           </figure>
 
@@ -522,11 +534,11 @@
               <source type="image/webp" srcset="/assets/images/halls/lounge/07.full.webp">
               <img src="/assets/images/halls/lounge/07.full.jpg" width="900" height="1200"
                    loading="lazy" decoding="async"
-                   alt="פופים בגוון תכלת סביב פסנתר הכנף מול קיר הסריג המואר">
+                   alt="שולחנות פליז מעוצבים עם קקטוסים, על רקע קיר הסריג המואר">
             </picture>
             <figcaption>
-              <h3>סביב הפסנתר</h3>
-              <p>פופי קטיפה תכולים מול קיר הסריג המואר.</p>
+              <h3>פרטי העיצוב</h3>
+              <p>שולחנות פליז מעוצבים עם קקטוסים מול קיר הסריג.</p>
             </figcaption>
           </figure>
 
@@ -535,11 +547,11 @@
               <source type="image/webp" srcset="/assets/images/halls/lounge/08.full.webp">
               <img src="/assets/images/halls/lounge/08.full.jpg" width="900" height="1200"
                    loading="lazy" decoding="async"
-                   alt="ספת קטיפה ירוקה מול קיר מסך וסמל המותג המוזהב בלאונג'">
+                   alt="לובי הכניסה — קיר אבן טבעית, מדרגות מוארות ווילונות אור">
             </picture>
             <figcaption>
-              <h3>מול המסך</h3>
-              <p>ספה ירוקה מול קיר מסך וסמל הבית המוזהב.</p>
+              <h3>הכניסה</h3>
+              <p>לובי הכניסה — קיר אבן טבעית ומדרגות מוארות.</p>
             </figcaption>
           </figure>
         </div>
@@ -756,35 +768,35 @@
             <picture>
               <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/01.half.webp">
               <source type="image/webp" srcset="/assets/images/shabbat-chatan/01.full.webp">
-              <img src="/assets/images/shabbat-chatan/01.full.jpg" alt="שולחנות ערוכים על טרסה פתוחה אל נוף המדבר בשבת חתן" width="1920" height="1280" loading="eager" fetchpriority="high" decoding="async" draggable="false">
+              <img src="/assets/images/shabbat-chatan/01.full.jpg" alt="מבט-על על מתחם שבת חתן מול המדבר ובריכת האינפיניטי" width="1920" height="1280" loading="eager" fetchpriority="high" decoding="async" draggable="false">
             </picture>
           </figure>
           <figure class="shabbat__media" data-index="4">
             <picture>
-              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/03.half.webp">
-              <source type="image/webp" srcset="/assets/images/shabbat-chatan/03.full.webp">
-              <img src="/assets/images/shabbat-chatan/03.full.jpg" alt="שולחן שבת ארוך ערוך בצבע ועיטורי פרחים בריזורט" width="1920" height="1280" loading="lazy" decoding="async" draggable="false">
+              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/02.half.webp">
+              <source type="image/webp" srcset="/assets/images/shabbat-chatan/02.full.webp">
+              <img src="/assets/images/shabbat-chatan/02.full.jpg" alt="אולם פתוח עם נוף מדברי וקירות עץ מסורגים" width="1920" height="1280" loading="lazy" decoding="async" draggable="false">
             </picture>
           </figure>
           <figure class="shabbat__media" data-index="3">
             <picture>
-              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/05.half.webp">
-              <source type="image/webp" srcset="/assets/images/shabbat-chatan/05.full.webp">
-              <img src="/assets/images/shabbat-chatan/05.full.jpg" alt="לאונג' צמוד לבריכה בריזורט עם פינות ישיבה ונוף פתוח" width="1920" height="1280" loading="lazy" decoding="async" draggable="false">
+              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/03.half.webp">
+              <source type="image/webp" srcset="/assets/images/shabbat-chatan/03.full.webp">
+              <img src="/assets/images/shabbat-chatan/03.full.jpg" alt="שולחן שבת חתן ארוך הערוך בפרחי שדה וכלי זכוכית" width="1920" height="1280" loading="lazy" decoding="async" draggable="false">
             </picture>
           </figure>
           <figure class="shabbat__media" data-index="2">
             <picture>
-              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/07.half.webp">
-              <source type="image/webp" srcset="/assets/images/shabbat-chatan/07.full.webp">
-              <img src="/assets/images/shabbat-chatan/07.full.jpg" alt="שולחנות שבת ערוכים בלבן על הטרסה בשעת בין הערביים" width="1920" height="1280" loading="lazy" decoding="async" draggable="false">
+              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/04.half.webp">
+              <source type="image/webp" srcset="/assets/images/shabbat-chatan/04.full.webp">
+              <img src="/assets/images/shabbat-chatan/04.full.jpg" alt="מרכז האולם המקורה תחת נברשות הקריסטל" width="1920" height="1280" loading="lazy" decoding="async" draggable="false">
             </picture>
           </figure>
           <figure class="shabbat__media" data-index="1">
             <picture>
-              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/09.half.webp">
-              <source type="image/webp" srcset="/assets/images/shabbat-chatan/09.full.webp">
-              <img src="/assets/images/shabbat-chatan/09.full.jpg" alt="מבט מלמעלה על שולחנות שבת ארוכים ערוכים ליד הבריכה" width="1920" height="1280" loading="lazy" decoding="async" draggable="false">
+              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/05.half.webp">
+              <source type="image/webp" srcset="/assets/images/shabbat-chatan/05.full.webp">
+              <img src="/assets/images/shabbat-chatan/05.full.jpg" alt="שולחנות שבת חתן באור הזהב של שקיעת המדבר" width="1920" height="1280" loading="lazy" decoding="async" draggable="false">
             </picture>
           </figure>
         </div>
@@ -1088,76 +1100,135 @@
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 0ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/01.half.webp">
-            <img src="/assets/images/gallery/01.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="שולחן ארוך ערוך בחלל המתחם עם פרחי קלה ורדים ונרות">
+            <img src="/assets/images/gallery/01.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן וכלה אוחזים ידיים וצועדים על כביש מתפתל בנוף הרי המדבר">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 100ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/02.half.webp">
-            <img src="/assets/images/gallery/02.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן וכלה מתחבקים עם זר כלה על רקע הרי המדבר של מישור אדומים">
+            <img src="/assets/images/gallery/02.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="שולחן ערב ערוך במפה אדומה עם פמוטי כסף ונברשת קריסטל תחת תאורת במה">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 200ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/03.half.webp">
-            <img src="/assets/images/gallery/03.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="שולחן ערב מעוצב עם פמוטי קריסטל גבוהים ונרות">
+            <img src="/assets/images/gallery/03.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן וכלה מחובקים ומחייכים על רקע הרי המדבר של מישור אדומים">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 300ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/04.half.webp">
-            <img src="/assets/images/gallery/04.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="גזיבו אבן לבן בגן האירועים עם שטיח לבן ונרות וקיר ירק">
+            <img src="/assets/images/gallery/04.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="הרמת הינומת הכלה על במת החופה מול קהל האורחים המריע">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 400ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/05.half.webp">
-            <img src="/assets/images/gallery/05.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="שולחן ערב ערוך עם פמוט קריסטל ונרות צפים באווירה חמה">
+            <img src="/assets/images/gallery/05.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="כלה בשמלה לבנה יושבת ליד פסנתר כנף בחלל מעוצב בגווני שמנת">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 500ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/06.half.webp">
-            <img src="/assets/images/gallery/06.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="כלה בשמלה לבנה צועדת על דרך מתפתלת בנוף המדבר">
+            <img src="/assets/images/gallery/06.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="ריקודי גברים סוערים והרמה על כתפיים תחת תאורה אדומה ונברשות">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 600ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/07.half.webp">
-            <img src="/assets/images/gallery/07.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חופת פרחים לבנה על עמוד בכניסה לאירוע">
+            <img src="/assets/images/gallery/07.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן מרים את הכלה בנוף המדבר החולי בשעת השקיעה הזהובה">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 700ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/08.half.webp">
-            <img src="/assets/images/gallery/08.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="כניסת חתן וכלה בין האורחים המריעים על שטיח לבן">
+            <img src="/assets/images/gallery/08.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="פרט שולחן ערב: אגרטל קריסטל עם פרחים לבנים ואשכולות ענבים">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 800ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/09.half.webp">
-            <img src="/assets/images/gallery/09.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="שולחנות ערב ערוכים בחלל המתחם עם פמוטי קריסטל ותאורה חמה">
+            <img src="/assets/images/gallery/09.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן וכלה עם זר פרחים מול בריכת אינסוף ונוף הרי המדבר">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 900ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/10.half.webp">
-            <img src="/assets/images/gallery/10.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן וכלה מתנשקים על דרך מתפתלת במדבר, צילום שחור-לבן">
+            <img src="/assets/images/gallery/10.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="פורטרט זוג חתן וכלה במשקפי שמש על רקע נוף המדבר">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1000ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/11.half.webp">
-            <img src="/assets/images/gallery/11.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="שולחנות ערוכים עם פרחי קלה על רקע הבריכה ונוף המדבר בשקיעה">
+            <img src="/assets/images/gallery/11.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="קיר מסך מואר עם עיטור מנדלה זהוב ותאורת ספוט על רחבת הריקודים">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1100ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/12.half.webp">
-            <img src="/assets/images/gallery/12.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="שולחן ערוך עם פרחי קלה לבנים מול הבריכה ונוף השקיעה המדברי">
+            <img src="/assets/images/gallery/12.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן וכלה מחובקים בריקוד על כביש מדברי בשעת אחר הצהריים">
           </picture>
         </li>
-      </ul>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1200ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/13.half.webp">
+            <img src="/assets/images/gallery/13.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="הרמת חתן על כתפיים בלב מעגל רוקדים תחת תאורה סגולה">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1300ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/14.half.webp">
+            <img src="/assets/images/gallery/14.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="כלה בשמלה לבנה עם שובל ארוך על רקע מצוקי המדבר">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1400ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/15.half.webp">
+            <img src="/assets/images/gallery/15.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="רחבת ריקודים מעוצבת עם נברשות קריסטל ותזמורת חיה על הבמה">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1500ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/16.half.webp">
+            <img src="/assets/images/gallery/16.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="כלה בשמלת נצנצים ניצבת מול דלת ירוקה וקשתות אבן עתיקות">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1600ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/17.half.webp">
+            <img src="/assets/images/gallery/17.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="ריקוד ראשון של חתן וכלה בעיגול אור עם סילוני עשן כחול">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1700ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/18.half.webp">
+            <img src="/assets/images/gallery/18.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="כניסת הכלה עם הינומה ארוכה במעבר נרות, צילום שחור-לבן">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1800ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/19.half.webp">
+            <img src="/assets/images/gallery/19.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="כלה בשמלה לבנה זורמת עם שובל ארוך על כביש מדברי בשעת זהב">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1900ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/20.half.webp">
+            <img src="/assets/images/gallery/20.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="תקליטן מנגן על דק תחת חופה פרחונית, צילום שחור-לבן אמנותי">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 2000ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/21.half.webp">
+            <img src="/assets/images/gallery/21.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="פינת החופה הפרחונית המוארת בשעת ערב">
+          </picture>
+        </li>
+        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 2100ms;">
+          <picture>
+            <source type="image/webp" srcset="/assets/images/gallery/22.half.webp">
+            <img src="/assets/images/gallery/22.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="טקס החופה — החתן עונד טבעת לכלה מול הרב והמשפחה">
+          </picture>
+        </li>      </ul>
     </section>
 
     <!-- ====================================================================

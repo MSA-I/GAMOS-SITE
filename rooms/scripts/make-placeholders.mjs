@@ -45,13 +45,13 @@ const FG_ON = {
 
 // Mirror src/roomsData.ts: COLS_PER_ROW, CATEGORIES order + tone, and how many
 // REAL photos each category currently has (the rest of the row = placeholders).
-const COLS_PER_ROW = 4;
+const COLS_PER_ROW = 5;
 const ROWS = [
-  { label: "חדר זוגי", tone: "cocoa", real: 2 },
-  { label: "חדר משפחה", tone: "brass", real: 1 },
-  { label: "סוויטה", tone: "rose", real: 1 },
-  { label: "חדר נוף", tone: "mist", real: 1 },
-  { label: "סאונה רטובה ויבשה", tone: "ivory", real: 2 },
+  { label: "חדר זוגי", tone: "cocoa", real: 3 },
+  { label: "חדר משפחה", tone: "brass", real: 3 },
+  { label: "סוויטה", tone: "rose", real: 5 },
+  { label: "חדר נוף", tone: "mist", real: 4 },
+  { label: "סאונה רטובה ויבשה", tone: "ivory", real: 4 },
 ];
 
 const W = 800;
