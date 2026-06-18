@@ -177,11 +177,11 @@ log("+ assets/ (minus _src, video, frames/hero)");
    on canvas-frames (sliding-window decode), so it no longer needs an MP4 — but
    culinary-poster.jpg is still the <picture> poster shown before frames decode.
    (culinary-h264-1080.mp4 stays on disk as an unused fallback asset.)
-   hero-poster.jpg is the og:image + JSON-LD image (index.html/mobile) — it must
-   ship or every social share + the schema image 404s in production. ----------- */
+   hero-poster.jpg removed 2026-06-18 (user) — the hero video + its OG/social
+   poster tags are gone, so nothing references it any more. ----------- */
 const videoDst = join(assetsDst, "video");
 mkdirSync(videoDst, { recursive: true });
-for (const v of ["culinary-poster.jpg", "hero-poster.jpg"]) {
+for (const v of ["culinary-poster.jpg"]) {
   const src = join(assetsSrc, "video", v);
   if (!existsSync(src)) fail(`expected assets/video/${v} on disk — not found (it's gitignored; must exist locally)`);
   cpSync(src, join(videoDst, v));
