@@ -33,6 +33,13 @@
   <title>גאמוס אירועים | אולם, ריזורט וגן אירועים במעלה אדומים</title>
   <meta name="description" content="גאמוס, קומפלקס אירועים יוקרתי בפארק ישראל, מעלה אדומים. שני מתחמים: אולם זכוכית עד 1000 מוזמנים וריזורט עם בריכה, חדרי אירוח וקולינריה. חתונות, בר-מצווה ואירועי חברה.">
 
+  <!-- Canonical + indexing directives. Self-canonical to the desktop root; the
+       generated /mobile/ mirror inherits this (it's built from this file, §13)
+       so it canonicalises to / — exactly right. max-image-preview:large lets
+       Google show large thumbnails for this visual venue brand. -->
+  <link rel="canonical" href="https://gamos.co.il/">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:locale" content="he_IL">
@@ -48,8 +55,12 @@
   <meta name="twitter:description" content="קומפלקס אירועים יוקרתי בפארק ישראל. אולם זכוכית, ריזורט וחדרי אירוח.">
   <meta name="twitter:image" content="https://gamos.co.il/assets/video/hero-poster.jpg">
 
-  <!-- Favicon — SVG primary; Agent 03 ships the rasterized 16/32/180 set later. -->
+  <!-- Favicon — SVG primary; rasterized set (rebuilt from favicon.svg via sharp)
+       for older clients + iOS home-screen. -->
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="manifest" href="/assets/site.webmanifest">
 
   <!-- Performance: preload LCP candidates (v10 scroll hero — sky + desert subject).
        subject is the LCP element; re-encoded from a 20MB PNG to responsive WebP
@@ -123,6 +134,7 @@
       "latitude": "31.7700",
       "longitude": "35.2900"
     },
+    "hasMap": "https://www.google.com/maps/dir/?api=1&destination=31.7878076,35.3371583",
     "contactPoint": [
       {
         "@type": "ContactPoint",

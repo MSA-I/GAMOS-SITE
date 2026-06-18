@@ -6,4 +6,29 @@ Allow: /
 # via the client-side viewport redirect, not via search.
 Disallow: /mobile/
 
+# AI crawlers — intentional ALLOW-ALL stance (decision 2026-06-17). Being crawled
+# and cited by AI search (ChatGPT, Perplexity, Gemini) is a discovery channel for
+# a venue brand. The rules below are explicit so the choice is visible, not
+# implicit. To opt out of model-training later, switch the relevant Disallow.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
 Sitemap: https://gamos.co.il/sitemap.xml

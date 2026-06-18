@@ -3,29 +3,34 @@
   <!-- Main single-page site -->
   <url>
     <loc>https://gamos.co.il/</loc>
+    <lastmod>2026-06-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <!-- Halls sub-app — two hall views (Constitution §2.1) -->
   <url>
     <loc>https://gamos.co.il/halls/dist/events/</loc>
+    <lastmod>2026-06-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://gamos.co.il/halls/dist/resort/</loc>
+    <lastmod>2026-06-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <!-- Rooms sub-app — phantom-style image wall (Constitution §2.1) -->
   <url>
     <loc>https://gamos.co.il/rooms/dist/</loc>
+    <lastmod>2026-06-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <!-- Press page -->
   <url>
     <loc>https://gamos.co.il/press/</loc>
+    <lastmod>2026-06-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
