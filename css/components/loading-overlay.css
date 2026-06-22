@@ -10,9 +10,14 @@
    - Fixed overlay covering full viewport (z-index = --z-overlay = 1000).
    - Hidden by default (opacity 0, visibility hidden, pointer-events: none).
    - Shown by adding `.is-visible` (JS sets aria-hidden="false" in parallel).
-   - Inner: gold logo + brass spinner + "טוען חוויה" caption, stacked center.
-   - Honors prefers-reduced-motion: instant show/hide; spinner still rotates;
-     400ms hold preserved by JS so users register the transition.
+   - Inner: gold logo + brass progress bar + dynamic caption, stacked center.
+     The JS injects "טוען…" by default and per-hall text
+     ("טוען את האולם" / "טוען את הריזורט").
+   - Surface: ivory wash + soft brass-tinted center glow + blur.
+   - The progress bar fills 0→100% over ~1.2s while .is-visible, growing from
+     the right edge (RTL: inset-inline-start + inline-size) toward the left.
+   - Honors prefers-reduced-motion: instant show/hide; logo appears instantly;
+     progress bar shows full statically (no growth animation).
    ========================================================================= */
 
 
@@ -30,8 +35,17 @@
   display: grid;
   place-items: center;
 
-  /* Surface */
-  background: color-mix(in srgb, var(--ink-deep) 96%, transparent);  /* --ink-deep at 0.96 */
+  /* Surface — warm ivory wash with a faint brass-tinted glow blooming from the
+     center, fading to mist at the edges. Layered over the blur for depth
+     without busyness. Both layers are composed from palette tokens (§5/§10.2). */
+  background:
+    radial-gradient(
+      ellipse 70% 55% at 50% 42%,
+      color-mix(in srgb, var(--brass) 22%, transparent) 0%,
+      color-mix(in srgb, var(--mist) 60%, transparent) 55%,
+      color-mix(in srgb, var(--ivory) 96%, transparent) 100%
+    ),
+    color-mix(in srgb, var(--ivory) 97%, transparent);
   backdrop-filter: blur(8px) saturate(0.9);
   -webkit-backdrop-filter: blur(8px) saturate(0.9);
 
@@ -57,7 +71,7 @@
 
 
 /* --------------------------------------------------------------------------
-   2. Inner stack (logo + spinner + text)
+   2. Inner stack (logo + bar + text)
    -------------------------------------------------------------------------- */
 
 .loading-overlay__inner {
@@ -100,27 +114,47 @@
 
 
 /* --------------------------------------------------------------------------
-   4. Spinner
+   4. Progress bar (replaces the old spinner — "logo + brass progress bar")
    -------------------------------------------------------------------------- */
 
-.loading-overlay__spinner {
-  inline-size: 48px;
-  block-size: 48px;
-  border: 3px solid var(--brass);
-  border-top-color: transparent;
-  border-radius: var(--radius-circle);
-  animation: la-spin 1s linear infinite;
-  /* Spinner is informational — keep it rotating even with reduced-motion */
+.loading-overlay__bar {
+  /* Thin pill track */
+  position: relative;
+  inline-size: min(280px, 70vw);
+  block-size: 2px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  /* Brass rail, a touch stronger so the empty track reads as gold on ivory */
+  background: color-mix(in srgb, var(--brass) 32%, transparent);
 }
 
-@keyframes la-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+.loading-overlay__bar-fill {
+  /* Grows from the right edge leftward in RTL: inset-inline-start anchors to
+     the start (right), and inline-size sweeps toward the left. */
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: 0;
+  border-radius: inherit;
+  /* Subtle brass → brass-deep sweep for a machined, lit edge. In RTL the fill
+     grows from the right (start) edge toward the left, so the brighter brass
+     leads at the right and deepens toward the advancing left edge. */
+  background: linear-gradient(to left, var(--brass) 0%, var(--brass-deep) 100%);
+}
+
+/* Animate only while the overlay is shown, so the fill restarts each open. */
+.loading-overlay.is-visible .loading-overlay__bar-fill {
+  animation: la-fill 1200ms var(--ease-out-cinema) forwards;
+}
+
+@keyframes la-fill {
+  from { inline-size: 0; }
+  to   { inline-size: 100%; }
 }
 
 
 /* --------------------------------------------------------------------------
-   5. Caption — "טוען חוויה"
+   5. Caption — dynamic ("טוען…" default; per-hall set by JS)
    -------------------------------------------------------------------------- */
 
 .loading-overlay__text {
@@ -128,7 +162,7 @@
   font-family: var(--font-display-he);
   font-size: var(--text-md);                /* 20px */
   font-weight: var(--fw-regular);
-  color: var(--ivory);
+  color: var(--ink-deep);
   opacity: 0.85;
   letter-spacing: var(--tracking-wide);     /* 0.05em */
   line-height: var(--lh-snug);
@@ -158,5 +192,10 @@
     transform: none;
     transition: opacity 0.01ms;
   }
-  /* Spinner keeps rotating — it's a loading indicator, informational. */
+  /* Progress bar shows full, statically — no growth animation. */
+  .loading-overlay__bar-fill,
+  .loading-overlay.is-visible .loading-overlay__bar-fill {
+    inline-size: 100%;
+    animation: none;
+  }
 }

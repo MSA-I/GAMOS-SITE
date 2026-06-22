@@ -45,6 +45,8 @@ const MIN_VISIBLE_HOLD_MS = 1500;
 const LOGO_WEBP = "/assets/images/brand/logo-central.webp";
 const LOGO_PNG  = "/assets/images/brand/logo-central.webp";
 
+const HALL_TEXT = { events: "טוען את האולם", resort: "טוען את הריזורט" };
+
 // ----------------------------------------------------------------------------
 // Module-scoped state
 // ----------------------------------------------------------------------------
@@ -89,8 +91,10 @@ function buildOverlayDom() {
              decoding="async"
              loading="eager">
       </picture>
-      <div class="loading-overlay__spinner" aria-hidden="true"></div>
-      <p class="loading-overlay__text">טוען חוויה</p>
+      <div class="loading-overlay__bar" aria-hidden="true">
+        <span class="loading-overlay__bar-fill"></span>
+      </div>
+      <p class="loading-overlay__text">טוען…</p>
     </div>
   `;
 
@@ -115,7 +119,7 @@ function clearHideTimer() {
 // State machine: show()
 // ----------------------------------------------------------------------------
 
-function show(/* opts */) {
+function show(opts) {
   if (!state.initialised || !state.el) {
     return Promise.resolve();
   }
@@ -124,6 +128,10 @@ function show(/* opts */) {
   if (state.visibilityState === "visible" || state.visibilityState === "showing") {
     return Promise.resolve();
   }
+
+  // Set the caption to the per-hall text (falls back to the static default).
+  const txt = state.el.querySelector(".loading-overlay__text");
+  if (txt && opts && HALL_TEXT[opts.hall]) txt.textContent = HALL_TEXT[opts.hall];
 
   clearHideTimer();
   state.shownAt = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
@@ -235,8 +243,8 @@ function isVisible() {
 // Event listeners (custom event coupling shim)
 // ----------------------------------------------------------------------------
 
-function onShowEvent() {
-  show();
+function onShowEvent(e) {
+  show(e && e.detail ? e.detail : undefined);
 }
 
 function onHideEvent() {
