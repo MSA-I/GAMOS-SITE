@@ -31,7 +31,7 @@
 import { playWhoosh } from "./audio.js";
 import { prefersReducedMotion } from "./utils/media-query.js";
 
-const NAV_DELAY_MS = 350;
+const NAV_DELAY_MS = 1400;  // Hold the loading overlay long enough for the brass bar (1200ms) to fill before navigating.
 const LOGO_SVG_URL = "/assets/images/hero-scene/logo.svg";
 
 const state = {
@@ -105,7 +105,7 @@ function bindHotspot(link) {
     event.preventDefault();
     const isResort = link.dataset.heroLink === "resort";
     try { playWhoosh(isResort); } catch { /* best-effort */ }
-    try { window.gamosLoading && window.gamosLoading.show(); } catch { /* ignore */ }
+    try { window.gamosLoading && window.gamosLoading.show({ hall: isResort ? "resort" : "events" }); } catch { /* ignore */ }
     const target = link.href;
     setTimeout(() => { window.location.href = target; }, NAV_DELAY_MS);
   };
@@ -206,8 +206,8 @@ function buildTimelines() {
   // rise + cloud drift on ≤768px keeps the desert in frame through the reveal.
   // Desktop (≥769px) stays byte-identical (ternaries collapse to the originals).
   const isNarrow = window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
-  const HOUSE_Y     = isNarrow ? "-40%" : "-40%";
-  const HOUSE_SCALE = isNarrow ? 1.3    : 1.3;
+  const HOUSE_Y     = isNarrow ? "-18%" : "-40%";
+  const HOUSE_SCALE = isNarrow ? 1.18   : 1.3;
   const CLOUD_X     = isNarrow ? "9%"   : "15%";
   const A = gsap.timeline();
   A.to([house, compHouse], { y: HOUSE_Y, scale: HOUSE_SCALE, duration: 1 }, 0);

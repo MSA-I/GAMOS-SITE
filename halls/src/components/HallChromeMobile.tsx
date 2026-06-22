@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { getProjectsByHall } from "../projectsData";
@@ -60,6 +60,36 @@ export default function HallChromeMobile({
   const planeCount = useMemo(() => getProjectsByHall(hallId).length, [hallId]);
   const totalLabel = String(planeCount).padStart(2, "0");
 
+  // First-load scroll hint (mirrors the desktop .hall-scrollcue + the rooms
+  // mobile hint pattern): GUARANTEED visible on load, dismisses ONLY after a real
+  // scroll/wheel/touch gesture or an auto-hide timeout — never instantly. A
+  // minimum-visible window protects it from a stray early touch.
+  const [cueVisible, setCueVisible] = useState(true);
+  useEffect(() => {
+    const MIN_VISIBLE_MS = 3000; // a stray early touch before this can't dismiss it
+    const AUTO_HIDE_MS = 6000; // fades on its own if the user just reads it
+    const mountedAt = performance.now();
+    let dismissed = false;
+    const dismiss = () => {
+      if (dismissed || performance.now() - mountedAt < MIN_VISIBLE_MS) return;
+      dismissed = true;
+      setCueVisible(false);
+    };
+    const opts = { passive: true } as const;
+    window.addEventListener("wheel", dismiss, opts);
+    window.addEventListener("touchmove", dismiss, opts);
+    window.addEventListener("scroll", dismiss, opts);
+    window.addEventListener("keydown", dismiss, opts);
+    const timer = window.setTimeout(() => setCueVisible(false), AUTO_HIDE_MS);
+    return () => {
+      window.removeEventListener("wheel", dismiss);
+      window.removeEventListener("touchmove", dismiss);
+      window.removeEventListener("scroll", dismiss);
+      window.removeEventListener("keydown", dismiss);
+      window.clearTimeout(timer);
+    };
+  }, []);
+
   const transition = reducedMotion
     ? { duration: 0 }
     : { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const };
@@ -81,12 +111,12 @@ export default function HallChromeMobile({
           label, ≥44px hit area; blurred-ink scrim + ivory hairline so it reads
           over bright photos. */}
       <motion.a
-        href="/"
+        href="/mobile/#hall-portal"
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={transition}
         className="hallm-home pointer-events-auto"
-        aria-label="חזרה לאתר Gamos"
+        aria-label="חזרה לבחירת אולם באתר Gamos"
       >
         <span className="hallm-home__arrow" aria-hidden="true">
           →
@@ -124,6 +154,29 @@ export default function HallChromeMobile({
           )}
         </a>
       </motion.div>
+
+      {/* First-load scroll hint — LOW (just above the title bar), small; an
+          animated invitation (drifting ‹ › arrows + a chevron pulse) that reads
+          as "scroll to view the images". Auto-dismisses after a real scroll
+          gesture or the timeout (min-visible guarded). Reduced-motion → static
+          (CSS). */}
+      <AnimatePresence>
+        {cueVisible ? (
+          <motion.div
+            key="scrollcue"
+            className={"hallm-scrollcue" + (reducedMotion ? " hallm-scrollcue--static" : "")}
+            aria-hidden="true"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={transition}
+          >
+            <span className="hallm-scrollcue__arrow hallm-scrollcue__arrow--start">‹</span>
+            <span className="hallm-scrollcue__text">גללו לצפייה בתמונות</span>
+            <span className="hallm-scrollcue__arrow hallm-scrollcue__arrow--end">›</span>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
 
       {/* ── Editorial label — single bottom bar, STACKED vertically ──
           Unlike the desktop `justify-between` spec-vs-title row, the mobile

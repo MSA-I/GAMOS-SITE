@@ -37,8 +37,15 @@
     margin-block-end: var(--space-10);
   }
 
-  /* Let the controls wrap: the dots take their own centred line below the
-     ‹ › arrows, so a too-wide dots row can never push the arrows off-axis. */
+  /* Hide the prev/next chevron arrows on mobile (issue 6, 2026-06-22) — the
+     dots grid below is the sole nav on phones. Desktop keeps the arrows
+     (css/sections/testimonials.css, untouched). */
+  .testimonials__btn--prev,
+  .testimonials__btn--next {
+    display: none;
+  }
+
+  /* Controls can still wrap (now just the dots grid remains in the row). */
   .testimonials__controls {
     flex-wrap: wrap;
     row-gap: var(--space-4);

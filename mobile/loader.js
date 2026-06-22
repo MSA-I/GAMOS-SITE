@@ -198,6 +198,12 @@
     if (typeof window.matchMedia === "function" &&
         window.matchMedia("(max-width: 768px)").matches) {
       canvas.dataset.manifestUrl = canvas.dataset.manifestUrlMobile;
+      // Lift the drawn frame upward so the plated dish (lower in the frame)
+      // rises toward screen centre on a tall phone instead of sitting
+      // bottom-cropped. canvas-frame-renderer reads data-scrub-voffset as a
+      // fraction of canvas height; negative = up. Desktop has no dataset →
+      // verticalOffset 0 → pure-centre, byte-identical. (2026-06-22)
+      canvas.dataset.scrubVoffset = "-0.13";
     } else {
       canvas.dataset.manifestUrl = desktopUrl;
     }

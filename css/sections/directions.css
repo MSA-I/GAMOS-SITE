@@ -120,12 +120,14 @@
    controls/pin/route/labels live above and stay true-color. Single knob for
    the whole map's tone. */
 .directions__map .leaflet-tile-pane {
-  /* 2026-06-16: the old saturate(1.04) brightness(1.01) contrast(0.99) washed
-     land/water/roads into the same pale gray (low contrast, a11y issue). This
-     chain saturates the warm beige + blue apart, stops the lightening, and
-     restores tonal hierarchy — still warm/branded, not default OSM. Single
-     knob: bump contrast→1.18 / saturate→1.25 if still flat. */
-  filter: saturate(1.18) brightness(0.97) contrast(1.12);
+  /* 2026-06-22 (user: "make the map look like a REAL map") — dropped the brand
+     recolor (the sepia/desaturate AND the earlier garish saturate-boost both
+     read un-map-like). CARTO Voyager's natural palette IS a real, legible map
+     (warm beige land, green parks, blue water); a light saturate+contrast keeps
+     it crisp without tinting it. The BRAND identity stays where the user asked
+     it to: the route polyline (--brass-deep) and the place/city labels (--cocoa)
+     sit ABOVE the tile pane and keep their colors — this filter is tiles only. */
+  filter: saturate(1.08) contrast(1.05);
 }
 
 /* ----- Venue pin (brass divIcon + gentle pulse) ----- */

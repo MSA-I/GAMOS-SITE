@@ -259,6 +259,63 @@
 }
 
 /* =====================================================================
+ * First-load scroll hint (mirrors the desktop .hall-scrollcue + the rooms
+ * mobile .roomsm-hint). A quiet centered invitation — "גללו לצפייה בתמונות"
+ * flanked by drifting ‹ › arrows + an opacity pulse — sitting LOW, just above
+ * the editorial title bar, so it never covers a tappable card. pointer-events
+ * off so the gallery stays fully scrollable through it.
+ * ===================================================================== */
+.hallm-scrollcue {
+  position: fixed;
+  inset-inline: 0;
+  /* clear of the bottom title bar (which rises ~env-bottom + content) */
+  inset-block-end: calc(max(env(safe-area-inset-bottom), 1rem) + 5.5rem);
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  pointer-events: none;
+  animation: hallm-scrollcue-pulse 2.4s ease-in-out infinite;
+}
+
+.hallm-scrollcue__text {
+  font-family: "Heebo", Arial, sans-serif;
+  font-weight: 500;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--color-ivory) 90%, transparent);
+  text-shadow: 0 1px 10px rgba(26, 20, 16, 0.7);
+  border-block-end: 1px solid color-mix(in srgb, var(--color-brass-glow, #cfae83) 70%, transparent);
+  padding-block: 0.3rem;
+}
+
+/* ‹ › arrows flanking the label — gentle outward drift = "scroll on / through". */
+.hallm-scrollcue__arrow {
+  font-family: "Heebo", Arial, sans-serif;
+  font-size: 0.95rem;
+  line-height: 1;
+  color: var(--color-brass-glow, #cfae83);
+  text-shadow: 0 1px 10px rgba(26, 20, 16, 0.7);
+  animation: hallm-scrollcue-drift 2.4s ease-in-out infinite;
+}
+.hallm-scrollcue__arrow--start { animation-name: hallm-scrollcue-drift-start; }
+.hallm-scrollcue__arrow--end { animation-name: hallm-scrollcue-drift-end; }
+
+@keyframes hallm-scrollcue-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+@keyframes hallm-scrollcue-drift-start {
+  0%, 100% { transform: translateX(0); opacity: 0.55; }
+  50% { transform: translateX(0.3rem); opacity: 1; }
+}
+@keyframes hallm-scrollcue-drift-end {
+  0%, 100% { transform: translateX(0); opacity: 0.55; }
+  50% { transform: translateX(-0.3rem); opacity: 1; }
+}
+
+/* =====================================================================
  * Reduced motion (§9 / WCAG 2.2). Remove transform-based motion + the
  * press scale; keep the legibility gradient and color/opacity affordances.
  * (The chrome's entrance/label opacity tweens are already neutralized in the
@@ -274,7 +331,17 @@
   .hallm-switch__pill:active {
     transform: none;
   }
+  /* Scroll hint → static (no pulse/drift) but still shown. */
+  .hallm-scrollcue,
+  .hallm-scrollcue--static,
+  .hallm-scrollcue__arrow,
+  .hallm-scrollcue--static .hallm-scrollcue__arrow {
+    animation: none;
+  }
 }
+/* JS-detected reduced-motion (motion/react) also pins it static. */
+.hallm-scrollcue--static,
+.hallm-scrollcue--static .hallm-scrollcue__arrow { animation: none; }
 
 @media (hover: hover) and (pointer: fine) {
   @media (prefers-reduced-motion: reduce) {

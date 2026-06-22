@@ -76,12 +76,12 @@ export default function HallChrome({ hallId, activeProject, frameDark = false }:
           Positioned in CSS (.hall-home) — the old Tailwind inset classes were
           invalid v4 utilities and collided with the switch pill. */}
       <motion.a
-        href="/"
+        href="/#hall-portal"
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={transition}
         className="hall-home pointer-events-auto"
-        aria-label="חזרה לאתר Gamos"
+        aria-label="חזרה לבחירת אולם באתר Gamos"
       >
         <span className="hall-home__arrow" aria-hidden="true">
           →

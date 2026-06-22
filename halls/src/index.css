@@ -188,27 +188,33 @@ body {
   transform: scaleX(-1) translateX(4px);
 }
 
-/* Scroll-down cue — centred above the bottom label; invites the visitor to
-   scroll DOWN through the gallery (the camera advances on scroll). React hides
-   it on the first scroll/touch input. Bounce animation runs via Motion. */
+/* Scroll-down cue — invites the visitor to scroll DOWN through the gallery (the
+   camera advances on scroll). React hides it on the first scroll/touch input.
+   Repositioned 2026-06 to sit clearly in the LOWER-CENTRE of the viewport —
+   high enough above the bottom editorial label that it reads at a glance (the
+   old clamp(92px,14vh,150px) buried it against the label/spec block). Bounce
+   animation runs via Motion. */
 .hall-scrollcue {
   position: absolute;
-  inset-block-end: clamp(92px, 14vh, 150px);
+  inset-block-end: clamp(150px, 24vh, 280px);
   inset-inline: 0;
   z-index: 38;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   color: var(--color-ivory);
-  text-shadow: 0 1px 8px rgba(26, 20, 16, 0.6);
+  text-shadow: 0 1px 10px rgba(26, 20, 16, 0.7);
   pointer-events: none;
 }
 .hall-scrollcue__text {
   font-family: "Heebo", Arial, sans-serif;
-  font-size: clamp(0.75rem, 1.1vw, 0.9rem);
+  font-size: clamp(0.78rem, 1.1vw, 0.92rem);
   font-weight: 600;
   letter-spacing: 0.14em;
+  /* editorial brass underline accent — matches the rooms / mobile hint line. */
+  padding-block-end: 0.35rem;
+  border-block-end: 1px solid color-mix(in srgb, var(--color-brass-glow, #cfae83) 70%, transparent);
 }
 .hall-scrollcue__arrow {
   display: grid;

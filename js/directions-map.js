@@ -248,7 +248,7 @@ function setCardAndCtas(key) {
   const etaOrigin = state.root.querySelector("[data-directions-eta-origin]");
   const etaStat = state.root.querySelector("[data-directions-eta]");
   if (etaOrigin) etaOrigin.textContent = o.labelHe;
-  if (etaStat) etaStat.textContent = `≈ ${o.min} דק׳ · ${o.km} ק״מ`;
+  if (etaStat) etaStat.textContent = `${o.min} דק׳ · ${o.km} ק״מ`;
 
   // Google Maps directions: origin = first route point, destination = venue.
   const origin = o.coords[0];
@@ -334,15 +334,44 @@ function renderRouteLabels(key) {
   const o = ORIGINS[key];
   if (!o) return;
 
+  // Declutter (2026-06-22, user bug: "the cities are all grouped in the same
+  // place"): many candidate towns on a route sit close together (esp. the
+  // north/south routes), so without a spacing guard their labels pile into one
+  // unreadable cluster. Drop any new label that sits within MIN_GAP_M (meters)
+  // of one already shown (or the destination pin). Greedy in data order — the
+  // pools are ordered along the route, so the survivors stay spread out, each
+  // reading next to its own town. Done in METERS (not screen px) because this
+  // runs BEFORE drawRoute()/fitBounds() set the map view, so pixel projection
+  // isn't available; the threshold scales with the route's span so the on-screen
+  // spacing stays roughly constant whatever zoom fitBounds picks.
+  const M_PER_DEG = 111320;
+  const distM = (a, b) => {
+    const dx = (a[1] - b[1]) * M_PER_DEG * Math.cos((a[0] * Math.PI) / 180);
+    const dy = (a[0] - b[0]) * M_PER_DEG;
+    return Math.hypot(dx, dy);
+  };
+  let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+  for (const cc of o.coords) {
+    minLat = Math.min(minLat, cc[0]); maxLat = Math.max(maxLat, cc[0]);
+    minLng = Math.min(minLng, cc[1]); maxLng = Math.max(maxLng, cc[1]);
+  }
+  const spanM = distM([minLat, minLng], [maxLat, maxLng]);
+  const MIN_GAP_M = spanM / 10;       // ~10 label-slots across the route diagonal
+  const placed = [];
+  const tooClose = (at) => placed.some((q) => distM(at, q) < MIN_GAP_M);
+  // Seed with the destination pin so no town label collides with גאמוס.
+  placed.push(o.coords[o.coords.length - 1]);
+
   // Origin city label sits at the route's start point (always on-route).
   if (ORIGIN_CITY[key]) {
     placeLabel(L, { name: ORIGIN_CITY[key], at: o.coords[0], anchor: "top" }, "origin").addTo(group);
+    placed.push(o.coords[0]);
   }
 
   // Keep only candidates within ON_ROUTE_MAX_M of the line. Place each label
   // BETWEEN its true location and the nearest route point (LABEL_BLEND toward
   // the line) so it reads as close to both the route AND the real city — not
-  // detached from either.
+  // detached from either. Skip any that would overlap an already-placed label.
   for (const p of (ROUTE_LABELS[key] || [])) {
     const near = nearestOnRoute(p.at, o.coords);
     if (near.distM > ON_ROUTE_MAX_M) continue;     // off-route → drop
@@ -350,7 +379,9 @@ function renderRouteLabels(key) {
       p.at[0] + (near.at[0] - p.at[0]) * LABEL_BLEND,
       p.at[1] + (near.at[1] - p.at[1]) * LABEL_BLEND,
     ];
+    if (tooClose(at)) continue;                     // would overlap → drop
     placeLabel(L, { name: p.name, at, anchor: p.anchor }).addTo(group);
+    placed.push(at);
   }
 
   group.addTo(state.map);

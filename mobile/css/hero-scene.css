@@ -43,54 +43,6 @@
      desert stays in frame the whole time). Desktop ≥769px keeps 500vh. */
   #hero.hero_root { block-size: 460vh; }
 
-  /* ----- DESERT RESTING FRAME: mirror desktop — ridge BELOW the fold --------
-     Desktop authors `.hero_house` as `top:60vh; height:170.8rem` at --rem
-     0.52vw, so the object-fit:contain desert's ridge lands BELOW the viewport
-     bottom at rest → the title sits on a clean cream sky and reads fully dark.
-     A prior pass lifted the mobile desert up (top:24vh) to tuck it behind the
-     GAMOS letters, but that pushed the bright desert ridge UP THROUGH the upper
-     title lines — the real cause of the washed-out "אוויר מדברי, אור רך," (busy
-     bright texture behind brass type). We now MIRROR desktop instead: position
-     the box so the contained desert's ridge rests just BELOW the bottom edge,
-     off the content frame. `top:50vh` + `height:95rem` (re-derived live at --rem
-     2.667vw) keeps the ridge under the fold at scrub 0 — clean cream sky behind
-     the title — while the desktop-matched `-40%` rise (js/hero-scene.js isNarrow
-     branch) then lifts the crest up to ~70% by fraction 0.30, behind the lower
-     GAMOS letters, mirroring desktop's 0.30 frame. (§13 mobile-only; desktop
-     ≥769px keeps top:60vh + 170.8rem.)
-
-     SCOPED TO `.hero_bg > .hero_house` (the STANDALONE visible desert) ONLY.
-     `.hero_house` appears TWICE in the markup: the standalone (`.hero_bg >
-     .hero_house`) AND a nested copy inside `.hero_composite` (`.hero_bg >
-     .hero_composite > .hero_house`) that is masked by the logo letters so they
-     "fill" with the dune. A bare `.hero_house` selector matched BOTH, so an
-     earlier version of this override pushed the COMPOSITE's masked desert out of
-     the letter region → the letters stopped filling on mobile (empty outline at
-     0.30–0.45 while desktop filled). The direct-child combinator excludes the
-     composite copy (its parent is `.hero_composite`, not `.hero_bg`), mirroring
-     the GSAP targets exactly (house = `.hero_bg > .hero_house`; compHouse =
-     `.hero_composite .hero_house`). The composite house keeps its base geometry
-     (top:60vh + 33.4/170.8rem from css/sections/hero-scene.css) so the
-     letter-fill aligns with the logo mask exactly like desktop. */
-  #hero.hero_root .hero_bg > .hero_house {
-    inset-block-start: 50vh;
-    block-size: calc(95 * var(--rem));
-  }
-
-  /* ----- CONTENT: centred over the now-clean sky (mirror desktop) -----------
-     With the desert pushed below the fold (above), the content frame is a clean
-     cream sky exactly like desktop — so the title reads fully dark with no
-     shadow needed. The mobile base lifts the block up via `padding-block-end`
-     (15rem); we soften that to a near-centred resting position so the eyebrow +
-     title + lede sit balanced on the clean sky (mirroring desktop's centred
-     composition) without crowding the top nav or the bottom edge. Padding isn't
-     touched by GSAP, so the scrub fade-out still plays from this resting spot.
-     (§13 mobile-only; desktop ≥769px keeps the sandbox padding-bottom:22.8rem.) */
-  #hero.hero_root .hero_content {
-    padding-block-start: calc(6 * var(--rem));
-    padding-block-end: calc(10 * var(--rem));
-  }
-
   /* ----- COMPOSER: give the landscape box real portrait height -------------
      aspect-ratio:auto cancels the 2048/1360 landscape ratio; min-block-size
      gives the absolutely-positioned children room to spread without overlap.
@@ -98,11 +50,7 @@
      scene reads fine); the ivory background fills any remainder. */
   #hall-portal .gamos-hero {
     aspect-ratio: auto;
-    /* svh (was 92vh): `vh` is the LARGE viewport on phones, so with the toolbar
-       showing the composer floor overshoots the visible area and a band of the
-       next section peeks below. svh pins the floor to the stable minimum — the
-       ivory background fills any remainder, no band. */
-    min-block-size: 92svh;
+    min-block-size: 92vh;
   }
 
   /* Brand logo (top-inline-start). Slightly smaller so it doesn't crowd the

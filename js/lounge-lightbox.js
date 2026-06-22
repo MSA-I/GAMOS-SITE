@@ -62,13 +62,27 @@ const state = {
   descEl: null,
   currentIndex: -1,
   lastFocus: null, // element to restore focus to on close
+  // Swipe-to-navigate tracking inside the open lightbox (mirrors lounge-
+  // selector's pointer bookkeeping; see onLbPointerDown/Move/Up below).
+  lbPointerId: null,
+  lbDownX: 0,
+  lbDownY: 0,
+  lbSwiped: false, // true once a horizontal swipe fired step() this gesture
   bound: {
     onPointerDown: null,
     onPointerMove: null,
     onPointerUp: null,
     onKeyDown: null,
+    onLbPointerDown: null,
+    onLbPointerMove: null,
+    onLbPointerUp: null,
   },
 };
+
+// A horizontal pointer drag inside the open lightbox of at least this many CSS
+// pixels swaps the image. Mirrors lounge-selector's drag feel; below it the
+// gesture is treated as a tap/click (backdrop close still works).
+const SWIPE_THRESHOLD_PX = 40;
 
 // ----------------------------------------------------------------------------
 // Tap detection on the stage
@@ -196,6 +210,15 @@ function open(index) {
   void overlay.offsetWidth;
   overlay.classList.add("is-open");
 
+  // Swipe-to-navigate: pointer drag on the overlay swaps the image (RTL-aware).
+  state.bound.onLbPointerDown = onLbPointerDown;
+  state.bound.onLbPointerMove = onLbPointerMove;
+  state.bound.onLbPointerUp = onLbPointerUp;
+  overlay.addEventListener("pointerdown", state.bound.onLbPointerDown);
+  overlay.addEventListener("pointermove", state.bound.onLbPointerMove);
+  overlay.addEventListener("pointerup", state.bound.onLbPointerUp);
+  overlay.addEventListener("pointercancel", state.bound.onLbPointerUp);
+
   // Keyboard: Esc + arrows.
   state.bound.onKeyDown = onKeyDown;
   window.addEventListener("keydown", state.bound.onKeyDown);
@@ -223,6 +246,66 @@ function show(index) {
 function step(delta) {
   if (!state.overlay) return;
   show(state.currentIndex + delta);
+}
+
+// ----------------------------------------------------------------------------
+// Swipe-to-navigate (pointer drag inside the open lightbox)
+// ----------------------------------------------------------------------------
+//
+// Reuses the onPointerDown/Move/Up skeleton from lounge-selector.js with a
+// horizontal-only threshold. RTL direction matches the arrow-key mapping:
+// dragging the image LEFTWARD (dx < 0) advances forward = step(1) (same as
+// ArrowLeft); dragging RIGHTWARD (dx > 0) goes back = step(-1). setPointerCapture
+// keeps the gesture tracked if it wanders off the figure. Works for mouse, touch
+// and pen; desktop keeps the chevrons too, mobile relies on this alone.
+
+function onLbPointerDown(event) {
+  if (event.button !== undefined && event.button !== 0) return;
+  state.lbPointerId = event.pointerId;
+  state.lbDownX = event.clientX;
+  state.lbDownY = event.clientY;
+  state.lbSwiped = false;
+  // NOTE: pointer capture is deliberately NOT taken here. Capturing on the
+  // overlay would retarget the following `click` to the overlay, which would
+  // defeat the chevrons' stopPropagation and trip the backdrop-close. We only
+  // capture once a real horizontal swipe crosses the threshold (in move).
+}
+
+function onLbPointerMove(event) {
+  if (event.pointerId !== state.lbPointerId) return;
+  if (state.lbSwiped) return; // one image-change per gesture
+  const dx = event.clientX - state.lbDownX;
+  const dy = event.clientY - state.lbDownY;
+  // Horizontal intent only — ignore mostly-vertical drags.
+  if (Math.abs(dx) < SWIPE_THRESHOLD_PX) return;
+  if (Math.abs(dx) <= Math.abs(dy)) return;
+  // Now that it's a genuine swipe, capture so a drag that wanders off the
+  // figure keeps tracking to pointerup.
+  if (state.overlay) {
+    try { state.overlay.setPointerCapture(event.pointerId); } catch { /* fine */ }
+  }
+  // dx < 0 (leftward) → next = step(1); dx > 0 (rightward) → prev = step(-1).
+  step(dx < 0 ? 1 : -1);
+  state.lbSwiped = true;
+}
+
+function onLbPointerUp(event) {
+  if (event.pointerId !== state.lbPointerId) return;
+  if (state.overlay) {
+    try { state.overlay.releasePointerCapture(event.pointerId); } catch { /* ignore */ }
+  }
+  state.lbPointerId = null;
+  // If this gesture changed an image, swallow the click that follows so the
+  // backdrop-close handler doesn't also fire (a drag is not a close-tap).
+  if (state.lbSwiped) {
+    const swallow = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+    };
+    if (state.overlay) {
+      state.overlay.addEventListener("click", swallow, { capture: true, once: true });
+    }
+  }
 }
 
 function onKeyDown(e) {
@@ -254,6 +337,13 @@ function closeLightbox() {
     window.removeEventListener("keydown", state.bound.onKeyDown);
     state.bound.onKeyDown = null;
   }
+  // The overlay (with its swipe listeners) is removed from the DOM below, so
+  // the listeners go with it; just drop our references and swipe bookkeeping.
+  state.bound.onLbPointerDown = null;
+  state.bound.onLbPointerMove = null;
+  state.bound.onLbPointerUp = null;
+  state.lbPointerId = null;
+  state.lbSwiped = false;
   document.documentElement.style.overflow = "";
 
   const remove = () => {

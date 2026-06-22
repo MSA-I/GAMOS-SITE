@@ -69,3 +69,17 @@
     color: color-mix(in srgb, var(--ivory) 80%, transparent);
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Lightbox swipe: hide the prev/next chevrons on phones (2026-06-22).
+   On mobile a horizontal pointer DRAG inside the open lightbox swaps the image
+   (js/lounge-lightbox.js, RTL-aware) — so the on-image chevrons are redundant
+   and only clutter a small screen. Desktop keeps them (minimal, lower corners).
+   Outside the RM guard above on purpose: the lightbox still opens under reduced
+   motion, and swipe replaces the chevrons there too. §13 self-contained.
+   ------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .lounge-lightbox__nav {
+    display: none;
+  }
+}

@@ -72,6 +72,12 @@ const DEFAULTS = {
   parallax: true,
   parallaxStrength: 24,
   bgColor: "#0E0E0C", // --ink-deep
+  // Vertical framing nudge (2026-06-22). Fraction of canvas height added to the
+  // centered dy, so callers can lift/drop the drawn frame within the stage.
+  // 0 = pure centre (desktop default, byte-identical). NEGATIVE shifts the
+  // frame UP — used on mobile so the plated dish (lower content) rises toward
+  // screen centre instead of sitting bottom-cropped on a tall phone.
+  verticalOffset: 0,
   // Decode strategy (2026-06-16, rev2). Two modes:
   //  • DECODE-ALL (default for light scenes): decode every frame ONCE up front
   //    and keep them — zero eviction, so scrolling (esp. reverse) never has to
@@ -421,7 +427,9 @@ export function createRenderer({ canvas, manifest, host, options }) {
     const dw = iw * scale;
     const dh = ih * scale;
     const dx = (cw - dw) / 2;
-    const dy = (ch - dh) / 2;
+    // Centre vertically, then apply the optional framing nudge (fraction of
+    // canvas height). Negative lifts the frame UP (dish rises toward centre).
+    const dy = (ch - dh) / 2 + (opts.verticalOffset || 0) * ch;
 
     ctx.drawImage(img, dx, dy, dw, dh);
     // Record what's actually on the canvas now (only when we painted the

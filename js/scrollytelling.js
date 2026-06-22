@@ -106,6 +106,12 @@ async function registerScene(canvas) {
   // 0 → unchanged full-range scrub. (2026-06-15)
   const frameStart = parseFloat(canvas.dataset.scrubFrameStart || "0") || 0;
 
+  // Optional vertical framing nudge: data-scrub-voffset="-0.12" lifts the drawn
+  // frame UP by 12% of canvas height (fraction). Used on mobile so the plated
+  // dish rises toward screen centre instead of bottom-cropped. Absent / 0 →
+  // pure-centre (desktop, byte-identical). (2026-06-22)
+  const verticalOffset = parseFloat(canvas.dataset.scrubVoffset || "0") || 0;
+
   let prevLoaded = 0;
   const renderer = createRenderer({
     canvas,
@@ -116,6 +122,7 @@ async function registerScene(canvas) {
       parallaxStrength: 28,
       bgColor: "#0E0E0C",
       frameStart,
+      verticalOffset,
       onProgress: (loaded, total) => {
         const delta = loaded - prevLoaded;
         prevLoaded = loaded;

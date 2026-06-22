@@ -82,61 +82,71 @@
   color: color-mix(in srgb, var(--ivory) 85%, transparent);
 }
 
-/* ----- Close button (top-inline-end) ----- */
+/* ----- Close button (top-inline-end) — minimal glyph, no box -----
+   Mirrors .btn--icon (css/components/buttons.css): transparent, no fill/border,
+   ≥44px transparent hit area, glyph tints brass + scales on hover. The user
+   wanted this minimal on desktop too (no filled brass circle). */
 .lounge-lightbox__close {
   position: absolute;
-  inset-block-start: clamp(var(--space-3), 3vw, var(--space-5));
-  inset-inline-end: clamp(var(--space-3), 3vw, var(--space-5));
-  inline-size: 38px;
-  block-size: 38px;
+  inset-block-start: clamp(var(--space-2), 3vw, var(--space-5));
+  inset-inline-end: clamp(var(--space-2), 3vw, var(--space-5));
+  inline-size: 44px;
+  block-size: 44px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.35rem;
+  font-size: 1.6rem;
   line-height: 1;
   color: var(--ivory);
-  background: color-mix(in srgb, var(--ink-deep) 50%, transparent);
-  border: 1px solid color-mix(in srgb, var(--ivory) 28%, transparent);
-  border-radius: 50%;
+  background: transparent;
+  border: 0;
   cursor: pointer;
-  transition: background var(--dur-fast) var(--ease-out-cinema),
-              border-color var(--dur-fast) var(--ease-out-cinema),
+  transition: color var(--dur-fast) var(--ease-out-cinema),
               transform var(--dur-fast) var(--ease-out-cinema);
 }
 
 .lounge-lightbox__close:hover,
 .lounge-lightbox__close:focus-visible {
-  background: color-mix(in srgb, var(--brass) 70%, transparent);
-  border-color: color-mix(in srgb, var(--brass) 60%, transparent);
-  color: var(--ink-deep);
-  transform: scale(1.06);
+  color: var(--brass);
+  transform: scale(1.12);
+}
+.lounge-lightbox__close:focus-visible {
+  outline: 3px solid var(--brass);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
-/* ----- Prev / next arrows ----- */
+/* ----- Prev / next arrows — minimal glyph, no box (desktop) -----
+   No filled circle/border (matches the close button + .btn--icon idiom). The
+   arrows sit in the LOWER corners (not dead-centre on the image) so they read as
+   quiet affordances; ≥44px transparent hit area; glyph tints brass + scales on
+   hover. On mobile these are hidden (swipe replaces them — see mobile/css/lounge.css). */
 .lounge-lightbox__nav {
   position: absolute;
-  inset-block-start: 50%;
-  transform: translateY(-50%);
-  inline-size: 40px;
-  block-size: 40px;
+  inset-block-end: clamp(var(--space-3), 4vw, var(--space-6));
+  inline-size: 44px;
+  block-size: 44px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--ivory);
-  background: color-mix(in srgb, var(--ink-deep) 50%, transparent);
-  border: 1px solid color-mix(in srgb, var(--ivory) 28%, transparent);
-  border-radius: 50%;
+  background: transparent;
+  border: 0;
   cursor: pointer;
-  transition: background var(--dur-fast) var(--ease-out-cinema),
-              border-color var(--dur-fast) var(--ease-out-cinema),
+  transition: color var(--dur-fast) var(--ease-out-cinema),
               transform var(--dur-fast) var(--ease-out-cinema);
 }
 
 .lounge-lightbox__nav:hover,
 .lounge-lightbox__nav:focus-visible {
-  background: color-mix(in srgb, var(--brass) 70%, transparent);
-  border-color: color-mix(in srgb, var(--brass) 60%, transparent);
-  color: var(--ink-deep);
+  color: var(--brass);
+}
+.lounge-lightbox__nav:focus-visible {
+  outline: 3px solid var(--brass);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 /* Chevron glyph: a small square showing only its top + right PHYSICAL borders,
@@ -172,7 +182,7 @@
 }
 
 .lounge-lightbox__nav:hover {
-  transform: translateY(-50%) scale(1.06);
+  transform: scale(1.12);
 }
 
 @media (prefers-reduced-motion: reduce) {
