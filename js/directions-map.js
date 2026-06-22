@@ -231,6 +231,7 @@ const state = {
   onInput: null,         // change handler ref (for removal)
   searchForm: null,      // [data-directions-search]
   onSubmit: null,        // submit handler ref (for removal)
+  searchMarker: null,    // custom address start label (L.marker)
   active: "jerusalem",
   built: false,          // Leaflet map constructed yet?
 };
@@ -438,6 +439,8 @@ function drawRoute(key, { animate } = { animate: true }) {
 
 function selectOrigin(key, { fly } = { fly: true }) {
   if (!ORIGINS[key]) return;
+  // Leaving a custom address search → drop its start label.
+  if (state.searchMarker) { state.searchMarker.remove(); state.searchMarker = null; }
   state.active = key;
   syncTabAria();
   setCardAndCtas(key);
@@ -459,27 +462,33 @@ function selectOrigin(key, { fly } = { fly: true }) {
 // Free-text address search → live geocode + driving route/ETA
 // ---------------------------------------------------------------------------
 //
-// ponytail: geocoding (Nominatim) + routing (OSRM) run against the PUBLIC demo
-// servers, keyless — fine for a low-traffic venue map but their usage policies
-// forbid heavy production use. Flagged in CLAUDE.md §14 / DEPLOYMENT-COSTS.md as
-// a follow-up if traffic grows (swap to a keyed / self-hosted geocoder+router).
-// No new dependency is added — plain fetch + the existing self-hosted Leaflet.
+// ponytail: geocoding (Photon) + routing (OSRM) run against keyless PUBLIC
+// servers. NOTE: we use Photon (photon.komoot.io), NOT Nominatim — Nominatim
+// returns HTTP 403 to browser/web-app requests (it forbids being used as a
+// geocoding backend), which silently broke the whole search. Photon is built
+// for browser/autocomplete use and sends CORS `*`. Both are fine for a
+// low-traffic venue map but their usage policies forbid heavy production use —
+// flagged in CLAUDE.md §14 / DEPLOYMENT-COSTS.md as a follow-up if traffic grows
+// (swap to a keyed / self-hosted geocoder+router). No new dependency — plain
+// fetch + the existing self-hosted Leaflet.
 
-/** Geocode a free-text address to [lat,lng] (IL-scoped, Hebrew). null if none. */
+// Israel bounding box (minLon,minLat,maxLon,maxLat) — keeps generic street names
+// (e.g. "הרצל 50") from matching the same street abroad.
+const PHOTON_BBOX = "34.2,29.45,35.95,33.5";
+
+/** Geocode a free-text address to [lat,lng] via Photon (IL-boxed). null if none. */
 async function geocodeAddress(q) {
   try {
     const url =
-      "https://nominatim.openstreetmap.org/search?format=json&limit=1" +
-      "&countrycodes=il&accept-language=he&q=" +
-      encodeURIComponent(q);
+      "https://photon.komoot.io/api/?limit=1&bbox=" + PHOTON_BBOX +
+      "&q=" + encodeURIComponent(q);
     const res = await fetch(url);
     if (!res.ok) return null;
     const data = await res.json();
-    if (!Array.isArray(data) || !data.length) return null;
-    const lat = parseFloat(data[0].lat);
-    const lon = parseFloat(data[0].lon);
-    if (Number.isNaN(lat) || Number.isNaN(lon)) return null;
-    return [lat, lon];
+    const f = data && data.features && data.features[0];
+    const c = f && f.geometry && f.geometry.coordinates; // [lng, lat]
+    if (!c || !Number.isFinite(c[0]) || !Number.isFinite(c[1])) return null;
+    return [c[1], c[0]];
   } catch {
     return null;
   }
@@ -566,6 +575,7 @@ async function onSearchSubmit(e) {
   if (state.routeLayer) { state.routeLayer.remove(); state.routeLayer = null; }
   // Clear the baked place labels — they belong to a baked origin, not this one.
   if (state.labelLayer) { state.labelLayer.remove(); state.labelLayer = null; }
+  if (state.searchMarker) { state.searchMarker.remove(); state.searchMarker = null; }
   state.routeLayer = L.polyline(route.coords, {
     className: "directions__route",
     color: "#8B6F46",
@@ -576,10 +586,16 @@ async function onSearchSubmit(e) {
   }).addTo(state.map);
   state.map.fitBounds(state.routeLayer.getBounds(), { padding: [40, 40] });
 
+  // Label the typed address ON the map at its start point (reuses the same
+  // "origin" label style the baked routes use). This is the visible "start point".
+  const startName = q.length > 28 ? q.slice(0, 28) + "…" : q;
+  state.searchMarker = placeLabel(L, { name: startName, at: coords, anchor: "top" }, "origin");
+  state.searchMarker.addTo(state.map);
+
   // Update the glass card (same fields setCardAndCtas touches).
   const etaOrigin = state.root.querySelector("[data-directions-eta-origin]");
   const etaStat = state.root.querySelector("[data-directions-eta]");
-  if (etaOrigin) etaOrigin.textContent = q.length > 28 ? q.slice(0, 28) + "…" : q;
+  if (etaOrigin) etaOrigin.textContent = startName;
   if (etaStat) etaStat.textContent = `${route.min} דק׳ · ${route.km} ק״מ`;
   const gEl = state.root.querySelector("[data-directions-google]");
   if (gEl) {
@@ -766,6 +782,7 @@ export function destroy() {
   if (state.resizeObs) { state.resizeObs.disconnect(); state.resizeObs = null; }
   if (state.routeLayer) { state.routeLayer.remove(); state.routeLayer = null; }
   if (state.labelLayer) { state.labelLayer.remove(); state.labelLayer = null; }
+  if (state.searchMarker) { state.searchMarker.remove(); state.searchMarker = null; }
   if (state.map) { state.map.remove(); state.map = null; }
   state.inputs = [];
   state.onInput = null;
