@@ -42,11 +42,18 @@
      are the JS rotation/placement channels; overriding them would re-kill the
      ring, which is the v3 bug we are removing). */
   .lounge__stage {
-    transform: scale(0.6);
+    /* WIDTH-FLUID scale (2026-06-22 device-fit pass). A FLAT scale(0.6) was tuned
+       for 360px (where the ring's radius floors and overflows a half-viewport);
+       on a 430px phone there is more room, so 0.6 left the ring looking small —
+       it rendered at a different proportion on every width. This maps the scale
+       linearly 360px→0.6 … 430px→~0.74 (clamped 0.6–0.76), so the ring fills the
+       same fraction of the screen at every width. (100vw−360px)/70px is unitless,
+       so the result is a valid scale <number>. Drag math is scale-independent. */
+    transform: scale(clamp(0.6, calc(0.6 + (100vw - 360px) / 70px * 0.14), 0.76));
     transform-origin: center center;
-    /* Compress the reserved height so the 0.6-scaled ring sits snug instead of
-       leaving a tall empty gap (desktop reserves clamp(420px,64vh,720px)). */
-    block-size: clamp(300px, 44vh, 480px);
+    /* Reserved height uses svh (not vh) so the toolbar show/hide doesn't resize
+       the stage mid-scroll; clamp keeps it bounded across short↔tall phones. */
+    block-size: clamp(320px, 42svh, 460px);
   }
 
   /* Captions (2026-06-15 — typographic hierarchy fix).

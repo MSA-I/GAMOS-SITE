@@ -18,13 +18,10 @@
        left/right edges on phones too. */
     padding-inline: clamp(2.25rem, 14%, 4rem);
     max-inline-size: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .kosher__container {
-    /* Tight phones — soften the oval to a stadium shape so the text block
-       fits cleanly without the oval pinching at the sides. */
+    /* Stadium shape across ALL phone widths (was ≤480 only, which left a
+       different oval radius on 481–768px → a visible shape jump at 480). Applying
+       it for every phone keeps the kashrut card identically shaped on all devices
+       and stops the oval pinching the text at the sides. */
     border-radius: 9999px / 30%;
   }
 }

@@ -11,9 +11,12 @@
    ========================================================================= */
 
 @media (max-width: 768px) {
-  /* Taller, full-bleed-ish stage so the map has room above the bar. */
+  /* Taller, full-bleed-ish stage so the map has room above the bar. Single svh
+     clamp (was 56vh, with a SECOND different 50vh formula at ≤480 — the mismatch
+     made the map jump height at the 480 boundary). One bounded svh clamp scales
+     smoothly across all widths/heights and is stable against the toolbar. */
   .directions__stage {
-    min-block-size: clamp(300px, 56vh, 460px);
+    min-block-size: clamp(280px, 52svh, 440px);
   }
 
   /* Address search: stack on a phone so neither field is cramped. Input goes
@@ -90,9 +93,11 @@
      control is the one third-party UI on the page — recolor stays in the
      base directions.css; here we only set the size. */
   .directions__map .leaflet-control-zoom a {
-    inline-size: 36px;
-    block-size: 36px;
-    line-height: 36px;
+    /* width-fluid (was fixed 36px → looked oversized on 360, undersized on 430).
+       clamp(34..40) keeps a comfortable, proportionally-consistent tap target. */
+    inline-size: clamp(34px, 9.4vw, 40px);
+    block-size: clamp(34px, 9.4vw, 40px);
+    line-height: clamp(34px, 9.4vw, 40px);
   }
 
   /* ≥44px touch targets (§9 / touch-targets convention). */
@@ -106,8 +111,9 @@
 }
 
 @media (max-width: 480px) {
+  /* Map height is now the single svh clamp above (no separate 480 formula — it
+     caused a jump at the boundary). Only the corner-rounding stays width-gated. */
   .directions__stage {
-    min-block-size: clamp(280px, 50vh, 380px);
     border-radius: var(--radius-md);
   }
 

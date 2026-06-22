@@ -32,7 +32,10 @@
   .hall-venue h2,
   .hall-resort h1,
   .hall-resort h2 {
-    line-height: 1.18;
+    /* Single line-height across ALL phone widths (was 1.18, stepping to 1.22 at
+       ≤380 — a visible discontinuity between a 380 and 381px device). 1.2 clears
+       the Hebrew descenders at every size, so the separate 380 step is removed. */
+    line-height: 1.2;
     /* Tiny block padding inside the heading box so the texture-clip
        doesn't catch a half-pixel of descender against the box edge. */
     padding-block: 0.08em;
@@ -59,16 +62,5 @@
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
   .kosher .section-header__title {
     background-image: var(--typo-on-dark) !important;
-  }
-}
-
-/* On the smallest viewports (iPhone SE 320), the same rule applies but
-   the type is small enough that 1.22 reads more comfortably. */
-@media (max-width: 380px) {
-  .section-header__title,
-  .shabbat__heading,
-  .lounge__title,
-  .culinary__title {
-    line-height: 1.22;
   }
 }

@@ -60,7 +60,7 @@
     justify-content: flex-end;
     /* Bottom breathing room so the sub clears the screen edge; the top-anchored
        image (below) occupies roughly the upper ~62vh, leaving this band free. */
-    padding-block-end: clamp(var(--space-6, 1.5rem), 8vh, var(--space-12, 3rem));
+    padding-block-end: clamp(var(--space-6, 1.5rem), 8svh, var(--space-12, 3rem));
   }
   .shabbat__sub {
     /* Centre the caption under the full-width image; widen it from the desktop
@@ -87,11 +87,13 @@
      — only clip-path + object-position — so overriding these is safe and keeps
      the mask-reveal intact. */
   .shabbat__media {
-    inset-block-start: clamp(72px, 11vh, 120px);
+    /* svh (stable small-viewport) not vh: the offset+height no longer shift when
+       the mobile toolbar shows/hides, and read more consistently short↔tall. */
+    inset-block-start: clamp(72px, 11svh, 120px);
     inset-inline: 0;
     inline-size: 100%;
     max-inline-size: none;
-    block-size: clamp(360px, 58vh, 560px);
+    block-size: clamp(360px, 58svh, 560px);
     transform: none;
   }
 

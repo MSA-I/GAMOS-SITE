@@ -56,35 +56,66 @@
      Paired with a larger desert rise in js/hero-scene.js (isNarrow branch). */
   #hero.hero_root .hero_bg > .hero_house,
   #hero.hero_root .hero_composite .hero_house {
-    top: 56vh;
-    height: 58vh;
+    /* svh to match the 100svh pin above — keeps the desert band placement stable
+       against the toolbar and consistent between short and tall phones. */
+    top: 56svh;
+    height: 58svh;
   }
   #hero.hero_root .hero_house img {
     object-fit: cover;
     object-position: center 30%;
   }
 
-  /* ----- COMPOSER: give the landscape box real portrait height -------------
-     aspect-ratio:auto cancels the 2048/1360 landscape ratio; min-block-size
-     gives the absolutely-positioned children room to spread without overlap.
-     The base image stays object-fit:cover (a soft centre crop of the GAMOS
-     scene reads fine); the ivory background fills any remainder. */
+  /* ----- COMPOSER: height-INDEPENDENT centred flex column (2026-06-22 device-fit)
+     PREVIOUS approach pinned prompt/EVENTS/RESORT at absolute `top:%` of a box
+     whose height was `min-block-size:92vh`. Because % is relative to that vh
+     height, the layout CHANGED device-to-device: on a SHORT phone (e.g. 390×600)
+     EVENTS/RESORT compressed together; on a TALL phone (390×1000) they spread far
+     apart with dead space — the #1 "looks different on every phone" complaint.
+     FIX: lay the composer out as a CENTRED FLEX COLUMN. The three items get a
+     CONSTANT, width-derived gap (clamp, no vh) so their relationship is identical
+     at every height; `justify-content:center` keeps the block centred regardless
+     of viewport height. base/logo/cue stay absolute (out of flow). `100svh` is the
+     stable small-viewport height → no jump when the browser toolbar shows/hides.
+     The old `top:%` overrides are COLLAPSED away (no more step-positioning). */
   #hall-portal .gamos-hero {
     aspect-ratio: auto;
-    min-block-size: 92vh;
+    min-block-size: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.75rem, 8vw, 3rem);
+    /* top pad keeps the centred stack clear of the corner logo; bottom pad clears
+       the cue. env(safe-area-inset-*) adds the notch / home-indicator margin on
+       devices that have one (0 elsewhere) so the framing is identical across both. */
+    padding-block:
+      calc(clamp(4.5rem, 13vh, 7.5rem) + env(safe-area-inset-top, 0px))
+      calc(clamp(4.5rem, 13vh, 7.5rem) + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
   }
 
-  /* Brand logo (top-inline-start). Slightly smaller so it doesn't crowd the
-     narrow column; position unchanged (still the top corner mark). */
+  /* Prompt + CTAs flow in the column (were absolute top:%). `position:relative`
+     keeps their z-index ABOVE the absolutely-positioned base image; reset the
+     inherited left/top/transform so flex centring takes over. */
+  #hall-portal .gamos-hero__prompt,
+  #hall-portal .gamos-hero__cta {
+    position: relative;
+    inset: auto;
+    left: auto;
+    top: auto;
+    transform: none;
+  }
+
+  /* Brand logo (top-inline-start corner mark). Slightly smaller on the narrow
+     column; position unchanged. */
   #hall-portal .gamos-hero__logo {
     inline-size: clamp(116px, 34vw, 150px);
   }
 
   /* Prompt: the desktop nowrap + .32em tracking overflows 390px. Tighten the
-     type + tracking so the single line fits the phone width, and lift it above
-     the (now lower) EVENTS wordmark. */
+     type + tracking so the single line fits the phone width. */
   #hall-portal .gamos-hero__prompt {
-    top: 28%;
     gap: .7rem;
   }
   #hall-portal .gamos-hero__prompt-text {
@@ -92,17 +123,12 @@
     letter-spacing: .14em;
   }
 
-  /* CTAs: re-stack with generous vertical spacing so the two wordmarks never
-     touch. Each image is ~0.4× its width tall → at this width ≈85px, and the
-     ~17% gap (≈130px on a 92vh box) keeps them clearly separate + ≥44px tap. */
+  /* CTAs: width-fluid so they scale smoothly 360→430px (no fixed px). The flex
+     `gap` above keeps EVENTS/RESORT clearly separated + ≥44px tap at every size.
+     The dim-siblings :has() hover is desktop-only; on touch both stay opaque. */
   #hall-portal .gamos-hero__cta {
     inline-size: clamp(196px, 56vw, 260px);
   }
-  #hall-portal .gamos-hero__cta--events { top: 44%; }
-  #hall-portal .gamos-hero__cta--resort { top: 64%; }
-
-  /* The dim-siblings :has() hover is desktop-only by nature; on touch the CTAs
-     stay at full opacity. Nothing to override — left here as a note. */
 
   /* SINGLE CUE on mobile. The shared `:not([data-hero-mode]) .hero_top .gamos-cue`
      rule (css/sections/hero-scene.css) hides the hero cue once the hero releases
