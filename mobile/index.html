@@ -1504,8 +1504,12 @@
             </div>
 
             <!-- Scroll cue → the branded #routes map sits directly below this
-                 reveal-pair. Animated down-arrow nudges the visitor to scroll. -->
-            <a class="contact__scroll-cue" href="#routes"
+                 reveal-pair. Animated down-arrow nudges the visitor to scroll.
+                 data-no-smooth: opt out of scrollytelling's generic anchor smooth
+                 -scroll (which targets #routes' in-flow position — still hidden
+                 behind the sticky-reveal #contact). js/contact-map-cue.js handles
+                 this cue instead, scrolling to where the map is actually revealed. -->
+            <a class="contact__scroll-cue" href="#routes" data-no-smooth
                aria-label="גללו לצפייה במפת ההגעה למתחם">
               <span class="contact__scroll-cue-text">גללו לצפייה במפת ההגעה</span>
               <span class="contact__scroll-cue-arrow" aria-hidden="true">
