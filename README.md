@@ -106,7 +106,7 @@ terminal: `npm run dev:halls` (port 5173) or `npm run dev:rooms` (port 5174).
 
 `scripts/deploy-cloudflare.mjs` runs the full build, assembles a clean
 production tree in `_site/` from an **allow-list** of paths (so repo junk, the
-`docs/` 30 MB zip, the 209 MB culinary frames, and `assets/_src/` never ship),
+`docs/` notes, the orphaned hero frames, and `assets/_src/` never ship),
 copies the gitignored culinary video in from disk, runs pre-flight asserts
 (6 routes present, no file > 25 MiB), then uploads via `wrangler`:
 
@@ -136,12 +136,12 @@ The encoders resolve that path automatically. Output goes to `assets/`.
 # Brand + poster + section images (WebP/JPEG variants)
 npm run encode:images
 
-# Canvas-scrub frame sequences (WebP). Hero frames are legacy + untracked — the
-# v10 hero is a layered GSAP scroll scene (assets/images/hero-scene/), not canvas
-# frames; the culinary scrub is the only live frame consumer.
+# Canvas-scrub frame sequences (WebP). The culinary scrub is the only live frame
+# consumer — the v10 hero is a layered GSAP scroll scene (assets/images/hero-scene/),
+# not canvas frames. Legacy v9 hero frames are untracked and have no npm script;
+# re-encode them manually only if the v9 canvas hero ever returns.
 npm run encode:culinary       # culinary frame sequence (live)
-npm run encode:hero           # legacy hero frames (untracked; v9 rollback only)
-npm run encode:all            # both
+npm run encode:all            # alias of encode:culinary
 
 # Low-res culinary frames for the mobile scrub
 node mobile/scripts/encode-frames-mobile.mjs

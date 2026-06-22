@@ -204,7 +204,7 @@ Plus: side-dot nav, marquee transition, mobile hamburger, loading overlay.
 | 60fps scrub (M1-class) | ⚠️ pending | architecture תומכת — דורש browser-verify |
 | Mobile fallback (iOS / reduced-motion) | ✅ ok | iOS branch + `prefers-reduced-motion` קוד |
 | כל סקציות gamos.co.il מיוצגות | ✅ ok | 11 anchors מאומתים מול scrape |
-| ≥10 agent-plans | ✅ ok | 14 plans היסטוריים (כולם בוצעו, נמחקו אחרי השלמה) |
+| תוכניות מתועדות ב-`PLANS/` | ✅ ok | 14 plans היסטוריים בוצעו ונמחקו; `agent-plans/` בוטלה 2026-06-22 — תוכניות עתידיות תחת `PLANS/` |
 | Console clean + 0 404s | ⚠️ pending | דורש browser-verify |
 
 5/8 ירוקים. 3 הצהובים דורשים פתיחה ידנית בדפדפן.
@@ -325,10 +325,7 @@ GAMOS-SITE/
 ├── PLANS/
 │   ├── README.md (B.L.A.S.T. layer guide)
 │   ├── research/ ⭐ 5 reference docs (master-plan + content-map + tabs + competitors + fonts)
-│   └── next-steps/ ⭐ עתידי בלבד
-│
-├── agent-plans/
-│   └── README.md (אין plans פעילים — כולם בוצעו ונמחקו)
+│   └── next-steps/ ⭐ עתידי בלבד (כל התוכניות, כולל של סוכנים, חיות כאן)
 │
 └── (source library moved 2026-06-09 → ../GAMOS-DOCS/תמונות לאנימציית האתר/)
 ```

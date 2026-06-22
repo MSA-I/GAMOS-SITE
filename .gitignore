@@ -72,7 +72,7 @@ assets/_src/
 # scroll scene (§3, LOCKED 2026-06-15) which paints layered PNG/WebP from
 # assets/images/hero-scene/ — it no longer uses canvas frames. These frames
 # have zero live references; untracked 2026-06-15 to keep the deploy lean.
-# Re-encode locally with `npm run encode:hero` only if v9 canvas hero returns.
+# Re-encode manually (no npm script) only if the v9 canvas hero ever returns.
 assets/frames/hero/
 
 # IMPORTANT — the following directories ARE tracked in git (do NOT ignore):
@@ -98,5 +98,17 @@ ruvector.db
 claude-flow.config.json
 *.artifact.json
 
-# Hero-lab QA screenshots — scratch, never committed (§6 rule 6)
+# Hero-lab QA + diagnostic scratch — never committed (§6 rule 6). The lab page
+# + assets + build-assets.mjs ARE tracked (porting reference); the comparison /
+# QA scripts and their screenshot outputs are local-only.
 hero-lab/scripts/__shots__/
+hero-lab/scripts/compare-*.mjs
+hero-lab/scripts/qa-*.mjs
+hero-lab/scripts/frame-diff-*.mjs
+
+# Removed reference/export artifacts (deleted 2026-06-22) — regenerable, kept
+# out of the repo so they don't creep back. Content is live in index.html;
+# QA screenshots re-shoot on demand; FIND hero source lives off-repo.
+exports/
+docs/qa-screenshots/
+docs/reference-assets/

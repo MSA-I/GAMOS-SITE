@@ -340,7 +340,9 @@ testimonials, gallery, events, kosher, contact, routes.
 
 ### חוקים תהליכיים:
 
-1. **כל סוכן כותב תוכנית ב-`agent-plans/agent-NN_*.md` לפני שהוא רץ קוד.**
+1. **כל סוכן כותב תוכנית ב-`PLANS/<category>/` לפי כללי `PLANS/README.md` לפני
+   שהוא רץ קוד.** (תיקיית `agent-plans/` בוטלה ונמחקה 2026-06-22 — כל התוכניות,
+   כולל של סוכנים, חיות תחת `PLANS/`.)
 2. **שינויים נושאיים מובנים** הולכים ל-`PLANS/<category>/` לפי כללי `PLANS/README.md`.
 3. **גילויים משמעותיים** מתועדים ב-commit message ב-git עם תאריך + מקור (היסטוריית השינויים חיה ב-`git log`, לא בקובץ החוק).
 4. **מצב הפרויקט** משתקף ב-`STATUS.md` בשורש (לא ב-progress.md/findings.md הישנים — נמחקו 2026-06-01).
@@ -428,7 +430,8 @@ testimonials, gallery, events, kosher, contact, routes.
    ערך מוקלד-קשיח ב-CSS אחר = באג.
 3. **JS is module-scoped.** ESM modules עם `init(el)` + `destroy()`. אין globals.
 4. **RTL First.** הכל עובר תחילה ב-`dir="rtl"`. בדיקת LTR אחרי.
-5. **Plans live in `PLANS/`** + **agent plans live in `agent-plans/`**.
+5. **All plans live in `PLANS/`** — including agent plans. (תיקיית `agent-plans/`
+   בוטלה ונמחקה 2026-06-22; אין יותר ארגון-לפי-בעלות נפרד.)
 6. **Status lives in `STATUS.md`** — current state vs. master plan, with checklist against §11 DoD. Master plan at `PLANS/research/2026-05-28_master-rebuild-plan.md` is canonical reference. Active future work at `PLANS/next-steps/`.
 
 ---
@@ -441,7 +444,7 @@ testimonials, gallery, events, kosher, contact, routes.
 - 60fps scrub בדסקטופ class-M1 (DevTools Performance recorder).
 - Mobile fallback verified ב-iPhone 12 + Galaxy S22.
 - כל הלשוניות מ-gamos.co.il מיוצגות (Agent 1 inventory מאומת ע"י משתמש).
-- ~~10 קבצי `agent-plans/agent-NN_*.md` קיימים~~ — כל 14 התוכניות בוצעו ונמחקו אחרי השלמתן (2026-06-01). ההיסטוריה ב-`git log` + `STATUS.md`. תוכניות עתידיות ב-`PLANS/next-steps/`.
+- ~~10 קבצי `agent-plans/agent-NN_*.md` קיימים~~ — כל 14 התוכניות בוצעו ונמחקו אחרי השלמתן (2026-06-01); תיקיית `agent-plans/` עצמה בוטלה ונמחקה 2026-06-22. ההיסטוריה ב-`git log` + `STATUS.md`. תוכניות עתידיות (כולל של סוכנים) ב-`PLANS/` (למשל `PLANS/next-steps/`).
 
 ---
 
