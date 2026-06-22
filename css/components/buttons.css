@@ -80,6 +80,10 @@
   border-radius: var(--radius-sm);
 }
 
+/* ---- Press feedback — the canonical tactile dip every CTA shares. A discrete
+   transform is instant (no transition), so it's reduced-motion-safe as-is. ---- */
+.btn:active { transform: scale(0.98); }
+
 /* ---- Hebrew labels are not uppercase-able; keep their natural case but
    preserve the wide editorial tracking. Latin-only labels stay uppercase. */
 .btn:lang(he),
@@ -158,6 +162,8 @@
   color: var(--brass);
   transform: scale(1.12);
 }
+/* Press dips below the hover-scale (must out-order .btn--icon:hover above). */
+.btn--icon:active { transform: scale(1.04); }
 
 /* ---- Reduced motion: show underlines statically (no grow), silence nudges. ---- */
 @media (prefers-reduced-motion: reduce) {

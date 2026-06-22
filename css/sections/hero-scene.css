@@ -128,7 +128,7 @@
    the join to #hall-portal is seamless. */
 .hero_overlay {
   position: absolute; left: 0; right: 0; bottom: 0; height: calc(10 * var(--rem)); z-index: 3;
-  background: linear-gradient(180deg, rgba(245, 239, 230, 0), var(--ivory));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ivory) 0%, transparent), var(--ivory));
 }
 @media (min-width: 768px) { .hero_overlay { height: calc(30.9 * var(--rem)); } }
 
@@ -237,9 +237,10 @@
 .gamos-hero__cta:hover img,
 .gamos-hero__cta:focus-visible img {
   transform: scale(1.06);
-  filter: brightness(1.10) drop-shadow(0 0 28px rgba(207,174,131,.55));
+  filter: brightness(1.10) drop-shadow(0 0 28px color-mix(in srgb, var(--brass) 55%, transparent));
 }
-.gamos-hero__cta:focus-visible { outline: 3px solid #CFAE83; outline-offset: 6px; border-radius: 8px; }
+.gamos-hero__cta:active img { transform: scale(0.98); }
+.gamos-hero__cta:focus-visible { outline: 3px solid var(--brass); outline-offset: 6px; border-radius: var(--radius-md); }
 .gamos-hero:has(.gamos-hero__cta:hover) .gamos-hero__cta:not(:hover),
 .gamos-hero:has(.gamos-hero__cta:focus-visible) .gamos-hero__cta:not(:focus-visible) {
   opacity: .55; filter: brightness(.92);
@@ -252,13 +253,13 @@
 }
 .gamos-hero__prompt-text {
   font-family: Heebo, sans-serif; font-weight: 500;
-  font-size: clamp(1.3rem, 1.5vw, 2rem); letter-spacing: .32em; color: #8B6F46; opacity: 0;
+  font-size: clamp(1.3rem, 1.5vw, 2rem); letter-spacing: .32em; color: var(--brass-deep); opacity: 0;
   animation: gamos-prompt-in 1100ms cubic-bezier(.16,1,.3,1) 400ms forwards,
              gamos-prompt-pulse 3200ms ease-in-out 1600ms infinite;
 }
 .gamos-hero__prompt-line {
   width: 1px; height: 0;
-  background: linear-gradient(180deg, #CFAE83, rgba(207,174,131,0));
+  background: linear-gradient(180deg, var(--brass), color-mix(in srgb, var(--brass) 0%, transparent));
   animation: gamos-prompt-line 900ms cubic-bezier(.16,1,.3,1) 1100ms forwards;
 }
 .gamos-hero__prompt-arrow {
@@ -268,7 +269,7 @@
 }
 .gamos-hero__prompt-arrow svg {
   display: block; width: 100%; height: 100%;
-  stroke: #CFAE83; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+  stroke: var(--brass); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
 }
 
 /* ----------------------------------------------------------- SCROLL CUE ---- */
@@ -279,12 +280,12 @@
   left: 50%; transform: translateX(-50%); z-index: 20;
   visibility: visible; display: inline-flex; align-items: center; justify-content: center;
   inline-size: 26px; block-size: 60px;
-  border: 1.5px solid rgba(139, 111, 70, .85); border-radius: 9999px;
+  border: 1.5px solid color-mix(in srgb, var(--brass-deep) 85%, transparent); border-radius: 9999px;
   text-decoration: none; pointer-events: auto; opacity: 1;
   transition: border-color 240ms cubic-bezier(.2,.8,.2,1);
 }
-.gamos-cue:hover, .gamos-cue:focus-visible { border-color: #8B6F46; }
-.gamos-cue:focus-visible { outline: 3px solid #CFAE83; outline-offset: 4px; }
+.gamos-cue:hover, .gamos-cue:focus-visible { border-color: var(--brass-deep); }
+.gamos-cue:focus-visible { outline: 3px solid var(--brass); outline-offset: 4px; }
 
 /* Single-cue invariant. The hero's `margin-bottom:-100vh` (+ z-index:110) tucks
    the #hall-portal composer under the hero's last pinned frame, so the HERO cue
@@ -299,10 +300,10 @@ html:not([data-hero-mode="true"]) .hero_top .gamos-cue {
   pointer-events: none;
   transition: opacity var(--dur-base) var(--ease-out-cinema);
 }
-.gamos-cue__track { position: relative; display: block; inline-size: 1px; block-size: 34px; background: rgba(139, 111, 70, .4); }
+.gamos-cue__track { position: relative; display: block; inline-size: 1px; block-size: 34px; background: color-mix(in srgb, var(--brass-deep) 40%, transparent); }
 .gamos-cue__dot {
   position: absolute; inset-inline-start: -2.5px; inset-block-start: 0;
-  inline-size: 6px; block-size: 6px; background: #8B6F46; border-radius: 50%;
+  inline-size: 6px; block-size: 6px; background: var(--brass-deep); border-radius: 50%;
   animation: gamos-cue-fall 1.6s cubic-bezier(.55,0,.55,1) infinite;
 }
 

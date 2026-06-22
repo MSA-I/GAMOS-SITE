@@ -146,6 +146,7 @@
   --border-strong:  rgba(26, 20, 16, 0.24);
   --shadow-soft:    0 8px 24px rgba(26, 20, 16, 0.06);
   --shadow-strong:  0 24px 60px rgba(26, 20, 16, 0.16);
+  --shadow-image:   0 30px 80px -40px rgba(26, 20, 16, 0.45); /* deep lift for large image cards (shabbat) */
   --focus-ring:     0 0 0 3px var(--brass);
   /* Offset focus ring for image/hotspot CTAs (hero CTAs, portals, hero cue,
      rooms door). A double box-shadow gives the "outline + gap" look that the

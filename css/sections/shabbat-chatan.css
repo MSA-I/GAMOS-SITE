@@ -30,7 +30,7 @@
   position: relative;
   inline-size: 100%;
   isolation: isolate;
-  background-color: var(--shabbat-tint, var(--shabbat-tint-1, #EDF9FF));
+  background-color: var(--shabbat-tint, var(--shabbat-tint-1, var(--ivory)));
   color: var(--ink-deep);
 }
 
@@ -140,7 +140,7 @@
      N-1 frontmost images to wipe them away in panel order. */
   clip-path: inset(0px 0px 0px 0px);
   /* Warm ink-deep shadow, not pure black (§5 — warm near-black palette). */
-  box-shadow: 0 30px 80px -40px rgba(26, 20, 16, 0.45);
+  box-shadow: var(--shadow-image);
   will-change: clip-path;
 }
 

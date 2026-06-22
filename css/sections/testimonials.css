@@ -120,6 +120,14 @@
   border-color: var(--accent);
 }
 
+/* Keyboard affordance — the dots are real <button>s (slider.js) but don't carry
+   .btn, so they need their own ring. Box-shadow grammar (var(--focus-ring))
+   suits the tiny circle better than an offset outline. */
+.testimonials__dots [data-slider-dot]:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
 .testimonials__dots [data-slider-dot].is-active {
   background: var(--accent);
   border-color: var(--accent);

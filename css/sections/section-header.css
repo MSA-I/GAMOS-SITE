@@ -53,6 +53,6 @@
 }
 
 .section-header--on-dark .section-header__title { color: var(--fg-on-dark); }
-.section-header--on-dark .section-header__lede  { color: rgba(245, 239, 230, 0.78); }
+.section-header--on-dark .section-header__lede  { color: color-mix(in srgb, var(--ivory) 78%, transparent); }
 
 

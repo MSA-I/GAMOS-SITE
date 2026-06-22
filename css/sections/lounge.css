@@ -76,7 +76,7 @@
   margin-block-start:  clamp(-213px, -14.66vw, -147px); /* half of computed block-size — see note */
   transform: var(--lounge-item-transform, none);
   opacity: var(--lounge-opacity, 1);
-  transition: opacity 0.3s linear;
+  transition: opacity var(--dur-base) var(--ease-out-cinema);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-strong);

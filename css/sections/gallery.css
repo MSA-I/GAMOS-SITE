@@ -52,10 +52,12 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .gallery__item:hover img { transform: scale(var(--card-zoom)); }
+  .gallery__item:hover img,
+  .gallery__item:focus-within img { transform: scale(var(--card-zoom)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .gallery__item img { transition: none; }
-  .gallery__item:hover img { transform: none; }
+  .gallery__item:hover img,
+  .gallery__item:focus-within img { transform: none; }
 }
