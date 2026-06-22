@@ -26,8 +26,8 @@ import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(HERE, "..", ".."); // GAMOS-SITE
-const LAB = resolve(HERE, "..");        // rooms-lab
+const ROOT = resolve(HERE, "..", "..", ".."); // GAMOS-SITE (legacy/rooms-lab/scripts → up 3)
+const LAB = resolve(HERE, "..");              // legacy/rooms-lab
 
 const SRC = resolve(
   ROOT, "..", "GAMOS-DOCS", "תמונות לאנימציית האתר", "חדרי נופש 2",

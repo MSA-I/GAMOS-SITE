@@ -21,8 +21,8 @@
     "encode:all": "node scripts/encode-frames.mjs culinary",
     "encode:images": "node scripts/encode-images.mjs",
     "encode:rooms-door": "node scripts/encode-rooms-door.mjs",
-    "encode:door-lab": "node rooms-lab/scripts/encode-door-frames.mjs",
-    "build:rooms-lab": "cd rooms-lab/gallery && npm install && npm run build",
+    "encode:door-lab": "node legacy/rooms-lab/scripts/encode-door-frames.mjs",
+    "build:rooms-lab": "cd legacy/rooms-lab/gallery && npm install && npm run build",
     "extract:shabbat-tints": "node scripts/extract-shabbat-tints.mjs",
     "export:figma": "node scripts/export-figma-tokens.mjs --self-check && node scripts/export-figma-media.mjs && node scripts/export-figma-images.mjs",
     "lighthouse": "npx --yes lighthouse http://localhost:8000 --view --preset=desktop"

@@ -12,6 +12,10 @@ const MANIFEST_URL = "/rooms-lab/assets/frames/door/manifest.json";
 const GALLERY_URL = "/rooms-lab/gallery/dist/";
 const NAV_AT = 0.985;   // scroll progress that triggers the lit handoff
 const VEIL_MS = 540;    // must match .lit-veil transition + a hair
+// Ease-IN on scroll→frame: slow open at the start, ACCELERATING toward the end
+// (user request 2026-06-22 — "faster near the end"). frame = p^END_ACCEL.
+// >1 accelerates the finish; 1 = linear; raise for a sharper late burst.
+const END_ACCEL = 1.9;
 
 const reduced =
   typeof window.matchMedia === "function" &&
@@ -52,6 +56,11 @@ async function init() {
       parallax: false,
       frameStart: 0,         // door opens from frame 0, no dead intro to trim
       bgColor: lit,          // any letterbox edge = the lit doorway tone
+      // We drive drawFrame ourselves (non-linear ease-in mapping), so we can't
+      // rely on bindScroll's sliding window following a LINEAR centre. decodeAll
+      // keeps every frame decoded (193×1080p — fine on desktop) so any eased
+      // index is paint-ready. preload() kicks off the full center-out decode.
+      decodeAll: true,
     },
   });
 
@@ -66,25 +75,31 @@ async function init() {
     return;
   }
 
-  renderer.bindScroll();
+  // We drive the frames ourselves so the scroll→frame mapping can EASE-IN
+  // (accelerate toward the end) instead of bindScroll's linear map.
   renderer.bindResize();
-  renderer.drawFrame(renderer.startFrame || 0);
+  const lastFrame = manifest.frameCount - 1;
 
-  // Auto-nav: when the door is fully open (scroll ~complete), flood the lit
-  // colour and hand off to the gallery. Fire once.
   let navigated = false;
+  let rafPending = false;
   function onScroll() {
-    if (navigated) return;
-    const p = renderer.computeProgress();
-    scene.style.setProperty("--p", p.toFixed(3)); // fades the cue out
-    if (p >= NAV_AT) {
-      navigated = true;
-      if (veil) veil.classList.add("is-on");
-      window.setTimeout(goGallery, VEIL_MS);
-    }
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(() => {
+      rafPending = false;
+      const p = renderer.computeProgress();      // 0..1 linear scroll position
+      scene.style.setProperty("--p", p.toFixed(3)); // fades the cue out
+      const eased = Math.pow(p, END_ACCEL);      // slow start → fast finish
+      renderer.drawFrame(Math.round(eased * lastFrame));
+      if (!navigated && p >= NAV_AT) {
+        navigated = true;
+        if (veil) veil.classList.add("is-on");
+        window.setTimeout(goGallery, VEIL_MS);
+      }
+    });
   }
   window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
+  onScroll(); // initial paint at frame 0
 }
 
 if (document.readyState === "loading") {
