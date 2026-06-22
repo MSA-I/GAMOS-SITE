@@ -33,6 +33,7 @@ import { prefersReducedMotion } from "./utils/media-query.js";
 
 const NAV_DELAY_MS = 1400;  // Hold the loading overlay long enough for the brass bar (1200ms) to fill before navigating.
 const LOGO_SVG_URL = "/assets/images/hero-scene/logo.svg";
+const RETURN_FLAG = "gamos-return-hall"; // set on entry → scroll back to #hall-portal
 
 const state = {
   initialised: false,
@@ -106,11 +107,40 @@ function bindHotspot(link) {
     const isResort = link.dataset.heroLink === "resort";
     try { playWhoosh(isResort); } catch { /* best-effort */ }
     try { window.gamosLoading && window.gamosLoading.show({ hall: isResort ? "resort" : "events" }); } catch { /* ignore */ }
+    // Remember to land back on the composer when the user returns from the halls
+    // sub-app (back-link → /#hall-portal). The pinned 500vh hero shifts offsets,
+    // so native hash-scroll lands wrong; restoreScrollToPortal() handles it on load.
+    try { sessionStorage.setItem(RETURN_FLAG, "1"); } catch { /* private mode */ }
     const target = link.href;
     setTimeout(() => { window.location.href = target; }, NAV_DELAY_MS);
   };
   link.addEventListener("click", handler);
   state.hotspots.push([link, handler]);
+}
+
+/* Returning from the halls sub-app? Scroll back to the composer instead of the
+   page top. The sub-app back-link lands us on "/#hall-portal"; the flag was set on
+   entry in bindHotspot above. We scroll explicitly because the pinned 500vh hero
+   above shifts offsets, so native hash-scroll lands wrong. */
+function restoreScrollToPortal() {
+  let flagged = false;
+  try {
+    flagged = sessionStorage.getItem(RETURN_FLAG) === "1";
+    if (flagged) sessionStorage.removeItem(RETURN_FLAG);
+  } catch { /* private mode → skip */ }
+  if (!flagged) return;
+
+  const jump = () => {
+    const target = document.getElementById("hall-portal");
+    if (!target) return;
+    // Instant (not smooth) — a smooth scroll through the 500vh pinned hero is long
+    // and janky. Land directly on the composer.
+    target.scrollIntoView({ block: "start" });
+  };
+  // Wait for layout + GSAP pins to settle so the offset is correct, then jump.
+  const run = () => requestAnimationFrame(() => window.setTimeout(jump, 350));
+  if (document.readyState === "complete") run();
+  else window.addEventListener("load", run, { once: true });
 }
 
 /* ----------------------------------------------------- logo outline+mask ---- */
@@ -301,6 +331,7 @@ export function init() {
   if (typeof document === "undefined") return;
 
   document.querySelectorAll("#hall-portal [data-hero-link]").forEach(bindHotspot);
+  restoreScrollToPortal();
 
   const hero = document.querySelector("#hero.hero_root");
   if (!hero) {

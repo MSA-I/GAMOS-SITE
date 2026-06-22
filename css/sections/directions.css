@@ -16,6 +16,58 @@
   gap: var(--space-6);
 }
 
+/* ----- Free-text address search (geocode + live route/ETA) ----- */
+
+.directions__search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  inline-size: 100%;
+  max-inline-size: 640px;
+  margin-inline: auto;
+}
+
+.directions__search input {
+  flex: 1 1 320px;
+  min-inline-size: 0;
+  padding-block: var(--space-3);
+  padding-inline: var(--space-4);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--ink-deep);
+  background: var(--ivory);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--dur-base) var(--ease-out-cinema),
+              box-shadow var(--dur-base) var(--ease-out-cinema);
+}
+
+.directions__search input::placeholder { color: var(--fg-muted); }
+
+.directions__search input:focus-visible {
+  outline: none;
+  border-color: var(--brass);
+  box-shadow: var(--focus-ring);
+}
+
+/* Submit button leans on the canonical .btn/.btn--filled brass look; this
+   just gives it a comfortable inline footprint next to the input. */
+.directions__search-btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.directions__search-msg {
+  flex: 1 0 100%;
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--cocoa);
+}
+
 /* ----- Origin tabs (line-language; native radios for a11y) -----
    No segmented box — quiet text labels with a growing brass underline that
    stays lit on the active tab (the .site-nav grammar). LINE-LANGUAGE rev. */

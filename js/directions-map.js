@@ -229,6 +229,8 @@ const state = {
   mqlMotion: null,       // matchMedia reduced-motion
   inputs: [],            // tab radio inputs
   onInput: null,         // change handler ref (for removal)
+  searchForm: null,      // [data-directions-search]
+  onSubmit: null,        // submit handler ref (for removal)
   active: "jerusalem",
   built: false,          // Leaflet map constructed yet?
 };
@@ -453,6 +455,153 @@ function selectOrigin(key, { fly } = { fly: true }) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Free-text address search → live geocode + driving route/ETA
+// ---------------------------------------------------------------------------
+//
+// ponytail: geocoding (Nominatim) + routing (OSRM) run against the PUBLIC demo
+// servers, keyless — fine for a low-traffic venue map but their usage policies
+// forbid heavy production use. Flagged in CLAUDE.md §14 / DEPLOYMENT-COSTS.md as
+// a follow-up if traffic grows (swap to a keyed / self-hosted geocoder+router).
+// No new dependency is added — plain fetch + the existing self-hosted Leaflet.
+
+/** Geocode a free-text address to [lat,lng] (IL-scoped, Hebrew). null if none. */
+async function geocodeAddress(q) {
+  try {
+    const url =
+      "https://nominatim.openstreetmap.org/search?format=json&limit=1" +
+      "&countrycodes=il&accept-language=he&q=" +
+      encodeURIComponent(q);
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) return null;
+    const lat = parseFloat(data[0].lat);
+    const lon = parseFloat(data[0].lon);
+    if (Number.isNaN(lat) || Number.isNaN(lon)) return null;
+    return [lat, lon];
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Driving route from `from` ([lat,lng]) to the venue via OSRM. Returns
+ * { coords:[[lat,lng]…], min, km } (road-following geometry), or null.
+ */
+async function fetchRoute(from) {
+  try {
+    const url =
+      "https://router.project-osrm.org/route/v1/driving/" +
+      `${from[1]},${from[0]};${VENUE[1]},${VENUE[0]}` +
+      "?overview=full&geometries=geojson";
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const route = data && data.routes && data.routes[0];
+    if (!route || !route.geometry || !route.geometry.coordinates) return null;
+    return {
+      coords: route.geometry.coordinates.map(([lng, lat]) => [lat, lng]),
+      min: Math.round(route.duration / 60),
+      km: Math.round(route.distance / 1000),
+    };
+  } catch {
+    return null;
+  }
+}
+
+/** Show / hide the inline status message under the search input. */
+function setSearchMsg(text) {
+  const msg = state.root && state.root.querySelector("[data-directions-msg]");
+  if (!msg) return;
+  if (text) {
+    msg.textContent = text;
+    msg.hidden = false;
+  } else {
+    msg.textContent = "";
+    msg.hidden = true;
+  }
+}
+
+/**
+ * Handle a free-text address submit: geocode → route → draw + fit + update the
+ * card. Mirrors drawRoute()'s polyline options so the custom route reads
+ * identically to a baked one. Does NOT call renderRouteLabels (those are keyed
+ * to the baked ORIGINS only). Guards on Leaflet + a built map; otherwise no-ops.
+ */
+async function onSearchSubmit(e) {
+  e.preventDefault();
+  const L = window.L;
+  const input = state.root && state.root.querySelector("[data-directions-address]");
+  const btn = state.searchForm && state.searchForm.querySelector("button[type=submit]");
+  if (!input) return;
+
+  const q = input.value.trim();
+  if (!q) { input.focus(); return; }
+
+  // Map not ready (vendor failed / not yet built) → no-op gracefully.
+  if (!L || !state.map) {
+    setSearchMsg("המפה עדיין נטענת, נסו שוב בעוד רגע");
+    return;
+  }
+
+  if (btn) btn.disabled = true;
+  setSearchMsg("מחשב…");
+
+  const coords = await geocodeAddress(q);
+  if (!coords) {
+    setSearchMsg("לא נמצאה כתובת, נסו שוב");
+    if (btn) btn.disabled = false;
+    return;
+  }
+
+  const route = await fetchRoute(coords);
+  if (!route) {
+    setSearchMsg("לא הצלחנו לחשב מסלול, נסו שוב");
+    if (btn) btn.disabled = false;
+    return;
+  }
+
+  // Draw the custom route — mirror drawRoute()'s polyline options exactly.
+  if (state.routeLayer) { state.routeLayer.remove(); state.routeLayer = null; }
+  // Clear the baked place labels — they belong to a baked origin, not this one.
+  if (state.labelLayer) { state.labelLayer.remove(); state.labelLayer = null; }
+  state.routeLayer = L.polyline(route.coords, {
+    className: "directions__route",
+    color: "#8B6F46",
+    weight: 4,
+    opacity: 1,
+    lineJoin: "round",
+    lineCap: "round",
+  }).addTo(state.map);
+  state.map.fitBounds(state.routeLayer.getBounds(), { padding: [40, 40] });
+
+  // Update the glass card (same fields setCardAndCtas touches).
+  const etaOrigin = state.root.querySelector("[data-directions-eta-origin]");
+  const etaStat = state.root.querySelector("[data-directions-eta]");
+  if (etaOrigin) etaOrigin.textContent = q.length > 28 ? q.slice(0, 28) + "…" : q;
+  if (etaStat) etaStat.textContent = `${route.min} דק׳ · ${route.km} ק״מ`;
+  const gEl = state.root.querySelector("[data-directions-google]");
+  if (gEl) {
+    gEl.href =
+      "https://www.google.com/maps/dir/?api=1" +
+      `&origin=${coords[0]},${coords[1]}` +
+      `&destination=${DEST_STR}&travelmode=driving`;
+  }
+  // Waze / WhatsApp left as-is (venue-deep-link / generic question).
+
+  // Custom route is now "active" — drop the baked tabs' visual selection.
+  state.active = null;
+  for (const tab of state.inputs) {
+    tab.checked = false;
+    tab.setAttribute("aria-selected", "false");
+    tab.closest(".directions__tab")?.classList.remove("is-active");
+  }
+
+  setSearchMsg("");
+  if (btn) btn.disabled = false;
+}
+
 /**
  * Reserve the floating glass card's footprint so route labels never hide
  * behind it. The card sits at the bottom inline-end corner — in RTL that's
@@ -567,6 +716,14 @@ export function init() {
   syncTabAria();
   setCardAndCtas(state.active);
 
+  // Free-text address search (geocode + route/ETA). Lives alongside the tabs;
+  // submitting restores onInput → selectOrigin for any tab clicked afterward.
+  state.searchForm = root.querySelector("[data-directions-search]");
+  if (state.searchForm) {
+    state.onSubmit = onSearchSubmit;
+    state.searchForm.addEventListener("submit", state.onSubmit);
+  }
+
   // If window.L isn't present (vendor script failed), leave the noscript-style
   // fallback content: tabs still re-point CTAs, just no map. Never throw.
   if (typeof window.L === "undefined") return;
@@ -600,6 +757,11 @@ export function destroy() {
       input.removeEventListener("change", state.onInput);
     }
   }
+  if (state.searchForm && state.onSubmit) {
+    state.searchForm.removeEventListener("submit", state.onSubmit);
+  }
+  state.searchForm = null;
+  state.onSubmit = null;
   if (state.io) { state.io.disconnect(); state.io = null; }
   if (state.resizeObs) { state.resizeObs.disconnect(); state.resizeObs = null; }
   if (state.routeLayer) { state.routeLayer.remove(); state.routeLayer = null; }

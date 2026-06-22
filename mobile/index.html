@@ -1545,6 +1545,17 @@
         </header>
 
         <div class="directions" data-directions>
+          <!-- Free-text origin search: type any address → geocode (Nominatim) +
+               driving route/ETA (OSRM), both keyless. Lives ALONGSIDE the baked
+               origin tabs below. Wired in js/directions-map.js. -->
+          <form class="directions__search" data-directions-search role="search">
+            <input type="text" data-directions-address
+                   placeholder="הקלידו כתובת מלאה לחישוב מסלול וזמן"
+                   aria-label="כתובת המוצא שלכם" autocomplete="street-address" inputmode="text">
+            <button type="submit" class="btn btn--filled directions__search-btn">חשבו מסלול</button>
+            <p class="directions__search-msg" data-directions-msg aria-live="polite" hidden></p>
+          </form>
+
           <!-- Origin tabs (native radios → keyboard + SR accessible). JS syncs
                aria-selected + the active route. RTL: first = rightmost. -->
           <div class="directions__tabs" role="tablist" aria-label="בחירת מוצא הנסיעה">

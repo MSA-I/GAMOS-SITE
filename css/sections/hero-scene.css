@@ -34,14 +34,14 @@
    GSAP entrance autoAlpha reveals (JS also force-reveals as a safety net). */
 .hero_root {
   position: relative;
-  height: 350vh;
+  height: 300vh;
   margin-bottom: -100vh;
   background: var(--ivory);
   isolation: isolate;
   z-index: 110;
   visibility: hidden;
 }
-@media (min-width: 768px) { .hero_root { height: 500vh; } }
+@media (min-width: 768px) { .hero_root { height: 400vh; } }
 
 .hero_top { position: sticky; top: 0; height: 100vh; }
 
