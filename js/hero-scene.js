@@ -206,8 +206,8 @@ function buildTimelines() {
   // rise + cloud drift on ≤768px keeps the desert in frame through the reveal.
   // Desktop (≥769px) stays byte-identical (ternaries collapse to the originals).
   const isNarrow = window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
-  const HOUSE_Y     = isNarrow ? "-18%" : "-40%";
-  const HOUSE_SCALE = isNarrow ? 1.18   : 1.3;
+  const HOUSE_Y     = isNarrow ? "-55%" : "-40%";
+  const HOUSE_SCALE = isNarrow ? 1.2    : 1.3;
   const CLOUD_X     = isNarrow ? "9%"   : "15%";
   const A = gsap.timeline();
   A.to([house, compHouse], { y: HOUSE_Y, scale: HOUSE_SCALE, duration: 1 }, 0);

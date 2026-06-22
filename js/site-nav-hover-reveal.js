@@ -25,12 +25,14 @@ const HERO_SELECTOR    = "#hero";   // class-agnostic — the rebuilt hero is #h
 const REVEAL_BAND_VH   = 14;           // top 14% of viewport reveals the bar
 const HIDE_GRACE_MS    = 220;          // small grace period before re-hiding
 
-// Touch devices have no hover affordance, so the cursor-band reveal never
-// fires — the hamburger (which lives INSIDE the hidden .site-nav) would be
-// unreachable while in the hero. On such devices we keep the bar REVEALED
-// throughout hero-mode so the toggle is always tappable. Desktop (fine pointer)
-// keeps the hover-reveal behaviour. (§9 keyboard/touch reachability; §13 rule 8
-// — equivalent experience on touch, not a degraded one.)
+// Touch devices have no hover affordance, so the cursor-band reveal never fires.
+// Instead of pinning the bar visible throughout the hero (which left it covering
+// the cinematic hero top — user request 2026-06-22), on touch we hide it during
+// hero-mode and reveal it on SCROLL-UP (hide on scroll-down, hidden at the very
+// top). The hamburger stays reachable — a small upward swipe brings the bar in —
+// and once past the hero the native sticky bar takes over. Desktop (fine pointer)
+// keeps the hover-band reveal. (§9 touch reachability; §13 rule 8 — equivalent
+// experience, matching the desktop "hero covers the nav" intent.)
 const isTouch = typeof window !== "undefined"
   && window.matchMedia
   && window.matchMedia("(hover: none)").matches;
@@ -42,6 +44,7 @@ const state = {
   inHero: false,
   inBand: false,
   hideTimer: null,
+  lastScrollY: 0,
   bound: {
     onMouseMove: null,
     onMouseLeave: null,
@@ -54,10 +57,10 @@ function setHeroMode(value) {
   if (!value && !state.inHero) return;
   state.inHero = !!value;
   document.documentElement.setAttribute("data-hero-mode", value ? "true" : "false");
-  // On touch, mirror reveal to hero-mode so the hamburger is always reachable
-  // (no mousemove will ever reveal it). On desktop, leave reveal to the cursor.
+  // On touch, start hidden whenever hero-mode toggles; the scroll-direction
+  // handler reveals on scroll-up. On desktop, leave reveal to the cursor.
   if (isTouch) {
-    setRevealed(!!value);
+    setRevealed(false);
   } else if (!value) {
     setRevealed(false);
   }
@@ -95,11 +98,9 @@ export function init() {
   //     reverts to its native sticky bar. Correct either way.
   state.inHero = document.documentElement.getAttribute("data-hero-mode") === "true";
 
-  // On touch we mirror reveal→hero-mode inside setHeroMode, but the first IO
-  // callback (visible===true) early-returns because inHero is already true, so
-  // setRevealed would never run. Seed the reveal here so the hamburger is
-  // tappable from the first frame on touch.
-  if (isTouch && state.inHero) setRevealed(true);
+  // On touch the bar starts hidden in hero-mode (revealed on scroll-up). Seed the
+  // scroll anchor so the first scroll delta is measured from the load position.
+  state.lastScrollY = window.scrollY || window.pageYOffset || 0;
 
   // hero-mode is active while the hero still OWNS the viewport, i.e. its 100vh
   // sticky pin is filling the screen (top has reached/passed the viewport top
@@ -128,7 +129,21 @@ export function init() {
   state.bound.onScroll = () => {
     if (state._navTick) return;
     state._navTick = true;
-    requestAnimationFrame(() => { state._navTick = false; evalHeroMode(); });
+    requestAnimationFrame(() => {
+      state._navTick = false;
+      evalHeroMode();
+      // Touch: scroll-direction reveal while the hero owns the viewport.
+      // At the very top → hidden (hero covers the nav); scroll up → reveal;
+      // scroll down → hide. Below the hero the native sticky bar takes over.
+      if (isTouch && state.inHero) {
+        const y = window.scrollY || window.pageYOffset || 0;
+        const dy = y - state.lastScrollY;
+        if (y <= 4) setRevealed(false);
+        else if (dy < -6) setRevealed(true);
+        else if (dy > 6) setRevealed(false);
+        state.lastScrollY = y;
+      }
+    });
   };
   window.addEventListener("scroll", state.bound.onScroll, { passive: true });
   evalHeroMode();

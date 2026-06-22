@@ -43,6 +43,26 @@
      desert stays in frame the whole time). Desktop ≥769px keeps 500vh. */
   #hero.hero_root { block-size: 460vh; }
 
+  /* ----- DESERT FILL FIX (2026-06-22) --------------------------------------
+     subject.png is a very wide panorama (6240×1599, AR 3.9). With the base
+     object-fit:contain in a narrow portrait box it fits-to-WIDTH → a ~100px
+     (~12vh) strip stuck low in the frame, while desktop's wide box renders it
+     ~41% of the frame. Result on mobile: the logo letters "fill" against empty
+     pale sky (the desert never reaches the centred logo) — the #1 reported
+     defect. Fix: object-fit:cover gives a tall desert band (centre-crop of the
+     panorama), sat lower-centre so the rising ridge sweeps UP behind the centred
+     logo at the fill beat — the same choreography the desktop box produces.
+     Paired with a larger desert rise in js/hero-scene.js (isNarrow branch). */
+  #hero.hero_root .hero_bg > .hero_house,
+  #hero.hero_root .hero_composite .hero_house {
+    top: 56vh;
+    height: 58vh;
+  }
+  #hero.hero_root .hero_house img {
+    object-fit: cover;
+    object-position: center 30%;
+  }
+
   /* ----- COMPOSER: give the landscape box real portrait height -------------
      aspect-ratio:auto cancels the 2048/1360 landscape ratio; min-block-size
      gives the absolutely-positioned children room to spread without overlap.
