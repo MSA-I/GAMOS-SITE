@@ -1,0 +1,286 @@
+/* =====================================================================
+ * index.mobile.css — phone-first chrome for the rooms gallery.
+ *
+ * Imported ONLY by main.mobile.tsx (after index.css), so these `.roomsm-*`
+ * rules are isolated from the desktop `.rooms-*` set and never affect the
+ * desktop build. Reuses the brand tokens from @theme in index.css
+ * (--color-brass / --color-ink-deep / --color-ivory, --font-display /
+ * --font-body) and the shared .texture-text--light fill.
+ *
+ * The WebGL wall + RoomDetail are untouched — this file only re-lays-out the
+ * overlaid chrome so nothing wraps/occludes the gallery on a ≤430px phone.
+ *
+ * Constitution: §5 palette (tokens only, no hard-coded hex except the warm
+ * black scrims, kept off pure #000 per §5), §9 a11y (≥44px back, focus rings,
+ * reduced-motion).
+ * ===================================================================== */
+
+/* ---------------------------------------------------------------------
+ * Back link — top inline-start. ≥44px tap target (Fitts'/touch). Short
+ * "חזרה" label so it can't collide with the eyebrow on a narrow row.
+ * Plain text + brass underline that grows on hover/focus (mirrors desktop).
+ * ------------------------------------------------------------------- */
+.roomsm-back {
+  position: fixed;
+  top: max(env(safe-area-inset-top), 0.75rem);
+  inset-inline-start: max(env(safe-area-inset-left), 1rem);
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  /* ≥44px tap target without a visible box */
+  min-block-size: 44px;
+  min-inline-size: 44px;
+  padding-inline: 0.25rem;
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--color-ivory) 92%, transparent);
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.3s ease;
+}
+
+.roomsm-back__arrow {
+  display: inline-block;
+  font-size: 1.1rem;
+  line-height: 1;
+  transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.roomsm-back__label {
+  position: relative;
+  padding-block-end: 0.16rem;
+}
+
+.roomsm-back__label::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  block-size: 1px;
+  background: var(--color-brass);
+  transform: scaleX(0);
+  transform-origin: inline-end;
+  transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Touch devices fire :hover on tap → gate the hover decoration. The press
+   feedback below is the real touch affordance. */
+@media (hover: hover) and (pointer: fine) {
+  .roomsm-back:hover {
+    color: var(--color-brass);
+  }
+  .roomsm-back:hover .roomsm-back__arrow {
+    transform: translateX(0.3rem); /* RTL: nudges toward the start edge */
+  }
+  .roomsm-back:hover .roomsm-back__label::after {
+    transform: scaleX(1);
+  }
+}
+
+/* Press feedback — the element confirms the tap (Emil: pressable → responsive). */
+.roomsm-back:active {
+  color: var(--color-brass);
+  transform: scale(0.97);
+}
+
+.roomsm-back:focus-visible {
+  color: var(--color-brass);
+  outline: 2px solid var(--color-brass);
+  outline-offset: 6px;
+  border-radius: 3px;
+}
+.roomsm-back:focus-visible .roomsm-back__label::after {
+  transform: scaleX(1);
+}
+
+/* ---------------------------------------------------------------------
+ * Eyebrow — top inline-end. Compact, quiet, single short line; never wraps.
+ * pointer-events:none so it never eats a tap meant for the gallery.
+ * ------------------------------------------------------------------- */
+.roomsm-eyebrow {
+  position: fixed;
+  top: max(env(safe-area-inset-top), 0.75rem);
+  inset-inline-end: max(env(safe-area-inset-right), 1rem);
+  z-index: 30;
+  /* sit centred against the 44px back-link row */
+  min-block-size: 44px;
+  display: flex;
+  align-items: center;
+  text-align: end;
+  pointer-events: none;
+  user-select: none;
+}
+
+.roomsm-eyebrow__kicker {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--color-brass) 80%, var(--color-ivory));
+}
+
+/* ---------------------------------------------------------------------
+ * Active-card title — bottom BAR. A scrim gradient anchors the type over any
+ * frame; index → title → type stacked. The title is clamped to 2 lines at a
+ * phone-safe size so it can NEVER wrap upward over the gallery centre.
+ * pointer-events:none → drags that start over the bar still pan the wall.
+ * ------------------------------------------------------------------- */
+.roomsm-active {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: 30;
+  padding-block: 2.5rem 1rem;
+  padding-block-end: max(env(safe-area-inset-bottom), 1rem);
+  padding-inline: 1.25rem;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  text-align: center;
+  /* warm-black scrim (off pure #000 per §5) so the title reads over any photo */
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--color-ink-deep) 82%, transparent) 0%,
+    color-mix(in srgb, var(--color-ink-deep) 55%, transparent) 45%,
+    transparent 100%
+  );
+}
+
+.roomsm-active__index {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--color-ivory) 92%, transparent);
+  text-shadow: 0 1px 5px rgba(26, 20, 16, 0.5);
+}
+
+.roomsm-active__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  line-height: 1.12;
+  letter-spacing: 0.01em;
+  /* phone-safe size — fits ~2 lines at 360px without crowding the gallery */
+  font-size: clamp(1.4rem, 6.2vw, 1.9rem);
+  color: var(--color-ivory);
+  filter: drop-shadow(0 1px 6px rgba(26, 20, 16, 0.5));
+  /* hard 2-line cap → a long title can never wrap up over the gallery centre */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  /* keep a long single Hebrew word from forcing a horizontal overflow */
+  overflow-wrap: anywhere;
+  max-inline-size: 100%;
+}
+
+.roomsm-active__type {
+  margin: 0.1rem 0 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-brass) 74%, var(--color-ivory));
+  text-shadow: 0 1px 5px rgba(26, 20, 16, 0.45);
+}
+
+/* ---------------------------------------------------------------------
+ * First-load hint — LOW, just above the title bar (NOT screen-centre), so it
+ * never sits on a tappable card. Small pill; auto-dismisses on first input.
+ * ------------------------------------------------------------------- */
+.roomsm-hint {
+  position: fixed;
+  inset-inline: 0;
+  /* clear of the bottom title bar (which ends ~env-bottom + ~3.5rem of content) */
+  inset-block-end: calc(max(env(safe-area-inset-bottom), 1rem) + 5.5rem);
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  pointer-events: none;
+  animation: roomsm-hint-pulse 2.4s ease-in-out infinite;
+}
+
+/* ‹ › arrows flanking the label — gentle outward drift = "swipe to the sides". */
+.roomsm-hint__arrow {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1;
+  color: var(--color-brass-glow);
+  text-shadow: 0 1px 10px rgba(26, 20, 16, 0.7);
+  animation: roomsm-hint-drift 2.4s ease-in-out infinite;
+}
+.roomsm-hint__arrow--start { animation-name: roomsm-hint-drift-start; }
+.roomsm-hint__arrow--end { animation-name: roomsm-hint-drift-end; }
+
+@media (prefers-reduced-motion: reduce) {
+  .roomsm-hint,
+  .roomsm-hint--static {
+    animation: none;
+    opacity: 0.85;
+  }
+  .roomsm-hint__arrow,
+  .roomsm-hint--static .roomsm-hint__arrow { animation: none; }
+}
+/* JS-detected reduced-motion (motion/react) also pins it static. */
+.roomsm-hint--static,
+.roomsm-hint--static .roomsm-hint__arrow { animation: none; }
+
+@keyframes roomsm-hint-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes roomsm-hint-drift-start {
+  0%, 100% { transform: translateX(0); opacity: 0.55; }
+  50% { transform: translateX(0.3rem); opacity: 1; }
+}
+@keyframes roomsm-hint-drift-end {
+  0%, 100% { transform: translateX(0); opacity: 0.55; }
+  50% { transform: translateX(-0.3rem); opacity: 1; }
+}
+
+/* LINE-LANGUAGE rev (2026-06-15): quiet text hint, no box/blur — soft ink
+   shadow for legibility over the wall + a thin brass underline. */
+.roomsm-hint__pill {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.74rem;
+  letter-spacing: 0.03em;
+  color: color-mix(in srgb, var(--color-ivory) 90%, transparent);
+  text-shadow: 0 1px 10px rgba(26, 20, 16, 0.7);
+  border-block-end: 1px solid color-mix(in srgb, var(--color-brass-glow) 70%, transparent);
+  padding-block: 0.3rem;
+}
+
+/* ---------------------------------------------------------------------
+ * RoomDetail (reused verbatim) already stacks at ≤820px — give the close
+ * button a ≥44px hit + a press feedback on touch. The desktop .rooms-detail*
+ * rules are untouched; this only ADDS phone affordances (since this file loads
+ * after index.css and only on mobile entry).
+ * ------------------------------------------------------------------- */
+.rooms-detail__close {
+  min-inline-size: 44px;
+  min-block-size: 44px;
+}
+.rooms-detail__close:active {
+  transform: scale(0.97);
+}

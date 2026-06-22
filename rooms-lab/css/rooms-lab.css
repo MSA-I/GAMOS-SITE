@@ -1,0 +1,124 @@
+/* ===========================================================================
+   rooms-lab.css — standalone styles for the scrolled-door experiment.
+   Self-contained (no site CSS imported). The sticky-stage rules mirror
+   css/sections/scroll-scene.css (canvas-frames mode); --lit is set by JS from
+   the encoded manifest's litColor (sampled from the door clip's last frame).
+   ========================================================================= */
+
+:root {
+  --lit: #dda86b; /* overwritten at runtime by door-scrub.js (manifest.litColor) */
+  --ivory: #f5efe6;
+  --ink-deep: #1a1410;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--ink-deep);
+  color: var(--ivory);
+  font-family: system-ui, "Segoe UI", sans-serif;
+}
+
+/* ----- The scrolled-door scene ----- */
+.door-scene {
+  position: relative;
+  display: block;
+  isolation: isolate;
+  background: var(--lit);
+}
+
+.door-scene__sticky {
+  position: sticky;
+  inset-block-start: 0;
+  inline-size: 100%;
+  block-size: 100vh;
+  overflow: hidden;
+  background: var(--lit);
+}
+
+.door-scene__poster {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  background: var(--lit);
+}
+.door-scene__poster img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Canvas painted by canvas-frame-renderer.js — fades in once preloaded. */
+.door-scene__canvas {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  display: block;
+  background: var(--lit);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+.door-scene__canvas.is-ready { opacity: 1; }
+.door-scene__canvas.is-ready ~ .door-scene__poster { opacity: 0; }
+
+/* Scroll cue — also a real link so no-JS / reduced-motion users can enter. */
+.door-scene__cue {
+  position: absolute;
+  inset-block-end: clamp(1.5rem, 5vh, 3rem);
+  inset-inline: 0;
+  margin-inline: auto;
+  inline-size: max-content;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--ivory);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink-deep) 45%, transparent);
+  backdrop-filter: blur(4px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.door-scene__cue::after {
+  content: "↓";
+  animation: cue-bob 1.6s ease-in-out infinite;
+}
+@keyframes cue-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+/* Fade the cue out as the door opens (JS sets --p 0..1). */
+.door-scene__cue { opacity: calc(1 - var(--p, 0) * 2.2); }
+
+.door-scene__spacer {
+  block-size: var(--scene-spacer, 300vh);
+  inline-size: 100%;
+  pointer-events: none;
+}
+
+/* ----- The lit veil — floods the doorway colour at the end, then navigates. */
+.lit-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--lit);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.52s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lit-veil.is-on { opacity: 1; }
+
+/* ----- Fallbacks ----- */
+@media (prefers-reduced-motion: reduce) {
+  .door-scene__spacer { block-size: auto; min-block-size: 100vh; }
+  .door-scene__cue { opacity: 1; }
+}
+.no-js .door-scene__canvas { display: none; }
+.no-js .door-scene__poster { opacity: 1; }

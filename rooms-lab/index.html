@@ -1,0 +1,36 @@
+<!doctype html>
+<html dir="rtl" lang="he" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>rooms-lab · דלת חדרי נופש מגוללת</title>
+  <meta name="robots" content="noindex">
+  <link rel="preload" as="image" href="/rooms-lab/assets/door-poster.webp">
+  <link rel="stylesheet" href="/rooms-lab/css/rooms-lab.css">
+</head>
+<body>
+  <!-- ================================================================
+       Scrolled-door experiment. Scroll opens the door (canvas-frames
+       scrub of the Seedance clip); at the end the lit doorway colour
+       floods the screen and we hand off to the gallery copy.
+       ================================================================ -->
+  <section class="door-scene" aria-label="כניסה לחדרי הנופש">
+    <div class="door-scene__sticky">
+      <picture class="door-scene__poster" aria-hidden="true">
+        <img src="/rooms-lab/assets/door-poster.webp" width="1920" height="1080"
+             alt="" decoding="async">
+      </picture>
+      <canvas class="door-scene__canvas"
+              data-manifest-url="/rooms-lab/assets/frames/door/manifest.json"
+              aria-hidden="true"></canvas>
+      <a class="door-scene__cue" href="/rooms-lab/gallery/dist/">גללו לפתיחת הדלת</a>
+    </div>
+    <div class="door-scene__spacer" style="--scene-spacer: 800vh;"></div>
+    <div class="lit-veil" aria-hidden="true"></div>
+  </section>
+
+  <!-- GSAP self-hosted (parallax in the renderer). Reused from the site. -->
+  <script defer src="/assets/vendor/gsap.min.js"></script>
+  <script type="module" src="/rooms-lab/js/door-scrub.js"></script>
+</body>
+</html>

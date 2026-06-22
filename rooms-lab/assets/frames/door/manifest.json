@@ -1,0 +1,14 @@
+{
+  "scene": "door",
+  "frameCount": 193,
+  "frameUrl": "/rooms-lab/assets/frames/door/frame_{NNNN}.webp",
+  "width": 1920,
+  "height": 1080,
+  "litColor": "#dda86b",
+  "sourceVideo": "video_Seedance2.0_r2v_00003_.mp4",
+  "sourceMtime": "2026-06-22T15:49:01.969Z",
+  "encoded": "2026-06-22T17:04:11.433Z",
+  "fpsExtracted": 24,
+  "scaleWidthPx": 1920,
+  "webpQuality": 90
+}
