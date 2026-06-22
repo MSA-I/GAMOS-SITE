@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAMOS Hero Concepts — Preview</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   GAMOS Hero Concepts Preview — Self-contained artifact
+   Palette from css/tokens.css §5; Fonts loaded from project assets
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* --- Font Faces (self-hosted from project) --- */
+@font-face {
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../../assets/fonts/rubik-hebrew.woff2") format("woff2");
+  unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../../assets/fonts/rubik-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC;
+}
+@font-face {
+  font-family: "Heebo";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../../assets/fonts/heebo-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Heebo";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../../assets/fonts/heebo-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Cinzel";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../../assets/fonts/cinzel-700.woff2") format("woff2");
+  unicode-range: U+0020-007E, U+00A0-00FF;
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../../assets/fonts/playfair-display-400.woff2") format("woff2");
+}
+
+/* --- Design Tokens --- */
+:root {
+  --brass: #CFAE83;
+  --brass-deep: #8B6F46;
+  --brass-glow: #D4B98A;
+  --cocoa: #534133;
+  --ivory: #F5EFE6;
+  --ivory-warm: #ECE3D3;
+  --mist: #E8DFD3;
+  --ink-deep: #1A1410;
+  --accent-rose: #B8576F;
+  --font-display: "Rubik", "Heebo", sans-serif;
+  --font-body: "Heebo", sans-serif;
+  --font-latin-display: "Cinzel", serif;
+  --font-serif: "Playfair Display", serif;
+}
+
+/* --- Reset & Base --- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--ink-deep);
+  color: var(--ivory);
+  overflow-x: hidden;
+}
+img { display: block; max-inline-size: 100%; block-size: auto; }
+a { color: inherit; text-decoration: none; }
+
+/* --- Concept Selector (fixed top bar) --- */
+.selector {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  background: rgba(26, 20, 16, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-block-end: 1px solid rgba(207, 174, 131, 0.2);
+}
+.selector__label {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--brass);
+  text-transform: uppercase;
+}
+.selector__btn {
+  padding: 0.5rem 1.2rem;
+  border: 1px solid rgba(207, 174, 131, 0.3);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ivory);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.selector__btn:hover,
+.selector__btn:focus-visible {
+  background: rgba(207, 174, 131, 0.15);
+  border-color: var(--brass);
+  color: var(--brass);
+}
+.selector__btn.is-active {
+  background: var(--brass);
+  border-color: var(--brass);
+  color: var(--ink-deep);
+  font-weight: 500;
+}
+.selector__btn:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+}
+
+/* --- Hero Sections (shared) --- */
+.hero-concept {
+  position: relative;
+  min-block-size: 100vh;
+  min-block-size: 100dvh;
+  display: none;
+  overflow: hidden;
+}
+.hero-concept.is-visible { display: grid; }
+
+/* --- Concept A: Commercial Premium --- */
+.hero-a {
+  grid-template-rows: 1fr;
+  align-items: center;
+  background: var(--ink-deep);
+}
+.hero-a__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.hero-a__bg img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  opacity: 0.55;
+  filter: brightness(0.7) saturate(0.85);
+}
+.hero-a__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    linear-gradient(to top, rgba(26,20,16,0.95) 0%, rgba(26,20,16,0.4) 40%, transparent 70%),
+    linear-gradient(to right, rgba(26,20,16,0.7) 0%, transparent 50%);
+}
+.hero-a__content {
+  position: relative;
+  z-index: 3;
+  padding-inline: clamp(2rem, 8vw, 10rem);
+  padding-block: 6rem 4rem;
+  max-inline-size: 72rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.hero-a__eyebrow {
+  font-family: var(--font-latin-display);
+  font-size: clamp(0.7rem, 1vw, 0.85rem);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--brass);
+  opacity: 0;
+  animation: fadeSlideUp 0.8s 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.hero-a__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5.5vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--ivory);
+  opacity: 0;
+  animation: fadeSlideUp 0.9s 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.hero-a__subtitle {
+  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  line-height: 1.6;
+  color: rgba(245, 239, 230, 0.8);
+  max-inline-size: 38rem;
+  opacity: 0;
+  animation: fadeSlideUp 0.8s 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.hero-a__ctas {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-block-start: 1rem;
+  opacity: 0;
+  animation: fadeSlideUp 0.8s 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.hero-a__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem 2.2rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 2px;
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-a__cta--primary {
+  background: var(--brass);
+  color: var(--ink-deep);
+}
+.hero-a__cta--primary:hover {
+  background: var(--brass-glow);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(207, 174, 131, 0.25);
+}
+.hero-a__cta--secondary {
+  background: transparent;
+  border: 1px solid rgba(207, 174, 131, 0.5);
+  color: var(--brass);
+}
+.hero-a__cta--secondary:hover {
+  background: rgba(207, 174, 131, 0.1);
+  border-color: var(--brass);
+}
+.hero-a__scroll-cue {
+  position: absolute;
+  inset-block-end: 2.5rem;
+  inset-inline: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--brass);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+}
+.hero-a__scroll-cue span {
+  display: block;
+  inline-size: 1px;
+  block-size: 32px;
+  background: var(--brass);
+  animation: scrollPulse 2s infinite;
+}
+
+/* --- Concept B: Awwwards/WebGL Depth --- */
+.hero-b {
+  background: var(--ink-deep);
+  grid-template-rows: 1fr;
+  perspective: 1200px;
+  align-items: stretch;
+}
+.hero-b__scene {
+  position: relative;
+  inline-size: 100%;
+  block-size: 100vh;
+  block-size: 100dvh;
+  transform-style: preserve-3d;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+.hero-b__layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  transition: transform 0.1s linear;
+}
+.hero-b__layer--back {
+  z-index: 1;
+  transform: translateZ(-300px) scale(1.6);
+}
+.hero-b__layer--mid {
+  z-index: 2;
+  transform: translateZ(-150px) scale(1.3);
+}
+.hero-b__layer--front {
+  z-index: 3;
+  transform: translateZ(0px);
+}
+.hero-b__panel {
+  position: absolute;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s ease;
+}
+.hero-b__panel img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+.hero-b__panel--1 {
+  inline-size: clamp(200px, 28vw, 380px);
+  block-size: clamp(140px, 20vw, 260px);
+  inset-block-start: 12%;
+  inset-inline-end: 8%;
+}
+.hero-b__panel--2 {
+  inline-size: clamp(240px, 34vw, 460px);
+  block-size: clamp(160px, 22vw, 300px);
+  inset-block-end: 20%;
+  inset-inline-start: 5%;
+}
+.hero-b__panel--3 {
+  inline-size: clamp(180px, 22vw, 300px);
+  block-size: clamp(240px, 30vw, 380px);
+  inset-block-start: 25%;
+  inset-inline-start: 35%;
+}
+.hero-b__panel--4 {
+  inline-size: clamp(160px, 20vw, 260px);
+  block-size: clamp(120px, 16vw, 200px);
+  inset-block-end: 10%;
+  inset-inline-end: 25%;
+}
+.hero-b__panel--5 {
+  inline-size: clamp(140px, 18vw, 240px);
+  block-size: clamp(180px, 24vw, 300px);
+  inset-block-start: 8%;
+  inset-inline-start: 8%;
+}
+.hero-b__panel-label {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  padding: 1.5rem 1rem 1rem;
+  background: linear-gradient(to top, rgba(26,20,16,0.9), transparent);
+  font-family: var(--font-display);
+  font-size: clamp(0.7rem, 1vw, 0.9rem);
+  color: var(--ivory);
+  letter-spacing: 0.05em;
+}
+.hero-b__title-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  text-align: center;
+  padding: 2rem;
+}
+.hero-b__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 700;
+  color: var(--ivory);
+  text-shadow: 0 4px 40px rgba(0,0,0,0.6);
+  margin-block-end: 0.5rem;
+}
+.hero-b__tagline {
+  font-size: clamp(0.9rem, 1.5vw, 1.15rem);
+  color: var(--brass);
+  letter-spacing: 0.05em;
+}
+.hero-b__ctas-wrap {
+  position: absolute;
+  inset-block-end: 4rem;
+  inset-inline: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  pointer-events: auto;
+}
+.hero-b__cta {
+  padding: 0.9rem 2rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 999px;
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: auto;
+}
+.hero-b__cta--events {
+  background: var(--brass);
+  color: var(--ink-deep);
+}
+.hero-b__cta--events:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 24px rgba(207, 174, 131, 0.3);
+}
+.hero-b__cta--resort {
+  border: 1px solid var(--brass);
+  color: var(--brass);
+  background: rgba(207, 174, 131, 0.06);
+}
+.hero-b__cta--resort:hover {
+  background: rgba(207, 174, 131, 0.15);
+  transform: translateY(-2px);
+}
+
+/* --- Concept C: Cinematic 24-Hour Journey --- */
+.hero-c {
+  grid-template-rows: 1fr;
+  background: var(--ink-deep);
+}
+.hero-c__timeline {
+  position: relative;
+  inline-size: 100%;
+  block-size: 100vh;
+  block-size: 100dvh;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+.hero-c__phase {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: flex 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-c__phase img {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), filter 0.7s ease;
+}
+.hero-c__phase-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  transition: background 0.7s ease;
+}
+.hero-c__phase:nth-child(1) .hero-c__phase-overlay {
+  background: linear-gradient(to top, rgba(207, 138, 60, 0.4), rgba(26, 20, 16, 0.3));
+}
+.hero-c__phase:nth-child(2) .hero-c__phase-overlay {
+  background: linear-gradient(to top, rgba(184, 87, 111, 0.3), rgba(26, 20, 16, 0.3));
+}
+.hero-c__phase:nth-child(3) .hero-c__phase-overlay {
+  background: linear-gradient(to top, rgba(26, 20, 16, 0.6), rgba(26, 20, 16, 0.4));
+}
+.hero-c__phase:nth-child(4) .hero-c__phase-overlay {
+  background: linear-gradient(to top, rgba(207, 174, 131, 0.2), rgba(245, 239, 230, 0.1));
+}
+.hero-c__phase-content {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  z-index: 3;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-c__phase-time {
+  font-family: var(--font-latin-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+.hero-c__phase-title {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-weight: 700;
+  color: var(--ivory);
+}
+.hero-c__phase-desc {
+  font-size: 0.85rem;
+  color: rgba(245, 239, 230, 0.7);
+  max-inline-size: 16rem;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.5s 0.15s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-c__phase:hover .hero-c__phase-desc,
+.hero-c__phase:focus-within .hero-c__phase-desc {
+  opacity: 1;
+  transform: translateY(0);
+}
+.hero-c__phase:hover img {
+  transform: scale(1.05);
+}
+.hero-c__main-title {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline: 0;
+  z-index: 10;
+  transform: translateY(-50%);
+  text-align: center;
+  pointer-events: none;
+  padding: 2rem;
+}
+.hero-c__main-title h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4.5vw, 3.5rem);
+  font-weight: 700;
+  color: var(--ivory);
+  text-shadow: 0 4px 40px rgba(0,0,0,0.5);
+  margin-block-end: 0.5rem;
+}
+.hero-c__main-title p {
+  font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+  color: var(--brass);
+  letter-spacing: 0.04em;
+}
+.hero-c__ctas {
+  position: absolute;
+  inset-block-end: 3rem;
+  inset-inline: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+.hero-c__cta {
+  padding: 0.9rem 2rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 2px;
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-c__cta--events {
+  background: var(--brass);
+  color: var(--ink-deep);
+}
+.hero-c__cta--events:hover {
+  background: var(--brass-glow);
+  transform: translateY(-2px);
+}
+.hero-c__cta--resort {
+  border: 1px solid var(--brass);
+  color: var(--brass);
+  background: transparent;
+}
+.hero-c__cta--resort:hover {
+  background: rgba(207, 174, 131, 0.12);
+}
+
+/* --- Animations --- */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.4; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.3); }
+}
+
+/* --- Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .hero-a__eyebrow, .hero-a__title, .hero-a__subtitle, .hero-a__ctas {
+    opacity: 1;
+    transform: none;
+  }
+  .hero-b__layer { transition: none; }
+  .hero-c__phase img { transition: none; }
+  .hero-c__phase-desc { opacity: 1; transform: none; }
+}
+
+/* --- Mobile (<=768px) --- */
+@media (max-width: 768px) {
+  .selector {
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    flex-wrap: wrap;
+  }
+  .selector__label { font-size: 0.7rem; }
+  .selector__btn { font-size: 0.75rem; padding: 0.4rem 0.9rem; }
+
+  .hero-a__content {
+    padding-inline: 1.5rem;
+    padding-block: 8rem 4rem;
+    justify-content: flex-end;
+  }
+
+  /* B: stack panels vertically on mobile */
+  .hero-b__scene { perspective: none; }
+  .hero-b__layer { transform: none !important; }
+  .hero-b__panel--1 { inset-block-start: 6%; inset-inline-end: 4%; inline-size: 42vw; block-size: 28vw; }
+  .hero-b__panel--2 { inset-block-end: 24%; inset-inline-start: 4%; inline-size: 48vw; block-size: 32vw; }
+  .hero-b__panel--3 { inset-block-start: 30%; inset-inline-start: 28%; inline-size: 40vw; block-size: 50vw; }
+  .hero-b__panel--4 { inset-block-end: 8%; inset-inline-end: 8%; inline-size: 36vw; block-size: 24vw; }
+  .hero-b__panel--5 { inset-block-start: 4%; inset-inline-start: 4%; inline-size: 32vw; block-size: 40vw; }
+  .hero-b__title { font-size: 2rem; }
+
+  /* C: vertical stack on mobile */
+  .hero-c__timeline {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 1fr);
+  }
+  .hero-c__phase-content { padding: 1.5rem 1rem; }
+  .hero-c__phase-desc { opacity: 1; transform: none; }
+  .hero-c__main-title h1 { font-size: 1.8rem; }
+}
+
+/* --- Focus visible --- */
+:focus-visible {
+  outline: 3px solid var(--brass);
+  outline-offset: 3px;
+}
+
+/* --- Info footer --- */
+.preview-info {
+  padding: 3rem 2rem;
+  text-align: center;
+  background: var(--cocoa);
+  color: var(--ivory);
+  font-size: 0.85rem;
+  line-height: 1.8;
+}
+.preview-info strong { color: var(--brass); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     CONCEPT SELECTOR
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<nav class="selector" aria-label="בחירת קונספט">
+  <span class="selector__label">Hero Concepts</span>
+  <button class="selector__btn is-active" data-target="a" aria-pressed="true">A. Commercial Premium</button>
+  <button class="selector__btn" data-target="b" aria-pressed="false">B. WebGL Depth</button>
+  <button class="selector__btn" data-target="c" aria-pressed="false">C. 24-Hour Journey</button>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     CONCEPT A — Commercial Premium
+     Clear value prop, luxury photography, two CTAs
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<section class="hero-concept hero-a is-visible" id="concept-a" aria-label="קונספט A: פרימיום מסחרי">
+  <div class="hero-a__bg">
+    <picture>
+      <source srcset="../../assets/images/gallery/01.full.webp" type="image/webp">
+      <img src="../../assets/images/gallery/01.full.jpg" alt="" loading="eager">
+    </picture>
+  </div>
+  <div class="hero-a__overlay"></div>
+  <div class="hero-a__content">
+    <span class="hero-a__eyebrow">GAMOS RESORT &amp; EVENTS</span>
+    <h1 class="hero-a__title">אירוע. שבת. חופשה.<br>במתחם אחד מול המדבר.</h1>
+    <p class="hero-a__subtitle">מתחם אירועים ונופש יוקרתי בלב מדבר יהודה. מהחופה ועד הקפה של הבוקר, הכל קורה כאן.</p>
+    <div class="hero-a__ctas">
+      <a href="#" class="hero-a__cta hero-a__cta--primary">אולמות ואירועים</a>
+      <a href="#" class="hero-a__cta hero-a__cta--secondary">ריזורט ושבתות חתן</a>
+    </div>
+  </div>
+  <div class="hero-a__scroll-cue" aria-hidden="true">
+    <span></span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     CONCEPT B — Awwwards/WebGL Depth
+     Layered parallax panels, mouse-driven depth, gallery-style
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<section class="hero-concept hero-b" id="concept-b" aria-label="קונספט B: עומק ושכבות">
+  <div class="hero-b__scene" id="parallax-scene">
+    <!-- Back layer -->
+    <div class="hero-b__layer hero-b__layer--back" data-depth="0.3">
+      <div class="hero-b__panel hero-b__panel--1">
+        <picture>
+          <source srcset="../../assets/images/halls/venue/02.full.webp" type="image/webp">
+          <img src="../../assets/images/halls/venue/02.full.jpg" alt="אולם אירועים" loading="lazy">
+        </picture>
+        <span class="hero-b__panel-label">אירועים</span>
+      </div>
+      <div class="hero-b__panel hero-b__panel--5">
+        <picture>
+          <source srcset="../../assets/images/halls/rooms/03.full.webp" type="image/webp">
+          <img src="../../assets/images/halls/rooms/03.full.jpg" alt="סוויטות" loading="lazy">
+        </picture>
+        <span class="hero-b__panel-label">סוויטות</span>
+      </div>
+    </div>
+    <!-- Mid layer -->
+    <div class="hero-b__layer hero-b__layer--mid" data-depth="0.15">
+      <div class="hero-b__panel hero-b__panel--2">
+        <picture>
+          <source srcset="../../assets/images/halls/resort/01.full.webp" type="image/webp">
+          <img src="../../assets/images/halls/resort/01.full.jpg" alt="ריזורט" loading="lazy">
+        </picture>
+        <span class="hero-b__panel-label">ריזורט</span>
+      </div>
+      <div class="hero-b__panel hero-b__panel--4">
+        <picture>
+          <source srcset="../../assets/images/culinary/03.full.webp" type="image/webp">
+          <img src="../../assets/images/culinary/03.full.jpg" alt="קולינריה" loading="lazy">
+        </picture>
+        <span class="hero-b__panel-label">קולינריה</span>
+      </div>
+    </div>
+    <!-- Front layer -->
+    <div class="hero-b__layer hero-b__layer--front" data-depth="0.05">
+      <div class="hero-b__panel hero-b__panel--3">
+        <picture>
+          <source srcset="../../assets/images/halls/lounge/04.full.webp" type="image/webp">
+          <img src="../../assets/images/halls/lounge/04.full.jpg" alt="לאונג'" loading="lazy">
+        </picture>
+        <span class="hero-b__panel-label">לאונג׳</span>
+      </div>
+    </div>
+    <!-- Title overlay -->
+    <div class="hero-b__title-wrap">
+      <h1 class="hero-b__title">מתחם אחד. כל רגע באירוע.</h1>
+      <p class="hero-b__tagline">GAMOS RESORT &amp; EVENTS</p>
+    </div>
+    <!-- CTAs -->
+    <div class="hero-b__ctas-wrap">
+      <a href="#" class="hero-b__cta hero-b__cta--events">אירועים</a>
+      <a href="#" class="hero-b__cta hero-b__cta--resort">ריזורט</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     CONCEPT C — Cinematic 24-Hour Journey
+     Sunrise → Sunset → Night → Morning, 4-column timeline
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<section class="hero-concept hero-c" id="concept-c" aria-label="קונספט C: מסע 24 שעות">
+  <div class="hero-c__timeline">
+    <!-- Phase 1: Afternoon / Event setup -->
+    <div class="hero-c__phase" tabindex="0">
+      <picture>
+        <source srcset="../../assets/images/halls/venue/01.full.webp" type="image/webp">
+        <img src="../../assets/images/halls/venue/01.full.jpg" alt="קבלת פנים" loading="lazy">
+      </picture>
+      <div class="hero-c__phase-overlay"></div>
+      <div class="hero-c__phase-content">
+        <span class="hero-c__phase-time">16:00 — GOLDEN HOUR</span>
+        <h2 class="hero-c__phase-title">קבלת הפנים</h2>
+        <p class="hero-c__phase-desc">שדרת הקשתות מוזהבת באור השקיעה, האורחים מגיעים</p>
+      </div>
+    </div>
+    <!-- Phase 2: Evening / Chuppah + Event -->
+    <div class="hero-c__phase" tabindex="0">
+      <picture>
+        <source srcset="../../assets/images/gallery/03.full.webp" type="image/webp">
+        <img src="../../assets/images/gallery/03.full.jpg" alt="החופה" loading="lazy">
+      </picture>
+      <div class="hero-c__phase-overlay"></div>
+      <div class="hero-c__phase-content">
+        <span class="hero-c__phase-time">19:00 — SUNSET</span>
+        <h2 class="hero-c__phase-title">החופה והאירוע</h2>
+        <p class="hero-c__phase-desc">רגע ההתרגשות מול נוף המדבר, ואחריו חגיגה עד הלילה</p>
+      </div>
+    </div>
+    <!-- Phase 3: Night / Resort -->
+    <div class="hero-c__phase" tabindex="0">
+      <picture>
+        <source srcset="../../assets/images/halls/lounge/02.full.webp" type="image/webp">
+        <img src="../../assets/images/halls/lounge/02.full.jpg" alt="הלאונג' בלילה" loading="lazy">
+      </picture>
+      <div class="hero-c__phase-overlay"></div>
+      <div class="hero-c__phase-content">
+        <span class="hero-c__phase-time">23:00 — NIGHT</span>
+        <h2 class="hero-c__phase-title">לילה במתחם</h2>
+        <p class="hero-c__phase-desc">מהלאונג׳ לסוויטה, בלי לעלות על רכב</p>
+      </div>
+    </div>
+    <!-- Phase 4: Morning / Shabbat -->
+    <div class="hero-c__phase" tabindex="0">
+      <picture>
+        <source srcset="../../assets/images/shabbat-chatan/01.full.webp" type="image/webp">
+        <img src="../../assets/images/shabbat-chatan/01.full.jpg" alt="בוקר שבת" loading="lazy">
+      </picture>
+      <div class="hero-c__phase-overlay"></div>
+      <div class="hero-c__phase-content">
+        <span class="hero-c__phase-time">07:00 — MORNING</span>
+        <h2 class="hero-c__phase-title">בוקר של שבת</h2>
+        <p class="hero-c__phase-desc">ארוחת בוקר מול הנוף, לפני שחוזרים הביתה</p>
+      </div>
+    </div>
+  </div>
+  <!-- Central title -->
+  <div class="hero-c__main-title">
+    <h1>מהחופה ועד הקפה של הבוקר.</h1>
+    <p>GAMOS RESORT &amp; EVENTS</p>
+  </div>
+  <!-- CTAs -->
+  <div class="hero-c__ctas">
+    <a href="#" class="hero-c__cta hero-c__cta--events">אולמות ואירועים</a>
+    <a href="#" class="hero-c__cta hero-c__cta--resort">ריזורט ושבתות חתן</a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     Info
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<footer class="preview-info">
+  <strong>Preview Artifact</strong> — לצפייה בלבד. לא חלק מהאתר הפעיל.<br>
+  בחר קונספט מלמעלה להשוואת כיוונים. כל קונספט 100vh, RTL, רספונסיבי.
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     JavaScript — Selector + Parallax
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<script>
+(function() {
+  'use strict';
+
+  // --- Concept Selector ---
+  const buttons = document.querySelectorAll('.selector__btn');
+  const concepts = document.querySelectorAll('.hero-concept');
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.target;
+      buttons.forEach(b => {
+        b.classList.remove('is-active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('is-active');
+      btn.setAttribute('aria-pressed', 'true');
+      concepts.forEach(c => c.classList.remove('is-visible'));
+      document.getElementById('concept-' + target).classList.add('is-visible');
+    });
+  });
+
+  // --- Concept B: Mouse Parallax ---
+  const scene = document.getElementById('parallax-scene');
+  if (scene) {
+    const layers = scene.querySelectorAll('.hero-b__layer');
+    let rafId = null;
+    let mouseX = 0.5, mouseY = 0.5;
+    let currentX = 0.5, currentY = 0.5;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!reducedMotion) {
+      scene.addEventListener('mousemove', (e) => {
+        const rect = scene.getBoundingClientRect();
+        mouseX = (e.clientX - rect.left) / rect.width;
+        mouseY = (e.clientY - rect.top) / rect.height;
+      });
+
+      scene.addEventListener('mouseleave', () => {
+        mouseX = 0.5;
+        mouseY = 0.5;
+      });
+
+      function animate() {
+        currentX += (mouseX - currentX) * 0.06;
+        currentY += (mouseY - currentY) * 0.06;
+
+        layers.forEach(layer => {
+          const depth = parseFloat(layer.dataset.depth) || 0.1;
+          const moveX = (currentX - 0.5) * depth * 80;
+          const moveY = (currentY - 0.5) * depth * 80;
+
+          const baseZ = layer.classList.contains('hero-b__layer--back') ? -300 :
+                        layer.classList.contains('hero-b__layer--mid') ? -150 : 0;
+          const baseScale = layer.classList.contains('hero-b__layer--back') ? 1.6 :
+                            layer.classList.contains('hero-b__layer--mid') ? 1.3 : 1;
+
+          layer.style.transform =
+            `translateZ(${baseZ}px) scale(${baseScale}) translate(${moveX}px, ${moveY}px)`;
+        });
+
+        rafId = requestAnimationFrame(animate);
+      }
+
+      // Only run parallax when concept B is visible
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && entry.target.classList.contains('is-visible')) {
+            if (!rafId) animate();
+          } else {
+            if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+          }
+        });
+      }, { threshold: 0.1 });
+
+      observer.observe(document.getElementById('concept-b'));
+
+      // Re-observe on concept switch
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (btn.dataset.target === 'b') {
+            if (!rafId) animate();
+          } else {
+            if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+          }
+        });
+      });
+    }
+  }
+
+  // --- Concept C: Hover expand on desktop ---
+  const timeline = document.querySelector('.hero-c__timeline');
+  if (timeline && window.matchMedia('(min-width: 769px)').matches) {
+    const phases = timeline.querySelectorAll('.hero-c__phase');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!reducedMotion) {
+      timeline.style.display = 'flex';
+
+      phases.forEach(phase => {
+        phase.style.flex = '1';
+        phase.style.transition = 'flex 0.7s cubic-bezier(0.22, 1, 0.36, 1)';
+
+        phase.addEventListener('mouseenter', () => {
+          phases.forEach(p => p.style.flex = '0.7');
+          phase.style.flex = '2.2';
+        });
+
+        phase.addEventListener('mouseleave', () => {
+          phases.forEach(p => p.style.flex = '1');
+        });
+      });
+    }
+  }
+})();
+</script>
+</body>
+</html>

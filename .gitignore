@@ -97,3 +97,6 @@ ruvector.db
 .swarm/
 claude-flow.config.json
 *.artifact.json
+
+# Hero-lab QA screenshots — scratch, never committed (§6 rule 6)
+hero-lab/scripts/__shots__/

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAMOS — Hero Concept: FIND-Inspired</title>
+<meta name="robots" content="noindex, nofollow">
+
+<style>
+/* --- Fonts --- */
+@font-face {
+  font-family: 'Rubik';
+  src: url('../../assets/fonts/rubik-hebrew.woff2') format('woff2');
+  font-weight: 400 700;
+  font-display: swap;
+  unicode-range: U+0590-05FF, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: 'Rubik';
+  src: url('../../assets/fonts/rubik-latin.woff2') format('woff2');
+  font-weight: 400 700;
+  font-display: swap;
+  unicode-range: U+0000-024F;
+}
+@font-face {
+  font-family: 'Heebo';
+  src: url('../../assets/fonts/heebo-400.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Heebo';
+  src: url('../../assets/fonts/heebo-500.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+
+/* --- Reset & Base --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --brass: #CFAE83;
+  --brass-deep: #8B6F46;
+  --cocoa: #534133;
+  --ivory: #F5EFE6;
+  --ink-deep: #1A1410;
+  --mist: #E8DFD3;
+  --font-display: 'Rubik', sans-serif;
+  --font-body: 'Heebo', sans-serif;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink-deep);
+  background: var(--ivory);
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+
+/* --- Nav --- */
+.nav {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 1.25rem;
+  padding-inline: clamp(1.5rem, 5vw, 4rem);
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+.nav.is-scrolled {
+  background: rgba(245, 239, 230, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 rgba(26, 20, 16, 0.06);
+}
+
+.nav__brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.35rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-deep);
+  text-decoration: none;
+}
+
+.nav__links {
+  display: flex;
+  gap: 2.2rem;
+  list-style: none;
+}
+
+.nav__links a {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ink-deep);
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.25s ease;
+}
+
+.nav__links a:hover,
+.nav__links a:focus-visible {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .nav__links { display: none; }
+}
+
+/* --- Hero --- */
+.hero {
+  position: relative;
+  min-block-size: 100vh;
+  min-block-size: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-block-start: max(22vh, 10rem);
+  padding-inline: 1.5rem;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    #dfe9f0 0%,
+    #e8dfd3 18%,
+    var(--ivory) 45%,
+    var(--ivory) 100%
+  );
+}
+
+.hero__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-inline-size: 56rem;
+}
+
+.hero__headline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.4rem, 6.5vw, 5.2rem);
+  line-height: 1.15;
+  color: var(--ink-deep);
+  letter-spacing: -0.01em;
+  opacity: 0;
+  transform: translateY(1.5rem);
+  animation: hero-rise 1s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+}
+
+.hero__subcopy {
+  margin-block-start: 1.4rem;
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  font-weight: 400;
+  color: var(--cocoa);
+  opacity: 0;
+  transform: translateY(1rem);
+  animation: hero-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
+}
+
+.hero__cta {
+  margin-block-start: 2.2rem;
+  display: inline-flex;
+  align-items: center;
+  padding-block: 0.7rem;
+  padding-inline: 2rem;
+  border-radius: 999px;
+  background: var(--ink-deep);
+  color: var(--ivory);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: background 0.3s ease, transform 0.2s ease;
+  opacity: 0;
+  transform: translateY(1rem);
+  animation: hero-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.75s forwards;
+}
+
+.hero__cta:hover {
+  background: var(--brass-deep);
+}
+
+.hero__cta:active {
+  transform: scale(0.97);
+}
+
+.hero__cta:focus-visible {
+  outline: 3px solid var(--brass);
+  outline-offset: 3px;
+}
+
+/* --- Emerging Image + Fog --- */
+.hero__scene {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  block-size: 55%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2rem);
+  animation: scene-emerge 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.9s forwards;
+}
+
+.hero__image {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+.hero__fog {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    var(--ivory) 0%,
+    rgba(245, 239, 230, 0.95) 12%,
+    rgba(245, 239, 230, 0.7) 30%,
+    rgba(245, 239, 230, 0.25) 55%,
+    transparent 80%
+  );
+}
+
+.hero__fog::after {
+  content: '';
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  block-size: 30%;
+  background: linear-gradient(
+    to top,
+    rgba(245, 239, 230, 0.4) 0%,
+    transparent 100%
+  );
+}
+
+/* Soft side fades */
+.hero__scene::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(to right, var(--ivory) 0%, transparent 15%),
+    linear-gradient(to left, var(--ivory) 0%, transparent 15%);
+}
+
+/* --- Animations --- */
+@keyframes hero-rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scene-emerge {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Storytelling Section --- */
+.storytelling {
+  position: relative;
+  padding-block: clamp(8rem, 18vh, 14rem) clamp(10rem, 22vh, 18rem);
+  padding-inline: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(3.5rem, 7vh, 6rem);
+  background: var(--ivory);
+}
+
+.story-line {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 4vw, 3.2rem);
+  line-height: 1.3;
+  color: var(--mist);
+  text-align: center;
+  max-inline-size: 42rem;
+  transition: color 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 0;
+  transform: translateY(2rem);
+}
+
+.story-line.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  color: var(--cocoa);
+}
+
+/* --- Closing breath --- */
+.closing {
+  block-size: 40vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ivory);
+}
+
+.closing__mark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  color: var(--brass);
+  opacity: 0.6;
+}
+
+/* --- Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+  .hero__headline,
+  .hero__subcopy,
+  .hero__cta,
+  .hero__scene {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .story-line {
+    transition: none;
+    opacity: 1;
+    transform: none;
+    color: var(--cocoa);
+  }
+}
+
+/* --- Focus --- */
+:focus-visible {
+  outline: 3px solid var(--brass);
+  outline-offset: 3px;
+}
+
+/* --- Responsive refinements --- */
+@media (max-width: 640px) {
+  .hero {
+    padding-block-start: max(18vh, 7rem);
+  }
+
+  .hero__scene {
+    block-size: 45%;
+  }
+
+  .hero__scene::before {
+    background:
+      linear-gradient(to right, var(--ivory) 0%, transparent 8%),
+      linear-gradient(to left, var(--ivory) 0%, transparent 8%);
+  }
+}
+
+@media (min-width: 1400px) {
+  .hero__scene {
+    block-size: 60%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Nav -->
+<nav class="nav" aria-label="ניווט ראשי">
+  <a href="#" class="nav__brand">GAMOS</a>
+  <ul class="nav__links">
+    <li><a href="#">אולם</a></li>
+    <li><a href="#">ריזורט</a></li>
+    <li><a href="#">שבת חתן</a></li>
+    <li><a href="#">קולינריה</a></li>
+    <li><a href="#">גלריה</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero" aria-label="ראשי">
+  <div class="hero__content">
+    <h1 class="hero__headline">מצאנו את המקום שבו<br>האירוע לא נגמר</h1>
+    <p class="hero__subcopy">אולם, ריזורט ושבת חתן — חוויה שלמה מול המדבר.</p>
+    <a href="#" class="hero__cta">לגלות את גאמוס</a>
+  </div>
+
+  <div class="hero__scene" aria-hidden="true">
+    <picture>
+      <source srcset="../../assets/images/halls/resort/01.full.webp" type="image/webp">
+      <img class="hero__image"
+           src="../../assets/images/halls/resort/01.full.webp"
+           alt=""
+           loading="eager"
+           decoding="async">
+    </picture>
+    <div class="hero__fog"></div>
+  </div>
+</section>
+
+<!-- Storytelling -->
+<section class="storytelling" aria-label="סיפור">
+  <p class="story-line">זה לא רק אולם.</p>
+  <p class="story-line">זה המקום שבו המשפחה נשארת עוד רגע.</p>
+  <p class="story-line">מהחופה ועד הקפה של הבוקר.</p>
+</section>
+
+<!-- Closing breath -->
+<div class="closing" aria-hidden="true">
+  <span class="closing__mark">GAMOS</span>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // Nav scroll state
+  var nav = document.querySelector('.nav');
+  var scrolled = false;
+
+  function checkScroll() {
+    var shouldScroll = window.scrollY > 60;
+    if (shouldScroll !== scrolled) {
+      scrolled = shouldScroll;
+      nav.classList.toggle('is-scrolled', scrolled);
+    }
+  }
+
+  window.addEventListener('scroll', checkScroll, { passive: true });
+  checkScroll();
+
+  // Storytelling reveal via IntersectionObserver
+  var lines = document.querySelectorAll('.story-line');
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (reducedMotion) {
+    lines.forEach(function(line) { line.classList.add('is-visible'); });
+    return;
+  }
+
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+
+    lines.forEach(function(line) { observer.observe(line); });
+  } else {
+    lines.forEach(function(line) { line.classList.add('is-visible'); });
+  }
+
+  // Subtle parallax on hero image (desktop only, respects reduced-motion)
+  if (!reducedMotion && window.matchMedia('(pointer: fine)').matches) {
+    var scene = document.querySelector('.hero__scene');
+    var ticking = false;
+
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(function() {
+          var scrollY = window.scrollY;
+          var heroHeight = window.innerHeight;
+          if (scrollY < heroHeight) {
+            var progress = scrollY / heroHeight;
+            scene.style.transform = 'translateY(' + (progress * -30) + 'px)';
+          }
+          ticking = false;
+        });
+      }
+    }, { passive: true });
+  }
+})();
+</script>
+
+</body>
+</html>
