@@ -292,11 +292,11 @@
 
 /* ‹ › arrows flanking the label — gentle outward drift = "scroll on / through". */
 .hallm-scrollcue__arrow {
-  font-family: "Heebo", Arial, sans-serif;
-  font-size: 0.95rem;
+  display: grid;
+  place-items: center;
   line-height: 1;
   color: var(--color-brass-glow, #cfae83);
-  text-shadow: 0 1px 10px rgba(26, 20, 16, 0.7);
+  filter: drop-shadow(0 1px 10px rgba(26, 20, 16, 0.7));
   animation: hallm-scrollcue-drift 2.4s ease-in-out infinite;
 }
 .hallm-scrollcue__arrow--start { animation-name: hallm-scrollcue-drift-start; }
@@ -306,13 +306,15 @@
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
 }
+/* 2026-06-25: arrows point UP/DOWN (not sideways) — drift along the Y axis to
+   reinforce the vertical scroll gesture. Up cue rises, down cue descends. */
 @keyframes hallm-scrollcue-drift-start {
-  0%, 100% { transform: translateX(0); opacity: 0.55; }
-  50% { transform: translateX(0.3rem); opacity: 1; }
+  0%, 100% { transform: translateY(0); opacity: 0.55; }
+  50% { transform: translateY(-0.3rem); opacity: 1; }
 }
 @keyframes hallm-scrollcue-drift-end {
-  0%, 100% { transform: translateX(0); opacity: 0.55; }
-  50% { transform: translateX(-0.3rem); opacity: 1; }
+  0%, 100% { transform: translateY(0); opacity: 0.55; }
+  50% { transform: translateY(0.3rem); opacity: 1; }
 }
 
 /* =====================================================================

@@ -132,7 +132,7 @@ export default function RoomsChromeMobile({ activeCard }: Props) {
         className="roomsm-active"
       >
         {/* 2026-06-18: "NN / total" index removed per user (confusing numbers). */}
-        <h1 className="roomsm-active__title texture-text texture-text--light">
+        <h1 className="roomsm-active__title">
           {activeCard?.category ?? ""}
         </h1>
         {activeCard?.titleHe ? (

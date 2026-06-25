@@ -108,7 +108,7 @@ export default function RoomsChrome({ activeCard }: Props) {
           room as the wall pans (§9). Tight stack: texture-text title →
           optional type, centered. */}
       <section aria-live="polite" aria-atomic="true" className="rooms-active">
-        <h1 className="rooms-title texture-text texture-text--light">
+        <h1 className="rooms-title">
           {activeCard?.category ?? ""}
         </h1>
         {activeCard?.titleHe ? (

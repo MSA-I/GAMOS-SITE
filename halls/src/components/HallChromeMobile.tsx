@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronUp, ChevronDown } from "lucide-react";
 import { getProjectsByHall } from "../projectsData";
 import type { ProjectWithColors } from "../types";
 
@@ -171,9 +171,13 @@ export default function HallChromeMobile({
             exit={{ opacity: 0, y: 8 }}
             transition={transition}
           >
-            <span className="hallm-scrollcue__arrow hallm-scrollcue__arrow--start">‹</span>
+            <span className="hallm-scrollcue__arrow hallm-scrollcue__arrow--start">
+              <ChevronUp size={16} aria-hidden="true" />
+            </span>
             <span className="hallm-scrollcue__text">גללו לצפייה בתמונות</span>
-            <span className="hallm-scrollcue__arrow hallm-scrollcue__arrow--end">›</span>
+            <span className="hallm-scrollcue__arrow hallm-scrollcue__arrow--end">
+              <ChevronDown size={16} aria-hidden="true" />
+            </span>
           </motion.div>
         ) : null}
       </AnimatePresence>

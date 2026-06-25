@@ -57,14 +57,13 @@ export function init() {
     ) {
       return;
     }
-    // Remember to land back on the door when the user returns (covers both the
-    // animated path and the reduced-motion plain-nav early-return below).
+    // Remember to land back on the door when the user returns.
     try { sessionStorage.setItem(RETURN_FLAG, "1"); } catch { /* private mode */ }
-    // Reduced motion → plain navigation (no clip), as the <a href> would.
-    if (prefersReducedMotion()) return;
-
-    e.preventDefault();
-    playInPlace(link.href);
+    // 2026-06-25: the in-place door-opening clip was removed per user — it read
+    // as an unwanted delay on entry. Entry is now plain, instant native <a href>
+    // navigation (Constitution §2.1 original "ניווט פשוט ללא אנימציה"). The clip
+    // machinery (playInPlace/navigate) is kept below, unwired, for a future
+    // opt-in: re-enable by `e.preventDefault(); playInPlace(link.href);` here.
   };
 
   link.addEventListener("click", onClick);
