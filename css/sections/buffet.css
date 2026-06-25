@@ -1,0 +1,71 @@
+/* ===========================================================================
+   buffet.css — #buffet (בופה) food gallery
+   2026-06-25: New section after #culinary. Stills extracted from the food
+   reel "Gamos 1.m4v.mp4" (user-curated + edited). Captioned masonry that
+   reads like a lavish buffet spread — distinct from the image-only #gallery
+   by carrying the shared .media-caption (dish name + brass tag).
+
+   2026-06-25 (rev): switched from an aspect-locked grid (with a fragile 2×2
+   "feature" square that cropped the tall hero photo) to a TRUE masonry —
+   CSS multicol with natural image heights. No crop, organic varied rhythm
+   ("not boring"), RTL-safe (multicol honours direction → first column right).
+   Reveal handled by reveals.js ([data-reveal="scale-up"] + [data-stagger]).
+   Tokens only (§10.2) — no hard-coded values.
+   ========================================================================= */
+
+.buffet {
+  padding-block: var(--section-pad);
+  padding-inline: var(--gutter);
+  background: var(--bg-alt);
+}
+
+.buffet > .section-header {
+  max-width: var(--container-max);
+  margin-inline: auto;
+}
+
+/* Masonry via CSS multicol — items flow down each column, heights stay
+   natural so tall (9:16) and shorter (2:3) stills interleave organically. */
+.buffet__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  margin-block-start: var(--space-12);
+  max-width: var(--container-max);
+  margin-inline: auto;
+  column-count: 2;
+  column-gap: var(--space-3);
+}
+
+@media (min-width: 768px)  { .buffet__grid { column-count: 3; } }
+@media (min-width: 1100px) { .buffet__grid { column-count: 4; } }
+
+.buffet__item {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  break-inside: avoid;           /* keep each card whole inside a column */
+  margin-block-end: var(--space-3);
+  background: linear-gradient(135deg, var(--mist), var(--brass));
+}
+
+.buffet__item picture { display: block; }
+
+.buffet__item img {
+  display: block;
+  width: 100%;
+  height: auto;                  /* natural aspect — the masonry rhythm */
+  transition: transform var(--dur-cinema) var(--ease-out-cinema);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .buffet__item:hover img,
+  .buffet__item:focus-within img { transform: scale(var(--card-zoom)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .buffet__item img { transition: none; }
+  .buffet__item:hover img,
+  .buffet__item:focus-within img { transform: none; }
+}

@@ -57,6 +57,13 @@ const MAPPINGS = [
   // New staged sources (copied into the repo under assets/_src/).
   { srcDir: "assets/_src/lounge",  outDir: "assets/images/halls/lounge", exts: [".jpg", ".jpeg", ".png"], srcBase: "root" },
   { srcDir: "assets/_src/gallery", outDir: "assets/images/gallery",      exts: [".jpg", ".jpeg", ".png"], srcBase: "root" },
+  // 2026-06-25: #buffet section (food gallery extracted from "Gamos 1.m4v.mp4",
+  // user-edited stills staged 01-13). Same in-repo staging pattern as gallery.
+  // Detail-dense food photos overflow the §8 half budget (≤80KB) at the 960/q78
+  // default, so the half variant is tuned down (820px / q70) to stay in budget;
+  // full keeps the 1920/q82 default (all within ≤220KB).
+  { srcDir: "assets/_src/buffet",  outDir: "assets/images/buffet",       exts: [".png", ".jpg", ".jpeg"], srcBase: "root",
+    encode: { halfWidth: 800, halfQuality: 66 } },
   // 2026-06-04: Corridor galleries (arch-corridor-gallery port). 10 venue + 6 resort
   // floating cards. NEW outDir to avoid collision with existing halls/* images
   // referenced elsewhere (about-section, legacy markup).
