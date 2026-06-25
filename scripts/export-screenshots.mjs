@@ -28,25 +28,27 @@ const PORT = 9222;
 
 const SECTION_TARGETS = [
   { name: "01-hero",            scrollTo: "top" },
-  { name: "02-lounge",          scrollTo: "#lounge" },
-  { name: "03-culinary",        scrollTo: "#culinary" },
-  { name: "04-shabbat-chatan",  scrollTo: "#shabbat-chatan" },
-  { name: "05-rooms",           scrollTo: "#rooms" },
-  { name: "06-marquee",         scrollTo: ".marquee" },
-  { name: "07-about",           scrollTo: "#about" },
-  { name: "08-testimonials",    scrollTo: "#testimonials" },
-  { name: "09-gallery",         scrollTo: "#gallery" },
-  { name: "10-events",          scrollTo: "#events" },
-  { name: "11-kosher",          scrollTo: "#kosher" },
-  { name: "12-contact",         scrollTo: "#contact" },
-  { name: "13-routes",          scrollTo: "#routes" },
-  { name: "14-site-footer",     scrollTo: "footer.site-footer" },
+  { name: "02-hall-portal",     scrollTo: "#hall-portal" },
+  { name: "03-lounge",          scrollTo: "#lounge" },
+  { name: "04-culinary",        scrollTo: "#culinary" },
+  { name: "05-buffet",          scrollTo: "#buffet" },
+  { name: "06-shabbat-chatan",  scrollTo: "#shabbat-chatan" },
+  { name: "07-rooms",           scrollTo: "#rooms" },
+  { name: "08-marquee",         scrollTo: ".marquee" },
+  { name: "09-about",           scrollTo: "#about" },
+  { name: "10-testimonials",    scrollTo: "#testimonials" },
+  { name: "11-gallery",         scrollTo: "#gallery" },
+  { name: "12-events",          scrollTo: "#events" },
+  { name: "13-kosher",          scrollTo: "#kosher" },
+  { name: "14-contact",         scrollTo: "#contact" },
+  { name: "15-routes",          scrollTo: "#routes" },
+  { name: "16-site-footer",     scrollTo: "footer.site-footer" },
 ];
 
 const LEGAL_TARGETS = [
-  { name: "15-privacy",         url: `${BASE}/legal/privacy.html` },
-  { name: "16-terms",           url: `${BASE}/legal/terms.html` },
-  { name: "17-accessibility",   url: `${BASE}/legal/accessibility.html` },
+  { name: "17-privacy",         url: `${BASE}/legal/privacy.html` },
+  { name: "18-terms",           url: `${BASE}/legal/terms.html` },
+  { name: "19-accessibility",   url: `${BASE}/legal/accessibility.html` },
 ];
 
 // Hero scrub states for Figma export (figma-export/README.md). The hero is a

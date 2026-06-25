@@ -34,7 +34,7 @@ npm run dev:fast                      # מגיש את האתר ב-http://localho
 node scripts/export-screenshots.mjs   # → D:\GAMOS-screenshots-tmp\
 ```
 
-מפיק 14 סקציות + 3 דפי legal + מצבי scrub של ההירו `hero-p000…hero-p100`.
+מפיק 16 סקציות + 3 דפי legal + מצבי scrub של ההירו `hero-p000…hero-p100`.
 
 > `figma-export/tokens.json`, `media/` ו-`site-images/` מוחרגים מ-git (פלט מחושב + כבד).
 > הקובץ הזה (`README.md`) כן נשמר.
@@ -43,6 +43,34 @@ node scripts/export-screenshots.mjs   # → D:\GAMOS-screenshots-tmp\
 > `npm run export:figma` מסנכרן הכל. היא כוללת את `site-images/` עם **כל התמונות
 > שבשימוש באתר**: `assets/images/` (root), אייקונים תחת `_misc`, ותמונות ה-sub-apps
 > halls/rooms תחת `_halls-app`/`_rooms-app`. זהו כל מאגר הוויזואל לייבוא ל-Figma.
+
+---
+
+## סדר הסקציות בדף הבית (עודכן 2026-06-25)
+
+הסדר מלמעלה למטה ב-`/` (כל אחת היא frame נפרד ב-Figma). זהו ה-truth של מבנה הדף —
+ייבוא html.to.design של `/` מביא את כולן, אבל זו הרשימה לאימות שלא נשמט דבר:
+
+1. **`#hero`** — הירו קולנועי 500vh pinned (scroll-scrub; ראה מצבי `hero-p000…p100`).
+2. **`#hall-portal`** — קומפוזר EVENTS/RESORT (לוגו GAMOS + שני CTAs wordmark עם hover-bulge); מנתב ל-sub-apps `/halls/dist/{events,resort}/`.
+3. **`#lounge`** — טבעת 3D מסתובבת של 8 תמונות (במובייל/reduced-motion → grid 2-טורים).
+4. **`#culinary`** — canvas-frame scrub (זום+parallax) + grid גלריה אחריו.
+5. **`#buffet`** — גלריית "bands" כהה (ink-deep), 10 צמדי תמונה+מספר/שם מתחלפים שמאל/ימין. ✨ חדש 2026-06-25.
+6. **`#shabbat-chatan`** — GSAP pinned mask-reveal (8 פאנלים, wipe של stack תמונות).
+7. **`#rooms`** — תמונת דלת → מנתב ל-`/rooms/dist/` (sub-app קיר-תמונות).
+8. **marquee** — פס טקסט נע (transition band).
+9. **`#about`** — copy + עמודת תמונה + 3 מוני-סטטיסטיקה.
+10. **`#testimonials`** — סליידר ביקורות Google (13+ כרטיסים; גדל מ-8).
+11. **`#gallery`** — מוזאיקה של 20 תמונות אירוע.
+12. **`#events`** — אקורדיון 6 סוגי-אירוע.
+13. **`#kosher`** — eyebrow + כותרת + 5 לוגו כשרות + copy.
+14. **`#contact`** — טופס + פרטי-קשר.
+15. **`#routes`** — מפת Leaflet אינטראקטיבית + טאבי מוצא + ETA.
+16. **`site-footer`** — footer chrome.
+
+> **`#buffet` לא דורש מדיה מיוחדת** — הוא RAF-parallax עדין מעל תמונות סטטיות (לא scrub
+> כמו culinary, לא WebGL כמו halls/rooms). ייבוא סטטי רגיל של ה-frame מכסה אותו במלואו;
+> ה-parallax הוא נופך בלבד שניתן לדמות עם Smart Animate אם רוצים.
 
 ---
 
