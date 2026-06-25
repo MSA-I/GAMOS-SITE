@@ -34,7 +34,7 @@
 // Constants — venue + per-origin route data (baked from OSRM, [lat,lng])
 // ---------------------------------------------------------------------------
 
-const VENUE = [31.7878076, 35.3371583]; // די זהב, מישור אדומים
+const VENUE = [31.7878076, 35.3371583]; // די זהב, פארק ישראל
 const DEST_STR = "31.7878076,35.3371583";
 
 // WhatsApp business number (matches #contact form data-wa-number).

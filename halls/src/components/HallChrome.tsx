@@ -201,7 +201,7 @@ export default function HallChrome({ hallId, activeProject, frameDark = false }:
                 />
                 <bdi>{`${display?.number ?? "01"} / ${totalLabel}`}</bdi>
               </p>
-              <h2 className="hall-label__title texture-text texture-text--light">{display?.label ?? ""}</h2>
+              <h2 className="hall-label__title texture-text texture-text--light">{display?.title ?? ""}</h2>
             </div>
           </motion.div>
         </AnimatePresence>

@@ -213,7 +213,7 @@ export default function HallChromeMobile({
             {/* Title — texture-filled display type, sized to fit 360px on
                 one–two lines. */}
             <h2 className="hallm-label__title texture-text texture-text--light">
-              {display?.label ?? ""}
+              {display?.title ?? ""}
             </h2>
 
             {/* Spec — location · year on a single inline row (replaces the
