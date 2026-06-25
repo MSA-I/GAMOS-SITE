@@ -242,7 +242,7 @@
         <li><a href="#culinary">קולינריה</a></li>
         <li><a href="#shabbat-chatan">שבתות חתן</a></li>
         <li><a href="#rooms">חדרי נופש</a></li>
-        <li><a href="#lounge" data-secondary>לאונג'</a></li>
+        <li><a href="#lounge" data-secondary>מתחם קבלת פנים</a></li>
         <li><a href="#about" data-secondary>אודות</a></li>
         <li><a href="#testimonials" data-secondary>המלצות</a></li>
         <li><a href="#gallery">גלריה</a></li>
@@ -351,9 +351,9 @@
         <div class="hero_content">
           <p class="hero_eyebrow">בין השמיים למדבר</p>
           <div class="hero_title" dir="rtl">
-            <h1>אוויר מדברי, אור רך,<br><span class="accent">וערב ששייך רק לכם.</span></h1>
+            <h1>אוויר מדברי, אור רך,<br><span class="accent">וחוויה ששייכת רק לכם.</span></h1>
           </div>
-          <p class="hero_text">גנים, אולם וחדרי אירוח, מול נוף שנפתח עד האופק.</p>
+          <p class="hero_text">גן, אולם, ריזורט וחדרי אירוח, מול נוף שנפתח עד האופק.</p>
         </div>
 
         <!-- Scroll cue: brass pill + falling dot → #hall-portal (sandbox .gamos-cue) -->
@@ -424,16 +424,12 @@
     <section id="lounge" class="lounge" aria-labelledby="lounge-title">
       <header class="lounge__header">
         <p class="section-header__eyebrow"
-           data-reveal="slide-right" style="--reveal-delay: 0ms;">לאונג'</p>
+           data-reveal="slide-right" style="--reveal-delay: 0ms;">מתחם קבלת פנים</p>
         <h2 id="lounge-title" class="section-header__title texture-text texture-text--dark"
             data-reveal="slide-right" style="--reveal-delay: 80ms;">פינה לנשום בלב הערב</h2>
-        <p class="section-header__lede"
-           data-reveal="slide-right" style="--reveal-delay: 160ms;">
-          הלאונג' של גאמוס. פינה רכה לקבלת פנים ולרגעים שקטים לאורך הערב.
-        </p>
       </header>
 
-      <div class="lounge__stage" data-lounge-stage role="region" aria-label="גלריית הלאונג'">
+      <div class="lounge__stage" data-lounge-stage role="region" aria-label="גלריית מתחם קבלת הפנים">
         <div class="lounge__ring" data-lounge-ring>
           <figure class="lounge__item" data-lounge-item data-index="0">
             <picture>
@@ -456,7 +452,7 @@
                    alt="ספת קטיפה ירוקה מול קיר עץ כהה, מדליון הזהב של גאמוס ומסך אמנות">
             </picture>
             <figcaption>
-              <h3>פינת הלאונג'</h3>
+              <h3>פינת קבלת הפנים</h3>
               <p>פינה אינטימית תחת מדליון הזהב — להתיישב ולהרגיש בבית.</p>
             </figcaption>
           </figure>
@@ -901,7 +897,7 @@
                style="--reveal-delay: 80ms;">הסיפור שלנו</p>
             <h2 id="about-title" class="section-header__title"
                 data-reveal="slide-right"
-                style="--reveal-delay: 140ms;">חוויית אירועים חדשה בישראל</h2>
+                style="--reveal-delay: 140ms;">חוויית אירועים המובילה בישראל</h2>
           </header>
 
           <div class="about__body">
@@ -982,10 +978,11 @@
         <h2 id="testimonials-title" class="section-header__title texture-text texture-text--dark">מה מספרים על האירוע אצלנו</h2>
       </header>
 
-      <!-- Testimonial quotes — REPRESENTATIVE PLACEHOLDERS in the venue voice,
-           NOT verified customer reviews. First-name + event-type attribution
-           only, no invented numbers/prices. Swap with owner-collected, real
-           quotes (and real names, with permission) before going live. -->
+      <!-- Real Google reviews — גאמוס מתחם אירועים, Google Business Profile (4.8★).
+           Selected from a 120-review scrape for clarity, quality & event variety;
+           over-long reviews skipped. Text is each reviewer's own, whitespace-
+           normalised for display; meta = stated event type, else review month.
+           Source data: .tmp/gmaps-reviews/reviews.json (gitignored). -->
       <div class="testimonials__track"
            data-slider-track
            role="region" aria-label="המלצות לקוחות"
@@ -994,11 +991,11 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 120ms;">
           <blockquote class="testimonial__quote">
-            <p>התחתנו בגן מול נוף המדבר, והמשכנו לאולם עד הבוקר. האורחים עדיין מספרים שזה היה אחד הערבים היפים שהם זוכרים.</p>
+            <p>התחתנו ב-26.3.26. לבחור בגאמוס הייתה הבחירה הטובה ביותר שיכולנו לעשות! האוכל פצצה! שירות ברמה! קיבלנו מלא מלא מלא מחמאות! ממליצה ברמות!</p>
           </blockquote>
           <footer class="testimonial__author">
-            <cite>נועה ויונתן</cite>
-            <span class="testimonial__meta">חתונה</span>
+            <cite>זוהר דורון</cite>
+            <span class="testimonial__meta">חתונה · אפריל 2026</span>
           </footer>
         </article>
 
@@ -1006,11 +1003,11 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 240ms;">
           <blockquote class="testimonial__quote">
-            <p>בר־מצווה לבן הבכור עם משפחה גדולה. הצוות סידר הכל מראש, בשקט, ואנחנו פשוט נהנינו עם האורחים מההתחלה ועד הסוף.</p>
+            <p>הייתי במסיבת בר מצווה. האוכל טעים, השירות מעולה, ויחס אישי לאורחים מצד כל הצוות באולם — החל מהסדרנים, המלצרים, אחראי האירוע ובר המשקאות.</p>
           </blockquote>
           <footer class="testimonial__author">
-            <cite>משפחת לוי</cite>
-            <span class="testimonial__meta">בר־מצווה</span>
+            <cite>קטי זרזבסקי</cite>
+            <span class="testimonial__meta">בר־מצווה · אפריל 2026</span>
           </footer>
         </article>
 
@@ -1018,11 +1015,11 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 360ms;">
           <blockquote class="testimonial__quote">
-            <p>הפקנו ערב חברה גדול. השילוב של אולם, ריזורט ובריכה באותו מתחם הוא משהו שלא ראינו במקום אחר, והעובדים עוד מדברים על זה.</p>
+            <p>היינו חלק משמחת חתונה ושבת חתן, והיה טופ שבטופ. שירות מעל המצופה, אירוח כיד המלך, טעים מאוד והכל בטעם טוב, והמקום מתוחזק ומטופח. רועי מנהל האירועים ליווה אותנו — שירותי ומקצוען אמיתי, שאפו!</p>
           </blockquote>
           <footer class="testimonial__author">
-            <cite>שירה, מנהלת רווחה</cite>
-            <span class="testimonial__meta">אירוע חברה</span>
+            <cite>Benjamin Zaidner</cite>
+            <span class="testimonial__meta">שבת חתן · דצמבר 2025</span>
           </footer>
         </article>
 
@@ -1030,11 +1027,11 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 480ms;">
           <blockquote class="testimonial__quote">
-            <p>בת־מצווה בגן. רצינו אווירה מיוחדת לבת, והצוות ירד איתנו לכל פרט. היא עוד מספרת על הערב הזה לחברות שלה.</p>
+            <p>חיתנו את הבת שלנו בגאמוס אירועים במישור אדומים ואין לנו מילים! האוכל היה מצוין, טרי, מושקע וטעים מאוד. האווירה הייתה נעימה ומרגשת, האולם מעוצב ביופי ויוקרה, והשירות פשוט מעל ומעבר. המלצרים היו אדיבים, זמינים ועם חיוך לאורך כל הערב. תודה לצוות גאמוס על יחס חם, מקצועיות והפקה מדהימה!</p>
           </blockquote>
           <footer class="testimonial__author">
-            <cite>תמר ויעקב</cite>
-            <span class="testimonial__meta">בת־מצווה</span>
+            <cite>אסתר יצחק</cite>
+            <span class="testimonial__meta">חתונה · יולי 2025</span>
           </footer>
         </article>
 
@@ -1042,11 +1039,11 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 600ms;">
           <blockquote class="testimonial__quote">
-            <p>השף יצא אל האורחים והתאים תפריט אישי, כולל פתרון למי שיש לו רגישויות. רמת השירות והאוכל היתה ממש מעבר למה שציפינו.</p>
+            <p>ממליצה בחום. חגגנו בר מצווה וקיבלנו רק מחמאות. אוכל מצוין, מקום חדש ונקי, נוף מהמם, ונכונות של הצוות לזרום עם הבקשות שלנו.</p>
           </blockquote>
           <footer class="testimonial__author">
-            <cite>אבי, אורח באירוע</cite>
-            <span class="testimonial__meta">אירוע פרטי</span>
+            <cite>יעלי סבאג</cite>
+            <span class="testimonial__meta">בר־מצווה · דצמבר 2025</span>
           </footer>
         </article>
 
@@ -1054,11 +1051,11 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 720ms;">
           <blockquote class="testimonial__quote">
-            <p>חתונת סוף שבוע בריזורט. ישנו במקום, קמנו לבריכה, וחזרנו לאירוע רעננים. האורחים מרחוק קיבלו חדר במתחם ולא היו צריכים לנהוג.</p>
+            <p>הייתי באירוע, והכל היה מושלם. אוכל מאוד טעים ברמה מאוד גבוהה, מקום מזמין, נקי ומטופח, אווירה יוקרתית. אפילו בשירותים היו כל מיני דברים להתרעננות. ממש נהניתי.</p>
           </blockquote>
           <footer class="testimonial__author">
-            <cite>מיכל ודניאל</cite>
-            <span class="testimonial__meta">חתונת סופ"ש</span>
+            <cite>Regina Rozen</cite>
+            <span class="testimonial__meta">אירוע · ספטמבר 2025</span>
           </footer>
         </article>
 
@@ -1066,11 +1063,11 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 840ms;">
           <blockquote class="testimonial__quote">
-            <p>שתי משפחות, שני אירועים באותו ערב, באולם ובריזורט במקביל. הכל זרם, ואף אורח לא הרגיש שמתקיים אירוע נוסף לידו.</p>
+            <p>אולם ברמה גבוהה מאוד. עיצוב מרהיב ויוקרתי, אווירה מפנקת ושירות מקצועי ואדיב לאורך כל האירוע. האוכל היה משובח ומוגש בצורה אסתטית. מומלץ בחום למי שמחפש אירוע בסטנדרט גבוה במיוחד.</p>
           </blockquote>
           <footer class="testimonial__author">
-            <cite>רחל, אם הכלה</cite>
-            <span class="testimonial__meta">חתונה כפולה</span>
+            <cite>Elnatan Zadok</cite>
+            <span class="testimonial__meta">פברואר 2026</span>
           </footer>
         </article>
 
@@ -1078,11 +1075,11 @@
                  data-slider-item
                  data-reveal="fade-up" style="--reveal-delay: 960ms;">
           <blockquote class="testimonial__quote">
-            <p>ברית עם תינוק בן שמונה ימים ומשפחה גדולה. הצוות לקח את כל הארגון על עצמו, וכך יכולנו פשוט להיות נוכחים עם הילד.</p>
+            <p>אולם מהמם באווירה מדברית קסומה! השירות ברמה גבוהה, האוכל טעים והנוף עוצר נשימה. מקום מושלם לאירועים עם אופי ונשמה. מומלץ בחום!</p>
           </blockquote>
           <footer class="testimonial__author">
-            <cite>עדי וערן</cite>
-            <span class="testimonial__meta">ברית מילה</span>
+            <cite>Eliya Yehudai</cite>
+            <span class="testimonial__meta">יולי 2025</span>
           </footer>
         </article>
       </div>
@@ -1134,7 +1131,7 @@
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 200ms;">
           <picture>
             <source type="image/webp" srcset="/assets/images/gallery/03.half.webp">
-            <img src="/assets/images/gallery/03.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן וכלה מחובקים ומחייכים על רקע הרי המדבר של מישור אדומים">
+            <img src="/assets/images/gallery/03.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן וכלה מחובקים ומחייכים על רקע הרי המדבר של פארק ישראל">
           </picture>
         </li>
         <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 300ms;">
@@ -1282,6 +1279,17 @@
           <details class="events__item" name="events-accordion"
                    data-reveal="slide-left" style="--reveal-delay: 360ms;">
             <summary class="events__summary">
+              <span>ברית</span>
+              <span class="events__chevron" aria-hidden="true">›</span>
+            </summary>
+            <div class="events__content">
+              <p>קבלת פנים חמה בגן או באולם, תפריט בוקר עשיר וצוות שמלווה אתכם מההכנה ועד הסיום.</p>
+            </div>
+          </details>
+
+          <details class="events__item" name="events-accordion"
+                   data-reveal="slide-left" style="--reveal-delay: 460ms;">
+            <summary class="events__summary">
               <span>אירועי חברה</span>
               <span class="events__chevron" aria-hidden="true">›</span>
             </summary>
@@ -1297,7 +1305,7 @@
               <span class="events__chevron" aria-hidden="true">›</span>
             </summary>
             <div class="events__content">
-              <p>ימי הולדת, אירוסין וערבי הוקרה, באולם, בלאונג' או בגן.</p>
+              <p>ימי הולדת, אירוסין וערבי הוקרה, באולם, במתחם קבלת הפנים או בגן.</p>
             </div>
           </details>
 
@@ -1499,7 +1507,7 @@
             <div class="contact__access" data-reveal="slide-right" style="--reveal-delay: 320ms;">
               <h4 class="contact__access-title">נגישות מלאה (100% נגיש)</h4>
               <p class="contact__access-text">
-                המתחם כולו תוכנן ונבנה על פי תקני הנגישות המחמירים ביותר. כל החללים, מהחנייה ושערי הכניסה, דרך גן האירועים והאולם הראשי ועד תאי השירותים, מונגשים באופן מלא ומכבד.
+                המתחם כולו תוכנן ונבנה על פי תקני הנגישות המחמירים ביותר. כל החללים, מהחנייה ושערי הכניסה, דרך גן האירועים והאולם הראשי ועד תאי השירותים, מונגשים באופן מלא ומכבד. יציאות חירום מסומנות ומוארות פרוסות בכל רחבי המתחם.
               </p>
             </div>
 
@@ -1584,7 +1592,7 @@
           <div class="directions__stage">
             <div id="directions-map" class="directions__map"
                  role="application"
-                 aria-label="מפת הגעה לגאמוס, די זהב 7, מישור אדומים"></div>
+                 aria-label="מפת הגעה לגאמוס, די זהב 7, פארק ישראל"></div>
 
             <!-- Floating glass card: live time/distance + navigation CTAs.
                  JS updates the label text + the three hrefs per active tab. -->
@@ -1593,7 +1601,7 @@
                 <span class="directions__eta-label" data-directions-eta-origin>מירושלים</span>
                 <span class="directions__eta-stat" data-directions-eta>≈ 17 דק׳ · 16 ק״מ</span>
               </p>
-              <p class="directions__address">די זהב 7, מישור אדומים, מעלה אדומים</p>
+              <p class="directions__address">די זהב 7, פארק ישראל, מעלה אדומים</p>
               <div class="directions__cta-row">
                 <a class="btn directions__cta directions__cta--waze" data-directions-waze
                    href="https://ul.waze.com/ul?preview_venue_id=23134526.231607403.655613&navigate=yes"
@@ -1613,7 +1621,7 @@
           <!-- JS-off fallback: address + the same three navigation links. -->
           <noscript>
             <div class="directions__fallback">
-              <p>די זהב 7, מישור אדומים, מעלה אדומים.</p>
+              <p>די זהב 7, פארק ישראל, מעלה אדומים.</p>
               <a href="https://ul.waze.com/ul?preview_venue_id=23134526.231607403.655613&navigate=yes"
                  target="_blank" rel="noopener noreferrer">נווטו ב-Waze</a>
               <a href="https://www.google.com/maps/dir/?api=1&destination=31.7878076,35.3371583"
