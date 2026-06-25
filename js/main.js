@@ -17,6 +17,7 @@ import * as heroScene           from "./hero-scene.js";     // 2026-06-15 — v1
 import * as scrollScene         from "./scroll-scene.js";
 import * as portals             from "./portals.js";
 import * as reveals             from "./reveals.js";
+import * as buffetParallax      from "./buffet-parallax.js"; // 2026-06-25 — #buffet bands subtle image parallax
 import * as accordions          from "./accordions.js";
 import * as slider              from "./slider.js";
 import * as loadingOverlay      from "./loading-overlay.js";
@@ -59,6 +60,7 @@ const MODULES = [
   ["portals",             portals],
   ["side-dot-nav",        sideDotNav],
   ["reveals",             reveals],
+  ["buffet-parallax",     buffetParallax], // 2026-06-25: #buffet bands image parallax (after reveals)
   ["directions-map",      directionsMap], // 2026-06-10: #routes Leaflet map (after reveals so [data-reveal] is set up)
   ["contact-map-cue",     contactMapCue], // 2026-06-22: #contact scroll-cue → reveal the #routes map (both desktop + mobile)
   ["accordions",          accordions],

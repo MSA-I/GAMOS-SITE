@@ -50,6 +50,7 @@
   .rooms__name,
   .feature h3,
   .marquee__text,
+  .band__num,
   .about__stat dd {
     background-repeat: no-repeat;
     background-size: 100% 100%;
@@ -77,6 +78,7 @@
   .marquee__text,
   .gallery .section-header__title,
   .kosher .section-header__title,
+  .band__num,
   .about__stat dd {
     background-image: var(--typo-on-light);
   }
@@ -88,6 +90,7 @@
      Footer claim was removed 2026-06-03 — user wants flat ivory text
      there ("בהיר בלבד ללא טקסטורה מאחורה"). ---- */
   [data-bg="dark"] .section-header__title,
+  [data-bg="dark"] .band__num,
   .bg-dark .section-header__title,
   .culinary .section-header__title,
   .hero .section-header__title,
