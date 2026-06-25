@@ -138,9 +138,14 @@ export function init() {
       if (isTouch && state.inHero) {
         const y = window.scrollY || window.pageYOffset || 0;
         const dy = y - state.lastScrollY;
+        // 2026-06-25: STICKY reveal. The old logic hid the bar on the tiniest
+        // downward movement (`dy > 6`), so once summoned it vanished again on any
+        // jitter — the user read that flicker as a "delay"/unavailable nav. Now:
+        // an upward intent reveals it, and it STAYS revealed until the user
+        // returns to the very top (where the hero owns the screen, per the
+        // 2026-06-04 "hero covers the nav" mandate). No more flicker on scroll-down.
         if (y <= 4) setRevealed(false);
-        else if (dy < -6) setRevealed(true);
-        else if (dy > 6) setRevealed(false);
+        else if (dy < -4) setRevealed(true);
         state.lastScrollY = y;
       }
     });

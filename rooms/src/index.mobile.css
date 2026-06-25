@@ -22,7 +22,11 @@
  * ------------------------------------------------------------------- */
 .roomsm-back {
   position: fixed;
-  top: max(env(safe-area-inset-top), 0.75rem);
+  /* 2026-06-25: reserve clearance for the browser's top bar. env(safe-area-*)
+     only covers the notch, NOT Safari/Chrome's dynamic URL/tab bar — and the
+     rooms wall pans horizontally (no vertical scroll), so the browser bars
+     never auto-hide → reserve statically so "חזרה" never sits under a bar. */
+  top: calc(env(safe-area-inset-top, 0px) + 1rem);
   inset-inline-start: max(env(safe-area-inset-left), 1rem);
   z-index: 30;
   display: inline-flex;
@@ -102,7 +106,8 @@
  * ------------------------------------------------------------------- */
 .roomsm-eyebrow {
   position: fixed;
-  top: max(env(safe-area-inset-top), 0.75rem);
+  /* match .roomsm-back top clearance (browser top-bar reserve, see note there) */
+  top: calc(env(safe-area-inset-top, 0px) + 1rem);
   inset-inline-end: max(env(safe-area-inset-right), 1rem);
   z-index: 30;
   /* sit centred against the 44px back-link row */
@@ -137,7 +142,11 @@
   inset-block-end: 0;
   z-index: 30;
   padding-block: 2.5rem 1rem;
-  padding-block-end: max(env(safe-area-inset-bottom), 1rem);
+  /* 2026-06-25: reserve for the browser's BOTTOM bar (iOS 15+ Safari puts the
+     address bar at the bottom; Chrome has a bottom toolbar) ON TOP of the home-
+     indicator safe area. The wall pans horizontally (no vertical scroll) so the
+     bottom bar stays visible → the title would otherwise sit under it. */
+  padding-block-end: calc(env(safe-area-inset-bottom, 0px) + 3.25rem);
   padding-inline: 1.25rem;
   pointer-events: none;
   display: flex;
@@ -204,8 +213,9 @@
 .roomsm-hint {
   position: fixed;
   inset-inline: 0;
-  /* clear of the bottom title bar (which ends ~env-bottom + ~3.5rem of content) */
-  inset-block-end: calc(max(env(safe-area-inset-bottom), 1rem) + 5.5rem);
+  /* sit above BOTH the browser bottom-bar reserve (3.25rem) and the title bar
+     content, so the hint is never hidden by the browser chrome (2026-06-25). */
+  inset-block-end: calc(env(safe-area-inset-bottom, 0px) + 8.5rem);
   z-index: 25;
   display: flex;
   align-items: center;
