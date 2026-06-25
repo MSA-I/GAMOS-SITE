@@ -245,7 +245,13 @@ function buildTimelines() {
   A.to(cloudL,  { x: "-" + CLOUD_X, duration: 1 }, 0);
   A.to(cloudR,  { x: CLOUD_X,       duration: 1 }, 0);
   A.to(content, { y: "20%", scale: 0.9, duration: 1 }, 0);
-  A.to(content, { opacity: 0, duration: 0.2 }, 0);
+  // 2026-06-25 mobile fix: on a phone the content (title + "גן, אולם, ריזורט…"
+  // subtitle) used to fade fully within the first screen of scroll (duration 0.2
+  // ≈ 1×100svh), and the iOS/Android toolbar-collapse jump at load pushed the
+  // scrub a chunk into that fade — so the text "flashed then vanished into the
+  // clouds". On ≤768px we HOLD it at full opacity through the first screen, then
+  // fade, so it stays readable. Desktop (≥769px) is byte-identical (0 / 0.2).
+  A.to(content, { opacity: 0, duration: isNarrow ? 0.25 : 0.2 }, isNarrow ? 0.18 : 0);
   A.to(logo,    { opacity: 1, duration: 0.01 }, 0.1);
   if (hasDrawSVG && logo) {
     A.fromTo(logo.querySelectorAll("svg path"),

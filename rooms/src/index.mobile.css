@@ -146,7 +146,7 @@
      address bar at the bottom; Chrome has a bottom toolbar) ON TOP of the home-
      indicator safe area. The wall pans horizontally (no vertical scroll) so the
      bottom bar stays visible → the title would otherwise sit under it. */
-  padding-block-end: calc(env(safe-area-inset-bottom, 0px) + 3.25rem);
+  padding-block-end: calc(env(safe-area-inset-bottom, 0px) + 6rem);
   padding-inline: 1.25rem;
   pointer-events: none;
   display: flex;
@@ -215,7 +215,7 @@
   inset-inline: 0;
   /* sit above BOTH the browser bottom-bar reserve (3.25rem) and the title bar
      content, so the hint is never hidden by the browser chrome (2026-06-25). */
-  inset-block-end: calc(env(safe-area-inset-bottom, 0px) + 8.5rem);
+  inset-block-end: calc(env(safe-area-inset-bottom, 0px) + 11.5rem);
   z-index: 25;
   display: flex;
   align-items: center;
