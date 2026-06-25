@@ -23,9 +23,17 @@
   Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
 
-# ---- Images + frames + video (content-stable encoded outputs) ---------------
+# ---- Images (REVALIDATING — 2026-06-25) -------------------------------------
+# Gallery images are human-named (buffet/01.full.webp …) and DO get replaced in
+# place when a section is redesigned (e.g. the #buffet "bands" redesign reused
+# 01–13.*). `immutable` made those updates invisible to returning visitors for a
+# year. SWR keeps them effectively instant (served from cache while a background
+# revalidate runs) but lets content edits propagate within a day. Egress is free
+# on Cloudflare Pages (§14) so the extra conditional requests cost nothing.
 /assets/images/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+# Frames + video are heavy, numerous, and only change on a deliberate re-encode
+# (which we cache-bust by version) → keep immutable.
 /assets/frames/*
   Cache-Control: public, max-age=31536000, immutable
 /assets/video/*
