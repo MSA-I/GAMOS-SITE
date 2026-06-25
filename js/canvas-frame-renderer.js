@@ -98,7 +98,10 @@ const DEFAULTS = {
 // Wider than the old 9/17 so that even in window mode a fast flick has more
 // already-decoded neighbours before it shows a stale frame.
 const WINDOW_DESKTOP = 41;
-const WINDOW_MOBILE = 61;
+// 2026-06-25: lowered 61 → 41. At 960×540 mobile frames that's 84MB held
+// (was 126MB) — extra headroom on low-RAM phones where Safari/Chrome kill the
+// tab well under 1GB. Still wide enough to avoid fast-flick stale-frame flicker.
+const WINDOW_MOBILE = 41;
 
 // DECODE-ALL footprint guard. Estimated decoded RAM = frameCount × W × H × 4
 // bytes (RGBA, the worst case for ImageBitmap). Above this ceiling we refuse
@@ -107,7 +110,15 @@ const WINDOW_MOBILE = 61;
 // full res, but ImageBitmaps of 1080p WebP decode to ~1080p → well under once
 // the browser keeps them GPU-backed) — we additionally cap by frameCount so a
 // pathological huge-count scene still uses the window.
-const DECODE_ALL_MAX_BYTES = 1.5 * 1024 * 1024 * 1024;
+// 2026-06-25 CRASH FIX: lowered 1.5GB → 600MB. The old 1.5GB ceiling let the
+// 361-frame mobile culinary clip (361 × 960×540 × 4 ≈ 748MB) pass the guard and
+// DECODE-ALL — decoding all 361 ImageBitmaps at once on page load. On a phone
+// (iOS Safari / Android Chrome kill a tab at a few hundred MB) that OOM-crashed
+// the tab a few seconds after entering. Desktop frames (1920×1080 ≈ 3.0GB) were
+// already over the old ceiling, so desktop was unaffected and stays so. 600MB
+// excludes the mobile clip too while still allowing decode-all for genuinely
+// light scenes on capable hardware. See also the mobile guard in decideDecodeAll.
+const DECODE_ALL_MAX_BYTES = 600 * 1024 * 1024;
 const DECODE_ALL_MAX_FRAMES = 600;
 
 function pad4(n) {
@@ -203,6 +214,15 @@ export function createRenderer({ canvas, manifest, host, options }) {
   // forced it. Estimate the decoded footprint from the manifest dimensions.
   function decideDecodeAll() {
     if (typeof opts.decodeAll === "boolean") return opts.decodeAll;
+    // 2026-06-25 CRASH FIX: never decode-all on phones. Mobile devices are
+    // memory-constrained and the browser kills the tab long before a desktop
+    // would; the sliding window (bounded ~WINDOW_MOBILE frames) is the only safe
+    // path there. This is the primary guard; the byte ceiling below is backup.
+    const isNarrow =
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(max-width: 768px)").matches;
+    if (isNarrow) return false;
     const w = manifest.width || 1920;
     const h = manifest.height || 1080;
     const estBytes = total * w * h * 4; // RGBA worst-case
