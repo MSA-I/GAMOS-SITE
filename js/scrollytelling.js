@@ -117,7 +117,11 @@ async function registerScene(canvas) {
     canvas,
     manifest,
     options: {
-      zoom: 1.35,
+      // 2026-06-25: reduced 1.35 → 1.05. The 1.35 overshoot upscaled the 1080p
+      // frames ~35% past cover, which read as soft (esp. the conveyor dishes).
+      // 1.05 is near-native cover (sharpest) — only a 5% overshoot to keep a
+      // hair of mouse-parallax margin and hide any baked-in edge.
+      zoom: 1.05,
       parallax: true,
       parallaxStrength: 28,
       bgColor: "#0E0E0C",
