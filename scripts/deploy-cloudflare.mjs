@@ -33,8 +33,9 @@
        the only scrub that works on iOS. (culinary-h264-1080.mp4 left on disk, unused.)
      • Map tiles stay on CARTO keyless for now; MapTiler key is a follow-up
        before a real public custom-domain launch.
-     • subject.png (20MB) ships as-is — it's only the no-WebP <img> fallback,
-       under the 25 MiB cap; modern browsers fetch the responsive subject-*.webp.
+     • subject.png re-encoded 2026-06-30 (6240×1599 ~20MB → 3120×800 ~1.6MB,
+       full-color) — it's only the no-WebP <img> fallback; modern browsers fetch
+       the responsive subject-*.webp.
 
    Usage:
      node scripts/deploy-cloudflare.mjs                  # build + stage + PREVIEW deploy
@@ -224,9 +225,12 @@ const oversize = [];
       totalBytes += st.size;
       if (st.size > biggest.size) biggest = { path: relative(SITE, p), size: st.size };
       if (st.size > MAX_FILE_BYTES) oversize.push({ path: relative(SITE, p), size: st.size });
-      if (name === "subject.png") {
+      // subject.png is the no-WebP <img> fallback (modern browsers use the
+      // subject-*.webp <source>s). Re-encoded 2026-06-30 to 3120×800 (~1.6MB);
+      // warn only if it regresses back to a bloated size.
+      if (name === "subject.png" && st.size > 5 * 1024 * 1024) {
         console.warn(
-          `[deploy-cf] ⚠ ${relative(SITE, p)} is ${human(st.size)} — it's the no-WebP <img> fallback (under the cap, OK for v1; re-encode is a tracked follow-up).`
+          `[deploy-cf] ⚠ ${relative(SITE, p)} is ${human(st.size)} — the no-WebP fallback should be ~1.6MB; re-encode (sharp resize 3120 + level9).`
         );
       }
     }

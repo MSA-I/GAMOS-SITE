@@ -64,11 +64,11 @@
 **Legacy v9 נשמר** (§2.1 כלל 6): `js/hero-static.js` + `css/sections/hero-static.css` +
 `mobile/css/hero-static.css` על-מקום, מנותקים. חזרה = החלפת markup+link+entry אחת.
 
-**⚠️ Follow-up חובה לפני go-live (§8 perf + §14):** `subject.png` הוא PNG ~20MB
-(הועתק כמו-שהוא לפי החלטת המשתמש). לפני דיפלוי — לקודד מחדש את 4 השכבות דרך
-`scripts/encode-images.mjs` `NAMED_PAIRS` (`keepAlpha:true, webpOnly:true` ל-subject/clouds/smoke;
-`flatten:#F5EFE6` ל-sky) → `assets/images/hero-scene/*.{full,half}.webp`, ולהחליף `<img src>`
-ב-`<picture>`. ראה `DEPLOYMENT-COSTS.md`.
+**✅ נסגר 2026-06-30:** `subject.png` (היה PNG ~20MB, 6240×1599) **קודד מחדש**
+ל-3120×800 RGBA full-color (~1.6MB, sharp resize+level9) — ~92% חיסכון, ללא banding.
+ה-subject הנראה בפועל ממילא נטען מ-WebP responsive (`subject-*.webp` דרך `<source>`);
+ה-PNG הוא fallback בלבד. שאר שכבות ההירו (`sky.jpg` 78KB, `clouds.png` 387KB,
+`smoke.png` 693KB) כבר קטנות. חריגת §8 נפתרה.
 
 ---
 
