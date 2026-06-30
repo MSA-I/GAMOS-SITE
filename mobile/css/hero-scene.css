@@ -118,10 +118,16 @@
   #hero.hero_root .hero_content {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;            /* anchor from the top (2026-06-30,
+                                               user: "lift the text block up") so
+                                               the whole block clears the desert +
+                                               smoke at the horizon, instead of
+                                               sitting centred on the ridge line. */
     align-items: center;
     gap: calc(2 * var(--rem));
-    padding-bottom: calc(7 * var(--rem));   /* sit a touch above the cue/smoke */
+    padding-block-start: 11svh;             /* top offset — block lands in the
+                                               upper sky zone, above the ridge. */
+    padding-bottom: 0;
   }
   #hero.hero_root .hero_eyebrow { margin: 0; }
   #hero.hero_root .hero_title h1 {
