@@ -104,6 +104,36 @@
   /* The dim-siblings :has() hover is desktop-only by nature; on touch the CTAs
      stay at full opacity. Nothing to override — left here as a note. */
 
+  /* ----- HERO TEXT BLOCK: tight centered column (2026-06-30) ---------------
+     The v10 title was a SHORT 2-line phrase; the copy doc (2026-06-30) swapped
+     in a longer sentence ("המקום שבו האירועים מקבלים / תפאורה יחודית.") + a longer
+     subtitle ("…ועוצר נשימה של מדבר יהודה"). `.hero_content` is a grid whose rows
+     STRETCH across the full 100svh, so the three lines spread far apart ("the
+     order doesn't sit right") and the now-taller wrapped title shoves the
+     subtitle's track to the bottom edge — where the scroll-fade (js/hero-scene.js
+     `content → opacity:0`) swallows it before it's read ("can't see it"). Fix:
+     re-flow the block as a tight centered flex column with even gaps so all three
+     lines read together and stay in the first screen; shrink the title a touch so
+     line 1 wraps to a clean 2 lines instead of 3. Desktop (≥769px) untouched. */
+  #hero.hero_root .hero_content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: calc(2 * var(--rem));
+    padding-bottom: calc(7 * var(--rem));   /* sit a touch above the cue/smoke */
+  }
+  #hero.hero_root .hero_eyebrow { margin: 0; }
+  #hero.hero_root .hero_title h1 {
+    font-size: calc(4.4 * var(--rem));      /* was 5.4·rem — fits the longer title */
+    line-height: 112%;
+    text-wrap: balance;
+  }
+  #hero.hero_root .hero_text {
+    margin: 0;
+    max-inline-size: 40ch;                  /* keep the long subtitle to ~2 lines */
+  }
+
   /* SINGLE CUE on mobile. The shared `:not([data-hero-mode]) .hero_top .gamos-cue`
      rule (css/sections/hero-scene.css) hides the hero cue once the hero releases
      — but on a phone the 460vh hero stays "hero-mode true" until ~99% scrolled,
