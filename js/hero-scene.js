@@ -33,6 +33,12 @@ import { prefersReducedMotion } from "./utils/media-query.js";
 
 const NAV_DELAY_MS = 1400;  // Hold the loading overlay long enough for the brass bar (1200ms) to fill before navigating.
 const LOGO_SVG_URL = "/assets/images/hero-scene/logo.svg";
+// English hero logo (GAMOS + English subtitle, viewBox 219.78×79.53 — its ratio
+// matches the desktop .hero_logo box exactly). Used only when the site is in EN;
+// Hebrew keeps LOGO_SVG_URL and renders byte-identically to before. See i18n.js.
+const LOGO_SVG_URL_EN = "/assets/images/hero-scene/logo-en.svg";
+const logoUrlForLang = () =>
+  document.documentElement.lang === "en" ? LOGO_SVG_URL_EN : LOGO_SVG_URL;
 const RETURN_FLAG = "gamos-return-hall"; // set on entry → scroll back to #hall-portal
 
 const state = {
@@ -49,6 +55,10 @@ const state = {
   triggers: [],
   splits: [],
   hotspots: [],
+  scrubTL: null,        // scrub timeline — rebuilt on language change (new logo paths)
+  scrubST: null,        // its ScrollTrigger
+  langHandler: null,    // gamos:langchange listener
+  currentLogoUrl: null, // last logo SVG fetched — skip redundant reloads
 };
 
 const q = (sel) => document.querySelector(sel);
@@ -163,16 +173,26 @@ function applyLogo(svgText) {
   if (comp) {
     comp.style.setProperty("-webkit-mask-image", `url("${uri}")`);
     comp.style.setProperty("mask-image", `url("${uri}")`);
+    // mask-size stays in CSS (97.7×35.4rem desktop). That ratio (2.764) matches the
+    // English viewBox 219.78×79.53 exactly and the Hebrew 205.7×82.46 closely, so
+    // neither logo stretches on desktop. (Mobile box 23.5×10.2 is a looser fit for
+    // both — a documented later refinement, not set here.)
   }
 }
 
-/* ------------------------------------------------------- GSAP timelines ----- */
-function buildTimelines() {
+/* --------------------------------------------------------- scrub timeline --- */
+/* The scroll-scrubbed hero choreography. Extracted from buildTimelines so a
+   language toggle can kill + rebuild it: its DrawSVG tween captures the logo
+   <path> nodes, and applyLogo() replaces those nodes when swapping EN⇄HE logos,
+   so the tween must be recreated against the fresh paths. Owns state.scrubTL /
+   state.scrubST exclusively (destroy() kills them directly). */
+function buildScrub() {
   const gsap = window.gsap;
+  const ScrollTrigger = window.ScrollTrigger;
+  if (!gsap || !ScrollTrigger) return;
   const hero = state.hero;
+  const hasDrawSVG = !!window.DrawSVGPlugin;
 
-  // elements (sandbox refs → DOM, source class names)
-  const back      = q(".hero_back");                       // A
   const house     = q(".hero_bg > .hero_house");           // s
   const compHouse = q(".hero_composite .hero_house");      // g
   const clouds    = qa(".hero_clouds .hero_cloud");
@@ -182,44 +202,6 @@ function buildTimelines() {
   const logo      = q(".hero_logo");                       // b
   const comp      = q(".hero_composite");                  // c
   const smoke     = q(".hero_top .hero_smoke");            // f
-  const titleH1   = q(".hero_title h1");                   // I
-
-  if (!gsap) {
-    // No GSAP: reveal the static composition so the hero is never invisible.
-    hero.style.visibility = "visible";
-    return;
-  }
-
-  // Register the now-free plugins if present (graceful if a build lacks them).
-  const ScrollTrigger = window.ScrollTrigger;
-  const DrawSVGPlugin = window.DrawSVGPlugin;
-  const SplitText     = window.SplitText;
-  const plugins = [ScrollTrigger, DrawSVGPlugin, SplitText].filter(Boolean);
-  if (plugins.length) gsap.registerPlugin(...plugins);
-  const hasDrawSVG = !!DrawSVGPlugin;
-
-  // Mobile stability: the dynamic browser toolbar (iOS Safari / Chrome-Android)
-  // resizes innerHeight on EVERY scroll. Unchecked, ScrollTrigger re-measures and
-  // the pinned hero "jumps" while the scrub desyncs — the "everything feels broken
-  // on a real phone" report. ignoreMobileResize tells ScrollTrigger to skip those
-  // toolbar-driven refreshes (a genuine orientationchange still re-measures), and
-  // it pairs with the mobile `.hero_top{height:100svh}` override (mobile/css/
-  // hero-scene.css) so the pin height itself is toolbar-stable. (fixing-motion-
-  // performance §4 — scroll-linked motion must not thrash on resize.)
-  if (ScrollTrigger && typeof ScrollTrigger.config === "function") {
-    ScrollTrigger.config({ ignoreMobileResize: true });
-  }
-
-  if (prefersReducedMotion()) {
-    // Show final composition statically (logo filled), no scrub. (§8/§9)
-    // init() seeds the hero at autoAlpha:0 for the entrance fade; with no entrance
-    // here we must restore it to fully visible, not leave it invisible.
-    gsap.set(hero, { autoAlpha: 1 });
-    gsap.set([logo], { opacity: 0 });
-    gsap.set([comp], { opacity: 1 });
-    if (house) gsap.set(house, { opacity: 1 });
-    return;
-  }
 
   // ---- scrub timeline (VERBATIM from sandbox page.js) ----
   // A.to([s,g],{y:"-40%",scale:1.3,duration:1},0); A.to(f,{y:"0%",d:1},0);
@@ -265,8 +247,89 @@ function buildTimelines() {
   const st = ScrollTrigger.create({
     trigger: hero, animation: A, start: "top top", end: "bottom top", scrub: 0.1,
   });
-  state.tweens.push(A);
-  state.triggers.push(st);
+  state.scrubTL = A;
+  state.scrubST = st;
+}
+
+/* Language toggle → re-fetch the EN/HE logo, re-inject it, and rebuild the scrub
+   so DrawSVG targets the fresh <path> nodes. Entrance timeline is left alone (no
+   replay mid-session). No-op under reduced-motion (there is no scrub to rebuild;
+   applyLogo still swaps the static filled composite). */
+function reloadLogoForLang() {
+  if (!state.hero) return;
+  const url = logoUrlForLang();
+  if (url === state.currentLogoUrl) return; // already showing this logo
+  fetch(url)
+    .then((res) => res.text())
+    .then((txt) => {
+      state.currentLogoUrl = url;
+      applyLogo(txt);
+      if (prefersReducedMotion()) return; // static composite already updated
+      if (state.scrubST) { try { state.scrubST.kill(); } catch { /* ignore */ } state.scrubST = null; }
+      if (state.scrubTL) { try { state.scrubTL.kill(); } catch { /* ignore */ } state.scrubTL = null; }
+      buildScrub();
+      const ST = window.ScrollTrigger;
+      if (ST && typeof ST.refresh === "function") { try { ST.refresh(); } catch { /* ignore */ } }
+    })
+    .catch(() => { /* keep whatever logo is showing */ });
+}
+
+/* ------------------------------------------------------- GSAP timelines ----- */
+function buildTimelines() {
+  const gsap = window.gsap;
+  const hero = state.hero;
+
+  // elements (sandbox refs → DOM, source class names)
+  const back      = q(".hero_back");                       // A
+  const house     = q(".hero_bg > .hero_house");           // s
+  const compHouse = q(".hero_composite .hero_house");      // g
+  const clouds    = qa(".hero_clouds .hero_cloud");
+  const cloudL    = clouds[0];                             // t
+  const cloudR    = clouds[1];                             // i
+  const logo      = q(".hero_logo");                       // b (reduced-motion set)
+  const comp      = q(".hero_composite");                  // c (reduced-motion set)
+  const titleH1   = q(".hero_title h1");                   // I
+
+  if (!gsap) {
+    // No GSAP: reveal the static composition so the hero is never invisible.
+    hero.style.visibility = "visible";
+    return;
+  }
+
+  // Register the now-free plugins if present (graceful if a build lacks them).
+  const ScrollTrigger = window.ScrollTrigger;
+  const DrawSVGPlugin = window.DrawSVGPlugin;
+  const SplitText     = window.SplitText;
+  const plugins = [ScrollTrigger, DrawSVGPlugin, SplitText].filter(Boolean);
+  if (plugins.length) gsap.registerPlugin(...plugins);
+
+  // Mobile stability: the dynamic browser toolbar (iOS Safari / Chrome-Android)
+  // resizes innerHeight on EVERY scroll. Unchecked, ScrollTrigger re-measures and
+  // the pinned hero "jumps" while the scrub desyncs — the "everything feels broken
+  // on a real phone" report. ignoreMobileResize tells ScrollTrigger to skip those
+  // toolbar-driven refreshes (a genuine orientationchange still re-measures), and
+  // it pairs with the mobile `.hero_top{height:100svh}` override (mobile/css/
+  // hero-scene.css) so the pin height itself is toolbar-stable. (fixing-motion-
+  // performance §4 — scroll-linked motion must not thrash on resize.)
+  if (ScrollTrigger && typeof ScrollTrigger.config === "function") {
+    ScrollTrigger.config({ ignoreMobileResize: true });
+  }
+
+  if (prefersReducedMotion()) {
+    // Show final composition statically (logo filled), no scrub. (§8/§9)
+    // init() seeds the hero at autoAlpha:0 for the entrance fade; with no entrance
+    // here we must restore it to fully visible, not leave it invisible.
+    gsap.set(hero, { autoAlpha: 1 });
+    gsap.set([logo], { opacity: 0 });
+    gsap.set([comp], { opacity: 1 });
+    if (house) gsap.set(house, { opacity: 1 });
+    return;
+  }
+
+  // Build the scrub timeline (extracted so a language toggle can rebuild it — the
+  // DrawSVG tween captures the logo <path> nodes, which are replaced when the
+  // EN/HE logo is re-injected). Owns state.scrubTL / state.scrubST.
+  buildScrub();
 
   // Re-measure once the layout is final. The mobile pass injects /mobile/css/
   // hero-scene.css as a runtime <link> (async), so at trigger-build time the
@@ -366,7 +429,9 @@ export function init() {
     if (!state.entranceStarted) gsapForceVisible(hero);
   }, 600);
 
-  fetch(LOGO_SVG_URL)
+  const initialLogoUrl = logoUrlForLang();
+  state.currentLogoUrl = initialLogoUrl;
+  fetch(initialLogoUrl)
     .then((res) => res.text())
     .then((txt) => { applyLogo(txt); buildTimelines(); })
     .catch(() => { hero.style.visibility = "visible"; buildTimelines(); });
@@ -374,6 +439,11 @@ export function init() {
   state.scrollHandler = onScroll;
   window.addEventListener("scroll", state.scrollHandler, { passive: true });
   requestAnimationFrame(computeProgress);
+
+  // React to the i18n toggle (i18n.js dispatches gamos:langchange). Swap the logo
+  // SVG to the EN/HE wordmark and rebuild the scrub so DrawSVG hits the new paths.
+  state.langHandler = () => reloadLogoForLang();
+  document.addEventListener("gamos:langchange", state.langHandler);
 
   state.initialised = true;
 }
@@ -389,8 +459,14 @@ export function destroy() {
     window.removeEventListener("orientationchange", state.refreshHandler);
     state.refreshHandler = null;
   }
+  if (state.langHandler) {
+    document.removeEventListener("gamos:langchange", state.langHandler);
+    state.langHandler = null;
+  }
   state.hotspots.forEach(([el, handler]) => el.removeEventListener("click", handler));
   state.hotspots = [];
+  if (state.scrubST) { try { state.scrubST.kill(); } catch { /* ignore */ } state.scrubST = null; }
+  if (state.scrubTL) { try { state.scrubTL.kill(); } catch { /* ignore */ } state.scrubTL = null; }
   state.triggers.forEach((t) => { try { t.kill(); } catch { /* ignore */ } });
   state.triggers = [];
   state.tweens.forEach((t) => { try { t.kill(); } catch { /* ignore */ } });

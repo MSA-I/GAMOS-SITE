@@ -213,6 +213,10 @@ async function applyLang(lang, { persist = false } = {}) {
   state.lang = lang;
   updateToggles(lang);
   if (persist) { try { localStorage.setItem(STORAGE_KEY, lang); } catch { /* ignore */ } }
+  // Broadcast so other modules can react (hero-scene swaps the EN/HE hero logo).
+  // The only cross-module language signal besides <html lang>/dir.
+  try { document.dispatchEvent(new CustomEvent("gamos:langchange", { detail: { lang } })); }
+  catch { /* ignore */ }
 }
 
 // ---------------------------------------------------------------------------
