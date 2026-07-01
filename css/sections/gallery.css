@@ -6,7 +6,10 @@
 
 
 .gallery {
-  padding-block: var(--section-pad);
+  /* padding-block-end: 0 — the .gallery__outro dissolve provides the closing
+     space and fades into #events, so no plain gap between them. */
+  padding-block-start: var(--section-pad);
+  padding-block-end: 0;
   padding-inline: var(--gutter);
   background: var(--bg-alt);
 }
@@ -21,33 +24,48 @@
   margin-inline: auto;
 }
 
+/* Proportional masonry (2026-07-01, rev 2026-07-01): JS shortest-column masonry.
+   Every photo keeps its true ratio (portraits tall, landscapes wide, no crop) AND
+   the columns pack NEAR-EVEN — js/gallery-masonry.js distributes each item into the
+   currently-shortest column (by cumulative aspect ratio). Neither CSS `columns`
+   (balance-fill) nor CSS-grid `dense` can equalise column bottoms, which left a
+   ~850px ragged light gap; shortest-column placement is the only reliable evener.
+   The grid is a flex row of .gallery__col columns the JS creates + fills. */
 .gallery__grid {
   list-style: none;
   margin: 0;
   padding: 0;
   margin-block-start: var(--space-12);
-  display: grid;
+  display: flex;
+  align-items: flex-start;
   gap: var(--space-3);
-  grid-template-columns: repeat(2, 1fr);
 }
 
-@media (min-width: 768px) { .gallery__grid { grid-template-columns: repeat(3, 1fr); } }
-@media (min-width: 1100px) { .gallery__grid { grid-template-columns: repeat(4, 1fr); } }
+/* Column wrappers are created by js/gallery-masonry.js. Before the JS runs (or if
+   it no-ops) the items sit directly in the flex row — still visible, just not
+   column-balanced. */
+.gallery__col {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
 
 .gallery__item {
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-md);
-  aspect-ratio: 4 / 5;
+  cursor: pointer;
   background: linear-gradient(135deg, var(--mist), var(--brass));
 }
 
-.gallery__item picture, .gallery__item img {
-  position: absolute;
-  inset: 0;
+.gallery__item picture { display: block; }
+
+.gallery__item img {
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;               /* natural ratio — no crop */
   transition: transform var(--dur-cinema) var(--ease-out-cinema);
 }
 
@@ -60,4 +78,62 @@
   .gallery__item img { transition: none; }
   .gallery__item:hover img,
   .gallery__item:focus-within img { transform: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   .gallery__outro (2026-07-01) — graphic "arch dissolve" that veils the small
+   residual raggedness and bridges into #events. Text-free / decorative. Pulled
+   up with a negative margin so its transparent-topped gradient fades the last row
+   of photos into the bg; the gradient bottom resolves to --bg (the #events bg) so
+   the colour flows seamlessly into the next section. A thin brass arch (echoing
+   the venue arches in the photos) + a faded GAMOS monogram sit near the seam.
+   --------------------------------------------------------------------------- */
+.gallery__outro {
+  position: relative;
+  pointer-events: none;
+  /* Largest-first masonry keeps residual raggedness small (<~150px), so a modest
+     overlap absorbs the shortest column's tail while the transparent-topped
+     gradient softly dissolves the last photos — on-concept for the "arch dissolve". */
+  margin-block-start: calc(-1 * clamp(140px, 18vw, 260px));
+  block-size: clamp(300px, 36vw, 460px);
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    var(--bg-alt) 42%,
+    var(--bg) 100%);
+  display: grid;
+  place-items: end center;
+}
+
+.gallery__outro-inner {
+  position: relative;
+  inline-size: min(92%, 640px);
+  padding-block-end: clamp(var(--space-8), 6vw, var(--space-16));
+  display: grid;
+  justify-items: center;
+  gap: clamp(var(--space-2), 2vw, var(--space-5));
+}
+
+/* Wide, shallow concave brass arc — a callback to the arched tunnel in the
+   gallery photos. Thin stroke, low opacity, purely decorative. */
+.gallery__outro-arch {
+  inline-size: min(100%, 560px);
+  block-size: auto;
+  color: var(--brass);
+  opacity: 0.75;
+}
+
+/* Gold GAMOS monogram — the "content" of this text-free block. Kept clearly
+   legible (not a faint watermark) while still soft enough to read as a graphic
+   sign-off rather than a heading. */
+.gallery__outro-mark {
+  inline-size: clamp(150px, 19vw, 230px);
+  block-size: auto;
+  opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+  .gallery__outro {
+    margin-block-start: calc(-1 * clamp(90px, 22vw, 160px));
+    block-size: clamp(240px, 52vw, 340px);
+  }
 }

@@ -56,7 +56,10 @@ const MAPPINGS = [
   { srcDir: "assets/_src/shabbat", outDir: "assets/images/shabbat-chatan", exts: [".jpg", ".jpeg", ".png"], srcBase: "root" },
   // New staged sources (copied into the repo under assets/_src/).
   { srcDir: "assets/_src/lounge",  outDir: "assets/images/halls/lounge", exts: [".jpg", ".jpeg", ".png"], srcBase: "root" },
-  { srcDir: "assets/_src/gallery", outDir: "assets/images/gallery",      exts: [".jpg", ".jpeg", ".png"], srcBase: "root" },
+  { srcDir: "assets/_src/gallery", outDir: "assets/images/gallery",      exts: [".jpg", ".jpeg", ".png"], srcBase: "root",
+    // 2026-07-01 pro/AI gallery set — a few sources are 2k+ and detail-dense;
+    // cap full width + trim quality to hold the §8 budget (full ≤220KB / half ≤80KB).
+    encode: { fullWidth: 1600, fullQuality: 80, halfQuality: 74 } },
   // 2026-06-25: #buffet section (food gallery extracted from "Gamos 1.m4v.mp4",
   // user-edited stills staged 01-13). Same in-repo staging pattern as gallery.
   // Detail-dense food photos overflow the §8 half budget (≤80KB) at the 960/q78

@@ -32,6 +32,8 @@ import * as roomsGallery        from "./rooms-gallery.js";  // #rooms — חדר
 import * as roomsDoor           from "./rooms-door.js";     // 2026-06-11 — #rooms door-opening transition → /rooms/dist/
 import * as loungeSelector      from "./lounge-selector.js";// #lounge — lounge selector
 import * as loungeLightbox      from "./lounge-lightbox.js";// 2026-06-15 — #lounge tap → fullscreen viewer (drag still rotates)
+import * as galleryMasonry      from "./gallery-masonry.js";  // 2026-07-01 — #gallery row-span masonry (even columns, no ragged gap)
+import * as galleryLightbox     from "./gallery-lightbox.js";// 2026-07-01 — #gallery click/tap → fullscreen viewer + mobile swipe (reuses .lounge-lightbox CSS)
 import * as siteNavHoverReveal  from "./site-nav-hover-reveal.js"; // 2026-06-04 — hide site-nav while in hero
 import * as scrollSpy           from "./scroll-spy.js";     // .site-nav — aria-current scroll-spy
 import * as shabbatGallery     from "./shabbat-gallery.js";// 2026-06-09 — GSAP pinned mask-reveal; 2026-06-11 — pin now runs at all widths (mobile-fidelity)
@@ -62,6 +64,7 @@ const MODULES = [
   ["scroll-scene",        scrollScene],
   ["portals",             portals],
   ["side-dot-nav",        sideDotNav],
+  ["gallery-masonry",     galleryMasonry], // #gallery — row-span masonry sizing (before reveals so spans are set first)
   ["reveals",             reveals],
   ["buffet-parallax",     buffetParallax], // 2026-06-25: #buffet bands image parallax (after reveals)
   ["directions-map",      directionsMap], // 2026-06-10: #routes Leaflet map (after reveals so [data-reveal] is set up)
@@ -77,6 +80,7 @@ const MODULES = [
   ["rooms-door",          roomsDoor],     // #rooms — door-opening transition → /rooms/dist/
   ["lounge-selector",     loungeSelector],// #lounge — lounge selector
   ["lounge-lightbox",     loungeLightbox],// #lounge — tap → fullscreen viewer (after selector; shares the stage's pointer events)
+  ["gallery-lightbox",    galleryLightbox],// #gallery — click/tap → fullscreen viewer + mobile swipe
   ["scroll-spy",          scrollSpy],     // .site-nav — aria-current highlighting
   ["interaction-hint",    interactionHint],// brass drag/scroll affordance cues (after the sections they annotate exist)
 ];

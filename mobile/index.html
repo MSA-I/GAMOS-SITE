@@ -1351,127 +1351,208 @@
             data-reveal="slide-right" style="--reveal-delay: 80ms;">רגעים מהמתחם</h2>
       </header>
 
-      <ul class="gallery__grid" role="list" data-stagger>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 0ms;">
+      <div class="gallery__grid" role="list" data-stagger data-gallery-stage>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 0ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/01.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/01.half.webp">
-            <img src="/assets/images/gallery/01.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן וכלה אוחזים ידיים וצועדים על כביש מתפתל בנוף הרי המדבר">
+            <img src="/assets/images/gallery/01.half.jpg" data-full="/assets/images/gallery/01.full.webp"
+                 width="1024" height="1536" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 100ms;">
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 100ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/02.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/02.half.webp">
-            <img src="/assets/images/gallery/02.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="שולחן ערב ערוך במפה אדומה עם פמוטי כסף ונברשת קריסטל תחת תאורת במה">
+            <img src="/assets/images/gallery/02.half.jpg" data-full="/assets/images/gallery/02.full.webp"
+                 width="1068" height="1600" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 200ms;">
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 200ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/03.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/03.half.webp">
-            <img src="/assets/images/gallery/03.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן וכלה מחובקים ומחייכים על רקע הרי המדבר של פארק ישראל">
+            <img src="/assets/images/gallery/03.half.jpg" data-full="/assets/images/gallery/03.full.webp"
+                 width="1024" height="1536" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 300ms;">
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 300ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/04.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/04.half.webp">
-            <img src="/assets/images/gallery/04.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="הרמת הינומת הכלה על במת החופה מול קהל האורחים המריע">
+            <img src="/assets/images/gallery/04.half.jpg" data-full="/assets/images/gallery/04.full.webp"
+                 width="1536" height="1024" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 400ms;">
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 400ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/05.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/05.half.webp">
-            <img src="/assets/images/gallery/05.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="כלה בשמלה לבנה יושבת ליד פסנתר כנף בחלל מעוצב בגווני שמנת">
+            <img src="/assets/images/gallery/05.half.jpg" data-full="/assets/images/gallery/05.full.webp"
+                 width="1066" height="1600" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 500ms;">
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 500ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/06.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/06.half.webp">
-            <img src="/assets/images/gallery/06.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="ריקודי גברים סוערים והרמה על כתפיים תחת תאורה אדומה ונברשות">
+            <img src="/assets/images/gallery/06.half.jpg" data-full="/assets/images/gallery/06.full.webp"
+                 width="1600" height="1066" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 600ms;">
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 600ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/07.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/07.half.webp">
-            <img src="/assets/images/gallery/07.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן מרים את הכלה בנוף המדבר החולי בשעת השקיעה הזהובה">
+            <img src="/assets/images/gallery/07.half.jpg" data-full="/assets/images/gallery/07.full.webp"
+                 width="2168" height="2896" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 700ms;">
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 700ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/08.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/08.half.webp">
-            <img src="/assets/images/gallery/08.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="פרט שולחן ערב: אגרטל קריסטל עם פרחים לבנים ואשכולות ענבים">
+            <img src="/assets/images/gallery/08.half.jpg" data-full="/assets/images/gallery/08.full.webp"
+                 width="1536" height="1024" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 800ms;">
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 800ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/09.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/09.half.webp">
-            <img src="/assets/images/gallery/09.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן וכלה עם זר פרחים מול בריכת אינסוף ונוף הרי המדבר">
+            <img src="/assets/images/gallery/09.half.jpg" data-full="/assets/images/gallery/09.full.webp"
+                 width="1024" height="1536" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 900ms;">
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 900ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/10.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/10.half.webp">
-            <img src="/assets/images/gallery/10.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="פורטרט זוג חתן וכלה במשקפי שמש על רקע נוף המדבר">
+            <img src="/assets/images/gallery/10.half.jpg" data-full="/assets/images/gallery/10.full.webp"
+                 width="1536" height="1024" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1000ms;">
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 1000ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/11.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/11.half.webp">
-            <img src="/assets/images/gallery/11.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="קיר מסך מואר עם עיטור מנדלה זהוב ותאורת ספוט על רחבת הריקודים">
+            <img src="/assets/images/gallery/11.half.jpg" data-full="/assets/images/gallery/11.full.webp"
+                 width="1024" height="1536" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1100ms;">
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 1100ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/12.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/12.half.webp">
-            <img src="/assets/images/gallery/12.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="חתן וכלה מחובקים בריקוד על כביש מדברי בשעת אחר הצהריים">
+            <img src="/assets/images/gallery/12.half.jpg" data-full="/assets/images/gallery/12.full.webp"
+                 width="1536" height="1024" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1200ms;">
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 1200ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/13.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/13.half.webp">
-            <img src="/assets/images/gallery/13.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="הרמת חתן על כתפיים בלב מעגל רוקדים תחת תאורה סגולה">
+            <img src="/assets/images/gallery/13.half.jpg" data-full="/assets/images/gallery/13.full.webp"
+                 width="1023" height="1537" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1300ms;">
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 1300ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/14.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/14.half.webp">
-            <img src="/assets/images/gallery/14.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="כלה בשמלה לבנה עם שובל ארוך על רקע מצוקי המדבר">
+            <img src="/assets/images/gallery/14.half.jpg" data-full="/assets/images/gallery/14.full.webp"
+                 width="1067" height="1600" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1600ms;">
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 1400ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/15.full.webp">
+            <source type="image/webp" srcset="/assets/images/gallery/15.half.webp">
+            <img src="/assets/images/gallery/15.half.jpg" data-full="/assets/images/gallery/15.full.webp"
+                 width="1024" height="1536" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
+          </picture>
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 1500ms;">
+          <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/16.full.webp">
+            <source type="image/webp" srcset="/assets/images/gallery/16.half.webp">
+            <img src="/assets/images/gallery/16.half.jpg" data-full="/assets/images/gallery/16.full.webp"
+                 width="1537" height="1023" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
+          </picture>
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 1600ms;">
+          <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/17.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/17.half.webp">
-            <img src="/assets/images/gallery/17.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="ריקוד ראשון של חתן וכלה בעיגול אור עם סילוני עשן כחול">
+            <img src="/assets/images/gallery/17.half.jpg" data-full="/assets/images/gallery/17.full.webp"
+                 width="1023" height="1537" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1700ms;">
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 1700ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/18.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/18.half.webp">
-            <img src="/assets/images/gallery/18.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="כניסת הכלה עם הינומה ארוכה במעבר נרות, צילום שחור-לבן">
+            <img src="/assets/images/gallery/18.half.jpg" data-full="/assets/images/gallery/18.full.webp"
+                 width="2048" height="1366" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1800ms;">
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 1800ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/19.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/19.half.webp">
-            <img src="/assets/images/gallery/19.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="כלה בשמלה לבנה זורמת עם שובל ארוך על כביש מדברי בשעת זהב">
+            <img src="/assets/images/gallery/19.half.jpg" data-full="/assets/images/gallery/19.full.webp"
+                 width="1023" height="1537" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 1900ms;">
+        </div>
+        <div class="gallery__item" role="button" tabindex="0" aria-label="הצגת התמונה במסך מלא"
+            data-reveal="scale-up" style="--reveal-delay: 1900ms;">
           <picture>
+            <source type="image/webp" media="(min-width: 769px)" srcset="/assets/images/gallery/20.full.webp">
             <source type="image/webp" srcset="/assets/images/gallery/20.half.webp">
-            <img src="/assets/images/gallery/20.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="תקליטן מנגן על דק תחת חופה פרחונית, צילום שחור-לבן אמנותי">
+            <img src="/assets/images/gallery/20.half.jpg" data-full="/assets/images/gallery/20.full.webp"
+                 width="2048" height="1366" loading="lazy" decoding="async" alt="תמונה מגלריית המתחם">
           </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 2000ms;">
-          <picture>
-            <source type="image/webp" srcset="/assets/images/gallery/21.half.webp">
-            <img src="/assets/images/gallery/21.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="פינת החופה הפרחונית המוארת בשעת ערב">
-          </picture>
-        </li>
-        <li class="gallery__item" data-reveal="scale-up" style="--reveal-delay: 2100ms;">
-          <picture>
-            <source type="image/webp" srcset="/assets/images/gallery/22.half.webp">
-            <img src="/assets/images/gallery/22.half.jpg" width="1280" height="1600" loading="lazy" decoding="async" alt="טקס החופה — החתן עונד טבעת לכלה מול הרב והמשפחה">
-          </picture>
-        </li>      </ul>
+        </div>
+      </div>
+
+      <!-- Graphic "arch dissolve" outro (2026-07-01): text-free, decorative.
+           Veils the small residual masonry raggedness and fades the photos into
+           #events. Concentric brass arches echo the arched tunnel in the photos;
+           a faded GAMOS monogram sits beneath. See css/sections/gallery.css. -->
+      <div class="gallery__outro" aria-hidden="true" data-reveal="fade" style="--reveal-delay: 0ms;">
+        <div class="gallery__outro-inner">
+          <svg class="gallery__outro-arch" viewBox="0 0 600 90" fill="none"
+               xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+            <path d="M30 88 Q300 6 570 88" stroke="currentColor" stroke-width="1.4"
+                  stroke-linecap="round" opacity="0.9"/>
+            <path d="M78 88 Q300 30 522 88" stroke="currentColor" stroke-width="1.2"
+                  stroke-linecap="round" opacity="0.6"/>
+            <path d="M126 88 Q300 52 474 88" stroke="currentColor" stroke-width="1"
+                  stroke-linecap="round" opacity="0.38"/>
+          </svg>
+          <img class="gallery__outro-mark" src="/assets/images/brand/logo-gold.webp"
+               alt="" aria-hidden="true" width="315" height="130" loading="lazy" decoding="async">
+        </div>
+      </div>
     </section>
 
     <!-- ====================================================================
