@@ -48,8 +48,21 @@
     block-size: 100svh;
   }
   .culinary .scroll-scene__overlay {
+    /* Move the text to the TOP so the center/bottom of each dish frame — where
+       the plated food sits — stays visible while scrubbing (user 2026-07-01).
+       Core is flex-end (bottom); flip to flex-start and swap the padding. */
+    align-items: flex-start;
     padding-inline: clamp(20px, 6vw, 28px);
-    padding-block-end: clamp(var(--space-12), 12vh, var(--space-16));
+    padding-block-start: clamp(var(--space-12), 10vh, var(--space-16));
+    padding-block-end: var(--space-8);
+    /* Flip the scrim to darken the TOP band (behind the text) instead of the
+       bottom — mirror of --scrim-overlay (tokens.css) with direction reversed —
+       so the effect below reads clear. */
+    background: linear-gradient(to bottom,
+      color-mix(in srgb, var(--ink-deep) 72%, transparent) 0%,
+      color-mix(in srgb, var(--ink-deep) 45%, transparent) 30%,
+      color-mix(in srgb, var(--ink-deep) 10%, transparent) 60%,
+      transparent 78%);
     /* keep the column from stretching full-bleed so lines wrap pleasantly */
   }
   .culinary .scroll-scene__overlay > * {

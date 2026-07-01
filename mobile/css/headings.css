@@ -62,6 +62,31 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Mobile: LIGHT-texture headings render as flat light text (no texture).
+   ---------------------------------------------------------------------------
+   User request 2026-07-01: the cream/gold `background-clip:text` fill
+   (--typo-on-dark) reads muddy at phone sizes. Wherever the LIGHT texture is
+   painted, show plain light text instead. Mirrors the light-texture selector
+   group in css/components/texture-text.css (lines 92-100) PLUS the kosher flip
+   forced above (line 60) — `.kosher .section-header__title` must be repeated
+   here (same specificity, declared later) to beat that !important rule.
+   Dark-texture headings on ivory backgrounds are untouched. Gated ≤768px. */
+@media (max-width: 768px) {
+  [data-bg="dark"] .section-header__title,
+  [data-bg="dark"] .band__num,
+  .bg-dark .section-header__title,
+  .culinary .section-header__title,
+  .hero .section-header__title,
+  .lounge__title,
+  .kosher .section-header__title,
+  .texture-text--light {
+    background-image: none !important;
+    -webkit-text-fill-color: var(--fg-on-dark) !important;
+    color: var(--fg-on-dark) !important;
+  }
+}
+
 /* On the smallest viewports (iPhone SE 320), the same rule applies but
    the type is small enough that 1.22 reads more comfortably. */
 @media (max-width: 380px) {
