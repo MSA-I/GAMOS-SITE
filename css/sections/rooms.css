@@ -325,6 +325,7 @@
 }
 
 .rooms__door {
+  position: relative; /* positioning context for the cursor-click cue */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -337,6 +338,68 @@
   transition:
     transform var(--dur-base) var(--ease-out-cinema),
     filter var(--dur-base) var(--ease-out-cinema);
+}
+
+/* Cursor-click cue (2026-07-01) — an animated pointer + expanding brass ring on
+   the door leaf, inviting a click to enter the rooms gallery (requested for the
+   entry point, before the sub-app). Fades once the user hovers/focuses the door
+   (they've found it). reduced-motion → static ring, no loop. */
+.rooms__door-tap {
+  position: absolute;
+  /* PHYSICAL left/top (not logical): aligned to the door raster, which is NOT
+     mirrored in RTL. Sits ON the door leaf face (centre), both desktop + mobile. */
+  left: 48%;
+  top: 48%;
+  transform: translate(-50%, -50%);
+  inline-size: 52px;
+  block-size: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity var(--dur-base) var(--ease-out-cinema);
+}
+/* A pointing hand (Lucide "pointer") — clearer than a mouse-arrow. Dark cocoa
+   stroke + a tight ivory halo pops it off the light door leaf. */
+.rooms__door-tap-cursor {
+  inline-size: 34px;
+  block-size: 34px;
+  fill: none;
+  stroke: var(--cocoa);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter:
+    drop-shadow(0 0 2px var(--ivory))
+    drop-shadow(0 2px 6px color-mix(in srgb, var(--ink-deep) 35%, transparent));
+  animation: rooms-door-tap-press 2s ease-in-out infinite;
+  transform-origin: 50% 30%;
+}
+.rooms__door-tap-ring {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  inline-size: 46px;
+  block-size: 46px;
+  border-radius: 50%;
+  border: 2px solid var(--brass);
+  opacity: 0;
+  animation: rooms-door-tap-ring 2s ease-out infinite;
+}
+.rooms__door:hover .rooms__door-tap,
+.rooms__door:focus-visible .rooms__door-tap {
+  opacity: 0;
+}
+@keyframes rooms-door-tap-press {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  45%      { transform: translate(1px, 2px) scale(0.88); }
+  60%      { transform: translate(0, 0) scale(1); }
+}
+@keyframes rooms-door-tap-ring {
+  0%   { transform: scale(0.4); opacity: 0; }
+  25%  { opacity: 0.85; }
+  100% { transform: scale(1.6); opacity: 0; }
 }
 
 .rooms__door picture,
@@ -397,6 +460,9 @@
   .rooms__door:active img {
     transform: none;
   }
+  .rooms__door-tap-cursor,
+  .rooms__door-tap-ring { animation: none; }
+  .rooms__door-tap-ring { opacity: 0.4; }
 }
 
 /* ====================================================================== *

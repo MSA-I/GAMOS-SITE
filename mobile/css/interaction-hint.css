@@ -1,0 +1,19 @@
+/* =============================================================================
+   mobile/css/interaction-hint.css — phone tuning for the brass affordance cue
+   ---------------------------------------------------------------------------
+   §13: @media (max-width:768px) overrides ONLY. The base cue (css/components/
+   interaction-hint.css) is minimalist text+icon; on a 390px phone the wide
+   letter-spacing can push it past the viewport edge, so tighten it and lift it
+   a touch clear of the thumb zone. Loaded by mobile/loader.js.
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .ix-hint {
+    inset-block-end: clamp(20px, 5vh, 56px);
+    gap: .45rem;
+    letter-spacing: .12em;
+    font-size: clamp(.72rem, 3vw, .82rem);
+    max-inline-size: calc(100vw - 32px);
+  }
+  .ix-hint__text { overflow: hidden; text-overflow: ellipsis; }
+}

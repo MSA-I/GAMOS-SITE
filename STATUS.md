@@ -125,7 +125,7 @@
 | 05 | CSS Layout | base/layout/utilities/tokens | ✅ הושלם | כל ערך ויזואלי דרך tokens (Constitution §10.2) |
 | 06 | Hero Video-Scrub | `hero-video-scrub.js` + `hero.css` | ✅ הושלם → V2 | מולטי-stage (intro/title/scrub/portals) |
 | 07 | Portal Bubbles | `portals.js` + `portals.css` | ✅ הושלם → bubble-overlay | החליף את הבועות העגולות בoverlay PNG מ-PSB |
-| 08 | Hall Sections | hall-venue / hall-resort / lounge / rooms / culinary | ✅ scaffolds + culinary live | resort/venue ב-Ken-Burns poster — ממתין לסרטונים |
+| 08 | Hall Sections | lounge / rooms / culinary (hall-venue/hall-resort הוסרו) | ✅ live | **hall-venue/hall-resort נמחקו 2026-06-15** — האולמות עברו ל-sub-app React (§2.1, `/halls/dist/events/` + `/resort/`). **אין צורך בסרטוני אולמות** — הטענה על "ממתין לסרטונים" בוטלה |
 | 09 | Motion (static) | reveals / accordions / slider | ✅ הושלם + הורחב | 11 דפוסי reveal, marquee transition, counter animation |
 | 10 | QA & Performance | Lighthouse baseline + defect tickets | ⚠️ חלקי | ה-defects של Wave 1 נסגרו (13 ticket). Lighthouse אמיתי דורש דפדפן |
 
@@ -175,11 +175,16 @@
 
 ## 3. אינוונטר סקציות (`index.html` — 11 anchors)
 
+> ⚠️ **הטבלה הזו קודמת ל-hero v10 ולמעבר האולמות ל-sub-apps (2026-06-15).**
+> חלק מהתיאורים מיושנים (`#hero` הוא כיום scroll-pinned layered scene ולא 528-frame
+> canvas; `#lounge` הוא טבעת 3D; `#rooms` הוא דלת → `/rooms/dist/`; `#culinary` הוא
+> 320vh ולא 900vh). **מקור האמת הוא `index.html` + `CLAUDE.md §3`, לא הטבלה הזו.**
+
 | # | ID | סוג | סטטוס |
 |---|----|-----|--------|
 | 1 | `#hero` | Scroll-scene canvas (528 frames) | ✅ Live |
-| 2 | `#hall-venue` | Scroll-scene poster Ken-Burns | ⏳ Scaffold (ממתין לסרטון) |
-| 3 | `#hall-resort` | Scroll-scene poster Ken-Burns | ⏳ Scaffold (ממתין לסרטון) |
+| — | ~~`#hall-venue`~~ | **הוסר 2026-06-15** → sub-app React `/halls/dist/events/` (§2.1) | ✅ Migrated (אין סרטון) |
+| — | ~~`#hall-resort`~~ | **הוסר 2026-06-15** → sub-app React `/halls/dist/resort/` (§2.1) | ✅ Migrated (אין סרטון) |
 | 4 | `#lounge` | Expanding-panels selector (10 panels, `lounge-selector.js`) | ✅ Live |
 | 5 | `#rooms` | Two-pane hover-swap gallery (10 rooms, `rooms-gallery.js`) | ✅ Live |
 | 6 | `#culinary` | Scroll-scene canvas (180 frames, 900vh spacer) + 6 dish grid | ✅ Live |
