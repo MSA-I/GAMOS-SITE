@@ -491,15 +491,19 @@
   opacity: 0;
 }
 
-/* The video sits ON TOP of the still door <picture>, same box, same fit, so it
-   lines up with the cut-out underneath (hidden once it plays). The clip is
-   opaque (a tight rectangle: casing + door + black void). */
+/* The video sits ON TOP of the still door <picture> and must register onto the
+   SAME door box so the swap has NO zoom/jump. The clip is cropped tight to the
+   casing (casing = the full frame), but door.webp shows the door at 84.7% of its
+   height, inset 9.9% from the top, centred (measured: door bbox 504×1307 @356,153
+   of the 1200×1543 still). So we shrink the clip to 0.847× the still box and drop
+   it 0.099× down — its door then lands exactly on the still door underneath. */
 .rooms__door .rooms-door__video {
   position: absolute;
-  inset-block-start: var(--space-3); /* matches the figure's top padding */
+  --rd-still-h: clamp(22rem, 52vh, 34rem); /* the still image's block-size */
+  inset-block-start: calc(var(--space-3) + var(--rd-still-h) * 0.099);
   inset-inline: 0;
   margin-inline: auto;
-  block-size: clamp(22rem, 52vh, 34rem); /* same as .rooms__door img */
+  block-size: calc(var(--rd-still-h) * 0.847);
   inline-size: auto;
   max-inline-size: 90vw;
   object-fit: contain;
