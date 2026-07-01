@@ -80,6 +80,18 @@ function build() {
     heights[min] += ratioOf(item) + GAP_PROXY;
   }
   state.cols = n;
+
+  // The markup's inline --reveal-delay (0…1900ms, in original DOM order) no longer
+  // matches the masonry's column-major visual order — long delays fired in scrambled
+  // positions left photos blank for up to ~2s while scrolling (janky, esp. on the
+  // tall 2-col mobile layout). Give each column a short top-down stagger instead, so
+  // items scale-in promptly as they enter the viewport.
+  for (const col of cols) {
+    const kids = col.querySelectorAll(".gallery__item");
+    kids.forEach((item, i) => {
+      item.style.setProperty("--reveal-delay", `${Math.min(i, 4) * 60}ms`);
+    });
+  }
 }
 
 export function init() {

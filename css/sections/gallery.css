@@ -119,16 +119,15 @@
   inline-size: min(100%, 560px);
   block-size: auto;
   color: var(--brass);
-  opacity: 0.75;
+  opacity: 0.85;
 }
 
-/* Gold GAMOS monogram — the "content" of this text-free block. Kept clearly
-   legible (not a faint watermark) while still soft enough to read as a graphic
-   sign-off rather than a heading. */
+/* Gold GAMOS monogram — the "content" of this text-free block. Clearly legible
+   (a graphic sign-off, not a faint watermark). */
 .gallery__outro-mark {
-  inline-size: clamp(150px, 19vw, 230px);
+  inline-size: clamp(170px, 20vw, 260px);
   block-size: auto;
-  opacity: 0.5;
+  opacity: 0.9;
 }
 
 @media (max-width: 768px) {
