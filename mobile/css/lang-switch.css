@@ -1,0 +1,27 @@
+/* =============================================================================
+   mobile/css/lang-switch.css — always-visible language FAB on mobile hero
+   ---------------------------------------------------------------------------
+   Injected by mobile/loader.js injectLangFab(). Fixed at the top-end corner
+   of the viewport so the HE⇄EN toggle is reachable BEFORE the navbar reveals.
+   Once the navbar reveals (data-nav-revealed) we hide the FAB so only one
+   toggle is visible at a time.
+   Logical properties + tokens only (§4, §5). @media (max-width: 768px) scoped.
+   ========================================================================= */
+
+@media (max-width: 768px) {
+  .mobile-lang-fab {
+    position: fixed;
+    inset-block-start: 1rem;
+    inset-inline-end: 1rem;
+    z-index: 120; /* above hero (110/111) and below nav overlay (130+) */
+    /* Subtle blur backing so the pill reads over any hero art */
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 999px;
+  }
+
+  /* Hide once the navbar slides in — avoids two toggles on screen */
+  html[data-nav-revealed="true"] .mobile-lang-fab {
+    display: none;
+  }
+}

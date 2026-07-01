@@ -70,6 +70,7 @@
     "/mobile/css/directions.css",
     "/mobile/css/testimonials.css",
     "/mobile/css/interaction-hint.css", // 2026-06-30: phone tuning for brass affordance cues
+    "/mobile/css/lang-switch.css",       // 2026-07-01: always-visible language FAB before nav reveals
   ];
 
   function injectStylesheets () {
@@ -229,10 +230,47 @@
   } else {
     domReady();
   }
+  // ---------------------------------------------------------------------------
+  // 7a. Language FAB  (2026-07-01)
+  // ---------------------------------------------------------------------------
+  // The navbar is hidden on page load (data-hero-mode) and only reveals after
+  // scroll, taking the language toggle with it. Inject a fixed FAB so HE⇄EN
+  // is reachable immediately. Uses the same .site-nav__lang markup so
+  // js/i18n.js updateToggles() targets it via .site-nav__lang [data-lang-set].
+  // The delegated click listener in i18n.js covers the whole document, so no
+  // extra wiring is needed. FAB hides once html[data-nav-revealed] is set
+  // (via /mobile/css/lang-switch.css).
+  function injectLangFab () {
+    if (typeof window.matchMedia === "function" &&
+        !window.matchMedia("(max-width: 768px)").matches) return;
+    if (document.querySelector(".mobile-lang-fab")) return;
+    var GLOBE_SVG =
+      '<svg class="site-nav__lang-globe" viewBox="0 0 24 24" width="15" height="15"' +
+      ' fill="none" stroke="currentColor" stroke-width="1.35" aria-hidden="true">' +
+      '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/>' +
+      '<path d="M12 3c2.6 2.6 3.9 5.8 3.9 9s-1.3 6.4-3.9 9c-2.6-2.6-3.9-5.8-3.9-9S9.4 5.6 12 3z"/></svg>';
+    var lang = document.documentElement.lang || "he";
+    var heActive = lang === "he";
+    var enActive = lang === "en";
+    var fab = document.createElement("div");
+    fab.className = "mobile-lang-fab";
+    fab.innerHTML =
+      '<div class="site-nav__lang" role="group" aria-label="Language \u00b7 \u05e9\u05e4\u05d4">' +
+      GLOBE_SVG +
+      '<button type="button" class="site-nav__lang-opt' + (heActive ? " is-active" : "") +
+      '" data-lang-set="he" lang="he" aria-pressed="' + heActive + '">\u05e2\u05d1</button>' +
+      '<span class="site-nav__lang-sep" aria-hidden="true"></span>' +
+      '<button type="button" class="site-nav__lang-opt' + (enActive ? " is-active" : "") +
+      '" data-lang-set="en" lang="en" aria-pressed="' + enActive + '">EN</button>' +
+      "</div>";
+    document.body.appendChild(fab);
+  }
+
   function domReady () {
     injectHalfSources();
     applyMobileRoutes();   // rewrites #hall-portal CTA hrefs → -mobile sub-app builds
     setupCulinaryMobileManifest();
+    injectLangFab();       // always-visible language toggle before navbar reveals
     // injectCtaLabels() + injectHeroTapZones() retired 2026-06-15: the v10 hero
     // CTAs live in the #hall-portal composer as visible, finger-sized anchors
     // (clamp() widths, no occluding desert layer) — no tap-zone overlays or
