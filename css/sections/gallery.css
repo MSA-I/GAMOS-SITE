@@ -91,6 +91,11 @@
 .gallery__outro {
   position: relative;
   pointer-events: none;
+  /* Full-bleed: cancel the section's padding-inline so the dissolve gradient
+     spans edge-to-edge. Otherwise the gradient rectangle is inset by --gutter and
+     its lighter (--bg) lower band shows two visible vertical seams against the
+     section's --bg-alt on both sides. */
+  margin-inline: calc(-1 * var(--gutter));
   /* Largest-first masonry keeps residual raggedness small (<~150px), so a modest
      overlap absorbs the shortest column's tail while the transparent-topped
      gradient softly dissolves the last photos — on-concept for the "arch dissolve". */
