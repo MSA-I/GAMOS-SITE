@@ -1,0 +1,132 @@
+/* ===========================================================================
+   lang-toggle.css — HE ⇄ EN language switch button
+   ---------------------------------------------------------------------------
+   The button is injected by js/i18n.js as the last <li> of .site-nav__links,
+   so it appears in the desktop bar AND (via site-nav.js's clone) in the mobile
+   overlay. Styling is a small brass pill that reads as a control, not a link.
+   Tokens only (§5, §10.2). RTL/LTR agnostic (logical props).
+   ========================================================================= */
+
+.site-nav__lang-item {
+  display: flex;
+  align-items: center;
+}
+
+/* Segmented control: globe + [ עב | EN ], active language filled in brass so
+   it's unmistakably a language switch and reads as a deliberate, luxe control. */
+.site-nav__lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15em;
+  padding: 0.22em 0.4em;
+  border: 1px solid color-mix(in srgb, var(--brass) 42%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ivory) 45%, transparent);
+}
+
+.site-nav__lang-globe {
+  color: var(--brass-deep);
+  margin-inline: 0.15em 0.05em;
+  flex: none;
+  opacity: 0.9;
+}
+
+.site-nav__lang-opt {
+  appearance: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  color: var(--brass-deep);
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.36em 0.62em;
+  min-width: 2.1em;
+  text-align: center;
+  transition: color var(--dur-base, 240ms) var(--ease-out-cinema, ease),
+              background-color var(--dur-base, 240ms) var(--ease-out-cinema, ease);
+}
+
+.site-nav__lang-opt:not(.is-active):hover {
+  color: var(--ink-deep);
+}
+
+.site-nav__lang-opt.is-active {
+  color: var(--ivory);
+  background: var(--brass);
+  cursor: default;
+}
+
+.site-nav__lang-opt:focus-visible {
+  outline: 3px solid var(--brass);
+  outline-offset: 2px;
+}
+
+.site-nav__lang-sep {
+  inline-size: 1px;
+  block-size: 0.95em;
+  background: color-mix(in srgb, var(--brass) 45%, transparent);
+  flex: none;
+}
+
+/* Mobile overlay clone — larger tap targets, centred among the stacked links. */
+.site-nav__mobile .site-nav__lang-item {
+  justify-content: center;
+}
+
+.site-nav__mobile .site-nav__lang {
+  gap: 0.25em;
+  padding: 0.3em 0.5em;
+}
+
+.site-nav__mobile .site-nav__lang-opt {
+  font-size: 0.95rem;
+  padding: 0.55em 1em;
+  min-width: 2.6em;
+}
+
+.site-nav__mobile .site-nav__lang-globe {
+  width: 18px;
+  height: 18px;
+}
+
+/* Reviews stay in Hebrew (user directive) — keep their bodies reading RTL even
+   when the page flips to LTR for English. Only the review meta/author is
+   translated; the quote itself is untranslated Hebrew. */
+html[lang="en"] .testimonial__quote {
+  direction: rtl;
+  text-align: right;
+}
+
+/* The hero title markup hard-codes dir="rtl" (needed for the Hebrew SplitText
+   reveal). In English the sentence-final period must sit at the end, so flip
+   this one block to LTR. Author rule beats the UA [dir] rule by specificity. */
+html[lang="en"] .hero_title,
+html[lang="en"] .hero_title h1 {
+  direction: ltr;
+}
+
+/* The hero title + eyebrow hard-code "Heebo" in hero-scene.css (they bypass the
+   display token), so the token override in tokens.css can't reach them — set
+   Cinzel here so the English hero matches the wordmark. .hero_word covers the
+   SplitText spans. */
+html[lang="en"] .hero_title h1,
+html[lang="en"] .hero_title h1 .hero_word,
+html[lang="en"] .hero_eyebrow {
+  font-family: "Canela", "Playfair Display", serif;
+}
+
+/* #about stats: English labels wrap to different line-counts ("GUESTS IN A
+   SINGLE EVENING" = 2 lines, the others = 1), which knocks the three numbers
+   off a shared baseline. Reserve two lines for every label box and bottom-align
+   the label so the numbers line up. Hebrew labels are all one line → scoped to
+   English so Hebrew spacing is untouched. */
+html[lang="en"] .about__stat dt {
+  min-block-size: 3.2em;      /* fit two lines so 1- and 2-line labels match */
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import type { RoomCard } from "../roomsData";
+import { t } from "../i18n";
 
 interface Props {
   /** Centre-most card (Engine flips it as the wall pans) — for the bottom title. */
@@ -98,7 +99,7 @@ export default function RoomsChromeMobile({ activeCard }: Props) {
         href="#rooms-canvas"
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:start-3 focus:z-40 focus:pointer-events-auto focus:px-4 focus:py-2 focus:rounded-lg focus:bg-ivory focus:text-ink-deep focus:font-medium focus-visible:ring-[3px] focus-visible:ring-brass focus-visible:outline-none"
       >
-        דלג לגלריה
+        {t("דלג לגלריה")}
       </a>
 
       {/* Back link — top inline-start. ≥44px tap target; short "חזרה" label. */}
@@ -108,10 +109,10 @@ export default function RoomsChromeMobile({ activeCard }: Props) {
         animate={{ opacity: 1, y: 0 }}
         transition={transition}
         className="roomsm-back"
-        aria-label="חזרה לחדרי האירוח באתר Gamos"
+        aria-label={t("חזרה לחדרי האירוח באתר Gamos")}
       >
         <span className="roomsm-back__arrow" aria-hidden="true">←</span>
-        <span className="roomsm-back__label">חזרה</span>
+        <span className="roomsm-back__label">{t("חזרה")}</span>
       </motion.a>
 
       {/* Eyebrow — top inline-end. Compact, quiet, single line. */}
@@ -121,7 +122,7 @@ export default function RoomsChromeMobile({ activeCard }: Props) {
         transition={transition}
         className="roomsm-eyebrow"
       >
-        <p className="roomsm-eyebrow__kicker">חדרי אירוח</p>
+        <p className="roomsm-eyebrow__kicker">{t("חדרי אירוח")}</p>
       </motion.div>
 
       {/* Active-card title — bottom BAR with scrim. aria-live announces the
@@ -133,10 +134,10 @@ export default function RoomsChromeMobile({ activeCard }: Props) {
       >
         {/* 2026-06-18: "NN / total" index removed per user (confusing numbers). */}
         <h1 className="roomsm-active__title">
-          {activeCard?.category ?? ""}
+          {t(activeCard?.category ?? "")}
         </h1>
         {activeCard?.titleHe ? (
-          <p className="roomsm-active__type">{activeCard.titleHe}</p>
+          <p className="roomsm-active__type">{t(activeCard.titleHe)}</p>
         ) : null}
       </section>
 
@@ -151,7 +152,7 @@ export default function RoomsChromeMobile({ activeCard }: Props) {
           aria-hidden="true"
         >
           <span className="roomsm-hint__arrow roomsm-hint__arrow--start">‹</span>
-          <span className="roomsm-hint__pill">החליקו לצדדים לגילוי החדרים</span>
+          <span className="roomsm-hint__pill">{t("החליקו לצדדים לגילוי החדרים")}</span>
           <span className="roomsm-hint__arrow roomsm-hint__arrow--end">›</span>
         </div>
       ) : null}

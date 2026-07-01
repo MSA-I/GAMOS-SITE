@@ -12,6 +12,7 @@
  */
 
 // Section modules — placeholder shells. Each exposes `init()`.
+import * as i18n                from "./i18n.js";           // 2026-07-01 — HE⇄EN switch + geo auto-detect; runs FIRST so dir/lang + nav clone are correct before other modules read them
 import * as smoothScroll        from "./smooth-scroll.js";  // 2026-07-01 — Lenis smooth scroll (desktop-only); MUST init before ScrollTrigger consumers
 import * as scrollOrchestrator from "./scroll-orchestrator.js";
 import * as heroScene           from "./hero-scene.js";     // 2026-06-15 — v10 cinematic scroll-pinned hero (replaces hero-static; that file kept as legacy)
@@ -55,6 +56,7 @@ import * as interactionHint    from "./interaction-hint.js";// 2026-06-30 — br
 //    early also prevents a missed event window).
 // - side-dot-nav inits AFTER hero so its hero progress hook attaches cleanly.
 const MODULES = [
+  ["i18n",                i18n],             // 2026-07-01: HE⇄EN + geo detect. Runs before site-nav so the mobile overlay clones the correct-language link list, and before scene modules so dir/lang is settled
   ["smooth-scroll",       smoothScroll],     // 2026-07-01: Lenis (desktop-only). FIRST — wires gsap.ticker + lenis.on("scroll", ScrollTrigger.update) before hero/shabbat build their ScrollTriggers
   ["scroll-orchestrator", scrollOrchestrator],
   ["loading-overlay",     loadingOverlay],   // window.gamosLoading must be ready before hero hotspot clicks

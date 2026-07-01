@@ -3,6 +3,7 @@ import { clamp } from "./utils";
 import type { QualityProfile } from "./quality";
 import type { RoomCard } from "../roomsData";
 import { COLS_PER_ROW, CATEGORIES } from "../roomsData";
+import { t } from "../i18n";
 
 /**
  * Wall — the phantom.land "infinite pan grid through a concave lens".
@@ -285,11 +286,11 @@ export default class Wall {
     // category — large, bold, ivory/white
     ctx.fillStyle = hot ? "#FFFFFF" : IVORY;
     ctx.font = `700 ${Math.round(CELL_W * 0.075)}px "Rubik", "Heebo", Arial, sans-serif`;
-    ctx.fillText(card.category, POSTER.x + POSTER.w - 22, POSTER.y + 18);
+    ctx.fillText(t(card.category), POSTER.x + POSTER.w - 22, POSTER.y + 18);
     // specific title — smaller, muted, just below the category
     ctx.fillStyle = hot ? "rgba(245,239,230,0.92)" : "rgba(245,239,230,0.74)";
     ctx.font = `500 ${Math.round(CELL_W * 0.05)}px "Heebo", Arial, sans-serif`;
-    ctx.fillText(card.titleHe, POSTER.x + POSTER.w - 22, POSTER.y + 18 + Math.round(CELL_W * 0.095));
+    ctx.fillText(t(card.titleHe), POSTER.x + POSTER.w - 22, POSTER.y + 18 + Math.round(CELL_W * 0.095));
     ctx.shadowBlur = 0;
 
     // ---- tag pill (bottom-start = right) ----
@@ -299,7 +300,8 @@ export default class Wall {
     ctx.textBaseline = "middle";
     // tag pill
     const padX = 16;
-    const tagW = ctx.measureText(card.tag).width + padX * 2;
+    const tag = t(card.tag);
+    const tagW = ctx.measureText(tag).width + padX * 2;
     const tagX = POSTER.x + POSTER.w - 22 - tagW;
     ctx.fillStyle = card.isReal
       ? `rgba(207,174,131,${hot ? 0.95 : 0.82})`
@@ -308,7 +310,7 @@ export default class Wall {
     ctx.fill();
     ctx.fillStyle = card.isReal ? INK_DEEP : IVORY;
     ctx.textAlign = "right";
-    ctx.fillText(card.tag, POSTER.x + POSTER.w - 22 - padX, by + 18);
+    ctx.fillText(tag, POSTER.x + POSTER.w - 22 - padX, by + 18);
 
     // reset alignment defaults
     ctx.textAlign = "left";

@@ -33,6 +33,16 @@
   aspect-ratio: 4 / 5;
 }
 
+/* The <picture> wrapper is inline by default, so .about__photo's block-size:100%
+   collapsed → the image filled only its natural height while the figure kept its
+   aspect-ratio:4/5 box, leaving an empty lower half whose box-shadow showed as
+   stray corner marks. Make the picture a full-height block so the photo fills
+   the frame. */
+.about__media picture {
+  display: block;
+  block-size: 100%;
+}
+
 .about__photo {
   display: block;
   inline-size: 100%;

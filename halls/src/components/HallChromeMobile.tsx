@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { ArrowLeft, ArrowRight, ChevronUp, ChevronDown } from "lucide-react";
 import { getProjectsByHall } from "../projectsData";
+import { t } from "../i18n";
 import type { ProjectWithColors } from "../types";
 
 interface Props {
@@ -54,7 +55,7 @@ export default function HallChromeMobile({
   const display = activeProject ?? lastKnownProjectRef.current;
 
   const otherHallId = hallId === "events" ? "resort" : "events";
-  const otherHallLabel = HALL_LABEL_HE[otherHallId];
+  const otherHallLabel = t(HALL_LABEL_HE[otherHallId]);
 
   // Total plane count for this hall → the denominator of the "NN / TT" index.
   const planeCount = useMemo(() => getProjectsByHall(hallId).length, [hallId]);
@@ -104,7 +105,7 @@ export default function HallChromeMobile({
         href="#hall-canvas"
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:start-4 focus:z-40 focus:pointer-events-auto focus:px-4 focus:py-2 focus:rounded-lg focus:bg-ivory focus:text-ink-deep focus:font-medium focus-visible:ring-[3px] focus-visible:ring-brass focus-visible:outline-none"
       >
-        דלג לגלריה
+        {t("דלג לגלריה")}
       </a>
 
       {/* Back chip — top-inline-end (top-left in RTL). Compact icon + short
@@ -116,12 +117,12 @@ export default function HallChromeMobile({
         animate={{ opacity: 1, y: 0 }}
         transition={transition}
         className="hallm-home pointer-events-auto"
-        aria-label="חזרה לבחירת אולם באתר Gamos"
+        aria-label={t("חזרה לבחירת אולם באתר Gamos")}
       >
         <span className="hallm-home__arrow" aria-hidden="true">
           →
         </span>
-        <span className="hallm-home__label">לאתר</span>
+        <span className="hallm-home__label">{t("לאתר")}</span>
       </motion.a>
 
       {/* Hall-switch chip — top-inline-start (top-right in RTL), opposite
@@ -133,12 +134,12 @@ export default function HallChromeMobile({
         animate={{ opacity: 1, y: 0 }}
         transition={transition}
         role="group"
-        aria-label="מעבר אולם"
+        aria-label={t("מעבר אולם")}
         className="hallm-switch pointer-events-auto"
       >
         <a
           href={`/halls/dist/${otherHallId}-mobile/`}
-          aria-label={`עבור ל${otherHallLabel}`}
+          aria-label={`${t("עבור ל")}${otherHallLabel}`}
           className="hallm-switch__pill"
         >
           {hallId === "events" ? (
@@ -174,7 +175,7 @@ export default function HallChromeMobile({
             <span className="hallm-scrollcue__arrow hallm-scrollcue__arrow--start">
               <ChevronUp size={16} aria-hidden="true" />
             </span>
-            <span className="hallm-scrollcue__text">גללו לצפייה בתמונות</span>
+            <span className="hallm-scrollcue__text">{t("גללו לצפייה בתמונות")}</span>
             <span className="hallm-scrollcue__arrow hallm-scrollcue__arrow--end">
               <ChevronDown size={16} aria-hidden="true" />
             </span>
@@ -217,19 +218,19 @@ export default function HallChromeMobile({
             {/* Title — texture-filled display type, sized to fit 360px on
                 one–two lines. */}
             <h2 className="hallm-label__title texture-text texture-text--light">
-              {display?.title ?? ""}
+              {t(display?.title ?? "")}
             </h2>
 
             {/* Spec — location · year on a single inline row (replaces the
                 desktop two-row <dl>; sr-only keys preserve semantics). */}
             <dl className="hallm-label__spec">
               <div className="hallm-label__spec-item">
-                <dt className="sr-only">מיקום</dt>
-                <dd className="hallm-label__spec-val m-0">{display?.location ?? ""}</dd>
+                <dt className="sr-only">{t("מיקום")}</dt>
+                <dd className="hallm-label__spec-val m-0">{t(display?.location ?? "")}</dd>
               </div>
               <span aria-hidden="true" className="hallm-label__spec-sep">·</span>
               <div className="hallm-label__spec-item">
-                <dt className="sr-only">שנה</dt>
+                <dt className="sr-only">{t("שנה")}</dt>
                 <dd className="hallm-label__spec-val m-0">
                   <bdi>{display?.year ?? ""}</bdi>
                 </dd>

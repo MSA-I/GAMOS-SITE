@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
 import { getProjectsByHall } from "../projectsData";
+import { t } from "../i18n";
 import type { ProjectWithColors } from "../types";
 
 interface Props {
@@ -28,8 +29,8 @@ export default function HallChrome({ hallId, activeProject, frameDark = false }:
   const display = activeProject ?? lastKnownProjectRef.current;
 
   const otherHallId = hallId === "events" ? "resort" : "events";
-  const otherHallLabel = HALL_LABEL_HE[otherHallId];
-  const currentHallLabel = HALL_LABEL_HE[hallId];
+  const otherHallLabel = t(HALL_LABEL_HE[otherHallId]);
+  const currentHallLabel = t(HALL_LABEL_HE[hallId]);
 
   // Total plane count for this hall → the denominator of the "NN / TT" index.
   const planeCount = useMemo(() => getProjectsByHall(hallId).length, [hallId]);
@@ -67,7 +68,7 @@ export default function HallChrome({ hallId, activeProject, frameDark = false }:
         href="#hall-canvas"
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:start-4 focus:z-40 focus:pointer-events-auto focus:px-4 focus:py-2 focus:rounded-lg focus:bg-ivory focus:text-ink-deep focus:font-medium focus-visible:ring-[3px] focus-visible:ring-brass focus-visible:outline-none"
       >
-        דלג לגלריה
+        {t("דלג לגלריה")}
       </a>
 
       {/* "חזרה לאתר" ghost back-pill — top-inline-end (top-left in RTL), exact
@@ -81,12 +82,12 @@ export default function HallChrome({ hallId, activeProject, frameDark = false }:
         animate={{ opacity: 1, y: 0 }}
         transition={transition}
         className="hall-home pointer-events-auto"
-        aria-label="חזרה לבחירת אולם באתר Gamos"
+        aria-label={t("חזרה לבחירת אולם באתר Gamos")}
       >
         <span className="hall-home__arrow" aria-hidden="true">
           →
         </span>
-        <span className="hall-home__label">חזרה לאתר</span>
+        <span className="hall-home__label">{t("חזרה לאתר")}</span>
       </motion.a>
 
       {/* HallSwitcher — top-inline-start (top-right in RTL), opposite corner from
@@ -97,7 +98,7 @@ export default function HallChrome({ hallId, activeProject, frameDark = false }:
         animate={{ opacity: 1, y: 0 }}
         transition={transition}
         role="group"
-        aria-label="מעבר אולם"
+        aria-label={t("מעבר אולם")}
         className="hall-switch pointer-events-auto"
       >
         <span className="hall-switch__eyebrow hidden sm:inline">
@@ -105,7 +106,7 @@ export default function HallChrome({ hallId, activeProject, frameDark = false }:
         </span>
         <a
           href={`/halls/dist/${otherHallId}/`}
-          aria-label={`עבור ל${otherHallLabel}`}
+          aria-label={`${t("עבור ל")}${otherHallLabel}`}
           className="hall-switch__pill"
         >
           {hallId === "events" ? (
@@ -135,7 +136,7 @@ export default function HallChrome({ hallId, activeProject, frameDark = false }:
             exit={{ opacity: 0, y: 8 }}
             transition={transition}
           >
-            <span className="hall-scrollcue__text">גללו לצפייה בתמונות</span>
+            <span className="hall-scrollcue__text">{t("גללו לצפייה בתמונות")}</span>
             <motion.span
               className="hall-scrollcue__arrow"
               animate={reducedMotion ? undefined : { y: [0, 6, 0] }}
@@ -178,11 +179,11 @@ export default function HallChrome({ hallId, activeProject, frameDark = false }:
             {/* Spec block — inline-start (DOM first) */}
             <dl className="m-0 grid gap-1.5 text-start">
               <div className="hall-label__spec-row">
-                <dt className="hall-label__spec-key">מיקום</dt>
-                <dd className="hall-label__spec-val m-0">{display?.location ?? ""}</dd>
+                <dt className="hall-label__spec-key">{t("מיקום")}</dt>
+                <dd className="hall-label__spec-val m-0">{t(display?.location ?? "")}</dd>
               </div>
               <div className="hall-label__spec-row">
-                <dt className="hall-label__spec-key">שנה</dt>
+                <dt className="hall-label__spec-key">{t("שנה")}</dt>
                 <dd className="hall-label__spec-val m-0">
                   <bdi>{display?.year ?? ""}</bdi>
                 </dd>
@@ -201,7 +202,7 @@ export default function HallChrome({ hallId, activeProject, frameDark = false }:
                 />
                 <bdi>{`${display?.number ?? "01"} / ${totalLabel}`}</bdi>
               </p>
-              <h2 className="hall-label__title texture-text texture-text--light">{display?.title ?? ""}</h2>
+              <h2 className="hall-label__title texture-text texture-text--light">{t(display?.title ?? "")}</h2>
             </div>
           </motion.div>
         </AnimatePresence>

@@ -6,6 +6,7 @@ import Hover from "./Hover";
 import { getRooms } from "../roomsData";
 import type { RoomCard } from "../roomsData";
 import type { WallApi } from "../App";
+import { t } from "../i18n";
 
 interface Props {
   /** Fired when the centre-most card changes (bottom aria-live title). */
@@ -86,7 +87,7 @@ export default function RoomsWall({ onActiveChange, onSelect, onReady }: Props) 
       ref={wrapperRef}
       id="rooms-canvas"
       role="region"
-      aria-label="גלריית חדרי האירוח — גררו לחקור, לחצו על חדר לפרטים"
+      aria-label={t("גלריית חדרי האירוח — גררו לחקור, לחצו על חדר לפרטים")}
       tabIndex={0}
       className="fixed inset-0 z-10 outline-none"
       style={{ touchAction: "none" }}

@@ -101,6 +101,35 @@
   unicode-range: U+0020-007E, U+00A0-00FF;
 }
 
+/* ---- Canela (Latin display — English headings, per user 2026-07-01) ------
+   High-contrast humanist serif (Commercial Type). Self-hosted WOFF2, converted
+   from the user's Canela-Regular.ttf. Weight 400 only; used for English display
+   headings + hero. §4.1: adopted on explicit user request. */
+@font-face {
+  font-family: "Canela";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/canela-regular.woff2") format("woff2");
+  unicode-range: U+0020-007E, U+00A0-00FF;
+}
+
+/* ---- English display font (2026-07-01) ----------------------------------
+   When the site is switched to English (js/i18n.js sets html[lang="en"]), the
+   DISPLAY family becomes Canela — an elegant high-contrast serif — instead of
+   Rubik. Body copy stays Heebo for readability (classic serif-display /
+   sans-body luxury pairing). html[lang="en"] (0,1,1) outranks :root (0,1,0), so
+   these win regardless of source order. */
+html[lang="en"] {
+  --font-display-he:      "Canela", "Playfair Display", serif;
+  --font-display-en:      "Canela", "Playfair Display", serif;
+  --font-display-luxury:  "Canela", "Playfair Display", serif;
+  /* Only Canela Regular (400) is self-hosted, but headings request 700 → the
+     browser faux-bolds the single face and thickens the strokes. Disable weight
+     synthesis so Canela renders at its true, thinner Regular. */
+  font-synthesis-weight: none;
+}
+
 /* Bodoni Moda removed 2026-06-02 — the Hero wordmark is now an <img> of
    the central Gamos logo (assets/images/brand/logo-central.webp), so no
    subsetted Latin Didone is needed in the font cascade. */

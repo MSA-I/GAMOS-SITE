@@ -4,6 +4,10 @@ import App from "./App.mobile.tsx";
 import "./index.css";
 // Mobile chrome overrides — imported AFTER index.css so the .roomsm-* rules win.
 import "./index.mobile.css";
+import { applyDocumentLang } from "./i18n";
+
+// Follow the main site's language choice before paint (see main.tsx).
+applyDocumentLang();
 
 // Mobile entry — mirrors main.tsx (single curved wall, no data-initial-hall) but
 // mounts App.mobile (which swaps RoomsChrome → RoomsChromeMobile). The WebGL wall,

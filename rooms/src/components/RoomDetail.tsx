@@ -3,6 +3,7 @@ import { animate, motion, useReducedMotion } from "motion/react";
 import { X } from "lucide-react";
 import type { RoomCard } from "../roomsData";
 import type { CardScreenRect } from "../wall/Engine";
+import { t } from "../i18n";
 
 interface Props {
   card: RoomCard;
@@ -168,16 +169,16 @@ export default function RoomDetail({ card, measureFrom, onClose }: Props) {
   const items = [
     // 2026-06-18: "NN / total" index removed per user (numbers were confusing).
     <h1 key="title" id="rooms-detail-title" className="rooms-detail__title">
-      {card.category}
+      {t(card.category)}
     </h1>,
     <p key="subtitle" className="rooms-detail__subtitle">
-      {card.titleHe}
+      {t(card.titleHe)}
     </p>,
     <div key="meta" className="rooms-detail__meta">
-      <span className="rooms-detail__tag">{card.tag}</span>
+      <span className="rooms-detail__tag">{t(card.tag)}</span>
     </div>,
     <p key="body" className="rooms-detail__body">
-      {card.body}
+      {t(card.body)}
     </p>,
   ];
 
@@ -208,16 +209,16 @@ export default function RoomDetail({ card, measureFrom, onClose }: Props) {
           type="button"
           className="rooms-detail__close"
           onClick={startClose}
-          aria-label="סגירה"
+          aria-label={t("סגירה")}
         >
           <X size={18} aria-hidden="true" />
-          <span>סגירה</span>
+          <span>{t("סגירה")}</span>
         </button>
 
         <div className="rooms-detail__layout">
           {/* media slot — the morph lands here; its own img shows once settled */}
           <div ref={mediaRef} className="rooms-detail__media">
-            <img src={src} alt={card.titleHe} draggable={false} />
+            <img src={src} alt={t(card.titleHe)} draggable={false} />
           </div>
 
           <div className="rooms-detail__text">
