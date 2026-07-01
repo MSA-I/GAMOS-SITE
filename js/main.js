@@ -12,6 +12,7 @@
  */
 
 // Section modules — placeholder shells. Each exposes `init()`.
+import * as smoothScroll        from "./smooth-scroll.js";  // 2026-07-01 — Lenis smooth scroll (desktop-only); MUST init before ScrollTrigger consumers
 import * as scrollOrchestrator from "./scroll-orchestrator.js";
 import * as heroScene           from "./hero-scene.js";     // 2026-06-15 — v10 cinematic scroll-pinned hero (replaces hero-static; that file kept as legacy)
 import * as scrollScene         from "./scroll-scene.js";
@@ -36,6 +37,7 @@ import * as scrollSpy           from "./scroll-spy.js";     // .site-nav — ari
 import * as shabbatGallery     from "./shabbat-gallery.js";// 2026-06-09 — GSAP pinned mask-reveal; 2026-06-11 — pin now runs at all widths (mobile-fidelity)
 import * as directionsMap      from "./directions-map.js";  // 2026-06-10 — #routes branded Leaflet map + origin tabs
 import * as contactMapCue      from "./contact-map-cue.js"; // 2026-06-22 — #contact cue → reveal #routes map (sticky-reveal aware)
+import * as interactionHint    from "./interaction-hint.js";// 2026-06-30 — brass affordance cues (drag #lounge / scroll #culinary)
 
 // Order matters:
 // - scroll-orchestrator MUST init before any scene (hero or non-hero) that
@@ -51,6 +53,7 @@ import * as contactMapCue      from "./contact-map-cue.js"; // 2026-06-22 — #c
 //    early also prevents a missed event window).
 // - side-dot-nav inits AFTER hero so its hero progress hook attaches cleanly.
 const MODULES = [
+  ["smooth-scroll",       smoothScroll],     // 2026-07-01: Lenis (desktop-only). FIRST — wires gsap.ticker + lenis.on("scroll", ScrollTrigger.update) before hero/shabbat build their ScrollTriggers
   ["scroll-orchestrator", scrollOrchestrator],
   ["loading-overlay",     loadingOverlay],   // window.gamosLoading must be ready before hero hotspot clicks
   ["hero-scene",          heroScene],        // 2026-06-15: v10 scroll hero — GSAP timeline + gamosHero progress stub (over 500vh) + #hall-portal CTA routing
@@ -75,6 +78,7 @@ const MODULES = [
   ["lounge-selector",     loungeSelector],// #lounge — lounge selector
   ["lounge-lightbox",     loungeLightbox],// #lounge — tap → fullscreen viewer (after selector; shares the stage's pointer events)
   ["scroll-spy",          scrollSpy],     // .site-nav — aria-current highlighting
+  ["interaction-hint",    interactionHint],// brass drag/scroll affordance cues (after the sections they annotate exist)
 ];
 
 function safeInit(name, mod) {

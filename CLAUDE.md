@@ -30,10 +30,18 @@
 - **GSAP + ScrollTrigger** — לקישור scroll progress ל-`video.currentTime` (טכניקת `video-to-website` skill),
   ל-pinned mask-reveal של `#shabbat-chatan`, **ול-v10 cinematic scroll-hero** (`js/hero-scene.js` —
   entrance timeline + ScrollTrigger scrub על 500vh; ADDED 2026-06-15, ראה §3). Self-hosted ב-`assets/vendor/`.
-- ~~**Lenis** — smooth scroll בדסקטופ בלבד (`smoothTouch: false`).~~ **REMOVED 2026-06-10**
-  מעולם לא מומש — היה no-op stub (`js/lenis.js` שרק הדפיס "TODO"). נמחק
-  מה-stack בפאס איחוד-העיצוב כדי שה-stack ישקף את המציאות. אם בעתיד יידרש
-  smooth-scroll — להחזיר את ההגדרה, לממש, ולתעד את השינוי ב-git.
+- **Lenis ~18KB** (REMOVED 2026-06-10, RE-ADDED 2026-07-01) — smooth scroll
+  **בדסקטופ בלבד**. self-hosted ב-`/assets/vendor/lenis.min.js` (v1.3.25, אותה
+  לוגיקה כמו GSAP/Leaflet — self-hosting פותר CDN-offline בלי תלות-runtime).
+  **צרכן יחיד:** `js/smooth-scroll.js` — המודול הראשון ב-`MODULES` (מחווט
+  `gsap.ticker` + `lenis.on("scroll", ScrollTrigger.update)` לפני שצרכני
+  ScrollTrigger בונים). **Gated:** `matchMedia("(min-width: 769px)")` +
+  `prefers-reduced-motion` → מובייל וגלילת-RM נשארים native (§8). ה-nav modules
+  (side-dot-nav, site-nav, scrollytelling, corridor) מנתבים anchor-scroll דרך
+  `window.gamosSmoothScrollTo` כדי ש-GSAP ScrollToPlugin לא יילחם ב-Lenis.
+  אסור להשתמש ב-Lenis למטרה אחרת ללא הרחבת clause זה. (ההיסטוריה: היה תחילה
+  no-op stub `js/lenis.js` שנמחק ב-2026-06-10; מומש במלואו ב-2026-07-01 לפי
+  clause "אם יידרש smooth-scroll — להחזיר, לממש, ולתעד".)
 - **Leaflet ~42KB** (ADDED 2026-06-10) — self-hosted ב-`/assets/vendor/leaflet.js`
   + `/assets/vendor/leaflet.css`, **לצורך מפת ההגעה האינטראקטיבית בלבד** (סקציית
   `#routes` — "מסלולי הגעה"). אותה לוגיקה כמו GSAP: self-hosting פותר את בעיית

@@ -190,7 +190,9 @@ export function init() {
     const target = e.target.closest("[data-scroll-to-top]");
     if (!target) return;
     e.preventDefault();
-    if (window.gsap && window.ScrollToPlugin) {
+    if (window.gamosSmoothScrollTo) {
+      window.gamosSmoothScrollTo(0);                 // Lenis (desktop) — avoid GSAP↔Lenis fight
+    } else if (window.gsap && window.ScrollToPlugin) {
       gsap.to(window, { duration: 1.0, scrollTo: 0, ease: "power3.inOut" });
     } else {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -200,7 +202,8 @@ export function init() {
   // Programmatic anchor scrolls (used by side-dot-nav). If GSAP is present,
   // smooth via ScrollToPlugin; otherwise let the browser do it.
   document.addEventListener("click", (e) => {
-    if (!window.gsap || !window.ScrollToPlugin) return;
+    // Need at least one smooth driver (Lenis on desktop, else GSAP).
+    if (!window.gamosSmoothScrollTo && (!window.gsap || !window.ScrollToPlugin)) return;
     const a = e.target.closest('a[href^="#"]:not([data-no-smooth])');
     if (!a) return;
     const id = a.getAttribute("href").slice(1);
@@ -208,11 +211,15 @@ export function init() {
     const el = document.getElementById(id);
     if (!el) return;
     e.preventDefault();
-    gsap.to(window, {
-      duration: 1.1,
-      scrollTo: { y: el, autoKill: true },
-      ease: "power3.inOut",
-    });
+    if (window.gamosSmoothScrollTo) {
+      window.gamosSmoothScrollTo(el, { duration: 1.1 }); // Lenis — no GSAP↔Lenis fight
+    } else {
+      gsap.to(window, {
+        duration: 1.1,
+        scrollTo: { y: el, autoKill: true },
+        ease: "power3.inOut",
+      });
+    }
     // Update URL hash without jump.
     history.pushState(null, "", "#" + id);
   });

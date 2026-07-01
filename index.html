@@ -33,6 +33,27 @@
   <title>גאמוס אירועים | אולם, ריזורט וגן אירועים במעלה אדומים</title>
   <meta name="description" content="גאמוס, קומפלקס אירועים יוקרתי בפארק ישראל, מעלה אדומים. שני מתחמים: אולם זכוכית עד 1000 מוזמנים וריזורט עם בריכה, חדרי אירוח וקולינריה. חתונות, בר-מצווה ואירועי חברה.">
 
+  <!-- Open Graph + Twitter — social / WhatsApp share preview (was missing →
+       blank cards). og:image reuses the existing brand hero composite
+       (1920×1080 JPG, 90KB) for max WhatsApp/Facebook compatibility. Absolute
+       URLs per OG spec, matching the canonical host. Inherited by /mobile/
+       (built from this file, §13). -->
+  <meta property="og:type" content="business.business">
+  <meta property="og:site_name" content="גאמוס אירועים">
+  <meta property="og:locale" content="he_IL">
+  <meta property="og:url" content="https://gamos.co.il/">
+  <meta property="og:title" content="גאמוס אירועים | אולם, ריזורט וגן אירועים במעלה אדומים">
+  <meta property="og:description" content="קומפלקס אירועים יוקרתי בפארק ישראל, מעלה אדומים. אולם זכוכית עד 1000 מוזמנים, ריזורט עם בריכה, חדרי אירוח וקולינריה.">
+  <meta property="og:image" content="https://gamos.co.il/assets/images/brand/hero-static.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1920">
+  <meta property="og:image:height" content="1080">
+  <meta property="og:image:alt" content="מתחם האירועים של גאמוס במעלה אדומים">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="גאמוס אירועים | אולם, ריזורט וגן אירועים במעלה אדומים">
+  <meta name="twitter:description" content="קומפלקס אירועים יוקרתי בפארק ישראל, מעלה אדומים. אולם זכוכית עד 1000 מוזמנים, ריזורט, חדרי אירוח וקולינריה.">
+  <meta name="twitter:image" content="https://gamos.co.il/assets/images/brand/hero-static.jpg">
+
   <!-- Canonical + indexing directives. Self-canonical to the desktop root; the
        generated /mobile/ mirror inherits this (it's built from this file, §13)
        so it canonicalises to / — exactly right. max-image-preview:large lets
@@ -115,8 +136,8 @@
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": "31.7700",
-      "longitude": "35.2900"
+      "latitude": "31.7878076",
+      "longitude": "35.3371583"
     },
     "hasMap": "https://www.google.com/maps/dir/?api=1&destination=31.7878076,35.3371583",
     "contactPoint": [
@@ -204,6 +225,7 @@
        section CSS without `!important` (2026-06-15 unify pass). -->
   <link rel="stylesheet" href="/css/components/buttons.css">
   <link rel="stylesheet" href="/css/components/media-caption.css">
+  <link rel="stylesheet" href="/css/components/interaction-hint.css">
 
   <!-- GSAP 3.15.0 (self-hosted; powers cinematic scroll + parallax in
        js/scrollytelling.js, the pinned mask-reveal in js/shabbat-gallery.js,
@@ -215,6 +237,11 @@
   <script defer src="/assets/vendor/ScrollTrigger.min.js"></script>
   <script defer src="/assets/vendor/DrawSVGPlugin.min.js"></script>
   <script defer src="/assets/vendor/SplitText.min.js"></script>
+
+  <!-- Lenis (self-hosted, ~18KB; Constitution §2 — DESKTOP-ONLY smooth scroll).
+       Powers js/smooth-scroll.js. defer → window.Lenis is ready before main.js.
+       Loaded after GSAP so the ticker/ScrollTrigger handshake can wire up. -->
+  <script defer src="/assets/vendor/lenis.min.js"></script>
 
   <!-- Leaflet (self-hosted, ~42KB; Constitution §2 — directions map ONLY).
        Powers the branded interactive #routes "מסלולי הגעה" map in
@@ -543,6 +570,18 @@
           </figure>
         </div>
       </div>
+      <!-- Brass drag affordance — a CHILD OF THE SECTION (not .lounge__stage) so
+           mobile's transform:scale(0.6) on the stage doesn't shrink it to ~7px,
+           and it lands in the clear ivory band BELOW the ring instead of over a
+           card. Dismissed on the first pointerdown on the stage (drag or tap-to-
+           lightbox). aria-hidden: the real label lives on the stage's aria-label. -->
+      <div class="ix-hint ix-hint--drag" data-ix-hint
+           data-ix-target="[data-lounge-stage]" aria-hidden="true">
+        <span class="ix-hint__icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"/><path d="M8 9l-3 3 3 3"/><path d="M16 9l3 3-3 3"/></svg>
+        </span>
+        <span class="ix-hint__text">גררו לסיבוב הגלריה</span>
+      </div>
     </section>
 
     <!-- ====================================================================
@@ -569,6 +608,16 @@
                alt="" width="1600" height="900"
                loading="lazy" decoding="async">
         </picture>
+
+        <!-- Brass scroll affordance — fades 5s after entering view (auto). The
+             sticky wrapper is a positioned context, so absolute resolves here. -->
+        <div class="ix-hint ix-hint--scroll ix-hint--on-dark" data-ix-hint data-ix-dismiss="auto"
+             aria-hidden="true">
+          <span class="ix-hint__icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6"/></svg>
+          </span>
+          <span class="ix-hint__text">המשיכו לגלול</span>
+        </div>
 
         <!-- Canvas-frames scrub (restored 2026-06-16). The original cinematic
              look — zoom 1.35 + pointer parallax + money-shot start (skip the

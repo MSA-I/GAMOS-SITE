@@ -309,10 +309,16 @@ function onDotClick(event) {
 
   const behavior = state.reducedMotion ? "auto" : "smooth";
 
-  // Prefer GSAP ScrollToPlugin (self-hosted, already loaded with the page) so
-  // we have a single smooth animation that won't fight the hero RAF orchestrator.
+  // Prefer Lenis (desktop smooth scroll) so its inertia drives the jump —
+  // a GSAP window.scrollTo tween would fight Lenis's own loop. Falls through
+  // to the shared hash-push + optimistic active-state update below.
   const gsap = window.gsap;
-  if (gsap && typeof gsap.to === "function") {
+  if (window.gamosSmoothScrollTo) {
+    window.gamosSmoothScrollTo(sectionId === "hero" ? 0 : target, { duration: 1.1 });
+  }
+  // Otherwise prefer GSAP ScrollToPlugin (self-hosted, already loaded with the
+  // page) so we have a single smooth animation that won't fight the hero RAF.
+  else if (gsap && typeof gsap.to === "function") {
     try {
       gsap.to(window, {
         duration: state.reducedMotion ? 0 : 1.1,

@@ -113,7 +113,9 @@ const state = {
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
 function smoothScrollToY(yPx, duration = 0.7) {
-  if (window.gsap && typeof window.gsap.to === "function" && window.ScrollToPlugin) {
+  if (window.gamosSmoothScrollTo) {
+    window.gamosSmoothScrollTo(yPx, { duration });   // Lenis (desktop) — avoid fight
+  } else if (window.gsap && typeof window.gsap.to === "function" && window.ScrollToPlugin) {
     window.gsap.to(window, {
       duration,
       ease: "power3.inOut",

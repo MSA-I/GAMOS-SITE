@@ -252,8 +252,15 @@ function smoothScrollTo(target) {
   if (!target) return;
   const reduced = prefersReducedMotion();
 
-  // Prefer GSAP ScrollToPlugin (already self-hosted at /assets/vendor/) for
-  // a single smooth animation that won't fight the hero's RAF loop.
+  // Prefer Lenis (desktop smooth scroll) — its inertia owns the scroll, so a
+  // GSAP window.scrollTo tween would fight it.
+  if (window.gamosSmoothScrollTo) {
+    window.gamosSmoothScrollTo(target === "top" ? 0 : target, { duration: reduced ? 0 : 1.1 });
+    return;
+  }
+
+  // Otherwise prefer GSAP ScrollToPlugin (already self-hosted at /assets/vendor/)
+  // for a single smooth animation that won't fight the hero's RAF loop.
   const gsap = typeof window !== "undefined" ? window.gsap : null;
   if (gsap && typeof gsap.to === "function") {
     try {
