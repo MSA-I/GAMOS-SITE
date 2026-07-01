@@ -17,86 +17,53 @@ const FALLBACK_COLORS: ExtractedColors = {
   blob2: "#534133", // cocoa
 };
 
-// 2026-06-18 (rev 2): order follows the SOURCE FOLDER NUMBERS (user: image "1"
-// first). Per hall: (A) numbered files in numeric order, then (B) the rest
-// (portrait before landscape), then (C) CHUPPAH photos last (portrait first).
-// EVENTS closes on the bride & groom's throne ("כס הכלה") as the very last
-// plane (user). Captions describe what each space is AND sell the GAMOS
-// experience. Per-image transition colours are auto-extracted by
-// scripts/extract-colors.mjs (prebuild). Images map to
-// halls/public/images/projects/<hall>-NN.webp, encoded from
-// assets/_src/{events,resort} by `npm run encode:images`.
+// 2026-07-01: full image refresh (user). Sources are the numbered folders
+// אולם → events (17) and ריזורט → resort (14) under GAMOS-DOCS "תמונות לחידוש
+// באתר", copied to assets/_src/{events,resort} as 01..NN and encoded by
+// `npm run encode:images` → halls/public/images/projects/<hall>-NN.webp.
+// Display order follows the SOURCE FOLDER NUMBERS (1,2,3…). Captions are
+// FUNCTIONAL — they name what is literally visible in each frame (space,
+// objects, setup), not abstract/marketing metaphors. Per-image transition
+// colours are auto-extracted by scripts/extract-colors.mjs (prebuild) so the
+// GLSL background blend matches each photo's palette.
 export const projectsData: Project[] = [
   // ─────────────────────────────────────────────────────────────────────────
-  // HALL 1: EVENTS HALL (אולם האירועים) — 30 planes
-  // A: numbered 01–16 · B: the rest 17–24 · C: chuppahs 25–29 · throne 30
+  // HALL 1: EVENTS (אולם האירועים) — 17 planes, source folder "אולם" 1–17
   // ─────────────────────────────────────────────────────────────────────────
-  { id: "events-01", hallId: "events", number: "01", title: "שדרת הקשתות", subtitle: "קשתות הזהב פותחות את הביקור ומלוות את האורחים מהכניסה אל לב הגן", label: "שדרת קשתות הזהב", location: "גן האירועים", year: "2026", image: "images/projects/events-01.webp" },
-  { id: "events-02", hallId: "events", number: "02", title: "שביל הזהב", subtitle: "מעבר הקשתות הנמשך לאורך הגן — כניסה דרמטית שמכינה את הלב לערב", label: "מנהרת הזהב אל הגן", location: "גן האירועים", year: "2026", image: "images/projects/events-02.webp" },
-  { id: "events-03", hallId: "events", number: "03", title: "מנהרת הקשתות", subtitle: "מנהרת הזהב הפורחת — הרגע שבו הגן עוטף את האורחים מכל עבר", label: "קשתות הזהב הפורחות", location: "גן האירועים", year: "2026", image: "images/projects/events-03.webp" },
-  { id: "events-04", hallId: "events", number: "04", title: "הגן הירוק", subtitle: "ירק חי וקשתות לאורך השביל — הנשמה הפורחת של מתחם גאמוס", label: "טרקלין הגן בשקיעה", location: "גן האירועים", year: "2026", image: "images/projects/events-04.webp" },
-  { id: "events-05", hallId: "events", number: "05", title: "פינות הגן", subtitle: "שביל הקשתות עם פינות הישיבה שמזמינות לעצור, לנשום ולהצטלם", label: "פינת הקשת בגן", location: "גן האירועים", year: "2026", image: "images/projects/events-05.webp" },
-  { id: "events-06", hallId: "events", number: "06", title: "קיר הסריג", subtitle: "קיר העץ המסורג שמלווה את חללי המתחם בחום טבעי ובקווים נקיים", label: "חצר הפריחה והקשתות", location: "המתחם", year: "2026", image: "images/projects/events-06.webp" },
-  { id: "events-07", hallId: "events", number: "07", title: "מתחם הקבלה", subtitle: "מיצב הקבלה המעוצב עם סמל הבית ועצי הפריחה — המפגש הראשון של האורחים", label: "מיצב הקבלה של GAMOS", location: "גן האירועים", year: "2026", image: "images/projects/events-07.webp" },
-  { id: "events-08", hallId: "events", number: "08", title: "לב האולם", subtitle: "החלל הראשי הרחב והמעוצב, ערוך ומואר ומוכן לקבל את האורחים", label: "מרפסת הלאונג' בזהב הערב", location: "גן האירועים", year: "2026", image: "images/projects/events-08.webp" },
-  { id: "events-09", hallId: "events", number: "09", title: "חזית המתחם", subtitle: "חצר הכניסה ועצי הזית באור הדמדומים — הפנים הקורנות של גאמוס", label: "חצר עצי הזית", location: "המתחם", year: "2026", image: "images/projects/events-09.webp" },
-  { id: "events-10", hallId: "events", number: "10", title: "לאונג' הגן", subtitle: "פינות ישיבה רכות בלב הירק — מקום להתכנס ולשהות בין רגעי החגיגה", label: "בר הגן הפתוח", location: "המתחם", year: "2026", image: "images/projects/events-10.webp" },
-  { id: "events-11", hallId: "events", number: "11", title: "אדריכלות האולם", subtitle: "הסריג והקווים הנקיים שמגדירים את שפת העיצוב המוקפדת של המתחם", label: "בר המתחם", location: "המתחם", year: "2026", image: "images/projects/events-11.webp" },
-  { id: "events-12", hallId: "events", number: "12", title: "חזית הזכוכית", subtitle: "חזית הזכוכית ועצי הזית מחברים את האולם אל הגן והמדבר שסביבו", label: "חזית הזכוכית אל הגן", location: "המתחם", year: "2026", image: "images/projects/events-12.webp" },
-  { id: "events-13", hallId: "events", number: "13", title: "אל המרחב", subtitle: "המתחם נפתח אל קו האופק — נשימה של מרחב מדברי שעוטפת את החגיגה", label: "הרחבה אל קו האופק", location: "המתחם", year: "2026", image: "images/projects/events-13.webp" },
-  { id: "events-14", hallId: "events", number: "14", title: "האולם הערוך", subtitle: "האולם המעוצב בפרחים ובתאורה רכה, רגע לפני שהאורחים נכנסים", label: "חופת העמודים בגן", location: "חופות", year: "2026", image: "images/projects/events-14.webp" },
-  { id: "events-15", hallId: "events", number: "15", title: "פרחים תלויים", subtitle: "סידור פרחים מרהיב נשפך מעל השולחן — הקפדה על כל פרט באירוח", label: "שולחן באור הנרות", location: "האולם הראשי", year: "2026", image: "images/projects/events-15.webp" },
-  { id: "events-16", hallId: "events", number: "16", title: "ערוך השולחן", subtitle: "שולחן ערוך בקפידה בפרחים וכלים — תשומת הלב שמייחדת אירוע בגאמוס", label: "שולחן הקריסטל המואר", location: "האולם הראשי", year: "2026", image: "images/projects/events-16.webp" },
-  // ── B: the rest — portrait first ──
-  { id: "events-17", hallId: "events", number: "17", title: "ערב באולם", subtitle: "האולם נדלק באור נרות — כך מרגיש ערב חגיגה אינטימי במתחם", label: "מסך הירק התלוי", location: "האולם הראשי", year: "2026", image: "images/projects/events-17.webp" },
-  { id: "events-18", hallId: "events", number: "18", title: "פרטי השולחן", subtitle: "כלים, פרחים ותאורה רכה — שפת האירוח המוקפדת של מתחם גאמוס", label: "שולחן הענפים הלבנים", location: "האולם הראשי", year: "2026", image: "images/projects/events-18.webp" },
-  { id: "events-19", hallId: "events", number: "19", title: "אווירת הסעודה", subtitle: "שולחנות ערוכים תחת אור חם — הזמנה לשבת, לחגוג ולהתארח בנחת", label: "אולם החגיגה הגדול", location: "האולם הראשי", year: "2026", image: "images/projects/events-19.webp" },
-  { id: "events-20", hallId: "events", number: "20", title: "שולחן מול הקיר", subtitle: "שולחן ערוך בפרחים מול קיר אמנות מואר — מסגרת מושלמת לסעודה", label: "שולחן הפריחה מול החלון", location: "האולם הראשי", year: "2026", image: "images/projects/events-20.webp" },
-  { id: "events-21", hallId: "events", number: "21", title: "שולחנות בשורה", subtitle: "שורות השולחנות הערוכים, מוכנות לקבל מאות אורחים בנוחות ובסטייל", label: "פרטי שולחן בגווני ורד", location: "האולם הראשי", year: "2026", image: "images/projects/events-21.webp" },
-  { id: "events-22", hallId: "events", number: "22", title: "ערב של נרות", subtitle: "אור הנרות על השולחנות — הקסם השקט של ערב חגיגה בגאמוס", label: "נברשות מעל שולחן הסעודה", location: "האולם הראשי", year: "2026", image: "images/projects/events-22.webp" },
-  { id: "events-23", hallId: "events", number: "23", title: "שולחן הכבוד", subtitle: "שולחן עגול ערוך בכלי קריסטל — מקום של כבוד לאורחי המשפחה", label: "אולם הקריסטל הגדול", location: "האולם הראשי", year: "2026", image: "images/projects/events-23.webp" },
-  { id: "events-24", hallId: "events", number: "24", title: "ערכת השולחן", subtitle: "ערכת שולחן מוקפדת — כל פרט נבחר כדי שהאורחים ירגישו בבית", label: "ערב באולם הקריסטל", location: "האולם הראשי", year: "2026", image: "images/projects/events-24.webp" },
-  // ── C: chuppahs (חופות) — portrait first ──
-  { id: "events-25", hallId: "events", number: "25", title: "חופת השער", subtitle: "שער החופה המואר בגן — המעבר אל הרגע הגדול תחת אור רך", label: "שער החופה המואר", location: "חופות", year: "2026", image: "images/projects/events-25.webp" },
-  { id: "events-26", hallId: "events", number: "26", title: "חופת הלילה", subtitle: "חופת עמודים לבנה ושביל נרות — טקס אינטימי תחת שמי הערב", label: "חופת העמודים בשביל הנרות", location: "חופות", year: "2026", image: "images/projects/events-26.webp" },
-  { id: "events-27", hallId: "events", number: "27", title: "חופת העמודים", subtitle: "חופה לבנה מוארת בלילה — טקס מרגש תחת כיפת השמיים הפתוחה", label: "חופה לבנה בשמי הלילה", location: "חופות", year: "2026", image: "images/projects/events-27.webp" },
-  { id: "events-28", hallId: "events", number: "28", title: "חופת הגן", subtitle: "חופה על שביל לבן מול קיר הירק — טקס בלב גן האירועים הפורח", label: "חופת הגן על השביל הלבן", location: "חופות", year: "2026", image: "images/projects/events-28.webp" },
-  { id: "events-29", hallId: "events", number: "29", title: "חופת הפרחים", subtitle: "חופת פרחים ושביל אורחים פתוח אל הנוף — טקס בחיק הטבע", label: "חופת הטבע אל הנוף", location: "חופות", year: "2026", image: "images/projects/events-29.webp" },
-  // ── throne — the bride & groom's seat, last (user) ──
-  { id: "events-30", hallId: "events", number: "30", title: "כס הכלה והחתן", subtitle: "כס הזוג תחת יריעות הבד ונברשות הקריסטל — הרגע שבו הזוג במרכז הבמה", label: "כס הכלה והחתן", location: "האולם הראשי", year: "2026", image: "images/projects/events-30.webp" },
-
+  { id: "events-01", hallId: "events", number: "01", title: "שדרת הקשתות", subtitle: "מנהרת קשתות זהב מעגליות מעל שביל אבן, עם ערוגות פרחים ורודים משני הצדדים", label: "מנהרת קשתות הזהב", location: "גן האירועים", year: "2026", image: "images/projects/events-01.webp" },
+  { id: "events-02", hallId: "events", number: "02", title: "מנהרת הזהב", subtitle: "מבט מקרוב אל קשתות הזהב המעגליות המובילות בשביל אל אזור הישיבה", label: "שביל הקשתות", location: "גן האירועים", year: "2026", image: "images/projects/events-02.webp" },
+  { id: "events-03", hallId: "events", number: "03", title: "פינת הישיבה", subtitle: "ספות וכורסאות ירוקות עם שולחנות צד לצד עצי בונסאי מעוצבים בגן הגג", label: "מרפסת הלאונג'", location: "גן האירועים", year: "2026", image: "images/projects/events-03.webp" },
+  { id: "events-04", hallId: "events", number: "04", title: "גינת הישיבה", subtitle: "מערך ספות וכורסאות ירוקות מוקף עצי זית מגוזמים וקיר צמחייה ירוק", label: "פינת ישיבה בגן", location: "גן האירועים", year: "2026", image: "images/projects/events-04.webp" },
+  { id: "events-05", hallId: "events", number: "05", title: "מושבי הלאונג'", subtitle: "ספה ושתי כורסאות ירוקות סביב שולחן נמוך מול קיר צמחייה ירוק", label: "סלון חוץ ירוק", location: "גן האירועים", year: "2026", image: "images/projects/events-05.webp" },
+  { id: "events-06", hallId: "events", number: "06", title: "פינת GAMOS", subtitle: "נדנדת קן עגולה עם כרית ירוקה ושלט GAMOS מוזהב על קיר לבנים, בין עצי פריחה לבנה", label: "נדנדת הצילום", location: "גן האירועים", year: "2026", image: "images/projects/events-06.webp" },
+  { id: "events-07", hallId: "events", number: "07", title: "בר המשקאות", subtitle: "בר חוץ עם שילוט BAR צהוב, מדפי בקבוקים על קיר חלוד וכיסאות בר מול שולחנות", label: "בר האירוע", location: "המתחם", year: "2026", image: "images/projects/events-07.webp" },
+  { id: "events-08", hallId: "events", number: "08", title: "אזור הבר", subtitle: "בר מקורה עם מדפי בקבוקים מוארים, כיסאות בר וגגון מתכת, לצד עץ זית", label: "בר מקורה", location: "המתחם", year: "2026", image: "images/projects/events-08.webp" },
+  { id: "events-09", hallId: "events", number: "09", title: "רחבת הבר", subtitle: "מבט רחב על רחבת הבר עם שולחנות גבוהים, כיסאות בר ועצי זית בעציצים", label: "רחבת הבר החיצונית", location: "המתחם", year: "2026", image: "images/projects/events-09.webp" },
+  { id: "events-10", hallId: "events", number: "10", title: "פינת ישיבה בגן", subtitle: "ספות וכורסאות לבנות עם כריות רכות ושולחנות צד, פינת ישיבה בגן שמחוץ לאולם", label: "פינת ישיבה לבנה בגן", location: "גן האירועים", year: "2026", image: "images/projects/events-10.webp" },
+  { id: "events-11", hallId: "events", number: "11", title: "חופה בגן", subtitle: "חופה לבנה עם עמודים ווילונות, סידורי ורדים לבנים ושטיח לבן בין כיסאות", label: "במת החופה", location: "גן האירועים", year: "2026", image: "images/projects/events-11.webp" },
+  { id: "events-12", hallId: "events", number: "12", title: "עיצוב הקריסטל הכחול", subtitle: "שולחן בעיצוב פמוטי קריסטל גבוהים וורדים לבנים, תחת תאורת קרן כחולה", label: "שולחן קריסטל בתאורה כחולה", location: "המתחם", year: "2026", image: "images/projects/events-12.webp" },
+  { id: "events-13", hallId: "events", number: "13", title: "עיצוב הנרות הצפים", subtitle: "שולחן בעיצוב קנדלברות זכוכית ונרות צפים בתאורה חמה, עם כיסאות מרופדים", label: "שולחן בתאורה חמה עם נרות צפים", location: "המתחם", year: "2026", image: "images/projects/events-13.webp" },
+  { id: "events-14", hallId: "events", number: "14", title: "עיצוב מינימלי עם ניאון", subtitle: "שולחן בעיצוב פמוטי קריסטל דקים ומינימליים, מול קוביית ניאון GAMOS אדומה", label: "שולחן מינימלי מול ניאון GAMOS", location: "המתחם", year: "2026", image: "images/projects/events-14.webp" },
+  { id: "events-15", hallId: "events", number: "15", title: "עיצוב נברשת הקריסטל", subtitle: "שולחן בעיצוב נברשת קריסטל מרכזית וקנדלברות, ורדים לבנים וכיסאות שקופים", label: "שולחן עם נברשת קריסטל תלויה", location: "המתחם", year: "2026", image: "images/projects/events-15.webp" },
+  { id: "events-16", hallId: "events", number: "16", title: "עיצוב הנברשות והאגרטלים", subtitle: "שולחן בעיצוב נברשות פרנזים לבנות, אגרטלי ורדים ומנורות שולחן וכיסאות שקופים", label: "שולחן עם נברשות פרנזים ואגרטלים", location: "המתחם", year: "2026", image: "images/projects/events-16.webp" },
+  { id: "events-17", hallId: "events", number: "17", title: "עיצוב בלאש וסאטן", subtitle: "שולחן בעיצוב מפת סאטן בלאש וורדים לבנים, מפיות שחורות מול לוגו GAMOS מואר", label: "שולחן סאטן מול לוגו הניאון", location: "המתחם", year: "2026", image: "images/projects/events-17.webp" },
   // ─────────────────────────────────────────────────────────────────────────
-  // HALL 2: RESORT (ריזורט המדבר) — 26 planes
-  // A: numbered 01–06 · B: the rest 07–21 · C: chuppahs 22–26
+  // HALL 2: RESORT (הריזורט) — 14 planes, source folder "ריזורט" 1–13 (+3.1/8.1)
   // ─────────────────────────────────────────────────────────────────────────
-  { id: "resort-01", hallId: "resort", number: "01", title: "מרחבי המדבר", subtitle: "קו הדיונות הפתוח שעוטף את הריזורט — הרקע הטבעי של כל אירוע אצלנו", label: "מרחבי המדבר הפתוחים", location: "הריזורט", year: "2026", image: "images/projects/resort-01.webp" },
-  { id: "resort-02", hallId: "resort", number: "02", title: "בריכת האינסוף", subtitle: "בריכת האינסוף שנמסכת אל המדבר — לב הפנאי והנוף של הריזורט", label: "בריכת האינסוף אל המדבר", location: "הריזורט", year: "2026", image: "images/projects/resort-02.webp" },
-  { id: "resort-03", hallId: "resort", number: "03", title: "הבריכה והנוף", subtitle: "מי הבריכה ומיטות השיזוף מול הדיונות — רגע של רוגע לפני הערב", label: "בריכת השיזוף אל הדיונות", location: "הריזורט", year: "2026", image: "images/projects/resort-03.webp" },
-  { id: "resort-04", hallId: "resort", number: "04", title: "פרגולת המים", subtitle: "עמודי הפרגולה ממסגרים את המדבר מעל מי הבריכה הזורמים", label: "הפרגולה מעל הבריכה", location: "הריזורט", year: "2026", image: "images/projects/resort-04.webp" },
-  { id: "resort-05", hallId: "resort", number: "05", title: "טרקלין הנוף", subtitle: "החלל הפתוח מול הבריכה והמדבר — אירוח רך בחיק הטבע", label: "ביתן הבריכה הלבן", location: "הריזורט", year: "2026", image: "images/projects/resort-05.webp" },
-  { id: "resort-06", hallId: "resort", number: "06", title: "אולם הריזורט", subtitle: "החלל המקורה שנפתח אל המדבר — מפגש של יוקרה וטבע פתוח", label: "ביתן הקשתות על המים", location: "הריזורט", year: "2026", image: "images/projects/resort-06.webp" },
-  // ── B: the rest — portrait first ──
-  { id: "resort-07", hallId: "resort", number: "07", title: "פרטי הריזורט", subtitle: "קאלות לבנות על השולחן — עידון מדברי שמאפיין כל פינה בריזורט", label: "שולחן הקאלות הלבן", location: "הריזורט", year: "2026", image: "images/projects/resort-07.webp" },
-  { id: "resort-08", hallId: "resort", number: "08", title: "אדריכלות הריזורט", subtitle: "העמודים והקווים הנקיים שמחברים את הפנים אל הנוף הפתוח", label: "סעודה אל מול המדבר", location: "הריזורט", year: "2026", image: "images/projects/resort-08.webp" },
-  { id: "resort-09", hallId: "resort", number: "09", title: "טרקלין היוקרה", subtitle: "פינות ישיבה רכות מול הנוף — מרחב מפנק לקבלת הפנים", label: "שולחן ארוך בחיק הנוף", location: "הריזורט", year: "2026", image: "images/projects/resort-09.webp" },
-  { id: "resort-10", hallId: "resort", number: "10", title: "ערוך מול הנוף", subtitle: "שולחן ערוך בקאלות מול חלון המדבר — סעודה בתוך הנוף עצמו", label: "שולחן עגול מול המדבר", location: "הריזורט", year: "2026", image: "images/projects/resort-10.webp" },
-  { id: "resort-11", hallId: "resort", number: "11", title: "שולחנות הטרקלין", subtitle: "שולחנות ערוכים בקאלות מול קיר הסריג — אירוח שופע ומוקפד", label: "מערך השולחנות אל הנוף", location: "הריזורט", year: "2026", image: "images/projects/resort-11.webp" },
-  { id: "resort-12", hallId: "resort", number: "12", title: "אווירת הדמדומים", subtitle: "הריזורט בשעת בין הערביים, כשהאור הרך ממלא את החללים", label: "נרות צפים בין הערביים", location: "הריזורט", year: "2026", image: "images/projects/resort-12.webp" },
-  { id: "resort-13", hallId: "resort", number: "13", title: "שולחן החתן", subtitle: "שולחן ארוך וקיר GAMOS מול הדיונות — לב הסעודה בריזורט", label: "שביל הטקס תחת המקרמה", location: "הריזורט", year: "2026", image: "images/projects/resort-13.webp" },
-  { id: "resort-14", hallId: "resort", number: "14", title: "סעודה אל המדבר", subtitle: "שולחנות ארוכים ערוכים מתחת ליריעות מול הנוף — חגיגה במרחב פתוח", label: "חופה מעל הבריכה", location: "חופות", year: "2026", image: "images/projects/resort-14.webp" },
-  { id: "resort-15", hallId: "resort", number: "15", title: "מערך הסעודה", subtitle: "מערך השולחנות הרחב, ערוך ומוכן לקבל את אורחי הריזורט", label: "שולחנות הסעודה באור חם", location: "הריזורט", year: "2026", image: "images/projects/resort-15.webp" },
-  { id: "resort-16", hallId: "resort", number: "16", title: "אולם הסעודות", subtitle: "החלל המקורה הערוך לאירוע, מחבר בין נוחות הפנים אל פתח הנוף", label: "אולם הסעודות המקורה", location: "הריזורט", year: "2026", image: "images/projects/resort-16.webp" },
-  { id: "resort-17", hallId: "resort", number: "17", title: "שולחן ערוך", subtitle: "שולחן ארוך ערוך בקפידה — כל כיסא וכל כלי במקומו המדויק", label: "מערך השולחנות הערוך", location: "הריזורט", year: "2026", image: "images/projects/resort-17.webp" },
-  { id: "resort-18", hallId: "resort", number: "18", title: "ערכת השולחן", subtitle: "כלי הזכוכית והקאלות — שפת האירוח המעודנת של הריזורט", label: "קאלות לבנות מול הבריכה", location: "הריזורט", year: "2026", image: "images/projects/resort-18.webp" },
-  { id: "resort-19", hallId: "resort", number: "19", title: "שולחנות הקאלה", subtitle: "שולחנות עגולים ערוכים בקאלות — אירוח אינטימי בלב הריזורט", label: "שולחנות הקאלה העגולים", location: "הריזורט", year: "2026", image: "images/projects/resort-19.webp" },
-  { id: "resort-20", hallId: "resort", number: "20", title: "מעבר הריזורט", subtitle: "המעבר המקורה והעמודים שמלווים את האורחים אל לב המתחם", label: "מרפסת הריזורט בדמדומים", location: "הריזורט", year: "2026", image: "images/projects/resort-20.webp" },
-  { id: "resort-21", hallId: "resort", number: "21", title: "שער הכניסה", subtitle: "שביל הכניסה המעוטר ביריעות — הצעד הראשון אל ערב בלתי נשכח", label: "רחבת הריקודים אל המדבר", location: "הריזורט", year: "2026", image: "images/projects/resort-21.webp" },
-  // ── C: chuppahs (חופות) — portrait first ──
-  { id: "resort-22", hallId: "resort", number: "22", title: "חופת הפריחה", subtitle: "חופת פרחים מעל הפרגולה — טקס עוטף ורך בלב הריזורט", label: "חופת הפריחה והנברשת", location: "חופות", year: "2026", image: "images/projects/resort-22.webp" },
-  { id: "resort-23", hallId: "resort", number: "23", title: "חופת היריעות", subtitle: "חופת יריעות לבנות מול המדבר — טקס מינימליסטי ועוצמתי", label: "חופת הפמפס אל הדיונות", location: "חופות", year: "2026", image: "images/projects/resort-23.webp" },
-  { id: "resort-24", hallId: "resort", number: "24", title: "חופת המדבר", subtitle: "חופת פרחים לבנה מול הדיונות — טקס בחיק נוף בראשית", label: "חופת הפרחים אל המדבר", location: "חופות", year: "2026", image: "images/projects/resort-24.webp" },
-  { id: "resort-25", hallId: "resort", number: "25", title: "חופת השקיעה", subtitle: "חופה לבנה על במה מול הדמדומים — רגע הטקס באור הזהב", label: "חופת השקיעה על הבמה", location: "חופות", year: "2026", image: "images/projects/resort-25.webp" },
-  { id: "resort-26", hallId: "resort", number: "26", title: "חופת הדיונות", subtitle: "חופת פרחים צחורה מול קו הדיונות — שיא הטקס בריזורט גאמוס", label: "חופה צחורה מול הדיונות", location: "חופות", year: "2026", image: "images/projects/resort-26.webp" },
+  { id: "resort-01", hallId: "resort", number: "01", title: "הנוף מול החופה", subtitle: "מרחב המדבר הפתוח וקו הגבעות — הנוף שנשקף מהריזורט אל מול החופה", label: "נוף המדבר מול החופה", location: "המדבר", year: "2026", image: "images/projects/resort-01.webp" },
+  { id: "resort-02", hallId: "resort", number: "02", title: "בריכת האינסוף", subtitle: "מיטות שיזוף עץ בתוך המים תחת פרגולה מול נוף הדיונות", label: "בריכה עם מיטות במים", location: "מתחם הבריכה", year: "2026", image: "images/projects/resort-02.webp" },
+  { id: "resort-03", hallId: "resort", number: "03", title: "מרפסת הבריכה", subtitle: "בריכת אינסוף עם שורת מיטות שיזוף וחופה לבנה בקצה", label: "בריכה ומרפסת שיזוף", location: "מתחם הבריכה", year: "2026", image: "images/projects/resort-03.webp" },
+  { id: "resort-04", hallId: "resort", number: "04", title: "מיטות במים", subtitle: "מיטות שיזוף מעץ ניצבות בתוך מדף המים הרדוד של הבריכה", label: "מיטות שיזוף בבריכה", location: "מתחם הבריכה", year: "2026", image: "images/projects/resort-04.webp" },
+  { id: "resort-05", hallId: "resort", number: "05", title: "חופת הבריכה", subtitle: "חופה לבנה מעוטרת פרחים על משטח מוגבה מעל הבריכה מול המדבר", label: "חופה מעל הבריכה", location: "מתחם הבריכה", year: "2026", image: "images/projects/resort-05.webp" },
+  { id: "resort-06", hallId: "resort", number: "06", title: "מתחם הטקס", subtitle: "מעבר שטיח לבן בין שורות כיסאות אל שער טקס מול הרי המדבר", label: "אזור טקס עם שער", location: "הריזורט", year: "2026", image: "images/projects/resort-06.webp" },
+  { id: "resort-07", hallId: "resort", number: "07", title: "חופת הפרחים", subtitle: "חופה עם גג ורדים לבנים ווילונות בד על במה מול נוף המדבר", label: "חופת ורדים לבנה", location: "המדבר", year: "2026", image: "images/projects/resort-07.webp" },
+  { id: "resort-08", hallId: "resort", number: "08", title: "מתחם האירוע", subtitle: "מבט על על שולחנות ערוכים ורחבת ריקודים לצד הבריכה בלילה", label: "אולם אירוח לצד בריכה", location: "הריזורט", year: "2026", image: "images/projects/resort-08.webp" },
+  { id: "resort-09", hallId: "resort", number: "09", title: "אזור הישיבה", subtitle: "שולחנות ערוכים וכיסאות עץ בין עמודים לבנים וקירות מחוררים", label: "שולחנות בין העמודים", location: "הריזורט", year: "2026", image: "images/projects/resort-09.webp" },
+  { id: "resort-10", hallId: "resort", number: "10", title: "שולחנות הסעודה", subtitle: "שולחנות אורחים ארוכים ערוכים בכלי כסף ופמוטי בדולח מוארים", label: "שולחנות ערוכים לאירוע", location: "הריזורט", year: "2026", image: "images/projects/resort-10.webp" },
+  { id: "resort-11", hallId: "resort", number: "11", title: "עיצוב הזכוכית והעץ", subtitle: "שולחן בעיצוב הזכוכית והעץ: כיסאות עץ מוצלבים, קנדלברות זכוכית וראנר סאטן", label: "שולחן בעיצוב הזכוכית והעץ", location: "הריזורט", year: "2026", image: "images/projects/resort-11.webp" },
+  { id: "resort-12", hallId: "resort", number: "12", title: "עיצוב הזכוכית והעץ — מזווית אחרת", subtitle: "עיצוב הזכוכית והעץ מזווית אחרת: שולחן עגול עם אגרטלי זכוכית וורדים לבנים על פשתן", label: "עיצוב הזכוכית והעץ — מזווית אחרת", location: "הריזורט", year: "2026", image: "images/projects/resort-12.webp" },
+  { id: "resort-13", hallId: "resort", number: "13", title: "עיצוב הזכוכית והעץ — מזווית אחרת", subtitle: "עיצוב הזכוכית והעץ מזווית אחרת: קנדלבר קריסטל, גבסנית ופמוטי עץ על שולחן עגול", label: "עיצוב הזכוכית והעץ — מזווית אחרת", location: "הריזורט", year: "2026", image: "images/projects/resort-13.webp" },
+  { id: "resort-14", hallId: "resort", number: "14", title: "עיצוב הזכוכית והעץ — מזווית אחרת", subtitle: "עיצוב הזכוכית והעץ מזווית אחרת: פרט של גלילי זכוכית ונרות בוטיק על מפת פשתן", label: "עיצוב הזכוכית והעץ — מזווית אחרת", location: "הריזורט", year: "2026", image: "images/projects/resort-14.webp" },
 ];
 
 export function getProjectsByHall(hallId: "events" | "resort"): ProjectWithColors[] {

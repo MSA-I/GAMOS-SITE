@@ -55,8 +55,6 @@ const TINT_VARS = [
   "--shabbat-tint-4",
   "--shabbat-tint-5",
   "--shabbat-tint-6",
-  "--shabbat-tint-7",
-  "--shabbat-tint-8",
 ];
 
 let _section = null;

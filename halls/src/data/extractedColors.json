@@ -1,282 +1,157 @@
 {
   "images/projects/events-01.webp": {
-    "background": "#695931",
-    "blob1": "#9c8661",
-    "blob2": "#705a13"
+    "background": "#605534",
+    "blob1": "#857659",
+    "blob2": "#4d5c14"
   },
   "images/projects/events-02.webp": {
-    "background": "#544c27",
-    "blob1": "#979562",
-    "blob2": "#7c4f10"
+    "background": "#5e4d32",
+    "blob1": "#977856",
+    "blob2": "#544414"
   },
   "images/projects/events-03.webp": {
-    "background": "#684f2f",
-    "blob1": "#8e6d48",
-    "blob2": "#694916"
+    "background": "#49502c",
+    "blob1": "#988470",
+    "blob2": "#605313"
   },
   "images/projects/events-04.webp": {
-    "background": "#2c284c",
-    "blob1": "#a97451",
-    "blob2": "#73491e"
+    "background": "#52422b",
+    "blob1": "#926d56",
+    "blob2": "#6b2c18"
   },
   "images/projects/events-05.webp": {
-    "background": "#4d4327",
-    "blob1": "#b0855b",
-    "blob2": "#6d4f0b"
+    "background": "#584c38",
+    "blob1": "#8a7258",
+    "blob2": "#6a3221"
   },
   "images/projects/events-06.webp": {
-    "background": "#685031",
-    "blob1": "#a47c52",
-    "blob2": "#744e17"
+    "background": "#5e483d",
+    "blob1": "#7e6756",
+    "blob2": "#644c14"
   },
   "images/projects/events-07.webp": {
-    "background": "#504139",
-    "blob1": "#907b6a",
-    "blob2": "#663d21"
+    "background": "#38485f",
+    "blob1": "#80644d",
+    "blob2": "#09185f"
   },
   "images/projects/events-08.webp": {
-    "background": "#3a4c32",
-    "blob1": "#9e7e64",
-    "blob2": "#833915"
+    "background": "#554838",
+    "blob1": "#a57f59",
+    "blob2": "#4f2c14"
   },
   "images/projects/events-09.webp": {
-    "background": "#413522",
-    "blob1": "#ac7c4e",
-    "blob2": "#6d4116"
+    "background": "#514335",
+    "blob1": "#848080",
+    "blob2": "#1d4585"
   },
   "images/projects/events-10.webp": {
-    "background": "#564d36",
-    "blob1": "#927966",
-    "blob2": "#6c3e14"
+    "background": "#48453d",
+    "blob1": "#8f8678",
+    "blob2": "#2d3508"
   },
   "images/projects/events-11.webp": {
-    "background": "#604e3e",
-    "blob1": "#a78469",
-    "blob2": "#673a20"
+    "background": "#3c542a",
+    "blob1": "#55799c",
+    "blob2": "#1e2a0b"
   },
   "images/projects/events-12.webp": {
-    "background": "#322b1b",
-    "blob1": "#a58657",
-    "blob2": "#6f5a2d"
+    "background": "#463828",
+    "blob1": "#a8865b",
+    "blob2": "#6e531e"
   },
   "images/projects/events-13.webp": {
-    "background": "#2b2115",
-    "blob1": "#967956",
-    "blob2": "#5f4424"
+    "background": "#4b3727",
+    "blob1": "#549c9c",
+    "blob2": "#704c18"
   },
   "images/projects/events-14.webp": {
-    "background": "#201c0f",
-    "blob1": "#947969",
-    "blob2": "#614d1f"
+    "background": "#624635",
+    "blob1": "#a7775b",
+    "blob2": "#61340f"
   },
   "images/projects/events-15.webp": {
-    "background": "#48392c",
-    "blob1": "#ac5c6c",
-    "blob2": "#857128"
+    "background": "#5f4b3b",
+    "blob1": "#937054",
+    "blob2": "#502409"
   },
   "images/projects/events-16.webp": {
-    "background": "#4a3c2f",
-    "blob1": "#9f7e5d",
-    "blob2": "#634824"
+    "background": "#674a33",
+    "blob1": "#aa835f",
+    "blob2": "#61341c"
   },
   "images/projects/events-17.webp": {
-    "background": "#4a4235",
-    "blob1": "#8b774f",
-    "blob2": "#635718"
-  },
-  "images/projects/events-18.webp": {
-    "background": "#5a4738",
-    "blob1": "#806048",
-    "blob2": "#a45404"
-  },
-  "images/projects/events-19.webp": {
-    "background": "#5f462b",
-    "blob1": "#947862",
-    "blob2": "#73500d"
-  },
-  "images/projects/events-20.webp": {
-    "background": "#433221",
-    "blob1": "#a4816e",
-    "blob2": "#6e3f14"
-  },
-  "images/projects/events-21.webp": {
-    "background": "#2b394d",
-    "blob1": "#54779f",
-    "blob2": "#294c73"
-  },
-  "images/projects/events-22.webp": {
-    "background": "#52382a",
-    "blob1": "#9b8569",
-    "blob2": "#4e341c"
-  },
-  "images/projects/events-23.webp": {
-    "background": "#3d2d20",
-    "blob1": "#647a99",
-    "blob2": "#613c15"
-  },
-  "images/projects/events-24.webp": {
-    "background": "#584d2e",
-    "blob1": "#ac8e77",
-    "blob2": "#714b16"
-  },
-  "images/projects/events-25.webp": {
-    "background": "#715942",
-    "blob1": "#a98b60",
-    "blob2": "#614f26"
-  },
-  "images/projects/events-26.webp": {
-    "background": "#444434",
-    "blob1": "#947358",
-    "blob2": "#543c1e"
-  },
-  "images/projects/events-27.webp": {
-    "background": "#454434",
-    "blob1": "#5c844d",
-    "blob2": "#5f4e24"
-  },
-  "images/projects/events-28.webp": {
-    "background": "#373a2a",
-    "blob1": "#8f8e83",
-    "blob2": "#614322"
-  },
-  "images/projects/events-29.webp": {
-    "background": "#2b3a57",
-    "blob1": "#547baa",
-    "blob2": "#335c91"
-  },
-  "images/projects/events-30.webp": {
-    "background": "#5f4637",
-    "blob1": "#a48d69",
-    "blob2": "#4e3904"
+    "background": "#4e4038",
+    "blob1": "#89837b",
+    "blob2": "#825c29"
   },
   "images/projects/resort-01.webp": {
-    "background": "#553b35",
-    "blob1": "#ab7857",
-    "blob2": "#663113"
+    "background": "#6d4f36",
+    "blob1": "#a48161",
+    "blob2": "#0f4674"
   },
   "images/projects/resort-02.webp": {
-    "background": "#613c34",
-    "blob1": "#4d7c9b",
-    "blob2": "#144f62"
-  },
-  "images/projects/resort-03.webp": {
     "background": "#44352d",
     "blob1": "#887a6b",
     "blob2": "#22444c"
   },
-  "images/projects/resort-04.webp": {
+  "images/projects/resort-03.webp": {
     "background": "#574336",
     "blob1": "#8b7e6b",
     "blob2": "#351d11"
   },
+  "images/projects/resort-04.webp": {
+    "background": "#374454",
+    "blob1": "#5c9ca4",
+    "blob2": "#84440f"
+  },
   "images/projects/resort-05.webp": {
-    "background": "#39565e",
-    "blob1": "#8c7b66",
-    "blob2": "#045162"
-  },
-  "images/projects/resort-06.webp": {
-    "background": "#4e3c2e",
-    "blob1": "#967c62",
-    "blob2": "#065f71"
-  },
-  "images/projects/resort-07.webp": {
-    "background": "#56402c",
-    "blob1": "#9d8959",
-    "blob2": "#5a642b"
-  },
-  "images/projects/resort-08.webp": {
-    "background": "#624930",
-    "blob1": "#95866c",
-    "blob2": "#4c3324"
-  },
-  "images/projects/resort-09.webp": {
-    "background": "#4b3427",
-    "blob1": "#907957",
-    "blob2": "#284366"
-  },
-  "images/projects/resort-10.webp": {
-    "background": "#51382b",
-    "blob1": "#887a70",
-    "blob2": "#5d472a"
-  },
-  "images/projects/resort-11.webp": {
-    "background": "#573b30",
-    "blob1": "#8d8171",
-    "blob2": "#4d3821"
-  },
-  "images/projects/resort-12.webp": {
-    "background": "#45402f",
-    "blob1": "#8e8370",
-    "blob2": "#273f5c"
-  },
-  "images/projects/resort-13.webp": {
-    "background": "#5d4736",
-    "blob1": "#a08165",
-    "blob2": "#4d3c21"
-  },
-  "images/projects/resort-14.webp": {
     "background": "#413421",
     "blob1": "#817a69",
     "blob2": "#39829a"
   },
-  "images/projects/resort-15.webp": {
-    "background": "#604a3b",
-    "blob1": "#8b7d77",
-    "blob2": "#553313"
+  "images/projects/resort-06.webp": {
+    "background": "#5d4736",
+    "blob1": "#a08165",
+    "blob2": "#4d3c21"
   },
-  "images/projects/resort-16.webp": {
-    "background": "#543f2c",
-    "blob1": "#958060",
-    "blob2": "#143c81"
-  },
-  "images/projects/resort-17.webp": {
-    "background": "#5d4a3b",
-    "blob1": "#967b6a",
-    "blob2": "#5d2610"
-  },
-  "images/projects/resort-18.webp": {
-    "background": "#544231",
-    "blob1": "#968068",
-    "blob2": "#3c2c14"
-  },
-  "images/projects/resort-19.webp": {
-    "background": "#534131",
-    "blob1": "#9c8e6f",
-    "blob2": "#829139"
-  },
-  "images/projects/resort-20.webp": {
-    "background": "#262417",
-    "blob1": "#a98366",
-    "blob2": "#703d26"
-  },
-  "images/projects/resort-21.webp": {
-    "background": "#454140",
-    "blob1": "#9a866c",
-    "blob2": "#243c6c"
-  },
-  "images/projects/resort-22.webp": {
-    "background": "#564132",
-    "blob1": "#547ca4",
-    "blob2": "#75470f"
-  },
-  "images/projects/resort-23.webp": {
-    "background": "#33445f",
-    "blob1": "#aa7d57",
-    "blob2": "#8b5e37"
-  },
-  "images/projects/resort-24.webp": {
+  "images/projects/resort-07.webp": {
     "background": "#444132",
     "blob1": "#9c8c54",
     "blob2": "#1a3e69"
   },
-  "images/projects/resort-25.webp": {
-    "background": "#4d4538",
-    "blob1": "#78808d",
-    "blob2": "#614122"
+  "images/projects/resort-08.webp": {
+    "background": "#59472e",
+    "blob1": "#897765",
+    "blob2": "#9c341c"
   },
-  "images/projects/resort-26.webp": {
-    "background": "#3a3d39",
-    "blob1": "#6c7494",
-    "blob2": "#764b0e"
+  "images/projects/resort-09.webp": {
+    "background": "#543f2c",
+    "blob1": "#958060",
+    "blob2": "#143c81"
+  },
+  "images/projects/resort-10.webp": {
+    "background": "#5d4a3b",
+    "blob1": "#967b6a",
+    "blob2": "#5d2610"
+  },
+  "images/projects/resort-11.webp": {
+    "background": "#604a3b",
+    "blob1": "#8b7d77",
+    "blob2": "#553313"
+  },
+  "images/projects/resort-12.webp": {
+    "background": "#5f3c2c",
+    "blob1": "#9c5454",
+    "blob2": "#62431c"
+  },
+  "images/projects/resort-13.webp": {
+    "background": "#4f3d2c",
+    "blob1": "#9c6c5d",
+    "blob2": "#67381b"
+  },
+  "images/projects/resort-14.webp": {
+    "background": "#645137",
+    "blob1": "#988873",
+    "blob2": "#5b4524"
   }
 }
