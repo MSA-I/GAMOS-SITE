@@ -1,8 +1,6 @@
 import { useEffect, useRef } from "react";
 import type * as THREE from "three";
-import Engine from "./Engine";
-import Drag from "./Drag";
-import Hover from "./Hover";
+import { PhantomWall } from "./PhantomWall";
 import { getRooms } from "../roomsData";
 import type { RoomCard } from "../roomsData";
 import type { WallApi } from "../App";
@@ -40,45 +38,41 @@ export default function RoomsWall({ onActiveChange, onSelect, onReady }: Props) 
   useEffect(() => {
     if (!canvasRef.current || !wrapperRef.current) return;
     const cards = getRooms();
+    const reducedMotion =
+      typeof matchMedia !== "undefined" &&
+      matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const engine = new Engine(canvasRef.current, { cards });
-
-    // Drag owns the pan offset (infinite). A tap → raycast the pooled meshes from
-    // the tap point → freeze the engine + open the detail page.
-    const drag = new Drag(wrapperRef.current, engine.getInitialMetrics(), {
-      onTap: (e) => {
-        const hit = engine.pickAt(e.clientX, e.clientY);
-        if (hit) {
-          engine.freeze(true);
-          onSelectRef.current?.(hit.card, hit.mesh);
-        }
+    const wall = new PhantomWall(
+      canvasRef.current,
+      cards,
+      {
+        onActiveChange: (card) => onActiveChangeRef.current?.(card),
+        // A tap → freeze the wall + open the detail page (FLIP measures the mesh).
+        // The wall tiles the catalogue, so resolve the card via the wall (the tap
+        // index is into the tiled placement, not the raw 25-card catalogue).
+        onCellClick: (index) => {
+          const mesh = wall.meshForIndex(index);
+          const card = wall.cardForIndex(index);
+          if (!mesh || !card) return;
+          wall.freeze(true);
+          onSelectRef.current?.(card, mesh);
+        },
       },
-    });
-    engine.setDrag(drag);
-
-    const hover = new Hover(
-      wrapperRef.current,
-      engine.wall,
-      drag,
-      engine.camera,
-      engine.quality,
+      reducedMotion,
     );
-    engine.setHover(hover);
 
-    engine.setActiveCallback((card) => onActiveChangeRef.current?.(card));
-
-    engine.init();
-    engine.start();
-    engine.forceResize();
+    // Open on the centre of the catalogue (row 2), like the old engine.
+    wall.setInitialOffset(0, 0);
+    wall.forceResize();
 
     // Expose the imperative API for the FLIP detail page.
     onReadyRef.current?.({
-      cardScreenRect: (mesh) => engine.cardScreenRect(mesh),
-      unfreeze: () => engine.freeze(false),
+      cardScreenRect: (mesh) => wall.cardScreenRect(mesh),
+      unfreeze: () => wall.freeze(false),
     });
 
     return () => {
-      engine.dispose();
+      wall.destroy();
     };
   }, []);
 

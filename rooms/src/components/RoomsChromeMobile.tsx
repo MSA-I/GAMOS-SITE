@@ -28,7 +28,10 @@ interface Props {
  * Classes are prefixed `.roomsm-` (isolated from the desktop `.rooms-*` set) and
  * styled in index.mobile.css; brand tokens + .texture-text--light are reused.
  */
-export default function RoomsChromeMobile({ activeCard }: Props) {
+// 2026-07-03 (user): the bottom active-card title is HIDDEN on mobile — with no
+// hover on touch it can't track the pointer, so it's dropped here. activeCard is
+// intentionally unused (the desktop RoomsChrome still shows it).
+export default function RoomsChromeMobile(_props: Props) {
   const reducedMotion = useReducedMotion();
 
   // First-load swipe hint — GUARANTEED visible: it shows on load with the pulse and
@@ -125,21 +128,8 @@ export default function RoomsChromeMobile({ activeCard }: Props) {
         <p className="roomsm-eyebrow__kicker">{t("חדרי אירוח")}</p>
       </motion.div>
 
-      {/* Active-card title — bottom BAR with scrim. aria-live announces the
-          centre-most room as the wall pans (§9). Index → title → type stacked. */}
-      <section
-        aria-live="polite"
-        aria-atomic="true"
-        className="roomsm-active"
-      >
-        {/* 2026-06-18: "NN / total" index removed per user (confusing numbers). */}
-        <h1 className="roomsm-active__title">
-          {t(activeCard?.category ?? "")}
-        </h1>
-        {activeCard?.titleHe ? (
-          <p className="roomsm-active__type">{t(activeCard.titleHe)}</p>
-        ) : null}
-      </section>
+      {/* Active-card title — HIDDEN on mobile (2026-07-03, user): no hover on touch,
+          so there's no pointer for it to track. Desktop keeps it in RoomsChrome. */}
 
       {/* First-load hint — LOW (just above the title bar), small; an animated
           invitation (drifting ‹ › arrows around the label) so it reads as "swipe
