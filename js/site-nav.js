@@ -47,6 +47,20 @@ const OVERLAY_CLASS      = "site-nav__mobile";
 const TOGGLE_OPEN_CLASS  = "is-open";
 const HTML_LOCK_CLASS    = "nav-open";
 
+// Per-language nav a11y labels. These are set on elements the i18n DOM walk
+// either can't reach (built after its pass) or overwrites dynamically (open/close),
+// so they can't be plain data-i18n keys — we localise them here and refresh on
+// gamos:langchange, the same signal hero-scene.js / directions-map.js listen to.
+const LABELS = {
+  he: { open: "פתח תפריט", close: "סגור תפריט", dialog: "תפריט ראשי" },
+  en: { open: "Open menu", close: "Close menu", dialog: "Main menu" },
+  fr: { open: "Ouvrir le menu", close: "Fermer le menu", dialog: "Menu principal" },
+};
+function label(key) {
+  const lang = document.documentElement.lang || "he";
+  return (LABELS[lang] || LABELS.he)[key];
+}
+
 // ----------------------------------------------------------------------------
 // Module-scoped state
 // ----------------------------------------------------------------------------
@@ -55,14 +69,16 @@ const state = {
   initialised:   false,
   toggle:        null,
   overlay:       null,
+  closeBtn:      null,   // dedicated close (X) button inside the overlay.
   desktopLinks:  null,   // original <ul> in header.
-  overlayLinks:  [],     // <a> elements inside overlay (focus-trap targets).
+  overlayLinks:  [],     // <a> elements inside overlay (click-to-close targets).
   isOpen:        false,
   bound: {
     onToggleClick:    null,
     onOverlayClick:   null,
     onKeyDown:        null,
     onLinkClick:      null,
+    onLangChange:     null,
   },
 };
 
@@ -84,7 +100,7 @@ function buildOverlay(originalLinks) {
   // visible at a time per breakpoint, so duplicate landmark warning is rare.
   wrap.setAttribute("role", "dialog");
   wrap.setAttribute("aria-modal", "true");
-  wrap.setAttribute("aria-label", "תפריט ראשי");
+  wrap.setAttribute("aria-label", label("dialog"));
 
   // Dedicated close (X) button. The hamburger toggle animates into an X but it
   // lives inside .site-nav (z-index:--z-sticky → its own stacking context), so
@@ -94,8 +110,7 @@ function buildOverlay(originalLinks) {
   const closeBtn = document.createElement("button");
   closeBtn.type = "button";
   closeBtn.className = `${OVERLAY_CLASS}__close`;
-  const closeLabels = { he: "סגור תפריט", en: "Close menu", fr: "Fermer le menu" };
-  closeBtn.setAttribute("aria-label", closeLabels[document.documentElement.lang] || closeLabels.he);
+  closeBtn.setAttribute("aria-label", label("close"));
   closeBtn.innerHTML =
     '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" ' +
     'stroke-width="1.6" stroke-linecap="round" aria-hidden="true">' +
@@ -142,7 +157,7 @@ function open() {
   state.overlay.classList.add(TOGGLE_OPEN_CLASS);
   state.toggle.classList.add(TOGGLE_OPEN_CLASS);
   state.toggle.setAttribute("aria-expanded", "true");
-  state.toggle.setAttribute("aria-label", "סגור תפריט");
+  state.toggle.setAttribute("aria-label", label("close"));
   document.documentElement.classList.add(HTML_LOCK_CLASS);
 
   // Refresh focus-trap targets (in case the link list was mutated).
@@ -166,7 +181,7 @@ function close({ returnFocus = true } = {}) {
   state.overlay.classList.remove(TOGGLE_OPEN_CLASS);
   state.toggle.classList.remove(TOGGLE_OPEN_CLASS);
   state.toggle.setAttribute("aria-expanded", "false");
-  state.toggle.setAttribute("aria-label", "פתח תפריט");
+  state.toggle.setAttribute("aria-label", label("open"));
   document.documentElement.classList.remove(HTML_LOCK_CLASS);
 
   if (returnFocus) {
@@ -237,8 +252,9 @@ function onKeyDown(event) {
 
   if (event.key !== "Tab") return;
 
-  // Build current focus loop: [toggle, ...overlayLinks].
-  const trap = [state.toggle, ...state.overlayLinks];
+  // Build current focus loop: [toggle, closeBtn, ...overlayLinks]. The close (X)
+  // button is a real focus target — omitting it let Tab escape the overlay.
+  const trap = [state.toggle, state.closeBtn, ...state.overlayLinks].filter(Boolean);
   if (trap.length <= 1) return;
 
   const active = document.activeElement;
@@ -261,6 +277,17 @@ function onKeyDown(event) {
       state.toggle.focus();
     }
   }
+}
+
+/**
+ * i18n.js dispatches gamos:langchange on every language switch. Refresh the a11y
+ * labels the DOM walk can't reach: the overlay/close button are built after i18n's
+ * one-time pass, and the hamburger label is overwritten dynamically by open/close.
+ */
+function onLangChange() {
+  if (state.overlay) state.overlay.setAttribute("aria-label", label("dialog"));
+  if (state.closeBtn) state.closeBtn.setAttribute("aria-label", label("close"));
+  if (state.toggle) state.toggle.setAttribute("aria-label", label(state.isOpen ? "close" : "open"));
 }
 
 // ----------------------------------------------------------------------------
@@ -371,12 +398,14 @@ export function init() {
   // Ensure aria-controls points at our overlay.
   state.toggle.setAttribute("aria-controls", OVERLAY_ID);
   state.toggle.setAttribute("aria-expanded", "false");
+  state.closeBtn = state.overlay.querySelector(`.${OVERLAY_CLASS}__close`);
 
   // 3. Wire listeners.
   state.bound.onToggleClick  = onToggleClick;
   state.bound.onOverlayClick = onOverlayClick;
   state.bound.onKeyDown      = onKeyDown;
   state.bound.onLinkClick    = onLinkClick;
+  state.bound.onLangChange   = onLangChange;
 
   state.toggle.addEventListener("click", state.bound.onToggleClick);
   state.overlay.addEventListener("click", state.bound.onOverlayClick);
@@ -387,6 +416,8 @@ export function init() {
   });
 
   document.addEventListener("keydown", state.bound.onKeyDown);
+  document.addEventListener("gamos:langchange", state.bound.onLangChange);
+  onLangChange(); // sync labels to the boot language (i18n may have set en/fr)
 
   state.initialised = true;
 }
@@ -412,6 +443,9 @@ export function destroy() {
   if (state.bound.onKeyDown) {
     document.removeEventListener("keydown", state.bound.onKeyDown);
   }
+  if (state.bound.onLangChange) {
+    document.removeEventListener("gamos:langchange", state.bound.onLangChange);
+  }
 
   // 3. Remove the overlay element we injected.
   if (state.overlay && state.overlay.parentNode) {
@@ -422,6 +456,7 @@ export function destroy() {
   state.initialised  = false;
   state.toggle       = null;
   state.overlay      = null;
+  state.closeBtn     = null;
   state.desktopLinks = null;
   state.overlayLinks = [];
   state.isOpen       = false;
@@ -429,4 +464,5 @@ export function destroy() {
   state.bound.onOverlayClick = null;
   state.bound.onKeyDown      = null;
   state.bound.onLinkClick    = null;
+  state.bound.onLangChange   = null;
 }

@@ -21,8 +21,17 @@ function detect(): Lang {
     if (tz === "Asia/Jerusalem" || tz === "Asia/Tel_Aviv") return "he";
   } catch { /* ignore */ }
   try {
-    const langs = (navigator.languages || [navigator.language || ""]).join(",").toLowerCase();
-    if (/(^|,)(he|iw)\b/.test(langs)) return "he";
+    const list = (navigator.languages && navigator.languages.length
+      ? navigator.languages
+      : [navigator.language || ""]).map((s) => String(s).toLowerCase());
+    const is = (l: string, code: string) => l === code || l.startsWith(code + "-");
+    // SAME order as js/i18n.js: Hebrew anywhere → he; then en/fr by preference
+    // order (so an auto-detected French visitor gets French chrome, not English).
+    if (list.some((l) => is(l, "he") || is(l, "iw"))) return "he";
+    for (const l of list) {
+      if (is(l, "en")) return "en";
+      if (is(l, "fr")) return "fr";
+    }
   } catch { /* ignore */ }
   return "en";
 }

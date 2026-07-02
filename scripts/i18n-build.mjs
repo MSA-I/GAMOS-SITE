@@ -270,6 +270,23 @@ const PAIRS = [
   ["מפת הגעה לגאמוס, די זהב 7, פארק ישראל", "Directions map to Gamos, 7 Dei Zahav St., Park Israel", "Plan d'accès à GAMOS, 7 rue Dei Zahav, Park Israel"],
 ];
 
+// Validate FIRST: a row missing its French (or English) cell would otherwise
+// write `undefined` into fr.json (JSON.stringify drops it), silently shipping the
+// Hebrew source for that key. Every row must be [he, en, fr], all non-empty.
+const malformed = [];
+PAIRS.forEach((row, i) => {
+  const ok = Array.isArray(row) && row.length === 3 &&
+    row.every((cell) => typeof cell === "string" && cell.trim() !== "");
+  if (!ok) malformed.push(`  PAIRS[${i}]: ${JSON.stringify(row)}`);
+});
+if (malformed.length) {
+  console.error(
+    `i18n-build: ${malformed.length} malformed row(s) — each must be ` +
+    `[he, en, fr] with three non-empty strings:\n${malformed.join("\n")}`
+  );
+  process.exit(1);
+}
+
 const en = {};
 const fr = {};
 let dupes = 0;

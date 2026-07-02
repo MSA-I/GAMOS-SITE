@@ -318,7 +318,7 @@
 }
 .site-nav__mobile__close:hover,
 .site-nav__mobile__close:focus-visible { color: var(--brass-deep); }
-.site-nav__mobile__close:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
+.site-nav__mobile__close:focus-visible { outline: 3px solid var(--brass); outline-offset: 3px; }
 .site-nav__mobile__close:active { transform: scale(0.94); }
 
 .site-nav__mobile__inner {

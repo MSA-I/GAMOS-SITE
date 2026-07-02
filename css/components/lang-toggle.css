@@ -118,7 +118,7 @@ html:not([lang="he"]) .hero_title h1 {
 html:not([lang="he"]) .hero_title h1,
 html:not([lang="he"]) .hero_title h1 .hero_word,
 html:not([lang="he"]) .hero_eyebrow {
-  font-family: "Canela", "Playfair Display", serif;
+  font-family: var(--font-display-en);
 }
 
 /* #about stats: Latin-script labels (English/French) wrap to different

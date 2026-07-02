@@ -33,19 +33,18 @@ import { prefersReducedMotion } from "./utils/media-query.js";
 
 const NAV_DELAY_MS = 1400;  // Hold the loading overlay long enough for the brass bar (1200ms) to fill before navigating.
 const LOGO_SVG_URL = "/assets/images/hero-scene/logo.svg";
-// Localised hero wordmarks. Each has its own viewBox aspect ratio (EN 205.14×83.3,
-// FR 202.58×86.79, HE 205.7×82.46), so the composite mask is now fitted to the
-// parsed viewBox at runtime (applyLogo/resizeComposite) rather than a hardcoded
-// CSS mask-size — any logo letterboxes cleanly into the .hero_logo box. See i18n.js.
-const LOGO_SVG_URL_EN = "/assets/images/hero-scene/logo-en.svg";
-const LOGO_SVG_URL_FR = "/assets/images/hero-scene/logo-fr.svg";
-const logoUrlForLang = () => {
-  switch (document.documentElement.lang) {
-    case "en": return LOGO_SVG_URL_EN;
-    case "fr": return LOGO_SVG_URL_FR;
-    default:   return LOGO_SVG_URL; // Hebrew (and any other) → logo.svg
-  }
+// Localised hero wordmarks, keyed by <html lang>. Each has its own viewBox aspect
+// ratio (EN 205.14×83.3, FR 202.58×86.79, HE 205.7×82.46), so the composite mask
+// is fitted to the parsed viewBox at runtime (applyLogo/applyCompositeMaskSize)
+// rather than a hardcoded CSS mask-size — any logo letterboxes cleanly into the
+// .hero_logo box. Add a language = add a `<code>: url` entry + drop its
+// logo-<code>.svg in assets/images/hero-scene/. See i18n.js DICT_URLS.
+const LOGO_URLS = {
+  he: LOGO_SVG_URL,
+  en: "/assets/images/hero-scene/logo-en.svg",
+  fr: "/assets/images/hero-scene/logo-fr.svg",
 };
+const logoUrlForLang = () => LOGO_URLS[document.documentElement.lang] || LOGO_SVG_URL;
 const RETURN_FLAG = "gamos-return-hall"; // set on entry → scroll back to #hall-portal
 
 const state = {
@@ -65,9 +64,13 @@ const state = {
   scrubTL: null,        // scrub timeline — rebuilt on language change (new logo paths)
   scrubST: null,        // its ScrollTrigger
   langHandler: null,    // gamos:langchange listener
-  currentLogoUrl: null, // last logo SVG fetched — skip redundant reloads
+  currentLogoUrl: null, // last logo SVG applied — skip redundant reloads
+  logoCache: new Map(), // url -> svgText memo — repeat toggles skip the network
+  logoGen: 0,           // bumped per reloadLogoForLang(); a stale fetch that resolves
+                        // after a newer toggle bails (last-resolving-wins race guard)
   logoViewBox: null,    // last parsed logo viewBox — used to re-fit the composite mask on resize
-  compResizeHandler: null, // debounced window resize/orientation → resizeComposite()
+  compResizeHandler: null, // debounced window resize/orientation → applyCompositeMaskSize()
+  compResizeTimer: 0,   // its pending setTimeout handle (cleared in destroy)
 };
 
 const q = (sel) => document.querySelector(sel);
@@ -292,19 +295,26 @@ function reloadLogoForLang() {
   if (!state.hero) return;
   const url = logoUrlForLang();
   if (url === state.currentLogoUrl) return; // already showing this logo
+  const gen = ++state.logoGen;
+  const apply = (txt) => {
+    // Drop a stale response: a newer toggle bumped logoGen, so applying this one
+    // would paint the wrong-language wordmark (last-resolving-fetch-wins bug).
+    if (gen !== state.logoGen) return;
+    state.currentLogoUrl = url;
+    applyLogo(txt);
+    if (prefersReducedMotion()) return; // static composite already updated
+    if (state.scrubST) { try { state.scrubST.kill(); } catch { /* ignore */ } state.scrubST = null; }
+    if (state.scrubTL) { try { state.scrubTL.kill(); } catch { /* ignore */ } state.scrubTL = null; }
+    buildScrub();
+    const ST = window.ScrollTrigger;
+    if (ST && typeof ST.refresh === "function") { try { ST.refresh(); } catch { /* ignore */ } }
+  };
+  const cached = state.logoCache.get(url);
+  if (cached != null) { apply(cached); return; } // repeat toggle — no network
   fetch(url)
-    .then((res) => res.text())
-    .then((txt) => {
-      state.currentLogoUrl = url;
-      applyLogo(txt);
-      if (prefersReducedMotion()) return; // static composite already updated
-      if (state.scrubST) { try { state.scrubST.kill(); } catch { /* ignore */ } state.scrubST = null; }
-      if (state.scrubTL) { try { state.scrubTL.kill(); } catch { /* ignore */ } state.scrubTL = null; }
-      buildScrub();
-      const ST = window.ScrollTrigger;
-      if (ST && typeof ST.refresh === "function") { try { ST.refresh(); } catch { /* ignore */ } }
-    })
-    .catch(() => { /* keep whatever logo is showing */ });
+    .then((res) => { if (!res.ok) throw new Error(`logo ${res.status}`); return res.text(); })
+    .then((txt) => { state.logoCache.set(url, txt); apply(txt); })
+    .catch(() => { /* fetch/404 failed — keep whatever logo is showing */ });
 }
 
 /* ------------------------------------------------------- GSAP timelines ----- */
@@ -465,9 +475,18 @@ export function init() {
   const initialLogoUrl = logoUrlForLang();
   state.currentLogoUrl = initialLogoUrl;
   fetch(initialLogoUrl)
-    .then((res) => res.text())
-    .then((txt) => { applyLogo(txt); buildTimelines(); })
+    .then((res) => { if (!res.ok) throw new Error(`logo ${res.status}`); return res.text(); })
+    .then((txt) => { state.logoCache.set(initialLogoUrl, txt); applyLogo(txt); buildTimelines(); })
     .catch(() => { hero.style.visibility = "visible"; buildTimelines(); });
+
+  // Safety net for applyCompositeMaskSize()'s 0-measure early-return: if the
+  // logo fetch resolved before .hero_logo had layout, mask-size stays unset
+  // (letters would stretch full-bleed). resize/orientation cover most cases, but
+  // a stationary phone may fire neither — so recompute once on window load too.
+  if (document.readyState !== "complete") {
+    window.addEventListener("load",
+      () => requestAnimationFrame(applyCompositeMaskSize), { once: true });
+  }
 
   state.scrollHandler = onScroll;
   window.addEventListener("scroll", state.scrollHandler, { passive: true });
@@ -476,10 +495,9 @@ export function init() {
   // Re-fit the composite mask when the .hero_logo box changes size (breakpoint
   // crossing, orientationchange, async mobile CSS <link> settling). Debounced so a
   // resize drag doesn't thrash. Uses the LAST parsed viewBox (state.logoViewBox).
-  let compResizeTimer = 0;
   state.compResizeHandler = () => {
-    clearTimeout(compResizeTimer);
-    compResizeTimer = window.setTimeout(() => requestAnimationFrame(applyCompositeMaskSize), 120);
+    clearTimeout(state.compResizeTimer);
+    state.compResizeTimer = window.setTimeout(() => requestAnimationFrame(applyCompositeMaskSize), 120);
   };
   window.addEventListener("resize", state.compResizeHandler, { passive: true });
   window.addEventListener("orientationchange", state.compResizeHandler, { passive: true });
@@ -508,6 +526,9 @@ export function destroy() {
     window.removeEventListener("orientationchange", state.compResizeHandler);
     state.compResizeHandler = null;
   }
+  // Cancel any pending debounce so it can't fire applyCompositeMaskSize() after
+  // teardown (the timer outlives the removed listeners).
+  if (state.compResizeTimer) { clearTimeout(state.compResizeTimer); state.compResizeTimer = 0; }
   if (state.langHandler) {
     document.removeEventListener("gamos:langchange", state.langHandler);
     state.langHandler = null;

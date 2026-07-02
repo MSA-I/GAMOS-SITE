@@ -1,24 +1,32 @@
 /**
- * i18n.js — Hebrew ⇄ English language switch + auto geo-detection
+ * i18n.js — N-language switch (Hebrew default + dictionaries) + auto geo-detection
  *
  * Constitution §2 (vanilla ESM, no framework), §4 (RTL logical properties —
- * flipping dir="ltr" for English "just works" because every layout rule is
- * logical), §10.3 (module-scoped init()/destroy(), no globals beyond the one
+ * flipping dir="ltr" for a Latin language "just works" because every layout rule
+ * is logical), §10.3 (module-scoped init()/destroy(), no globals beyond the one
  * documented window hook).
  *
- * Strategy (LOCKED 2026-07-01)
- * ---------------------------
+ * Strategy (LOCKED 2026-07-01, generalised to N languages 2026-07-02)
+ * ------------------------------------------------------------------
  * Hebrew is the DOM default — it stays inline in index.html and needs no JSON.
- * English lives in a single dictionary `assets/i18n/en.json` shaped
- * { "<canonical hebrew>": "<english>" }. On switch-to-EN we walk every visible
- * text node + translatable attribute, look up its canonical Hebrew, and swap in
- * the English (caching the original so switch-back-to-HE is lossless). Setting
- * html.dir="ltr"/lang="en" mirrors the whole layout via logical properties.
+ * Every OTHER language is a dictionary under `assets/i18n/<code>.json` shaped
+ * { "<canonical hebrew>": "<translated>" }, registered in DICT_URLS below (add a
+ * language = add a { code: url } entry + its JSON). On switch-to-foreign we walk
+ * every visible text node + translatable attribute, look up its canonical Hebrew,
+ * and swap in the translation (caching the original so switch-back-to-HE is
+ * lossless). Setting html.dir="ltr"/lang=<code> mirrors the layout via logical
+ * properties. A foreign→foreign switch restores Hebrew first (keys are Hebrew).
+ *
+ * Toggle safety (2026-07-02): the target dict is fetched BEFORE any DOM mutation,
+ * so a failed fetch leaves the current language untouched (no downgrade, no
+ * localStorage clobber); a generation token drops a stale fetch that resolves
+ * after a newer toggle so the slower dict can't stomp the newer language.
  *
  * Locale resolution order:
  *   1. localStorage 'gamos-lang' — an explicit user choice, sticky forever.
  *   2. Geo heuristic (client-side, no backend): Israel timezone OR Hebrew
- *      browser language → 'he'; otherwise → 'en' (international default).
+ *      browser language → 'he'; otherwise the browser's preferred Latin language
+ *      in order (fr before en only if listed first) → 'fr'/'en' (default 'en').
  *   Detection is re-evaluated every visit until the user makes an explicit
  *   choice (so travellers aren't locked in, but a deliberate toggle wins).
  *
@@ -52,6 +60,10 @@ const RICH_SELECTORS = [".hero_title h1"];
 const state = {
   initialised: false,
   lang: "he",
+  requested: "he",     // latest REQUESTED language (may differ from applied `lang`
+                       // while a dict fetch is in flight) — guards double-clicks.
+  applyGen: 0,         // bumped per applyLang() call; a stale async continuation
+                       // whose gen != applyGen bails (rapid-toggle race guard).
   dicts: {},           // { [lang]: { canonicalHe: translated } } — per-lang cache
   origText: new Map(), // textNode -> original nodeValue (Hebrew)
   rich: [],            // [{ el, pristineHTML }]
@@ -85,9 +97,18 @@ function detectLang() {
     if (tz === "Asia/Jerusalem" || tz === "Asia/Tel_Aviv") return "he";
   } catch { /* ignore */ }
   try {
-    const langs = (navigator.languages || [navigator.language || ""]).join(",").toLowerCase();
-    if (/(^|,)(he|iw)\b/.test(langs)) return "he";
-    if (/(^|,)fr\b/.test(langs)) return "fr"; // French browsers → French
+    const list = (navigator.languages && navigator.languages.length
+      ? navigator.languages
+      : [navigator.language || ""]).map((s) => String(s).toLowerCase());
+    const is = (l, code) => l === code || l.startsWith(code + "-");
+    // Israeli geo-heuristic (pre-existing): Hebrew ANYWHERE in the list → Hebrew.
+    if (list.some((l) => is(l, "he") || is(l, "iw"))) return "he";
+    // en vs fr: honour the browser's preference ORDER — whichever appears first
+    // wins, so an en-first user who merely lists fr lower still gets English.
+    for (const l of list) {
+      if (is(l, "en")) return "en";
+      if (is(l, "fr")) return "fr";
+    }
   } catch { /* ignore */ }
   return "en"; // international default
 }
@@ -213,26 +234,35 @@ function updateToggles(lang) {
 
 async function applyLang(lang, { persist = false } = {}) {
   if (!LANGS.includes(lang)) lang = "he";
+  state.requested = lang;
+  const gen = ++state.applyGen;
+
+  // Fetch the target dict BEFORE touching the DOM. If it fails we leave the
+  // current language fully intact (no downgrade-to-Hebrew, no localStorage
+  // clobber of the user's saved choice). The cached path resolves instantly.
+  let dict = null;
+  if (lang !== "he") {
+    try { dict = await loadDict(lang); }
+    catch (e) { console.error(`[i18n] dict "${lang}" load failed, staying "${state.lang}":`, e); return; }
+    // A newer toggle started while we awaited → drop this stale continuation so
+    // the slower fetch can't stomp the newer language (rapid-toggle race).
+    if (gen !== state.applyGen) return;
+  }
+
   const html = document.documentElement;
   html.lang = lang;
   html.setAttribute("dir", lang === "he" ? "rtl" : "ltr");
-
-  if (lang !== "he") {
-    // Restore Hebrew FIRST so a foreign→foreign switch (e.g. en→fr) looks up the
-    // right keys: origText/attrs are keyed by the Hebrew source, and the new dict
-    // is keyed by canonical Hebrew — the DOM must hold Hebrew before we translate.
-    restoreHe();
-    try { translate(lang, await loadDict(lang)); }
-    catch (e) { console.error(`[i18n] dict "${lang}" load failed, staying Hebrew:`, e); html.lang = "he"; html.setAttribute("dir", "rtl"); lang = "he"; }
-  } else {
-    restoreHe();
-  }
+  // Restore Hebrew FIRST so a foreign→foreign switch (e.g. en→fr) looks up the
+  // right keys: origText/attrs are keyed by the Hebrew source, and the new dict
+  // is keyed by canonical Hebrew — the DOM must hold Hebrew before we translate.
+  restoreHe();
+  if (dict) translate(lang, dict);
 
   state.lang = lang;
   updateToggles(lang);
   if (persist) { try { localStorage.setItem(STORAGE_KEY, lang); } catch { /* ignore */ } }
-  // Broadcast so other modules can react (hero-scene swaps the EN/HE hero logo).
-  // The only cross-module language signal besides <html lang>/dir.
+  // Broadcast so other modules can react (hero-scene swaps the per-language hero
+  // logo). The only cross-module language signal besides <html lang>/dir.
   try { document.dispatchEvent(new CustomEvent("gamos:langchange", { detail: { lang } })); }
   catch { /* ignore */ }
 }
@@ -270,7 +300,10 @@ function onToggleClick(event) {
   event.preventDefault();
   const lang = opt.getAttribute("data-lang-set");
   if (!LANGS.includes(lang)) return;
-  if (lang === state.lang) return;
+  // Guard against the REQUESTED language, not the applied one: while a dict
+  // fetch is in flight state.lang still holds the old language, so guarding on
+  // it would swallow a follow-up click to a third language.
+  if (lang === state.requested) return;
   applyLang(lang, { persist: true });
 }
 
