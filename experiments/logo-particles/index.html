@@ -20,8 +20,9 @@
   <canvas id="c"></canvas>
   <p class="hint">לחצו בכל מקום כדי לפוצץ · הלוגו מתאסף מחדש אוטומטית</p>
 
-  <!-- הלוגו של האותיות מההירו (assets/images/hero-scene/logo.svg), מוטמע כדי שהקובץ יעבוד עצמאית -->
-  <script type="image/svg+xml" id="logoSrc"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 205.7 82.46">
+  <!-- הלוגו של האותיות מההירו (assets/images/hero-scene/logo.svg), מוטמע כדי שהקובץ יעבוד עצמאית.
+       viewBox גובהו 44 (לא 82.46) → רק שורת ה-GAMOS מרוסטרת; שורת "אירועים" (y 62-82) נחתכת מחוץ ל-viewport ולא נדגמת. -->
+  <script type="image/svg+xml" id="logoSrc"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 205.7 44">
   <g>
     <path d="M52.99,82.34c-.36,0-.64-.1-.83-.3-.19-.2-.29-.47-.29-.82v-17.31c0-.36.08-.64.24-.84.16-.2.41-.31.73-.34,1.93-.17,4.15-.26,6.64-.26,1.73,0,3.18.16,4.34.48,1.16.32,2.09.81,2.8,1.47.7.66,1.22,1.53,1.54,2.61.32,1.08.49,2.48.49,4.2v9.99c0,.35-.1.62-.3.82s-.47.3-.82.3h-14.54ZM65.49,71.47c0-1.87-.17-3.23-.52-4.07s-.95-1.44-1.81-1.79c-.85-.35-2.1-.52-3.73-.52s-3.07.04-4.4.11v14.5h10.46v-8.23Z"/>
     <path d="M77.07,73.72c0,.21-.12.36-.36.45-.24.09-.65.13-1.23.13s-.98-.04-1.22-.13c-.24-.09-.36-.24-.36-.45v-10.66c0-.21.12-.36.36-.45.24-.09.64-.13,1.22-.13s.98.04,1.23.13c.24.09.36.24.36.45v10.66Z"/>
@@ -48,7 +49,7 @@
 // the hero SVG instead of a banned .glb model.
 //   form (assemble) → idle (sway) → explode (fly out + fade) → loop.
 // ────────────────────────────────────────────────────────────────────────────
-const BRASS = "#CFAE83", INK = "#1A1410";
+const DOT = "#ffffff", INK = "#1A1410";
 const canvas = document.getElementById("c");
 const ctx = canvas.getContext("2d");
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -136,7 +137,7 @@ function buildParticles(img) {
 
 function drawStatic() {
   ctx.fillStyle = INK; ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = BRASS;
+  ctx.fillStyle = DOT;
   for (const p of particles) ctx.fillRect(homeX(p) - 1, homeY(p) - 1, 2.2, 2.2);
 }
 
@@ -168,7 +169,7 @@ function tick(now) {
   }
 
   ctx.fillStyle = INK; ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = BRASS;
+  ctx.fillStyle = DOT;
 
   if (phase === "form") {
     const e = easeOut(t / FORM);
