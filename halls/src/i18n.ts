@@ -15,12 +15,12 @@
  */
 
 const STORAGE_KEY = "gamos-lang";
-export type Lang = "he" | "en";
+export type Lang = "he" | "en" | "fr";
 
 function detect(): Lang {
   try {
     const s = localStorage.getItem(STORAGE_KEY);
-    if (s === "he" || s === "en") return s;
+    if (s === "he" || s === "en" || s === "fr") return s;
   } catch { /* ignore */ }
   try {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
@@ -56,28 +56,28 @@ const EN: Record<string, string> = {
   "חזרה לאתר": "Back to site",
   "לאתר": "Site",
   "מעבר אולם": "Switch hall",
-  "גללו לצפייה בתמונות": "Scroll to view the images",
+  "גללו לצפייה בתמונות": "Scroll to explore the gallery",
   "עבור ל": "Go to ",
 
   // ── Locations ──
   "גן האירועים": "The Events Garden",
   "המתחם": "The Estate",
   "המדבר": "The Desert",
-  "מתחם הבריכה": "The Pool Area",
+  "מתחם הבריכה": "The Poolside",
   "הריזורט": "The Resort",
 
   // ── Events hall — image titles (17) ──
-  "שדרת הקשתות": "The Arches Avenue",
+  "שדרת הקשתות": "The Avenue of Arches",
   "מנהרת הזהב": "The Golden Tunnel",
-  "פינת הישיבה": "The Seating Corner",
+  "פינת הישיבה": "The Lounge Corner",
   "גינת הישיבה": "The Garden Lounge",
   "מושבי הלאונג'": "The Lounge Seating",
   "פינת GAMOS": "The GAMOS Corner",
   "בר המשקאות": "The Bar",
-  "אזור הבר": "The Bar Area",
+  "אזור הבר": "The Bar Lounge",
   "רחבת הבר": "The Bar Deck",
-  "פינת ישיבה בגן": "Garden Seating Corner",
-  "חופה בגן": "Garden Chuppah",
+  "פינת ישיבה בגן": "The Garden Nook",
+  "חופה בגן": "The Garden Chuppah",
   "עיצוב הקריסטל הכחול": "The Blue Crystal Setting",
   "עיצוב הנרות הצפים": "The Floating Candles Setting",
   "עיצוב מינימלי עם ניאון": "Minimalist Neon Setting",
@@ -100,8 +100,67 @@ const EN: Record<string, string> = {
   "עיצוב הזכוכית והעץ — מזווית אחרת": "The Glass & Wood Setting — Another Angle",
 };
 
+const FR: Record<string, string> = {
+  // ── Hall labels + field keys ──
+  "אולם": "Salle",
+  "ריזורט": "Resort",
+  "מיקום": "Emplacement",
+  "שנה": "Année",
+
+  // ── Chrome UI ──
+  "דלג לגלריה": "Aller à la galerie",
+  "חזרה לבחירת אולם באתר Gamos": "Retour au choix de la salle sur le site GAMOS",
+  "חזרה לאתר": "Retour au site",
+  "לאתר": "Site",
+  "מעבר אולם": "Changer de salle",
+  "גללו לצפייה בתמונות": "Faites défiler pour explorer la galerie",
+  "עבור ל": "Aller à ",
+
+  // ── Locations ──
+  "גן האירועים": "Le Jardin des Événements",
+  "המתחם": "Le Domaine",
+  "המדבר": "Le Désert",
+  "מתחם הבריכה": "L'Espace Piscine",
+  "הריזורט": "Le Resort",
+
+  // ── Events hall — image titles (17) ──
+  "שדרת הקשתות": "L'Allée des Arches",
+  "מנהרת הזהב": "Le Tunnel Doré",
+  "פינת הישיבה": "Le Coin Salon",
+  "גינת הישיבה": "Le Salon du Jardin",
+  "מושבי הלאונג'": "Les Assises du Lounge",
+  "פינת GAMOS": "Le Coin GAMOS",
+  "בר המשקאות": "Le Bar",
+  "אזור הבר": "L'Espace Bar",
+  "רחבת הבר": "La Terrasse du Bar",
+  "פינת ישיבה בגן": "Le Coin Salon du Jardin",
+  "חופה בגן": "La Houppa au Jardin",
+  "עיצוב הקריסטל הכחול": "La Décoration en Cristal Bleu",
+  "עיצוב הנרות הצפים": "La Décoration aux Bougies Flottantes",
+  "עיצוב מינימלי עם ניאון": "Décoration Minimaliste au Néon",
+  "עיצוב נברשת הקריסטל": "La Décoration au Lustre de Cristal",
+  "עיצוב הנברשות והאגרטלים": "Décoration Lustres et Vases",
+  "עיצוב בלאש וסאטן": "Décoration Blush et Satin",
+
+  // ── Resort hall — image titles (12 unique; resort-12/13/14 share one) ──
+  "הנוף מול החופה": "La Vue Face à la Houppa",
+  "בריכת האינסוף": "La Piscine à Débordement",
+  "מרפסת הבריכה": "La Terrasse de la Piscine",
+  "מיטות במים": "Les Lits dans l'Eau",
+  "חופת הבריכה": "La Houppa au Bord de la Piscine",
+  "מתחם הטקס": "Le Site de la Cérémonie",
+  "חופת הפרחים": "La Houppa Fleurie",
+  "מתחם האירוע": "Le Site de l'Événement",
+  "אזור הישיבה": "L'Espace Salon",
+  "שולחנות הסעודה": "Les Tables du Dîner",
+  "עיצוב הזכוכית והעץ": "La Décoration Verre et Bois",
+  "עיצוב הזכוכית והעץ — מזווית אחרת": "La Décoration Verre et Bois — Sous un Autre Angle",
+};
+
+const DICTS: Record<Exclude<Lang, "he">, Record<string, string>> = { en: EN, fr: FR };
+
 /** Translate a Hebrew string to the active language (identity in Hebrew). */
 export function t(he: string): string {
   if (!he) return he;
-  return lang === "en" ? (EN[he] ?? he) : he;
+  return lang === "he" ? he : (DICTS[lang]?.[he] ?? he);
 }

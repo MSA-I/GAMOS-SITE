@@ -114,13 +114,14 @@
   unicode-range: U+0020-007E, U+00A0-00FF;
 }
 
-/* ---- English display font (2026-07-01) ----------------------------------
-   When the site is switched to English (js/i18n.js sets html[lang="en"]), the
-   DISPLAY family becomes Canela — an elegant high-contrast serif — instead of
-   Rubik. Body copy stays Heebo for readability (classic serif-display /
-   sans-body luxury pairing). html[lang="en"] (0,1,1) outranks :root (0,1,0), so
-   these win regardless of source order. */
-html[lang="en"] {
+/* ---- Non-Hebrew display font (2026-07-01, extended to French 2026-07-02) ---
+   When the site is switched to any Latin-script language (js/i18n.js sets
+   html[lang="en"] or html[lang="fr"]), the DISPLAY family becomes Canela — an
+   elegant high-contrast serif — instead of Rubik. Body copy stays Heebo for
+   readability (classic serif-display / sans-body luxury pairing).
+   html:not([lang="he"]) (0,1,1) outranks :root (0,1,0), so these win regardless
+   of source order — and cover en, fr, and any future non-Hebrew language. */
+html:not([lang="he"]) {
   --font-display-he:      "Canela", "Playfair Display", serif;
   --font-display-en:      "Canela", "Playfair Display", serif;
   --font-display-luxury:  "Canela", "Playfair Display", serif;

@@ -249,6 +249,132 @@ const PIN_SVG =
   "</svg></span>";
 
 // ---------------------------------------------------------------------------
+// i18n — fixed-string localisation (he / en / fr)
+// ---------------------------------------------------------------------------
+//
+// This module injects its labels/ETA/status at RUNTIME (after Leaflet builds,
+// after a tab click, after a geocode) — long past i18n.js's one-time DOM pass —
+// so those strings can't carry data-i18n keys. Instead we localise them here
+// against document.documentElement.lang and re-render on gamos:langchange (the
+// same signal hero-scene.js listens to). Free-text addresses the user types are
+// NEVER translated (they fall through PLACE_I18N unchanged).
+
+/** Current UI language from <html lang>, clamped to a supported code. */
+function lang() {
+  const l = (document.documentElement.lang || "he").slice(0, 2).toLowerCase();
+  return l === "en" || l === "fr" ? l : "he";
+}
+
+// ETA units + approx sign — "≈ 17 min · 16 km".
+const APPROX = "≈";
+const UNITS = {
+  he: { min: "דק׳", km: "ק״מ" },
+  en: { min: "min", km: "km" },
+  fr: { min: "min", km: "km" },
+};
+
+// Origin tab / card "from X" labels, per language.
+const ORIGIN_LABELS = {
+  he: { jerusalem: "מירושלים",        telaviv: "מהמרכז",          north: "מהצפון",          south: "מהדרום" },
+  en: { jerusalem: "From Jerusalem",  telaviv: "From the Center", north: "From the North",  south: "From the South" },
+  fr: { jerusalem: "Depuis Jérusalem", telaviv: "Depuis le Centre", north: "Depuis le Nord", south: "Depuis le Sud" },
+};
+
+// Search-status messages, per language.
+const STATUS = {
+  he: {
+    loading:   "המפה עדיין נטענת, נסו שוב בעוד רגע",
+    calc:      "מחשב…",
+    noAddress: "לא נמצאה כתובת, נסו שוב",
+    noRoute:   "לא הצלחנו לחשב מסלול, נסו שוב",
+  },
+  en: {
+    loading:   "The map is still loading, try again in a moment",
+    calc:      "Calculating…",
+    noAddress: "Address not found, try again",
+    noRoute:   "Couldn't calculate a route, try again",
+  },
+  fr: {
+    loading:   "La carte charge encore, réessayez dans un instant",
+    calc:      "Calcul en cours…",
+    noAddress: "Adresse introuvable, réessayez",
+    noRoute:   "Impossible de calculer un itinéraire, réessayez",
+  },
+};
+
+// City / neighborhood / venue name translations, keyed by the Hebrew name used
+// in ORIGINS / ROUTE_LABELS / ORIGIN_CITY / EXTRA_CITIES. Any name not listed
+// (e.g. a typed free-text address) falls back to the original string unchanged.
+const PLACE_I18N = {
+  "גאמוס":         { en: "GAMOS",              fr: "GAMOS" },
+  // Origin cities
+  "ירושלים":       { en: "Jerusalem",          fr: "Jérusalem" },
+  "תל אביב":       { en: "Tel Aviv",           fr: "Tel Aviv" },
+  "חיפה":          { en: "Haifa",              fr: "Haïfa" },
+  "באר שבע":       { en: "Beersheba",          fr: "Beer-Sheva" },
+  // Jerusalem neighborhoods
+  "מרכז העיר":     { en: "City Center",        fr: "Centre-ville" },
+  "העיר העתיקה":   { en: "Old City",           fr: "Vieille ville" },
+  "הר הצופים":     { en: "Mount Scopus",       fr: "Mont Scopus" },
+  "הגבעה הצרפתית": { en: "French Hill",         fr: "Colline française" },
+  "רמת אשכול":     { en: "Ramat Eshkol",       fr: "Ramat Eshkol" },
+  "פסגת זאב":      { en: "Pisgat Ze'ev",       fr: "Pisgat Ze'ev" },
+  "נווה יעקב":     { en: "Neve Yaakov",        fr: "Neve Yaakov" },
+  "מעלה אדומים":   { en: "Ma'ale Adumim",      fr: "Maale Adoumim" },
+  // Towns along the routes
+  "אור יהודה":     { en: "Or Yehuda",          fr: "Or Yehouda" },
+  "יהוד":          { en: "Yehud",              fr: "Yehoud" },
+  "פתח תקווה":     { en: "Petah Tikva",        fr: "Petah Tikva" },
+  "ראש העין":      { en: "Rosh HaAyin",        fr: "Rosh HaAyin" },
+  "אלעד":          { en: "Elad",               fr: "Elad" },
+  "בן שמן":        { en: "Ben Shemen",         fr: "Ben Shemen" },
+  "שוהם":          { en: "Shoham",             fr: "Shoham" },
+  "מודיעין":       { en: "Modiin",             fr: "Modiin" },
+  "מכבים רעות":    { en: "Maccabim-Reut",      fr: "Maccabim-Reout" },
+  "יקנעם":         { en: "Yokneam",            fr: "Yokneam" },
+  "פרדס חנה":      { en: "Pardes Hanna",       fr: "Pardes Hanna" },
+  "באקה אל-גרבייה": { en: "Baqa al-Gharbiyye", fr: "Baqa al-Gharbiyye" },
+  "קלנסווה":       { en: "Qalansawe",          fr: "Qalansawe" },
+  "טייבה":         { en: "Tayibe",             fr: "Tayibe" },
+  "כפר קאסם":      { en: "Kafr Qasim",         fr: "Kafr Qasim" },
+  "שער הגיא":      { en: "Sha'ar HaGai",       fr: "Sha'ar HaGai" },
+  "אבו גוש":       { en: "Abu Ghosh",          fr: "Abou Gosh" },
+  "מבשרת ציון":    { en: "Mevaseret Zion",     fr: "Mevaseret Zion" },
+  "קרית גת":       { en: "Kiryat Gat",         fr: "Kiryat Gat" },
+  "קרית מלאכי":    { en: "Kiryat Malakhi",     fr: "Kiryat Malakhi" },
+  "בית שמש":       { en: "Beit Shemesh",       fr: "Beit Shemesh" },
+  "מוצא":          { en: "Motza",              fr: "Motza" },
+  // Extra national cities (free-text coverage)
+  "אשדוד":         { en: "Ashdod",             fr: "Ashdod" },
+  "אשקלון":        { en: "Ashkelon",           fr: "Ashkelon" },
+  "נתניה":         { en: "Netanya",            fr: "Netanya" },
+  "כפר סבא":       { en: "Kfar Saba",          fr: "Kfar Saba" },
+  "רעננה":         { en: "Ra'anana",           fr: "Raanana" },
+  "הרצליה":        { en: "Herzliya",           fr: "Herzliya" },
+  "ראשון לציון":   { en: "Rishon LeZion",      fr: "Rishon LeZion" },
+  "רחובות":        { en: "Rehovot",            fr: "Rehovot" },
+  "רמלה":          { en: "Ramla",              fr: "Ramla" },
+  "לוד":           { en: "Lod",                fr: "Lod" },
+  "אריאל":         { en: "Ariel",              fr: "Ariel" },
+  "אילת":          { en: "Eilat",              fr: "Eilat" },
+  "קרית שמונה":    { en: "Kiryat Shmona",      fr: "Kiryat Shmona" },
+  "טבריה":         { en: "Tiberias",           fr: "Tibériade" },
+};
+
+/** Localise a place/city name to the given lang (fallback: the Hebrew name). */
+function placeName(he, l = lang()) {
+  if (l === "he") return he;
+  const t = PLACE_I18N[he];
+  return (t && t[l]) || he;
+}
+
+/** Format the ETA stat in the given lang — "≈ 17 min · 16 km". */
+function formatEta(min, km, l = lang()) {
+  const u = UNITS[l] || UNITS.he;
+  return `${APPROX} ${min} ${u.min} · ${km} ${u.km}`;
+}
+
+// ---------------------------------------------------------------------------
 // Module state (closure — no globals)
 // ---------------------------------------------------------------------------
 
@@ -268,6 +394,9 @@ const state = {
   searchForm: null,      // [data-directions-search]
   onSubmit: null,        // submit handler ref (for removal)
   searchMarker: null,    // custom address start label (L.marker)
+  venueMarker: null,     // brass venue pin + "גאמוס" label (re-labelled on langchange)
+  customRoute: null,     // last free-text route { coords, startName, min, km } (for re-render)
+  langHandler: null,     // gamos:langchange listener (added in init, removed in destroy)
   active: "jerusalem",
   built: false,          // Leaflet map constructed yet?
 };
@@ -284,10 +413,11 @@ function setCardAndCtas(key) {
   const o = ORIGINS[key];
   if (!o) return;
 
+  const l = lang();
   const etaOrigin = state.root.querySelector("[data-directions-eta-origin]");
   const etaStat = state.root.querySelector("[data-directions-eta]");
-  if (etaOrigin) etaOrigin.textContent = o.labelHe;
-  if (etaStat) etaStat.textContent = `${o.min} דק׳ · ${o.km} ק״מ`;
+  if (etaOrigin) etaOrigin.textContent = (ORIGIN_LABELS[l] || ORIGIN_LABELS.he)[key];
+  if (etaStat) etaStat.textContent = formatEta(o.min, o.km, l);
 
   // Google Maps directions: origin = first route point, destination = venue.
   const origin = o.coords[0];
@@ -317,6 +447,10 @@ function syncTabAria() {
 /** Build a non-interactive text label divIcon for a place. */
 function placeLabel(L, place, variant) {
   const anchor = place.anchor || "right";
+  // Localise the label to the current lang (typed free-text names fall through
+  // PLACE_I18N unchanged). Read lang() at render time so a langchange re-render
+  // picks up the new language.
+  const name = placeName(place.name);
   return L.marker(place.at, {
     icon: L.divIcon({
       className: "directions__label-wrap",
@@ -324,7 +458,7 @@ function placeLabel(L, place, variant) {
         `<span class="directions__place directions__place--${anchor}` +
         (variant ? ` directions__place--${variant}` : "") +
         '" aria-hidden="true">' +
-        '<b class="directions__place-name">' + place.name + "</b>" +
+        '<b class="directions__place-name">' + name + "</b>" +
         "</span>",
       iconSize: [0, 0],
       iconAnchor: [0, 0],
@@ -552,8 +686,9 @@ function drawRoute(key, { animate } = { animate: true }) {
 
 function selectOrigin(key, { fly } = { fly: true }) {
   if (!ORIGINS[key]) return;
-  // Leaving a custom address search → drop its start label.
+  // Leaving a custom address search → drop its start label + stored route.
   if (state.searchMarker) { state.searchMarker.remove(); state.searchMarker = null; }
+  state.customRoute = null;
   state.active = key;
   syncTabAria();
   setCardAndCtas(key);
@@ -662,25 +797,27 @@ async function onSearchSubmit(e) {
   const q = input.value.trim();
   if (!q) { input.focus(); return; }
 
+  const st = STATUS[lang()] || STATUS.he;
+
   // Map not ready (vendor failed / not yet built) → no-op gracefully.
   if (!L || !state.map) {
-    setSearchMsg("המפה עדיין נטענת, נסו שוב בעוד רגע");
+    setSearchMsg(st.loading);
     return;
   }
 
   if (btn) btn.disabled = true;
-  setSearchMsg("מחשב…");
+  setSearchMsg(st.calc);
 
   const coords = await geocodeAddress(q);
   if (!coords) {
-    setSearchMsg("לא נמצאה כתובת, נסו שוב");
+    setSearchMsg(st.noAddress);
     if (btn) btn.disabled = false;
     return;
   }
 
   const route = await fetchRoute(coords);
   if (!route) {
-    setSearchMsg("לא הצלחנו לחשב מסלול, נסו שוב");
+    setSearchMsg(st.noRoute);
     if (btn) btn.disabled = false;
     return;
   }
@@ -705,11 +842,15 @@ async function onSearchSubmit(e) {
   const startName = q.length > 28 ? q.slice(0, 28) + "…" : q;
   renderCustomLabels(route.coords, startName);
 
+  // Remember the custom route so a later langchange can re-render its labels +
+  // re-format its ETA (the town labels translate; the typed startName does not).
+  state.customRoute = { coords: route.coords, startName, min: route.min, km: route.km };
+
   // Update the glass card (same fields setCardAndCtas touches).
   const etaOrigin = state.root.querySelector("[data-directions-eta-origin]");
   const etaStat = state.root.querySelector("[data-directions-eta]");
   if (etaOrigin) etaOrigin.textContent = startName;
-  if (etaStat) etaStat.textContent = `${route.min} דק׳ · ${route.km} ק״מ`;
+  if (etaStat) etaStat.textContent = formatEta(route.min, route.km);
   const gEl = state.root.querySelector("[data-directions-google]");
   if (gEl) {
     gEl.href =
@@ -751,6 +892,37 @@ function fitPadding() {
   };
 }
 
+/** Re-label the persistent venue pin ("גאמוס") in the current language. */
+function updateVenuePinLabel() {
+  if (!state.venueMarker) return;
+  const el = state.venueMarker.getElement();
+  const b = el && el.querySelector(".directions__pin-name");
+  if (b) b.textContent = placeName("גאמוס");
+}
+
+/**
+ * Re-render every runtime-injected string in the current language. Fired by the
+ * gamos:langchange listener (i18n.js can't reach these — they're built after its
+ * one-time DOM pass). Re-runs the card + place labels + venue pin without any
+ * fly/scroll, honouring whichever route is active (baked tab or free-text).
+ */
+function applyLang() {
+  updateVenuePinLabel();
+  if (state.active) {
+    // Baked origin tab active → refresh card + relabel the route in-place.
+    setCardAndCtas(state.active);
+    renderRouteLabels(state.active);
+  } else if (state.customRoute) {
+    // Free-text route active → relabel towns (translate) + reformat the ETA.
+    // The typed startName stays as-is (never translated).
+    renderCustomLabels(state.customRoute.coords, state.customRoute.startName);
+    const etaOrigin = state.root.querySelector("[data-directions-eta-origin]");
+    const etaStat = state.root.querySelector("[data-directions-eta]");
+    if (etaOrigin) etaOrigin.textContent = state.customRoute.startName;
+    if (etaStat) etaStat.textContent = formatEta(state.customRoute.min, state.customRoute.km);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Map construction (deferred until first reveal)
 // ---------------------------------------------------------------------------
@@ -783,11 +955,11 @@ function buildMap() {
   // (Per-route place labels are rendered by renderRouteLabels() on each
   // origin selection — see selectOrigin().)
 
-  // Venue pin + "גאמוס" label.
-  L.marker(VENUE, {
+  // Venue pin + "גאמוס" label (localised; kept in state so langchange re-labels).
+  state.venueMarker = L.marker(VENUE, {
     icon: L.divIcon({
       className: "directions__pin-wrap",
-      html: PIN_SVG + '<b class="directions__pin-name" aria-hidden="true">גאמוס</b>',
+      html: PIN_SVG + '<b class="directions__pin-name" aria-hidden="true">' + placeName("גאמוס") + "</b>",
       iconSize: [32, 44],
       iconAnchor: [16, 44],
     }),
@@ -855,6 +1027,13 @@ export function init() {
     state.searchForm.addEventListener("submit", state.onSubmit);
   }
 
+  // Re-localise runtime strings when i18n.js toggles the language. (setCardAndCtas
+  // above already used lang() for the INITIAL render, so a page booted in en/fr
+  // shows translated text without a toggle; deferred buildMap() likewise renders
+  // its labels via placeName()/lang() at build time.)
+  state.langHandler = () => applyLang();
+  document.addEventListener("gamos:langchange", state.langHandler);
+
   // If window.L isn't present (vendor script failed), leave the noscript-style
   // fallback content: tabs still re-point CTAs, just no map. Never throw.
   if (typeof window.L === "undefined") return;
@@ -893,11 +1072,17 @@ export function destroy() {
   }
   state.searchForm = null;
   state.onSubmit = null;
+  if (state.langHandler) {
+    document.removeEventListener("gamos:langchange", state.langHandler);
+    state.langHandler = null;
+  }
   if (state.io) { state.io.disconnect(); state.io = null; }
   if (state.resizeObs) { state.resizeObs.disconnect(); state.resizeObs = null; }
   if (state.routeLayer) { state.routeLayer.remove(); state.routeLayer = null; }
   if (state.labelLayer) { state.labelLayer.remove(); state.labelLayer = null; }
   if (state.searchMarker) { state.searchMarker.remove(); state.searchMarker = null; }
+  if (state.venueMarker) { state.venueMarker.remove(); state.venueMarker = null; }
+  state.customRoute = null;
   if (state.map) { state.map.remove(); state.map = null; }
   state.inputs = [];
   state.onInput = null;

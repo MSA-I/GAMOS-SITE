@@ -292,6 +292,35 @@
   opacity: 1;
 }
 
+/* Close (X) button — the visible way out of the overlay. The overlay's
+   backdrop-filter makes it the containing block for this fixed child, so it
+   pins to the overlay's top-inline-end corner and doesn't scroll with the list.
+   ≥44px tap target (§9). Injected by js/site-nav.js buildOverlay(). */
+.site-nav__mobile__close {
+  position: fixed;
+  inset-block-start: var(--space-16);
+  inset-inline-end: var(--gutter);
+  z-index: 1;
+  inline-size: 44px;
+  block-size: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--cocoa);
+  cursor: pointer;
+  border-radius: 999px;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--dur-base) var(--ease-out-cinema),
+              transform var(--dur-base) var(--ease-out-cinema);
+}
+.site-nav__mobile__close:hover,
+.site-nav__mobile__close:focus-visible { color: var(--brass-deep); }
+.site-nav__mobile__close:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
+.site-nav__mobile__close:active { transform: scale(0.94); }
+
 .site-nav__mobile__inner {
   width: 100%;
   max-width: var(--container-narrow);

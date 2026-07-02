@@ -20,8 +20,11 @@
     border-radius: 999px;
   }
 
-  /* Hide once the navbar slides in — avoids two toggles on screen */
-  html[data-nav-revealed="true"] .mobile-lang-fab {
+  /* Keep the FAB visible through the hero (the user wants the language switch
+     reachable IN the hero). Only hand off to the nav's own toggle once we're
+     PAST the hero — i.e. hide the FAB when the navbar is revealed AND we are no
+     longer in hero-mode. During hero-mode the FAB stays even if the nav peeks. */
+  html[data-nav-revealed="true"]:not([data-hero-mode="true"]) .mobile-lang-fab {
     display: none;
   }
 }

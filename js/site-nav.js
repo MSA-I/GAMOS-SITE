@@ -86,6 +86,22 @@ function buildOverlay(originalLinks) {
   wrap.setAttribute("aria-modal", "true");
   wrap.setAttribute("aria-label", "תפריט ראשי");
 
+  // Dedicated close (X) button. The hamburger toggle animates into an X but it
+  // lives inside .site-nav (z-index:--z-sticky → its own stacking context), so
+  // the body-level overlay (z:--z-overlay) paints OVER it and the X is invisible.
+  // This button lives inside the overlay's own stacking context, so it's always
+  // visible + tappable. Click handled in onOverlayClick.
+  const closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.className = `${OVERLAY_CLASS}__close`;
+  const closeLabels = { he: "סגור תפריט", en: "Close menu", fr: "Fermer le menu" };
+  closeBtn.setAttribute("aria-label", closeLabels[document.documentElement.lang] || closeLabels.he);
+  closeBtn.innerHTML =
+    '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" ' +
+    'stroke-width="1.6" stroke-linecap="round" aria-hidden="true">' +
+    '<path d="M6 6l12 12M18 6L6 18"/></svg>';
+  wrap.appendChild(closeBtn);
+
   const inner = document.createElement("div");
   inner.className = `${OVERLAY_CLASS}__inner`;
 
@@ -183,6 +199,11 @@ function onOverlayClick(event) {
   // Closing on link click is handled by onLinkClick (event bubbles up but
   // we close there directly so the anchor still navigates).
   if (target.tagName === "A") return;
+  // Dedicated close (X) button anywhere in the overlay.
+  if (target.closest(`.${OVERLAY_CLASS}__close`)) {
+    close();
+    return;
+  }
   // Treat clicks on the overlay root or inner wrapper as "backdrop" clicks.
   if (target === state.overlay || target.classList.contains(`${OVERLAY_CLASS}__inner`)) {
     close();

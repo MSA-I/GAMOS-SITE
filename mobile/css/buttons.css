@@ -1,0 +1,23 @@
+/* =============================================================================
+   mobile/css/buttons.css — long-CTA wrap on phones (2026-07-02)
+   ---------------------------------------------------------------------------
+   The primary CTAs (.btn) are single-line, uppercase, letter-spaced "engraved"
+   labels (css/components/buttons.css: white-space:nowrap + letter-spacing .18em).
+   Hebrew labels are short and fit a 390px phone; the English/French translations
+   are much longer — e.g. FR "Envoyer vos coordonnées et organiser une visite au
+   domaine" — and overflow the right edge on one nowrap line (the last words get
+   clipped off-screen). Let the large/primary CTA WRAP on phones and tighten the
+   tracking a touch so any language fits cleanly. Desktop (≥769px) keeps the
+   single engraved line. §13: @media (max-width:768px) overrides only.
+   ========================================================================= */
+
+@media (max-width: 768px) {
+  .btn--primary-lg,
+  .contact__submit {
+    white-space: normal;          /* allow multi-line for long EN/FR labels */
+    letter-spacing: 0.12em;       /* was .18em — a hair tighter for wrapped lines */
+    line-height: 1.4;
+    text-wrap: balance;           /* even, centred line breaks */
+    max-inline-size: 100%;        /* never exceed the form/column width */
+  }
+}

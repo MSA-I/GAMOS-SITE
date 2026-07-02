@@ -149,18 +149,8 @@
      mobile we simply retire the hero cue — one clean cue throughout. */
   #hero .hero_top .gamos-cue { display: none; }
 
-  /* ----- ENGLISH HERO LOGO: match the composite fill to the outline (2026-07-01)
-     The English wordmark (logo-en.svg) has viewBox 219.78×79.53 (AR 2.76), wider
-     than the mobile .hero_logo box 23.5×10.2rem (AR 2.30). The outline <svg>
-     letterboxes to WIDTH automatically (default preserveAspectRatio), so its
-     letters are ~8.5rem tall. But .hero_composite's mask-size is the full box
-     (23.5×10.2rem), which STRETCHES the filled letters ~20% taller → they "grow"
-     on the outline→fill crossfade. Set the composite mask to the English aspect
-     at mobile width (23.5 × 23.5·79.53/219.78 = 8.5rem) so fill == outline.
-     Hebrew keeps the CSS default (its AR 2.49 ≈ the box). Desktop (≥769px) box AR
-     already equals the English AR, so it needs no override — this is mobile-only. */
-  html[lang="en"] #hero.hero_root .hero_composite {
-    -webkit-mask-size: calc(23.5 * var(--rem)) calc(8.5 * var(--rem));
-    mask-size: calc(23.5 * var(--rem)) calc(8.5 * var(--rem));
-  }
+  /* NOTE (2026-07-02): the former `html[lang="en"] … mask-size` override here is
+     gone — js/hero-scene.js now fits the composite mask to each logo's viewBox
+     ratio inside the measured .hero_logo box at every breakpoint (EN/FR/HE), so
+     no per-language, per-breakpoint mask-size is needed. */
 }

@@ -94,37 +94,39 @@
 }
 
 /* Reviews stay in Hebrew (user directive) — keep their bodies reading RTL even
-   when the page flips to LTR for English. Only the review meta/author is
-   translated; the quote itself is untranslated Hebrew. */
-html[lang="en"] .testimonial__quote {
+   when the page flips to LTR for a Latin-script language (English or French).
+   Only the review meta/author is translated; the quote itself is untranslated
+   Hebrew. */
+html:not([lang="he"]) .testimonial__quote {
   direction: rtl;
   text-align: right;
 }
 
 /* The hero title markup hard-codes dir="rtl" (needed for the Hebrew SplitText
-   reveal). In English the sentence-final period must sit at the end, so flip
-   this one block to LTR. Author rule beats the UA [dir] rule by specificity. */
-html[lang="en"] .hero_title,
-html[lang="en"] .hero_title h1 {
+   reveal). In any Latin-script language (English or French) the sentence-final
+   period must sit at the end, so flip this one block to LTR. Author rule beats
+   the UA [dir] rule by specificity. */
+html:not([lang="he"]) .hero_title,
+html:not([lang="he"]) .hero_title h1 {
   direction: ltr;
 }
 
 /* The hero title + eyebrow hard-code "Heebo" in hero-scene.css (they bypass the
    display token), so the token override in tokens.css can't reach them — set
-   Cinzel here so the English hero matches the wordmark. .hero_word covers the
-   SplitText spans. */
-html[lang="en"] .hero_title h1,
-html[lang="en"] .hero_title h1 .hero_word,
-html[lang="en"] .hero_eyebrow {
+   Canela here so the non-Hebrew (English/French) hero matches the wordmark.
+   .hero_word covers the SplitText spans. */
+html:not([lang="he"]) .hero_title h1,
+html:not([lang="he"]) .hero_title h1 .hero_word,
+html:not([lang="he"]) .hero_eyebrow {
   font-family: "Canela", "Playfair Display", serif;
 }
 
-/* #about stats: English labels wrap to different line-counts ("GUESTS IN A
-   SINGLE EVENING" = 2 lines, the others = 1), which knocks the three numbers
-   off a shared baseline. Reserve two lines for every label box and bottom-align
-   the label so the numbers line up. Hebrew labels are all one line → scoped to
-   English so Hebrew spacing is untouched. */
-html[lang="en"] .about__stat dt {
+/* #about stats: Latin-script labels (English/French) wrap to different
+   line-counts ("GUESTS IN A SINGLE EVENING" = 2 lines, the others = 1), which
+   knocks the three numbers off a shared baseline. Reserve two lines for every
+   label box and bottom-align the label so the numbers line up. Hebrew labels are
+   all one line → scoped to non-Hebrew so Hebrew spacing is untouched. */
+html:not([lang="he"]) .about__stat dt {
   min-block-size: 3.2em;      /* fit two lines so 1- and 2-line labels match */
   display: flex;
   align-items: flex-end;

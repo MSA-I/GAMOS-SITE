@@ -33,12 +33,19 @@ import { prefersReducedMotion } from "./utils/media-query.js";
 
 const NAV_DELAY_MS = 1400;  // Hold the loading overlay long enough for the brass bar (1200ms) to fill before navigating.
 const LOGO_SVG_URL = "/assets/images/hero-scene/logo.svg";
-// English hero logo (GAMOS + English subtitle, viewBox 219.78×79.53 — its ratio
-// matches the desktop .hero_logo box exactly). Used only when the site is in EN;
-// Hebrew keeps LOGO_SVG_URL and renders byte-identically to before. See i18n.js.
+// Localised hero wordmarks. Each has its own viewBox aspect ratio (EN 205.14×83.3,
+// FR 202.58×86.79, HE 205.7×82.46), so the composite mask is now fitted to the
+// parsed viewBox at runtime (applyLogo/resizeComposite) rather than a hardcoded
+// CSS mask-size — any logo letterboxes cleanly into the .hero_logo box. See i18n.js.
 const LOGO_SVG_URL_EN = "/assets/images/hero-scene/logo-en.svg";
-const logoUrlForLang = () =>
-  document.documentElement.lang === "en" ? LOGO_SVG_URL_EN : LOGO_SVG_URL;
+const LOGO_SVG_URL_FR = "/assets/images/hero-scene/logo-fr.svg";
+const logoUrlForLang = () => {
+  switch (document.documentElement.lang) {
+    case "en": return LOGO_SVG_URL_EN;
+    case "fr": return LOGO_SVG_URL_FR;
+    default:   return LOGO_SVG_URL; // Hebrew (and any other) → logo.svg
+  }
+};
 const RETURN_FLAG = "gamos-return-hall"; // set on entry → scroll back to #hall-portal
 
 const state = {
@@ -59,6 +66,8 @@ const state = {
   scrubST: null,        // its ScrollTrigger
   langHandler: null,    // gamos:langchange listener
   currentLogoUrl: null, // last logo SVG fetched — skip redundant reloads
+  logoViewBox: null,    // last parsed logo viewBox — used to re-fit the composite mask on resize
+  compResizeHandler: null, // debounced window resize/orientation → resizeComposite()
 };
 
 const q = (sel) => document.querySelector(sel);
@@ -173,11 +182,35 @@ function applyLogo(svgText) {
   if (comp) {
     comp.style.setProperty("-webkit-mask-image", `url("${uri}")`);
     comp.style.setProperty("mask-image", `url("${uri}")`);
-    // mask-size stays in CSS (97.7×35.4rem desktop). That ratio (2.764) matches the
-    // English viewBox 219.78×79.53 exactly and the Hebrew 205.7×82.46 closely, so
-    // neither logo stretches on desktop. (Mobile box 23.5×10.2 is a looser fit for
-    // both — a documented later refinement, not set here.)
   }
+  // Aspect-correct mask sizing (owns mask-size now — the CSS hardcode was removed):
+  // fit the logo viewBox ratio INSIDE the measured .hero_logo box (letterbox), so
+  // the filled composite matches the outline <svg> (which letterboxes via default
+  // preserveAspectRatio) for ANY logo at ANY breakpoint — no stretch on EN/FR/HE.
+  state.logoViewBox = viewBox;
+  applyCompositeMaskSize();
+}
+
+/* Set .hero_composite mask-size to the logo viewBox ratio letterboxed inside the
+   measured .hero_logo box. Shared by applyLogo() and the resize/orientation
+   handler. No-ops until the box is laid out (width 0) — a later recompute covers
+   it (the mobile CSS <link> is async, so first measure can be 0). */
+function applyCompositeMaskSize() {
+  const comp = q(".hero_composite");
+  const logoBox = q(".hero_logo");
+  if (!comp || !logoBox || !state.logoViewBox) return;
+  const box = logoBox.getBoundingClientRect();
+  if (!box.width || !box.height) return; // not laid out yet → rely on later recompute
+  const parts = state.logoViewBox.split(/\s+/).map(Number);
+  const vw = parts[2];
+  const vh = parts[3];
+  if (!vw || !vh) return;
+  const r = vw / vh;
+  let mw, mh;
+  if (box.width / box.height > r) { mh = box.height; mw = box.height * r; }
+  else { mw = box.width; mh = box.width / r; }
+  comp.style.setProperty("mask-size", `${mw}px ${mh}px`);
+  comp.style.setProperty("-webkit-mask-size", `${mw}px ${mh}px`);
 }
 
 /* --------------------------------------------------------- scrub timeline --- */
@@ -440,6 +473,17 @@ export function init() {
   window.addEventListener("scroll", state.scrollHandler, { passive: true });
   requestAnimationFrame(computeProgress);
 
+  // Re-fit the composite mask when the .hero_logo box changes size (breakpoint
+  // crossing, orientationchange, async mobile CSS <link> settling). Debounced so a
+  // resize drag doesn't thrash. Uses the LAST parsed viewBox (state.logoViewBox).
+  let compResizeTimer = 0;
+  state.compResizeHandler = () => {
+    clearTimeout(compResizeTimer);
+    compResizeTimer = window.setTimeout(() => requestAnimationFrame(applyCompositeMaskSize), 120);
+  };
+  window.addEventListener("resize", state.compResizeHandler, { passive: true });
+  window.addEventListener("orientationchange", state.compResizeHandler, { passive: true });
+
   // React to the i18n toggle (i18n.js dispatches gamos:langchange). Swap the logo
   // SVG to the EN/HE wordmark and rebuild the scrub so DrawSVG hits the new paths.
   state.langHandler = () => reloadLogoForLang();
@@ -458,6 +502,11 @@ export function destroy() {
     window.removeEventListener("load", state.refreshHandler);
     window.removeEventListener("orientationchange", state.refreshHandler);
     state.refreshHandler = null;
+  }
+  if (state.compResizeHandler) {
+    window.removeEventListener("resize", state.compResizeHandler);
+    window.removeEventListener("orientationchange", state.compResizeHandler);
+    state.compResizeHandler = null;
   }
   if (state.langHandler) {
     document.removeEventListener("gamos:langchange", state.langHandler);

@@ -71,6 +71,7 @@
     "/mobile/css/testimonials.css",
     "/mobile/css/interaction-hint.css", // 2026-06-30: phone tuning for brass affordance cues
     "/mobile/css/lang-switch.css",       // 2026-07-01: always-visible language FAB before nav reveals
+    "/mobile/css/buttons.css",           // 2026-07-02: wrap long EN/FR CTAs so they don't clip off-screen
   ];
 
   function injectStylesheets () {
@@ -252,6 +253,7 @@
     var lang = document.documentElement.lang || "he";
     var heActive = lang === "he";
     var enActive = lang === "en";
+    var frActive = lang === "fr";
     var fab = document.createElement("div");
     fab.className = "mobile-lang-fab";
     fab.innerHTML =
@@ -262,6 +264,9 @@
       '<span class="site-nav__lang-sep" aria-hidden="true"></span>' +
       '<button type="button" class="site-nav__lang-opt' + (enActive ? " is-active" : "") +
       '" data-lang-set="en" lang="en" aria-pressed="' + enActive + '">EN</button>' +
+      '<span class="site-nav__lang-sep" aria-hidden="true"></span>' +
+      '<button type="button" class="site-nav__lang-opt' + (frActive ? " is-active" : "") +
+      '" data-lang-set="fr" lang="fr" aria-pressed="' + frActive + '">FR</button>' +
       "</div>";
     document.body.appendChild(fab);
   }

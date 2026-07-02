@@ -32,7 +32,13 @@
  */
 
 const STORAGE_KEY = "gamos-lang";
-const DICT_URL = "/assets/i18n/en.json";
+// Hebrew is the DOM default (no dict). Every OTHER language is a dictionary keyed
+// by canonical Hebrew. Add a language = add a { code: url } entry + its JSON.
+const DICT_URLS = {
+  en: "/assets/i18n/en.json",
+  fr: "/assets/i18n/fr.json",
+};
+const LANGS = ["he", ...Object.keys(DICT_URLS)]; // ["he","en","fr"]
 const ATTRS = ["alt", "aria-label", "placeholder", "title", "content"];
 const SKIP_PARENTS = new Set(["SCRIPT", "STYLE", "NOSCRIPT"]);
 
@@ -46,8 +52,8 @@ const RICH_SELECTORS = [".hero_title h1"];
 const state = {
   initialised: false,
   lang: "he",
-  dict: null,          // { canonicalHe: en }
-  origText: new Map(), // textNode -> original nodeValue
+  dicts: {},           // { [lang]: { canonicalHe: translated } } — per-lang cache
+  origText: new Map(), // textNode -> original nodeValue (Hebrew)
   rich: [],            // [{ el, pristineHTML }]
   bound: { onToggle: null },
 };
@@ -67,7 +73,7 @@ function canon(s) {
 function savedLang() {
   try {
     const v = localStorage.getItem(STORAGE_KEY);
-    return v === "he" || v === "en" ? v : null;
+    return LANGS.includes(v) ? v : null;
   } catch { return null; }
 }
 
@@ -81,6 +87,7 @@ function detectLang() {
   try {
     const langs = (navigator.languages || [navigator.language || ""]).join(",").toLowerCase();
     if (/(^|,)(he|iw)\b/.test(langs)) return "he";
+    if (/(^|,)fr\b/.test(langs)) return "fr"; // French browsers → French
   } catch { /* ignore */ }
   return "en"; // international default
 }
@@ -88,12 +95,14 @@ function detectLang() {
 // ---------------------------------------------------------------------------
 // Dictionary
 // ---------------------------------------------------------------------------
-async function loadDict() {
-  if (state.dict) return state.dict;
-  const res = await fetch(DICT_URL, { cache: "force-cache" });
-  if (!res.ok) throw new Error(`i18n dict ${res.status}`);
-  state.dict = await res.json();
-  return state.dict;
+async function loadDict(lang) {
+  if (state.dicts[lang]) return state.dicts[lang];
+  const url = DICT_URLS[lang];
+  if (!url) throw new Error(`i18n: no dict for "${lang}"`);
+  const res = await fetch(url, { cache: "force-cache" });
+  if (!res.ok) throw new Error(`i18n dict ${lang} ${res.status}`);
+  state.dicts[lang] = await res.json();
+  return state.dicts[lang];
 }
 
 // ---------------------------------------------------------------------------
@@ -142,33 +151,37 @@ function translateHtml(html, dict) {
 function applyRich(lang, dict) {
   for (const entry of state.rich) {
     if (!entry.el.isConnected) continue;
-    entry.el.innerHTML = lang === "en" ? translateHtml(entry.pristineHTML, dict) : entry.pristineHTML;
+    // Any foreign language translates the rich HTML; Hebrew restores the pristine.
+    entry.el.innerHTML = lang !== "he" ? translateHtml(entry.pristineHTML, dict) : entry.pristineHTML;
   }
 }
 
-function translateToEn(dict) {
-  applyRich("en", dict);
+// Translate the DOM into `lang` using its `dict` ({ canonicalHe: translated }).
+// The DOM must be in HEBREW before this runs (origText caches the Hebrew source);
+// applyLang() guarantees that via restore-before-translate on foreign→foreign.
+function translate(lang, dict) {
+  applyRich(lang, dict);
   // Text nodes
   walkTextNodes((node) => {
     const raw = node.nodeValue;
     const key = canon(raw);
-    const en = dict[key];
-    if (en == null) return;
+    const tr = dict[key];
+    if (tr == null) return;
     if (!state.origText.has(node)) state.origText.set(node, raw);
     const lead = raw.match(/^\s*/)[0];
     const trail = raw.match(/\s*$/)[0];
-    node.nodeValue = lead + en + trail;
+    node.nodeValue = lead + tr + trail;
   });
   // Attributes
   for (const attr of ATTRS) {
     document.querySelectorAll(`[${attr}]`).forEach((el) => {
       const raw = el.getAttribute(attr);
       if (!raw) return;
-      const en = dict[canon(raw)];
-      if (en == null) return;
+      const tr = dict[canon(raw)];
+      if (tr == null) return;
       const cacheKey = `i18nO${attr.replace(/[^a-z]/gi, "")}`;
       if (el.dataset[cacheKey] == null) el.dataset[cacheKey] = raw;
-      el.setAttribute(attr, en);
+      el.setAttribute(attr, tr);
     });
   }
 }
@@ -199,13 +212,18 @@ function updateToggles(lang) {
 }
 
 async function applyLang(lang, { persist = false } = {}) {
+  if (!LANGS.includes(lang)) lang = "he";
   const html = document.documentElement;
   html.lang = lang;
   html.setAttribute("dir", lang === "he" ? "rtl" : "ltr");
 
-  if (lang === "en") {
-    try { translateToEn(await loadDict()); }
-    catch (e) { console.error("[i18n] dict load failed, staying Hebrew:", e); html.lang = "he"; html.setAttribute("dir", "rtl"); lang = "he"; }
+  if (lang !== "he") {
+    // Restore Hebrew FIRST so a foreign→foreign switch (e.g. en→fr) looks up the
+    // right keys: origText/attrs are keyed by the Hebrew source, and the new dict
+    // is keyed by canonical Hebrew — the DOM must hold Hebrew before we translate.
+    restoreHe();
+    try { translate(lang, await loadDict(lang)); }
+    catch (e) { console.error(`[i18n] dict "${lang}" load failed, staying Hebrew:`, e); html.lang = "he"; html.setAttribute("dir", "rtl"); lang = "he"; }
   } else {
     restoreHe();
   }
@@ -240,6 +258,8 @@ function injectToggle() {
     '<button type="button" class="site-nav__lang-opt" data-lang-set="he" lang="he">עב</button>' +
     '<span class="site-nav__lang-sep" aria-hidden="true"></span>' +
     '<button type="button" class="site-nav__lang-opt" data-lang-set="en" lang="en">EN</button>' +
+    '<span class="site-nav__lang-sep" aria-hidden="true"></span>' +
+    '<button type="button" class="site-nav__lang-opt" data-lang-set="fr" lang="fr">FR</button>' +
     "</div>";
   list.appendChild(li);
 }
@@ -249,7 +269,7 @@ function onToggleClick(event) {
   if (!opt) return;
   event.preventDefault();
   const lang = opt.getAttribute("data-lang-set");
-  if (lang !== "he" && lang !== "en") return;
+  if (!LANGS.includes(lang)) return;
   if (lang === state.lang) return;
   applyLang(lang, { persist: true });
 }
