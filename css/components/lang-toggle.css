@@ -121,6 +121,18 @@ html:not([lang="he"]) .hero_eyebrow {
   font-family: var(--font-display-en);
 }
 
+/* /press/ display headlines hard-code Heebo (var(--font-body)) in press.css, so
+   the tokens.css Canela override can't reach them either — restate it here so the
+   English/French press page renders its editorial headlines in Canela, matching
+   the rest of the site's non-Hebrew display type. Hebrew keeps Heebo (Canela has
+   no Hebrew glyphs). */
+html:not([lang="he"]) .press-hero__title,
+html:not([lang="he"]) .press-intro__sentence,
+html:not([lang="he"]) .press-card__title,
+html:not([lang="he"]) .press-closer__title {
+  font-family: var(--font-display-en);
+}
+
 /* #about stats: Latin-script labels (English/French) wrap to different
    line-counts ("GUESTS IN A SINGLE EVENING" = 2 lines, the others = 1), which
    knocks the three numbers off a shared baseline. Reserve two lines for every

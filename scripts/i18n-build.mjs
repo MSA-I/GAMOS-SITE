@@ -17,7 +17,12 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-const canon = (s) => String(s).replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+const canon = (s) =>
+  String(s)
+    .replace(/&nbsp;/g, " ")
+    .replace(/[\u200e\u200f\u200b]/g, "") // drop invisible bidi marks (LRM/RLM/ZWSP)
+    .replace(/\s+/g, " ")
+    .trim();
 
 // [ Hebrew source (verbatim), English, French ]
 const PAIRS = [
@@ -268,6 +273,97 @@ const PAIRS = [
   ["כתובת המוצא שלכם", "Your starting address", "Votre adresse de départ"],
   ["בחירת מוצא הנסיעה", "Choose your point of origin", "Choisir votre point de départ"],
   ["מפת הגעה לגאמוס, די זהב 7, פארק ישראל", "Directions map to Gamos, 7 Dei Zahav St., Park Israel", "Plan d'accès à GAMOS, 7 rue Dei Zahav, Park Israel"],
+
+  // ===================================================================
+  // /press/ page (מן העיתונות) — separate document, same runtime dict.
+  // Reuses existing keys where they already appear above: "מן העיתונות",
+  // "חתונה", "צור קשר", "גאמוס אירועים". The two venue-opening pills use
+  // "פתיחת המתחם" (not bare "פתיחה") to avoid colliding with the culinary
+  // "פתיחה" course above, whose French is "Amuse-bouche".
+  // Card image alts carry an invisible LRM after the "ב" prefix in the DOM;
+  // canon() strips it (both here and at runtime), so the keys below are the
+  // stripped form ("בmynet", "בוואלה", …).
+  // ===================================================================
+  // Head
+  ["מן העיתונות | גאמוס אירועים", "Press | Gamos Events", "Presse | GAMOS Événements"],
+  ["כתבות וביקורות שהתפרסמו על מתחם גאמוס: אולמות, ריזורט וקולינריה, בעיתונות הארצית.", "Features and reviews about the Gamos estate — halls, resort and cuisine — published in the national press.", "Reportages et critiques sur le domaine GAMOS — salles, resort et gastronomie — parus dans la presse nationale."],
+  ["כתבות וביקורות שהתפרסמו על מתחם גאמוס בעיתונות הארצית.", "Features and reviews about the Gamos estate published in the national press.", "Reportages et critiques sur le domaine GAMOS parus dans la presse nationale."],
+  // Chrome / hero / intro
+  ["דלג לתוכן", "Skip to content", "Aller au contenu"],
+  ["חזרה לדף הבית גאמוס", "Back to the Gamos homepage", "Retour à l'accueil de GAMOS"],
+  ["חזרה לאתר", "Back to site", "Retour au site"],
+  ["מתחם גאמוס בפארק ישראל", "The Gamos estate in Park Israel", "Le domaine GAMOS à Park Israel"],
+  ["פארק ישראל", "Park Israel", "Park Israel"],
+  ["07 כתבות", "07 articles", "07 articles"],
+  ["כותבים", "Writing", "On parle"],
+  ["על גאמוס.", "about Gamos.", "de GAMOS."],
+  ["כתבות וביקורות שהתפרסמו על המתחם בעיתונות הארצית.", "Features and reviews published about the estate in the national press.", "Reportages et critiques parus sur le domaine dans la presse nationale."],
+  ["גלול לתוכן", "Scroll to content", "Faire défiler vers le contenu"],
+  ["הקדמה", "Introduction", "Introduction"],
+  ["ארכיון עיתונות", "Press Archive", "Archives de presse"],
+  ["כל מה שעיתונות הארץ כתבה על המתחם — מעיצוב ויוקרה ועד חתונות שלא נשכחות.", "Everything the national press has written about the estate — from design and luxury to unforgettable weddings.", "Tout ce que la presse nationale a écrit sur le domaine — du design et du luxe jusqu'aux mariages inoubliables."],
+  ["כתבות מהעיתונות", "Press features", "Articles de presse"],
+  // Pills
+  ["עיצוב", "Design", "Design"],
+  ["מהדורה מקומית", "Local Edition", "Édition locale"],
+  ["בר מצווה", "Bar Mitzvah", "Bar Mitzvah"],
+  ["אורח VIP", "VIP Guest", "Invité VIP"],
+  ["פתיחת המתחם", "Opening", "Ouverture"],
+  // Outlets (Latin-script outlets ynet / ICE need no key)
+  ["וואלה בית ועיצוב", "Walla Home & Design", "Walla Maison & Design"],
+  ["mynet ירושלים", "mynet Jerusalem", "mynet Jérusalem"],
+  ["מעריב Sport1", "Maariv Sport1", "Maariv Sport1"],
+  ["EMESS רדיו", "EMESS Radio", "EMESS Radio"],
+  ["וואלה מקומי", "Walla Local", "Walla Local"],
+  // Dates
+  ["31 ביולי 2025", "31 July 2025", "31 juillet 2025"],
+  ["5 באוגוסט 2025", "5 August 2025", "5 août 2025"],
+  ["16 באוקטובר 2025", "16 October 2025", "16 octobre 2025"],
+  ["21 בנובמבר 2024", "21 November 2024", "21 novembre 2024"],
+  ["28 ביוני 2024", "28 June 2024", "28 juin 2024"],
+  ["9 ביוני 2024", "9 June 2024", "9 juin 2024"],
+  // Titles
+  ["מתחם האירועים בפארק ישראל: דובאי פוגשת את המדבר", "The events estate in Park Israel: Dubai meets the desert", "Le domaine événementiel de Park Israel : Dubaï rencontre le désert"],
+  ["מתחם גאמוס בידיעות ירושלים", "The Gamos estate in Yediot Jerusalem", "Le domaine GAMOS dans Yediot Jérusalem"],
+  ["כולל מסיבה מטורפת עד שעות הבוקר: החגיגה הענקית של משפחת בוזגלו", "Including a wild party until dawn: the Buzaglo family's huge celebration", "Avec une fête endiablée jusqu'à l'aube : l'immense célébration de la famille Buzaglo"],
+  ["טוקר חיתן בת; כולם הגיעו להשתתף בשמחתו", "Tucker married off a daughter; everyone came to share in his joy", "Tucker a marié sa fille ; tous sont venus partager sa joie"],
+  ["סודות הכסף", "Money Secrets", "Les secrets de l'argent"],
+  ["חולמים על חתונה בסגנון דובאי: הכירו את GAMOS בפארק ישראל", "Dreaming of a Dubai-style wedding: meet GAMOS in Park Israel", "Rêver d'un mariage façon Dubaï : découvrez GAMOS à Park Israel"],
+  ["בהשקעת 100 מיליון שקל: גן אירועים ומלון חדש נפתחו בישראל", "A 100-million-shekel investment: a new events garden and hotel open in Israel", "Un investissement de 100 millions de shekels : un nouveau jardin d'événements et un hôtel ouvrent en Israël"],
+  // Excerpts
+  ["קומפלקס אירועים יוקרתי חדש במעלה אדומים עם עיצוב בינלאומי, טכנולוגיה מתקדמת וריזורט פרטי.", "A new luxury events complex in Ma'ale Adumim, with international design, advanced technology and a private resort.", "Un nouveau complexe événementiel de luxe à Maalé Adoumim, au design international, à la technologie de pointe et doté d'un resort privé."],
+  ["כתבה במהדורת mynet ירושלים על מתחם האירועים החדש במעלה אדומים.", "A feature in the mynet Jerusalem edition on the new events estate in Ma'ale Adumim.", "Un article de l'édition mynet Jérusalem sur le nouveau domaine événementiel de Maalé Adoumim."],
+  ["משפחת בוזגלו חגגה בר מצווה בגאמוס בפארק ישראל עם שישה דיג'יים וסשן זריחה עד הבוקר.", "The Buzaglo family celebrated a bar mitzvah at Gamos in Park Israel, with six DJs and a sunrise session until morning.", "La famille Buzaglo a célébré une bar mitzvah à GAMOS, Park Israel, avec six DJ et une session au lever du soleil jusqu'au matin."],
+  ["חתונת בתו של מנחם טוקר התקיימה באולמי גאמוס בפארק ישראל בהשתתפות רבנים ובכירי תעשיית המוזיקה.", "The wedding of Menachem Tucker's daughter took place at the Gamos halls in Park Israel, attended by rabbis and leading figures of the music industry.", "Le mariage de la fille de Menachem Tucker s'est tenu dans les salles GAMOS de Park Israel, en présence de rabbins et de personnalités de l'industrie musicale."],
+  ["השף אבי ביטון חגג יום הולדת 40 לחברתו בריזורט פרטי במתחם האירועים היוקרתי גאמוס במעלה אדומים.", "Chef Avi Biton celebrated his partner's 40th birthday at a private resort within the luxury Gamos events estate in Ma'ale Adumim.", "Le chef Avi Biton a célébré les 40 ans de sa compagne dans un resort privé au sein du domaine événementiel de luxe GAMOS, à Maalé Adoumim."],
+  ['נפתח קומפלקס אירועים בגודל 11 דונם בהשקעה של כ־100 מיליון ש"ח המכיל אולם, גן אירועים וריזורט עם 33 חדרים.', "An 11-dunam events complex has opened, with an investment of some 100 million shekels, comprising a hall, an events garden and a resort with 33 rooms.", "Un complexe événementiel de 11 dounams a ouvert, avec un investissement d'environ 100 millions de shekels, comprenant une salle, un jardin d'événements et un resort de 33 chambres."],
+  ["קומפלקס גאמוס שנפתח בפארק ישראל כולל אולם אירועים, גן מעוצב וריזורט עם 33 סוויטות.", "The Gamos complex that opened in Park Israel includes an events hall, a landscaped garden and a resort with 33 suites.", "Le complexe GAMOS, ouvert à Park Israel, comprend une salle d'événements, un jardin paysager et un resort de 33 suites."],
+  // Credits
+  ["צילום מתוך הכתבה · וואלה בית ועיצוב", "Photo from the article · Walla Home & Design", "Photo tirée de l'article · Walla Maison & Design"],
+  ["צילום מתוך הכתבה · mynet ירושלים", "Photo from the article · mynet Jerusalem", "Photo tirée de l'article · mynet Jérusalem"],
+  ["צילום מתוך הכתבה · מעריב Sport1", "Photo from the article · Maariv Sport1", "Photo tirée de l'article · Maariv Sport1"],
+  ["צילום: שלומי כהן · EMESS רדיו", "Photo: Shlomi Cohen · EMESS Radio", "Photo : Shlomi Cohen · EMESS Radio"],
+  ["צילום מתוך הכתבה · ynet", "Photo from the article · ynet", "Photo tirée de l'article · ynet"],
+  ["צילום מתוך הכתבה · וואלה מקומי", "Photo from the article · Walla Local", "Photo tirée de l'article · Walla Local"],
+  ["צילום מתוך הכתבה · ICE", "Photo from the article · ICE", "Photo tirée de l'article · ICE"],
+  // CTA
+  ["קראו את הכתבה", "Read the article", "Lire l'article"],
+  // Closer
+  ["קריאה לפעולה", "Call to action", "Appel à l'action"],
+  ["לתיאום ביקור באתר", "To arrange a visit to the venue", "Pour organiser une visite du domaine"],
+  ["החגיגה הבאה", "The next celebration", "La prochaine fête"],
+  ["אצלכם.", "at your place.", "chez vous."],
+  ["חזרה לדף הבית", "Back to homepage", "Retour à l'accueil"],
+  // Footer
+  ["לדף הבית →", "To homepage →", "Vers l'accueil →"],
+  // Card image alts (LRM-stripped keys)
+  ["מתחם גאמוס בפארק ישראל, צילום מתוך הכתבה בוואלה בית ועיצוב", "The Gamos estate in Park Israel, a photo from the Walla Home & Design article", "Le domaine GAMOS à Park Israel, photo tirée de l'article de Walla Maison & Design"],
+  ["מתחם גאמוס, צילום מתוך הכתבה בmynet ירושלים", "The Gamos estate, a photo from the mynet Jerusalem article", "Le domaine GAMOS, photo tirée de l'article de mynet Jérusalem"],
+  ["החגיגה של משפחת בוזגלו במתחם גאמוס, צילום מתוך הכתבה בSport1", "The Buzaglo family's celebration at the Gamos estate, a photo from the Sport1 article", "La célébration de la famille Buzaglo au domaine GAMOS, photo tirée de l'article de Sport1"],
+  ["חתונת בתו של מנחם טוקר באולמי גאמוס, צילום: שלומי כהן", "The wedding of Menachem Tucker's daughter at the Gamos halls, photo: Shlomi Cohen", "Le mariage de la fille de Menachem Tucker dans les salles GAMOS, photo : Shlomi Cohen"],
+  ["השף אבי ביטון, צילום מתוך הכתבה בynet", "Chef Avi Biton, a photo from the ynet article", "Le chef Avi Biton, photo tirée de l'article de ynet"],
+  ["מתחם מעוצב בהשראת דובאי לחתונות ואירועים, צילום מתוך הכתבה בוואלה מקומי", "A Dubai-inspired estate for weddings and events, a photo from the Walla Local article", "Un domaine d'inspiration Dubaï pour mariages et événements, photo tirée de l'article de Walla Local"],
+  ["מתחם גאמוס בפארק ישראל, צילום מתוך הכתבה בICE", "The Gamos estate in Park Israel, a photo from the ICE article", "Le domaine GAMOS à Park Israel, photo tirée de l'article de ICE"],
 ];
 
 // Validate FIRST: a row missing its French (or English) cell would otherwise

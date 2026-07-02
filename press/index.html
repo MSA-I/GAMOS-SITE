@@ -68,6 +68,7 @@
   <!-- Stylesheets: chrome (reveals + texture-text — site brand typography system) -->
   <link rel="stylesheet" href="/css/sections/motion-reveals.css">
   <link rel="stylesheet" href="/css/components/texture-text.css">
+  <link rel="stylesheet" href="/css/components/lang-toggle.css">
 
   <!-- Stylesheets: page-scoped -->
   <link rel="stylesheet" href="/css/pages/press.css">
@@ -92,6 +93,11 @@
     <span class="press-home-link__arrow" aria-hidden="true">→</span>
     <span class="press-home-link__text">חזרה לאתר</span>
   </a>
+
+  <!-- Language toggle (HE/EN/FR) — this page has no nav, so js/i18n.js injects the
+       segmented control into this floating host. Mirrors the home link, opposite
+       corner. -->
+  <div class="press-lang" data-lang-toggle></div>
 
   <!-- ========================================================================
        HERO — full-bleed photograph + meta strip + display headline + scroll cue
@@ -348,7 +354,7 @@
         <div class="press-card__shade" aria-hidden="true"></div>
         <div class="press-card__topline">
           <span class="press-card__index" dir="ltr" aria-hidden="true">06 / 07</span>
-          <span class="press-card__pill btn--chip">פתיחה</span>
+          <span class="press-card__pill btn--chip">פתיחת המתחם</span>
         </div>
         <div class="press-card__content">
           <p class="press-card__meta">
@@ -382,7 +388,7 @@
         <div class="press-card__shade" aria-hidden="true"></div>
         <div class="press-card__topline">
           <span class="press-card__index" dir="ltr" aria-hidden="true">07 / 07</span>
-          <span class="press-card__pill btn--chip">פתיחה</span>
+          <span class="press-card__pill btn--chip">פתיחת המתחם</span>
         </div>
         <div class="press-card__content">
           <p class="press-card__meta">

@@ -76,7 +76,11 @@ const state = {
 // which \s matches), trims.
 // ---------------------------------------------------------------------------
 function canon(s) {
-  return String(s).replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+  return String(s)
+    .replace(/&nbsp;/g, " ")
+    .replace(/[\u200e\u200f\u200b]/g, "") // drop invisible bidi marks (LRM/RLM/ZWSP)
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 // ---------------------------------------------------------------------------
@@ -278,11 +282,7 @@ const GLOBE_SVG =
   '<path d="M12 3c2.6 2.6 3.9 5.8 3.9 9s-1.3 6.4-3.9 9c-2.6-2.6-3.9-5.8-3.9-9S9.4 5.6 12 3z"/></svg>';
 
 function injectToggle() {
-  const list = document.querySelector(".site-nav__links");
-  if (!list || list.querySelector(".site-nav__lang")) return;
-  const li = document.createElement("li");
-  li.className = "site-nav__lang-item";
-  li.innerHTML =
+  const group =
     '<div class="site-nav__lang" role="group" aria-label="Language · שפה">' +
     GLOBE_SVG +
     '<button type="button" class="site-nav__lang-opt" data-lang-set="he" lang="he">עב</button>' +
@@ -291,7 +291,19 @@ function injectToggle() {
     '<span class="site-nav__lang-sep" aria-hidden="true"></span>' +
     '<button type="button" class="site-nav__lang-opt" data-lang-set="fr" lang="fr">FR</button>' +
     "</div>";
-  list.appendChild(li);
+  const list = document.querySelector(".site-nav__links");
+  if (list) {
+    if (list.querySelector(".site-nav__lang")) return;
+    const li = document.createElement("li");
+    li.className = "site-nav__lang-item";
+    li.innerHTML = group;
+    list.appendChild(li);
+    return;
+  }
+  // Fallback for pages with no site-nav (e.g. /press/): a [data-lang-toggle]
+  // host receives the segmented control directly (no <li> wrapper).
+  const host = document.querySelector("[data-lang-toggle]");
+  if (host && !host.querySelector(".site-nav__lang")) host.innerHTML = group;
 }
 
 function onToggleClick(event) {

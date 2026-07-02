@@ -134,6 +134,16 @@ html:not([data-press-hero="true"]) .press-home-link:focus-visible {
 }
 
 
+/* Language toggle — floats opposite the home link (home = top-inline-end, this =
+   top-inline-start). js/i18n.js injects the .site-nav__lang control into it. */
+.press-lang {
+  position: fixed;
+  inset-block-start: clamp(20px, 3vh, 36px);
+  inset-inline-start: clamp(20px, 3vw, 40px);
+  z-index: 200;
+}
+
+
 /* ---------------------------------------------------------------------------
    3. HERO — full-bleed photograph + meta strip + display headline + scroll cue
       Covers the viewport edge-to-edge from y=0 (no nav above).

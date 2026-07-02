@@ -12,10 +12,15 @@
  * editorial intro on ivory. We toggle [data-press-hero] on <html> for that.
  */
 
+import * as i18n from "./i18n.js";
 import * as reveals from "./reveals.js";
 import * as pressShader from "./press-shader.js";
 
+// i18n first: it injects the language toggle into [data-lang-toggle] and applies
+// the saved/detected locale before reveals/shader run. Same /js module as the
+// main page → an EN/FR choice made there follows the visitor here (localStorage).
 const MODULES = [
+  ["i18n", i18n],
   ["reveals", reveals],
   ["press-shader", pressShader],
 ];
