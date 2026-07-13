@@ -218,15 +218,12 @@
   <!-- GSAP 3.15.0 (self-hosted; powers cinematic scroll + parallax in
        js/scrollytelling.js AND the scroll-pinned hero in js/hero-scene.js).
        DrawSVGPlugin + SplitText (now-free GSAP plugins) drive the hero's
-       letter-stroke-on + title word-stagger, exactly as the sandbox source.
-       ScrambleTextPlugin (2026-07-13) drives the #events hover-list gallery
-       Hebrew text scramble (js/events-gallery.js). -->
+       letter-stroke-on + title word-stagger, exactly as the sandbox source. -->
   <script defer src="/assets/vendor/gsap.min.js"></script>
   <script defer src="/assets/vendor/ScrollToPlugin.min.js"></script>
   <script defer src="/assets/vendor/ScrollTrigger.min.js"></script>
   <script defer src="/assets/vendor/DrawSVGPlugin.min.js"></script>
   <script defer src="/assets/vendor/SplitText.min.js"></script>
-  <script defer src="/assets/vendor/ScrambleTextPlugin.min.js"></script>
 
   <!-- Lenis (self-hosted, ~18KB; Constitution §2 — DESKTOP-ONLY smooth scroll).
        Powers js/smooth-scroll.js. defer → window.Lenis is ready before main.js.
@@ -1483,16 +1480,17 @@
     </section>
 
     <!-- ====================================================================
-         #events — סוגי אירועים · hover-list gallery (2026-07-13)
-         Vanilla port of the "Music Portfolio" hover-list template: rows of
-         event types; hovering (desktop) / scrolling through the center band
-         (mobile, IO in js/events-gallery.js) swaps a scale-in background
-         image, dims siblings, and scrambles the row text with Hebrew glyphs
-         (GSAP ScrambleTextPlugin). Rows are links to #contact — single tap
-         always navigates; stable aria-label so screen readers never hear
-         mid-scramble glyphs. Images swap via data-image on each <li>.
-         Replaced the <details> accordion (js/accordions.js +
-         css/sections/motion-accordions.css kept on disk as legacy).
+         #events — סוגי אירועים · mouse-image-distortion gallery (2026-07-13 v2)
+         1:1 vanilla port of olivierlarose/mouse-image-distortion (user-chosen
+         reference; the original is Next.js + R3F): full-width bordered rows of
+         large event-type titles; hovering a row fades in a WebGL image plane
+         that FOLLOWS the mouse with a jelly distortion driven by pointer
+         velocity (verbatim shaders — sin(uv*PI) * delta * amplitude — lerp
+         0.1, alpha 0.2s). Raw WebGL1, zero deps (§2 shader clause, path א).
+         On coarse pointers the plane tracks the scroll-activated center-band
+         row instead of the mouse (§13 rule 8). Rows stay links to #contact.
+         Images swap via data-image on each <li>. The previous hover-list
+         (bg swap + ScrambleText) was replaced by this look — see git history.
     ==================================================================== -->
     <section id="events" class="events" data-bg="dark" aria-labelledby="events-title">
       <div class="events__inner" data-stagger>
@@ -1507,75 +1505,49 @@
         </header>
 
         <div class="events__stage" data-events-stage>
-          <div class="events__bg" aria-hidden="true">
-            <div class="events__bg-img" data-events-bg></div>
-          </div>
+          <canvas class="events__canvas" data-events-canvas aria-hidden="true"></canvas>
 
           <ul class="events__list" role="list" data-events-list>
             <li class="events__row" data-image="/assets/images/gallery/03.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 160ms;">
               <a class="events__link" href="#contact" data-cta="events-wedding"
                  aria-label="חתונות — באולם, בגן או במתחם כולו, עד 1000 מוזמנים — לתיאום סיור">
-                <span class="events__cell events__cell--idx" aria-hidden="true"><bdi>01</bdi></span>
-                <span class="events__cell events__cell--name">חתונות</span>
-                <span class="events__cell events__cell--desc">באולם, בגן או במתחם כולו</span>
-                <span class="events__cell events__cell--tag">ליווי אישי</span>
-                <span class="events__cell events__cell--meta">עד 1000 מוזמנים</span>
+                <span class="events__name">חתונות</span>
               </a>
             </li>
             <li class="events__row" data-image="/assets/images/gallery/07.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 240ms;">
               <a class="events__link" href="#contact" data-cta="events-mitzvah"
                  aria-label="בר ובת מצווה — חגיגה שמרגשת את כל הדורות, תוכן ואטרקציות — לתיאום סיור">
-                <span class="events__cell events__cell--idx" aria-hidden="true"><bdi>02</bdi></span>
-                <span class="events__cell events__cell--name">בר ובת מצווה</span>
-                <span class="events__cell events__cell--desc">חגיגה שמרגשת את כל הדורות</span>
-                <span class="events__cell events__cell--tag">תוכן ואטרקציות</span>
-                <span class="events__cell events__cell--meta">מתחמים מותאמים</span>
+                <span class="events__name">בר ובת מצווה</span>
               </a>
             </li>
             <li class="events__row" data-image="/assets/images/gallery/11.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 320ms;">
               <a class="events__link" href="#contact" data-cta="events-brit"
                  aria-label="ברית ובריתה — אירוע משפחתי באווירה אלגנטית, קולינריה איכותית — לתיאום סיור">
-                <span class="events__cell events__cell--idx" aria-hidden="true"><bdi>03</bdi></span>
-                <span class="events__cell events__cell--name">ברית ובריתה</span>
-                <span class="events__cell events__cell--desc">אירוע משפחתי באווירה אלגנטית</span>
-                <span class="events__cell events__cell--tag">אירוח מוקפד</span>
-                <span class="events__cell events__cell--meta">קולינריה איכותית</span>
+                <span class="events__name">ברית ובריתה</span>
               </a>
             </li>
             <li class="events__row" data-image="/assets/images/gallery/15.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 400ms;">
               <a class="events__link" href="#contact" data-cta="events-corporate"
                  aria-label="אירועי חברה — כנסים, השקות וערבי גיבוש, הפקה מלאה — לתיאום סיור">
-                <span class="events__cell events__cell--idx" aria-hidden="true"><bdi>04</bdi></span>
-                <span class="events__cell events__cell--name">אירועי חברה</span>
-                <span class="events__cell events__cell--desc">כנסים, השקות וערבי גיבוש</span>
-                <span class="events__cell events__cell--tag">הפקה מלאה</span>
-                <span class="events__cell events__cell--meta">פתרונות מותאמים</span>
+                <span class="events__name">אירועי חברה</span>
               </a>
             </li>
             <li class="events__row" data-image="/assets/images/gallery/19.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 480ms;">
               <a class="events__link" href="#contact" data-cta="events-private"
                  aria-label="אירועים פרטיים — ימי הולדת וחגיגות משפחתיות, במה מרשימה — לתיאום סיור">
-                <span class="events__cell events__cell--idx" aria-hidden="true"><bdi>05</bdi></span>
-                <span class="events__cell events__cell--name">אירועים פרטיים</span>
-                <span class="events__cell events__cell--desc">ימי הולדת וחגיגות משפחתיות</span>
-                <span class="events__cell events__cell--tag">במה מרשימה</span>
-                <span class="events__cell events__cell--meta">כל קונספט</span>
+                <span class="events__name">אירועים פרטיים</span>
               </a>
             </li>
             <li class="events__row" data-image="/assets/images/shabbat-chatan/03.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 560ms;">
               <a class="events__link" href="#contact" data-cta="events-shabbat"
                  aria-label="שבתות חתן — המתחם כולו שמור רק לכם, סוויטות ובריכה, סוף שבוע מלא — לתיאום סיור">
-                <span class="events__cell events__cell--idx" aria-hidden="true"><bdi>06</bdi></span>
-                <span class="events__cell events__cell--name">שבתות חתן</span>
-                <span class="events__cell events__cell--desc">המתחם כולו שמור רק לכם</span>
-                <span class="events__cell events__cell--tag">סוויטות ובריכה</span>
-                <span class="events__cell events__cell--meta">סוף שבוע מלא</span>
+                <span class="events__name">שבתות חתן</span>
               </a>
             </li>
           </ul>

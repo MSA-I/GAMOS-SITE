@@ -1,18 +1,16 @@
 /* ===========================================================================
-   events.css — #events "סוגי אירועים" hover-list gallery (2026-07-13)
+   events.css — #events "סוגי אירועים" mouse-image-distortion gallery
+   (2026-07-13 v2 — replaces the hover-list look; see git history)
 
-   Vanilla port of the "Music Portfolio" hover-list template, GAMOS skin:
-   dark ink-deep section; rows of event types; the active row (hover /
-   focus-visible on desktop, scroll-center on mobile via js/events-gallery.js)
-   swaps a scale-in background image behind the list and dims its siblings.
-   Text scramble lives in JS (GSAP ScrambleTextPlugin, Hebrew glyphs).
+   1:1 vanilla skin of olivierlarose/mouse-image-distortion: full-width
+   bordered rows of large event-type titles (template: text-[4vw] p-5
+   border-t, ul border-b, mix-blend-difference) over a WebGL canvas where
+   the hovered row's image follows the mouse with a jelly distortion
+   (js/events-gallery.js — raw WebGL1, verbatim template shaders).
 
-   The 0.6s / 0.8s durations + cubic-bezier(.25,.46,.45,.94) replicate the
-   reference template exactly. Everything else rides tokens; reduced-motion
-   kills the scale.
-
-   RTL: grid + logical properties only — no physical left/right anywhere.
-   Replaces the <details> accordion styles (see git history / accordions.js).
+   The list sits ABOVE the canvas with mix-blend-mode: difference, exactly
+   like the template (text inverts over the bright image, stays ivory-ish
+   on the ink-deep ground). RTL: logical properties only.
    ========================================================================= */
 
 .events {
@@ -27,89 +25,45 @@
 }
 
 /* Eyebrow on ink-deep uses --brass-glow — same documented on-dark exception
-   as culinary.css (plain --brass is too dim on this background). Texture only
-   at display sizes; texture-text.css picks typo-on-dark via data-bg="dark". */
+   as culinary.css (plain --brass is too dim on this background). */
 .events .section-header__eyebrow { color: var(--brass-glow); }
 
-/* ---- Stage: positioning context for the floating background image ---- */
+/* ---- Stage ---- */
 .events__stage {
   position: relative;
   margin-block-start: var(--space-12);
 }
 
-/* Background image centered via grid (RTL-safe; no translate(-50%,-50%)). */
-.events__bg {
+/* The distortion plane. Decorative; never intercepts the pointer. */
+.events__canvas {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
+  inline-size: 100%;
+  block-size: 100%;
   pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
+  z-index: 1;
 }
 
-.events__bg-img {
-  position: relative;
-  inline-size: min(44vw, 620px);
-  aspect-ratio: 4 / 3;
-  background-size: cover;
-  background-position: center;
-  border-radius: var(--radius-md);
-  opacity: 0;
-  transform: scale(1.2);
-  transition:
-    opacity 0.6s ease,
-    transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* Ink scrim over the photo so row text stays readable while it floats past. */
-.events__bg-img::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: color-mix(in srgb, var(--ink-deep) 35%, transparent);
-}
-
-.events__bg-img.is-visible {
-  opacity: 0.9;
-  transform: scale(1);
-}
-
-/* ---- Row list ---- */
+/* ---- Row list (template: ul border-b > li text-[4vw] p-5 border-t) ---- */
 .events__list {
   list-style: none;
   margin: 0;
   padding: 0;
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  mix-blend-mode: difference;
+  border-block-end: 1px solid color-mix(in srgb, var(--ivory) 40%, transparent);
 }
 
 .events__row {
-  border-block-end: 1px solid color-mix(in srgb, var(--brass) 25%, transparent);
-  transition: opacity var(--dur-slow) var(--ease-out-cinema);
+  border-block-start: 1px solid color-mix(in srgb, var(--ivory) 40%, transparent);
 }
-
-.events__row:first-child {
-  border-block-start: 1px solid color-mix(in srgb, var(--brass) 25%, transparent);
-}
-
-/* Sibling dimming. :not([data-reveal]) keeps rows whose entrance hasn't run
-   yet fully hidden (js/events-gallery.js strips data-reveal after reveal, so
-   revealed rows always match). Desktop hover = transient 0.25; the mobile
-   scroll-driven variant is a resting state, so mobile/css/events.css raises
-   the floor to keep link text AA-readable (§9). */
-.events__list.has-active .events__row:not(.is-active):not([data-reveal]) { opacity: 0.25; }
-.events__list.has-active .events__row.is-active { opacity: 1; }
 
 .events__link {
-  display: grid;
-  grid-template-columns: 3ch 1.4fr 1.6fr 1fr 1fr;
-  align-items: baseline;
-  gap: var(--space-6);
-  padding-block: var(--space-6);
+  display: block;
+  padding: var(--space-5);
   text-decoration: none;
-  color: var(--fg-on-dark);
+  color: var(--ivory);
 }
 
 .events__link:focus-visible {
@@ -118,42 +72,9 @@
   border-radius: var(--radius-sm);
 }
 
-.events__cell { min-inline-size: 0; }
-
-.events__cell--idx {
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  color: var(--brass);
-  letter-spacing: var(--tracking-wide);
-}
-
-.events__cell--name {
+.events__name {
   font-family: var(--font-display-he);
-  font-weight: var(--fw-bold);
-  font-size: clamp(1.5rem, 2.6vw, 2.4rem);
-  line-height: 1.1;
-}
-
-.events__cell--desc,
-.events__cell--tag,
-.events__cell--meta {
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  color: var(--fg-on-dark-muted);
-}
-
-.events__cell--tag,
-.events__cell--meta {
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-}
-
-/* ---- Reduced motion: static crossfade only, no scale, no dim delay ---- */
-@media (prefers-reduced-motion: reduce) {
-  .events__bg-img {
-    transform: none;
-    transition: opacity 0.01ms;
-  }
-  .events__row { transition: none; }
+  font-weight: var(--fw-medium);
+  font-size: clamp(2rem, 4vw, 4.25rem); /* template: text-[4vw] */
+  line-height: 1.15;
 }

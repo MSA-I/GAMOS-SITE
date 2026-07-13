@@ -28,11 +28,15 @@
   "בופה"); `buffet-parallax` הוסר מ-MODULES.
 - **`#shabbat-chatan` בוטל** — מיוצג כפריט בגלריית `#events`; בניווט "סוגי אירועים"
   תפס את מקומו (הוסרה הכפילות "אירועים").
-- **`#events` חדש** — hover-list gallery (פורט וונילה של תבנית Music Portfolio):
-  רקע scale-in מתחלף, dim-siblings, scramble עברי (ScrambleTextPlugin 3.15.0,
-  vendor חדש), idle flicker; במובייל/מסכי-מגע הפעלה בגלילה (IO center-band) +
-  rewire על שינוי breakpoint. `js/events-gallery.js` + `css/sections/events.css`
-  (שכתוב) + `mobile/css/events.css`.
+- **`#events` חדש** — **mouse-image-distortion gallery** (בחירת משתמש: פורט
+  וונילה 1:1 של `olivierlarose/mouse-image-distortion`; המקור Next.js+R3F):
+  שורות שמות-אירוע ענקיות עם borders + mix-blend-difference, ו-plane של WebGL
+  (raw WebGL1, אפס תלות — §2 clause WebGL מסלול א) שעוקב אחרי העכבר עם עיוות-
+  ג'לי לפי מהירות (השיידרים המקוריים מילולית, lerp 0.1, fade 0.2s); במובייל/
+  מסכי-מגע ה-plane עוקב אחרי השורה הפעילה בגלילה (IO center-band) + rewire על
+  שינוי breakpoint. `js/events-gallery.js` + `css/sections/events.css` (שכתוב)
+  + `mobile/css/events.css`. (גרסת-ביניים באותו יום — hover-list עם ScrambleText
+  — הוחלפה; הפלאגין הוסר מה-vendor.)
 - **סטטים של `#why-gamos`** — טקסטורת typo-on-light (כמו about).
 - **ביקורת קוד (8 זוויות) יושמה:** שימור זהות text-nodes מול i18n, strip של
   data-reveal אחרי entrance (מונע קונפליקט transitions), טעינת תמונות עצלה
