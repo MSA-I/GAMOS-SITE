@@ -19,7 +19,7 @@ import * as heroScene           from "./hero-scene.js";     // 2026-06-15 — v1
 import * as scrollScene         from "./scroll-scene.js";
 import * as portals             from "./portals.js";
 import * as reveals             from "./reveals.js";
-import * as eventsGallery       from "./events-gallery.js"; // 2026-07-13 — #events mouse-image-distortion gallery (raw WebGL plane follows the pointer); replaced accordions.js (kept as legacy)
+import * as eventsGallery       from "./events-gallery.js"; // 2026-07-13 — #events editorial fixed-preview gallery (DOM+CSS, no WebGL); replaced accordions.js (kept as legacy)
 import * as slider              from "./slider.js";
 import * as loadingOverlay      from "./loading-overlay.js";
 import * as sideDotNav          from "./side-dot-nav.js";
@@ -66,7 +66,7 @@ const MODULES = [
   ["side-dot-nav",        sideDotNav],
   ["gallery-masonry",     galleryMasonry], // #gallery — row-span masonry sizing (before reveals so spans are set first)
   ["reveals",             reveals],
-  ["events-gallery",      eventsGallery], // 2026-07-13: #events mouse-distortion gallery (raw WebGL; after reveals so the DOM is settled)
+  ["events-gallery",      eventsGallery], // 2026-07-13: #events fixed-preview gallery (DOM+CSS; after reveals so the DOM is settled)
   ["directions-map",      directionsMap], // 2026-06-10: #routes Leaflet map (after reveals so [data-reveal] is set up)
   ["contact-map-cue",     contactMapCue], // 2026-06-22: #contact scroll-cue → reveal the #routes map (both desktop + mobile)
   ["slider",              slider],

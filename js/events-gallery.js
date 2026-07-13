@@ -67,27 +67,50 @@ function warmImages() {
   }
 }
 
-/* ---- Panel swap: incoming layer wipes in over the outgoing one ---- */
+/* ---- Panel swap: incoming layer wipes in OVER the still-visible outgoing
+   one (z-index toggle), which is hidden only after the wipe completes — the
+   panel never shows a blank frame, even during rapid hover sweeps (a swap
+   arriving mid-wipe first snaps the current wipe to its final state so the
+   panel stays fully covered). ---- */
+
+const WIPE_MS = 760; // clip-path 700ms + headroom
+
+let _swapTimer = 0;
+
+/* Complete a layer's in-flight transition instantly (state unchanged). */
+function snapLayer(layer) {
+  layer.classList.add("no-transition");
+  void layer.offsetWidth;
+  layer.classList.remove("no-transition");
+}
+
+/* Reset a layer to its hidden state without animating a reverse wipe. */
+function hideLayer(layer) {
+  layer.classList.add("no-transition");
+  layer.classList.remove("is-shown");
+  void layer.offsetWidth;
+  layer.classList.remove("no-transition");
+}
 
 function showImage(src, instant) {
   const back = 1 - _front;
   const incoming = _layers[back];
   const outgoing = _layers[_front];
+  window.clearTimeout(_swapTimer);
+  snapLayer(outgoing);  // mid-wipe? complete it — full coverage before we start
+  hideLayer(incoming);  // also finalizes a pending deferred hide
   incoming.style.backgroundImage = `url("${src}")`;
+  incoming.style.zIndex = "2";
+  outgoing.style.zIndex = "1";
   if (instant) {
-    // First paint: no wipe, just show it.
     incoming.classList.add("is-shown", "no-transition");
     void incoming.offsetWidth; // commit before re-enabling transitions
     incoming.classList.remove("no-transition");
+    hideLayer(outgoing);
   } else {
-    incoming.classList.add("is-shown"); // CSS transitions clip-path + scale
+    incoming.classList.add("is-shown"); // CSS wipes it in over the outgoing
+    _swapTimer = window.setTimeout(() => hideLayer(outgoing), WIPE_MS);
   }
-  // The outgoing layer resets beneath once the wipe is over; hiding it with
-  // transitions off avoids a reverse-wipe flash.
-  outgoing.classList.add("no-transition");
-  outgoing.classList.remove("is-shown");
-  void outgoing.offsetWidth;
-  outgoing.classList.remove("no-transition");
   _front = back;
 }
 
@@ -160,9 +183,12 @@ export function destroy() {
   if (_mqlWidth) { _mqlWidth.removeEventListener("change", onBreakpointChange); _mqlWidth = null; }
   if (_mqlHover) { _mqlHover.removeEventListener("change", onBreakpointChange); _mqlHover = null; }
   if (_preIO) { _preIO.disconnect(); _preIO = null; }
+  window.clearTimeout(_swapTimer);
+  _swapTimer = 0;
   for (const layer of _layers) {
     layer.classList.remove("is-shown", "no-transition");
     layer.style.backgroundImage = "";
+    layer.style.zIndex = "";
   }
   for (const r of _rows) r.classList.remove("is-active");
   _stage = _list = _active = null;

@@ -350,8 +350,8 @@ Both are supporting sections. We picked `#rooms` because:
 - `#portals` — invisible chrome (portals reveal at hero progress 0.92, no separate section feel).
 - `#lounge` — see §9.1.
 - `#gallery` — overlaps with `#culinary` and `#rooms` visually; cuts noise.
-- `#events` — accordion list; user-controlled depth; less benefit from teleport.
-- `#kosher` — short compliance text; reachable via footer; not a destination.
+- `#events` — fixed-preview gallery (2026-07-13; was an accordion); user-controlled depth.
+- ~~`#kosher`~~ — retired 2026-07-13; the kashrut copy is a detail block inside `#contact`.
 - `#footer` — chrome, not content.
 
 These sections remain accessible via top-nav + footer-nav + scroll. The side-dot is a curated affordance, not a complete map.

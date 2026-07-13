@@ -116,24 +116,24 @@ NAV_PRIMARY = [
     ("גלריה",       "#gallery"),
     ("צור קשר",     "#contact"),
 ]
+# 2026-07-13: #kosher + #shabbat-chatan retired; "סוגי אירועים" sits after
+# gallery. Keep in sync with index.html nav + js/side-dot-nav.js SECTIONS.
 NAV_SECONDARY = [
     ("לאונג'",      "#lounge"),
     ("אודות",       "#about"),
     ("המלצות",      "#testimonials"),
-    ("אירועים",     "#events"),
-    ("כשרות",       "#kosher"),
+    ("סוגי אירועים", "#events"),
 ]
 SIDE_DOTS = [
     ("hero",            "פתיחה"),
+    ("why-gamos",       "למה גאמוס"),
     ("lounge",          "לאונג'"),
     ("culinary",        "קולינריה"),
-    ("shabbat-chatan",  "שבתות חתן"),
     ("rooms",           "חדרים"),
     ("about",           "אודות"),
     ("testimonials",    "המלצות"),
     ("gallery",         "גלריה"),
-    ("events",          "אירועים"),
-    ("kosher",          "כשרות"),
+    ("events",          "סוגי אירועים"),
     ("contact",         "צור קשר"),
 ]
 NAV_MISC = [
@@ -280,17 +280,8 @@ HOME_SECTIONS = [
              "שבת אירוח שלמה במתחם הריזורט: סעודות, חדרי לינה לכל המוזמנים, ובריכה צמודה לשבת המשפחה."),
         ],
     },
-    {
-        "id":      "#kosher",
-        "name":    "כשרות",
-        "eyebrow": "כשרות",
-        "h2":      "כשרות ורבנות",
-        "lede":    "—",
-        "items": [
-            ("גוף",
-             "המתחם פועל בכשרות בהשגחת רבנות מוסמכת, עם הפרדה מלאה בין בשרי לחלבי. תעודות הכשרות זמינות לעיון במשרדי המתחם."),
-        ],
-    },
+    # (2026-07-13) #kosher retired — its copy is a detail block inside
+    # #contact ("כשרות ורבנות", next to the accessibility note).
     {
         "id":      "#contact",
         "name":    "צור קשר — טופס + פרטי קשר",

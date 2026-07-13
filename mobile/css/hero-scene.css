@@ -35,14 +35,13 @@
   #hero.hero_root .hero_top { block-size: 100svh; }
 
   /* ----- SCRUB PACING: hero scroll track on mobile -------------------------
-     Faster scroll requested (2026-06-22): the hero scroll DISTANCE was cut so
-     the same cinematic beats (desert rise → letters fill → smoke → composer)
-     finish in less scrolling. Mobile track = 400vh (lengthened 2026-06-22 per
-     user: 300vh felt too rushed on a tall phone; desktop ≥768px = 320vh). The
-     reduced desert amplitude in js/hero-scene.js keeps the desert in frame across
-     the track. ScrollTrigger end:"bottom top" + the gamosHero progress stub both
-     derive from this height, so no JS change is needed. */
-  #hero.hero_root { block-size: 400vh; }
+     Mobile track = 350vh — the reference sandbox's own <768px value
+     (2026-07-13, user: 400vh scrolled too long vs the source site; history:
+     300vh felt too rushed 2026-06-22, 400vh overshot). The reduced desert
+     amplitude in js/hero-scene.js keeps the desert in frame across the track.
+     ScrollTrigger end:"bottom top" + the gamosHero progress stub both derive
+     from this height, so no JS change is needed. */
+  #hero.hero_root { block-size: 350vh; }
 
   /* ----- DESERT FILL FIX (2026-06-22) --------------------------------------
      subject.png is a very wide panorama (6240×1599, AR 3.9). With the base

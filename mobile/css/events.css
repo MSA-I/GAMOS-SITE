@@ -11,9 +11,15 @@
    loaded by native lazy-loading with the .half.webp source.
 
    §13: @media rules only. No desktop leakage.
-   ========================================================================= */
 
-@media (max-width: 768px) {
+   Gate note (2026-07-13 review fix): the query includes (hover: none) in
+   addition to ≤768px so it exactly mirrors the core module's coarse gate —
+   without it, wide touch devices (iPad portrait/landscape, >768px) got the
+   desktop two-column stage with a permanently EMPTY panel and collapsed
+   descriptions (the JS deliberately does nothing on coarse pointers).
+   Wherever the JS opts out, these cards apply. ========================== */
+
+@media (max-width: 768px), (hover: none) {
   /* The desktop preview panel is replaced by per-card images. */
   .events__preview { display: none; }
 

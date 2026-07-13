@@ -22,19 +22,19 @@ SRC_DOC  = r"C:\Users\art1\Desktop\GAMOS-SITE-תוכן.docx"
 DEST_DOC = r"C:\Users\art1\Desktop\GAMOS-SITE-תוכן + צילומי מסך.docx"
 
 # Map heading text (verbatim from doc) → screenshot filename in SHOTS dir.
+# 2026-07-13: renumbered to match scripts/export-screenshots.mjs after
+# #buffet/#shabbat-chatan/#kosher were retired (kosher copy lives in #contact).
 HEADING_TO_IMAGE = {
     # === עמוד הבית (Heading 2) ===
     "Hero — פתיחה  ·  #hero":                              "01-hero.png",
-    "לאונג' — קרוסלה תלת-ממדית  ·  #lounge":               "02-lounge.png",
-    "קולינריה — סקרול scene + 9 מנות  ·  #culinary":      "03-culinary.png",
-    "שבתות חתן — פרלקס אופקי  ·  #shabbat-chatan":         "04-shabbat-chatan.png",
-    "חדרי נופש — 10 חדרים  ·  #rooms":                     "05-rooms.png",
-    "Marquee — סרט נע (פס מעבר)  ·  marquee":              "06-marquee.png",
-    "אודות  ·  #about":                                    "07-about.png",
-    "המלצות — סליידר  ·  #testimonials":                  "08-testimonials.png",
-    "גלריה — מוזאיקה 8 תמונות  ·  #gallery":              "09-gallery.png",
-    "סוגי אירועים — אקורדיון  ·  #events":                 "10-events.png",
-    "כשרות  ·  #kosher":                                   "11-kosher.png",
+    "לאונג' — קרוסלה תלת-ממדית  ·  #lounge":               "04-lounge.png",
+    "קולינריה — סקרול scene + מנות  ·  #culinary":         "05-culinary.png",
+    "חדרי נופש — 10 חדרים  ·  #rooms":                     "06-rooms.png",
+    "Marquee — סרט נע (פס מעבר)  ·  marquee":              "07-marquee.png",
+    "אודות  ·  #about":                                    "08-about.png",
+    "המלצות — סליידר  ·  #testimonials":                  "09-testimonials.png",
+    "גלריה — מוזאיקה 8 תמונות  ·  #gallery":              "10-gallery.png",
+    "סוגי אירועים — גלריית פאנל  ·  #events":              "11-events.png",
     "צור קשר — טופס + פרטי קשר  ·  #contact":              "12-contact.png",
     "מסלולי הגעה — 3 מפות  ·  #routes":                    "13-routes.png",
 

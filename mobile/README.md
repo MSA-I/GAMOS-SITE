@@ -41,7 +41,8 @@ mobile/
 ├── css/                            ← @media overrides בלבד
 │   ├── lounge.css                    coverflow carousel ל-≤768px
 │   ├── shabbat-chatan.css            legacy (הסקציה בוטלה 2026-07-13; לא מוזרק)
-│   ├── events.css                    hover-list gallery — פריסת טלפון (2026-07-13)
+│   ├── events.css                    stacked cards — תמונה+שם+פירוט גלוי (v4, גם hover:none רחב)
+│   ├── kosher.css                    legacy (הסקציה בוטלה 2026-07-13; לא מוזרק)
 │   ├── culinary.css                  2-col grid ל-≤559px
 │   ├── hero-static.css               pill CTA buttons ל-≤768px
 │   ├── responsive-images.css         (placeholder; עיבוד עתידי)

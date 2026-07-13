@@ -43,24 +43,9 @@
      use texture-fill. */
 }
 
-/* ---------------------------------------------------------------------------
-   Kosher section title — texture-fill correction (mobile pass v3 fix)
-   ---------------------------------------------------------------------------
-   The desktop CSS at /css/components/texture-text.css groups
-   `.kosher .section-header__title` with the LIGHT-bg titles
-   (`--typo-on-light` = dark texture). But the kosher section ships with
-   `background: var(--bg-cocoa)` — a DARK surface — so the dark texture
-   disappears into the background and the title becomes invisible.
-
-   Force the LIGHT (cream) texture for the kosher title at all viewports.
-   Wrapped in @supports so browsers without background-clip:text fall
-   back to the solid `var(--fg-on-dark)` color set in /css/sections/kosher.css.
-   --------------------------------------------------------------------------- */
-@supports ((-webkit-background-clip: text) or (background-clip: text)) {
-  .kosher .section-header__title {
-    background-image: var(--typo-on-dark) !important;
-  }
-}
+/* (2026-07-13) The kosher title texture-flip block that lived here was
+   removed — the #kosher section was retired (its copy is a detail block in
+   #contact). See git history if the section ever returns. */
 
 /* ---------------------------------------------------------------------------
    Mobile: LIGHT-texture headings render as flat light text (no texture).
@@ -68,10 +53,8 @@
    User request 2026-07-01: the cream/gold `background-clip:text` fill
    (--typo-on-dark) reads muddy at phone sizes. Wherever the LIGHT texture is
    painted, show plain light text instead. Mirrors the light-texture selector
-   group in css/components/texture-text.css (lines 92-100) PLUS the kosher flip
-   forced above (line 60) — `.kosher .section-header__title` must be repeated
-   here (same specificity, declared later) to beat that !important rule.
-   Dark-texture headings on ivory backgrounds are untouched. Gated ≤768px. */
+   group in css/components/texture-text.css. Dark-texture headings on ivory
+   backgrounds are untouched. Gated ≤768px. */
 @media (max-width: 768px) {
   [data-bg="dark"] .section-header__title,
   [data-bg="dark"] .band__num,
@@ -79,7 +62,6 @@
   .culinary .section-header__title,
   .hero .section-header__title,
   .lounge__title,
-  .kosher .section-header__title,
   .texture-text--light {
     background-image: none !important;
     -webkit-text-fill-color: var(--fg-on-dark) !important;

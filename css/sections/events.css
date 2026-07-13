@@ -38,9 +38,10 @@
   padding-inline: var(--gutter);
 }
 
-/* Eyebrow on ink-deep uses --brass-glow — same documented on-dark exception
-   as culinary.css (plain --brass is too dim on this background). */
-.events .section-header__eyebrow { color: var(--brass-glow); }
+/* Eyebrow on the TAUPE ground: brass-glow only reaches ~3.2:1 here (it
+   cleared 7:1 on the old ink-deep — the culinary exception doesn't carry
+   over), so the eyebrow goes ivory for AA (§9). */
+.events .section-header__eyebrow { color: var(--ivory); }
 
 /* ---- Stage: rows (inline-start) | preview panel (inline-end) ---- */
 .events__stage {
@@ -148,7 +149,9 @@
   font-family: var(--font-body);
   font-size: var(--text-sm);
   line-height: 1.7;
-  color: var(--fg-on-dark-muted);
+  /* ivory-94% — --fg-on-dark-muted (88%) sits exactly on the 4.5:1 AA
+     boundary against the taupe ground; small text needs headroom (§9). */
+  color: color-mix(in srgb, var(--ivory) 94%, transparent);
   opacity: 0;
   transition:
     opacity var(--dur-slow) var(--ease-out-cinema),
