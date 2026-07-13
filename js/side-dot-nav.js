@@ -47,6 +47,7 @@
 // visual top-to-bottom order on the right edge.
 const SECTIONS = [
   { id: "hero",         label: "פתיחה" },
+  { id: "why-gamos",    label: "למה גאמוס" },   // conversion pass 2026-07-13
   { id: "lounge",       label: "לאונג'" },
   { id: "culinary",     label: "קולינריה" },
   { id: "shabbat-chatan", label: "שבתות חתן" },

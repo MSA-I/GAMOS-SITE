@@ -1,0 +1,38 @@
+/* =====================================================================
+ * cta-band.css — reusable conversion band (2026-07-13 conversion pass)
+ *
+ * A slim, centered invitation + the primary/secondary CTA pair, repeated at
+ * the persuasion points the marketing critique named: end of #why-gamos and
+ * end of #testimonials. Buttons come from the canonical buttons.css
+ * line-language — this file only lays them out.
+ *
+ * Tokens only (§10.2): --font-body, --fw-medium, --fg-muted, --space-*.
+ * RTL-safe: flex + gap, logical padding.
+ * ===================================================================== */
+
+.cta-band {
+  text-align: center;
+  padding-block: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 4vw, 3rem);
+  padding-inline: var(--space-4, 1.5rem);
+}
+
+.cta-band__lede {
+  margin: 0 0 1.4rem;
+  font-family: var(--font-body);
+  font-weight: var(--fw-medium);
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  color: var(--fg-muted);
+  text-wrap: balance;
+}
+
+.cta-band__actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  flex-wrap: wrap;
+}
+
+/* Give the pair a touch more presence than the base 13px editorial scale. */
+.cta-band__actions .btn { font-size: 0.9375rem; }
+.cta-band__actions .btn--primary-lg { font-size: 1.0625rem; }

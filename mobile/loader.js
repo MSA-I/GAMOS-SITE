@@ -72,6 +72,8 @@
     "/mobile/css/interaction-hint.css", // 2026-06-30: phone tuning for brass affordance cues
     "/mobile/css/lang-switch.css",       // 2026-07-01: always-visible language FAB before nav reveals
     "/mobile/css/buttons.css",           // 2026-07-02: wrap long EN/FR CTAs so they don't clip off-screen
+    "/mobile/css/why-gamos.css",         // 2026-07-13: conversion pass — trust section fit ≤768px
+    "/mobile/css/cta-bar.css",           // 2026-07-13: conversion pass — fixed bottom action bar
   ];
 
   function injectStylesheets () {
@@ -241,10 +243,7 @@
   // The delegated click listener in i18n.js covers the whole document, so no
   // extra wiring is needed. FAB hides once html[data-nav-revealed] is set
   // (via /mobile/css/lang-switch.css).
-  function injectLangFab () {
-    if (typeof window.matchMedia === "function" &&
-        !window.matchMedia("(max-width: 768px)").matches) return;
-    if (document.querySelector(".mobile-lang-fab")) return;
+  function buildLangGroupHTML () {
     var GLOBE_SVG =
       '<svg class="site-nav__lang-globe" viewBox="0 0 24 24" width="15" height="15"' +
       ' fill="none" stroke="currentColor" stroke-width="1.35" aria-hidden="true">' +
@@ -254,9 +253,7 @@
     var heActive = lang === "he";
     var enActive = lang === "en";
     var frActive = lang === "fr";
-    var fab = document.createElement("div");
-    fab.className = "mobile-lang-fab";
-    fab.innerHTML =
+    return (
       '<div class="site-nav__lang" role="group" aria-label="Language \u00b7 \u05e9\u05e4\u05d4">' +
       GLOBE_SVG +
       '<button type="button" class="site-nav__lang-opt' + (heActive ? " is-active" : "") +
@@ -267,15 +264,96 @@
       '<span class="site-nav__lang-sep" aria-hidden="true"></span>' +
       '<button type="button" class="site-nav__lang-opt' + (frActive ? " is-active" : "") +
       '" data-lang-set="fr" lang="fr" aria-pressed="' + frActive + '">FR</button>' +
-      "</div>";
+      "</div>"
+    );
+  }
+
+  function injectLangFab () {
+    if (typeof window.matchMedia === "function" &&
+        !window.matchMedia("(max-width: 768px)").matches) return;
+    if (document.querySelector(".mobile-lang-fab")) return;
+    var fab = document.createElement("div");
+    fab.className = "mobile-lang-fab";
+    fab.innerHTML = buildLangGroupHTML();
     document.body.appendChild(fab);
+  }
+
+  // ---------------------------------------------------------------------------
+  // 7c. Language toggle IN the navbar  (2026-07-13, user request: "\u05d1\u05de\u05d5\u05d1\u05d9\u05d9\u05dc \u05ea\u05de\u05d9\u05d3
+  // \u05e6\u05e8\u05d9\u05da \u05e9\u05ea\u05d4\u05d9\u05d4 \u05d0\u05e4\u05e9\u05e8\u05d5\u05ea \u05dc\u05d4\u05d7\u05dc\u05e4\u05ea \u05e9\u05e4\u05d5\u05ea \u05d1-NAVBAR")
+  // ---------------------------------------------------------------------------
+  // The desktop bar carries the lang toggle as the last .site-nav__links <li>,
+  // but that list is display:none \u2264768px \u2014 so once the navbar reveals (and the
+  // FAB hides via lang-switch.css) the phone had NO visible switch. Inject a
+  // second .site-nav__lang group directly into .site-nav__inner, between the
+  // brand and the hamburger. js/i18n.js updates ALL .site-nav__lang groups and
+  // its click handling is document-delegated \u2014 zero extra wiring. Styled by
+  // mobile/css/lang-switch.css (\u00a713).
+  function injectNavbarLang () {
+    if (typeof window.matchMedia === "function" &&
+        !window.matchMedia("(max-width: 768px)").matches) return;
+    var inner = document.querySelector(".site-nav__inner");
+    if (!inner || inner.querySelector(".site-nav__lang--bar")) return;
+    var holder = document.createElement("div");
+    holder.className = "site-nav__lang-bar-slot";
+    holder.innerHTML = buildLangGroupHTML();
+    holder.firstChild.classList.add("site-nav__lang--bar");
+    var toggleBtn = inner.querySelector(".site-nav__toggle");
+    if (toggleBtn) inner.insertBefore(holder, toggleBtn);
+    else inner.appendChild(holder);
+  }
+
+  // ---------------------------------------------------------------------------
+  // 7b. Fixed bottom CTA bar  (2026-07-13, conversion pass)
+  // ---------------------------------------------------------------------------
+  // Marketing critique: conversion lived only in section 13/14 — phones need an
+  // always-available action bar. Three ≥44px targets: phone · WhatsApp · book-
+  // a-tour (#contact, the primary). Injected BEFORE main.js bootstrap (this
+  // script's DOMContentLoaded listener queues first), so js/i18n.js translates
+  // the labels and js/scrollytelling.js binds the #contact anchor for free.
+  // Styled by /mobile/css/cta-bar.css (§13: media-query rules only).
+  function injectCtaBar () {
+    if (typeof window.matchMedia === "function" &&
+        !window.matchMedia("(max-width: 768px)").matches) return;
+    if (document.querySelector(".mobile-cta-bar")) return;
+    var PHONE_SVG =
+      '<span class="mobile-cta-bar__icon" aria-hidden="true">' +
+      '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
+      '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.5 2.9.7a2 2 0 0 1 1.6 2z"/></svg></span>';
+    var WA_SVG =
+      '<span class="mobile-cta-bar__icon" aria-hidden="true">' +
+      '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
+      '<path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 21l2.2-5.4A8.5 8.5 0 1 1 21 11.5z"/>' +
+      '<path d="M9 9.5c.5 2.5 3 5 5.5 5.5l1-1.5-2-1-1 .5c-.8-.5-1.5-1.2-2-2l.5-1-1-2z"/></svg></span>';
+    var TOUR_SVG =
+      '<span class="mobile-cta-bar__icon" aria-hidden="true">' +
+      '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
+      '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/>' +
+      '<path d="M9.5 15.5l2 2 3.5-3.5"/></svg></span>';
+    var WA_HREF = "https://wa.me/972779972343?text=" +
+      "%D7%A9%D7%9C%D7%95%D7%9D%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%2F%D7%AA%20" +
+      "%D7%9C%D7%A7%D7%91%D7%9C%20%D7%A4%D7%A8%D7%98%D7%99%D7%9D%20%D7%A2%D7%9C%20%D7%90%D7%99%D7%A8%D7%95%D7%A2%20" +
+      "%D7%91%D7%92%D7%90%D7%9E%D7%95%D7%A1.";
+    var bar = document.createElement("nav");
+    bar.className = "mobile-cta-bar";
+    bar.setAttribute("aria-label", "פעולות מהירות");
+    bar.innerHTML =
+      '<a class="mobile-cta-bar__action" href="tel:+972779972343" data-cta="bar-phone">' +
+      PHONE_SVG + "<span>שיחה</span></a>" +
+      '<a class="mobile-cta-bar__action mobile-cta-bar__action--primary" href="#contact" data-cta="bar-tour">' +
+      TOUR_SVG + "<span>תיאום סיור</span></a>" +
+      '<a class="mobile-cta-bar__action" href="' + WA_HREF + '" target="_blank" rel="noopener noreferrer" data-cta="bar-whatsapp">' +
+      WA_SVG + "<span>וואטסאפ</span></a>";
+    document.body.appendChild(bar);
   }
 
   function domReady () {
     injectHalfSources();
     applyMobileRoutes();   // rewrites #hall-portal CTA hrefs → -mobile sub-app builds
     setupCulinaryMobileManifest();
+    injectCtaBar();        // fixed bottom conversion bar (before FAB, before main.js)
     injectLangFab();       // always-visible language toggle before navbar reveals
+    injectNavbarLang();    // 2026-07-13: lang toggle inside the navbar itself
     // injectCtaLabels() + injectHeroTapZones() retired 2026-06-15: the v10 hero
     // CTAs live in the #hall-portal composer as visible, finger-sized anchors
     // (clamp() widths, no occluding desert layer) — no tap-zone overlays or

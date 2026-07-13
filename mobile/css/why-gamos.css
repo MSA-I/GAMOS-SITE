@@ -1,0 +1,20 @@
+/* =========================================================================
+   mobile/css/why-gamos.css — ≤768px fit for the #why-gamos trust section
+   (conversion pass 2026-07-13). §13: media-query overrides ONLY.
+   ========================================================================= */
+
+@media (max-width: 768px) {
+  .why-gamos__stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+
+  .why-gamos__quotes {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .why-gamos__stat dd { font-size: 2rem; }
+}

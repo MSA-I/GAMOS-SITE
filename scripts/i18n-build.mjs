@@ -364,6 +364,27 @@ const PAIRS = [
   ["השף אבי ביטון, צילום מתוך הכתבה בynet", "Chef Avi Biton, a photo from the ynet article", "Le chef Avi Biton, photo tirée de l'article de ynet"],
   ["מתחם מעוצב בהשראת דובאי לחתונות ואירועים, צילום מתוך הכתבה בוואלה מקומי", "A Dubai-inspired estate for weddings and events, a photo from the Walla Local article", "Un domaine d'inspiration Dubaï pour mariages et événements, photo tirée de l'article de Walla Local"],
   ["מתחם גאמוס בפארק ישראל, צילום מתוך הכתבה בICE", "The Gamos estate in Park Israel, a photo from the ICE article", "Le domaine GAMOS à Park Israel, photo tirée de l'article de ICE"],
+  // Conversion pass (2026-07-13): CTA layer + trust line + bands + hints
+  ["תיאום סיור", "Book a Tour", "Réserver une visite"],
+  ["תיאום סיור ובדיקת תאריך", "Book a Tour & Check Your Date", "Réserver une visite et vérifier une date"],
+  ["דברו איתנו בוואטסאפ", "Chat with Us on WhatsApp", "Écrivez-nous sur WhatsApp"],
+  ["עד 1,000 אורחים · 33 סוויטות · בריכה וריזורט", "Up to 1,000 guests · 33 suites · Pool & Resort", "Jusqu'à 1 000 invités · 33 suites · Piscine et resort"],
+  ["רוצים לראות את המתחם מקרוב?", "Want to see the estate up close?", "Envie de découvrir le domaine de plus près ?"],
+  // Conversion pass (2026-07-13): #why-gamos trust section
+  ["למה גאמוס", "Why Gamos", "Pourquoi GAMOS"],
+  ["מתחם אירועים וריזורט מול נוף מדבר יהודה", "An Events Estate & Resort Facing the Judean Desert", "Un domaine d'événements et resort face au désert de Judée"],
+  ["מתחם האירועים של גאמוס ערוך לסעודה חגיגית מול נוף המדבר הפתוח", "The Gamos events estate set for a festive meal facing the open desert landscape", "Le domaine d'événements GAMOS dressé pour un repas de fête face au paysage désertique ouvert"],
+  ["סוויטות אירוח", "Guest Suites", "Suites"],
+  ["לבחור בגאמוס הייתה הבחירה הטובה ביותר שיכולנו לעשות! האוכל פצצה! שירות ברמה!", "Choosing Gamos was the best decision we could have made! The food is amazing! Top-level service!", "Choisir GAMOS a été la meilleure décision possible ! La cuisine est incroyable ! Un service de haut niveau !"],
+  ["זוהר דורון · חתונה", "Zohar Doron · Wedding", "Zohar Doron · Mariage"],
+  ["אוכל מצוין, מקום חדש ונקי, נוף מהמם, ונכונות של הצוות לזרום עם הבקשות שלנו.", "Excellent food, a new and spotless venue, a stunning view, and a team happy to go along with our requests.", "Une cuisine excellente, un lieu neuf et impeccable, une vue superbe, et une équipe prête à s'adapter à nos demandes."],
+  ["יעלי סבאג · בר־מצווה", "Yaeli Sabag · Bar Mitzvah", "Yaeli Sabag · Bar-mitsva"],
+  ["בואו לראות את המתחם מקרוב — הסיור לא מחייב, הרושם כן.", "Come see the estate up close — the tour is free of obligation; the impression isn't.", "Venez découvrir le domaine de plus près — la visite est sans engagement, l'impression ne l'est pas."],
+  // Conversion pass (2026-07-13): interaction-language unification hints
+  ["לחצו על תמונה להגדלה", "Tap an image to enlarge", "Appuyez sur une image pour l'agrandir"],
+  // Conversion pass (2026-07-13): mobile bottom CTA bar labels
+  ["שיחה", "Call", "Appeler"],
+  ["וואטסאפ", "WhatsApp", "WhatsApp"],
 ];
 
 // Validate FIRST: a row missing its French (or English) cell would otherwise

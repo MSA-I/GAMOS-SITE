@@ -57,7 +57,11 @@
      a fixed 4-column GRID → a BALANCED, even 4 + 4 block, centred. Grid (not
      flex-wrap) keeps the columns even regardless of the active dot being a wider
      brass pill (which threw the flex-wrap onto uneven 3 + 4 + 1 lines). */
-  .testimonials__dots {
+  /* [data-slider-dots] added 2026-07-13: the core fix that un-absoluted the
+     dots (css/sections/testimonials.css) uses specificity (0,2,0), so this
+     grid re-layout must match it or the dots collapse back to one overflowing
+     flex row. */
+  .testimonials__dots[data-slider-dots] {
     order: 1;
     flex-basis: 100%;
     display: grid;

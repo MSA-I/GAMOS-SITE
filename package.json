@@ -14,6 +14,7 @@
     "build:rooms": "cd rooms && npm install && npm run build",
     "build:mobile": "node scripts/build-mobile-index.mjs",
     "build:i18n": "node scripts/i18n-build.mjs",
+    "build:brand": "node scripts/make-favicon.mjs && node scripts/make-social-preview.mjs",
     "build": "npm run build:i18n && npm run build:mobile && npm run build:halls && npm run build:rooms",
     "deploy:cf": "node scripts/deploy-cloudflare.mjs",
     "deploy:cf:prod": "node scripts/deploy-cloudflare.mjs --prod",

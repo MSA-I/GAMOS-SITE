@@ -21,10 +21,33 @@
   }
 
   /* Keep the FAB visible through the hero (the user wants the language switch
-     reachable IN the hero). Only hand off to the nav's own toggle once we're
-     PAST the hero — i.e. hide the FAB when the navbar is revealed AND we are no
-     longer in hero-mode. During hero-mode the FAB stays even if the nav peeks. */
-  html[data-nav-revealed="true"]:not([data-hero-mode="true"]) .mobile-lang-fab {
+     reachable IN the hero, where the navbar is hidden). PAST the hero the
+     navbar carries its own permanent lang toggle (injectNavbarLang, 2026-07-13)
+     — so the FAB now hides whenever hero-mode is off, unconditionally. (The
+     old data-nav-revealed condition left windows where BOTH toggles showed,
+     overlapping at the top corner.) */
+  html:not([data-hero-mode="true"]) .mobile-lang-fab {
     display: none;
   }
+
+  /* --- Lang toggle inside the navbar (2026-07-13, user request) ------------
+     Injected by loader injectNavbarLang() between the brand and the hamburger.
+     The desktop bar's own toggle lives in .site-nav__links, which is
+     display:none ≤768px — this slot is the phone's permanent in-bar switch
+     (the FAB still covers the hero, where the navbar is hidden). */
+  .site-nav__lang-bar-slot {
+    display: flex;
+    align-items: center;
+    /* Sit against the hamburger; brand keeps the other end (space-between). */
+    margin-inline-start: auto;
+    margin-inline-end: 0.6rem;
+  }
+  .site-nav__lang-bar-slot .site-nav__lang--bar { flex: none; }
+}
+
+/* Desktop safety: the slot is only injected ≤768px, but if a resized session
+   carries it up, keep it out of the desktop bar (the links-list toggle owns
+   that breakpoint). */
+@media (min-width: 769px) {
+  .site-nav__lang-bar-slot { display: none; }
 }

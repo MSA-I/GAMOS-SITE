@@ -190,9 +190,27 @@
 }
 
 /* CTA removed 2026-06-02 (per user: "the standalone Book button is too
-   aggressive — let the nav bar BE the call to action"). The .site-nav__cta
-   selector and all its rules are intentionally absent now; the contact link
-   inside .site-nav__links carries the same affordance, gracefully styled. */
+   aggressive — let the nav bar BE the call to action").
+   CTA REINSTATED 2026-07-13 (conversion pass — user decision after the
+   marketing critique: "תיאום סיור" must be the one distinct action in the
+   bar). It stays in the nav's own line-language — no box, no pill: the
+   .btn--filled grammar expressed on the nav link (thick brass underline AT
+   REST, semibold, thickens on hover). */
+.site-nav__links a.site-nav__cta {
+  font-weight: var(--fw-semibold);
+  color: var(--brass-deep);
+}
+.site-nav__links a.site-nav__cta::after {
+  transform: scaleX(1);            /* visible at rest — anchors the action */
+  block-size: 2.5px;
+  transition: block-size var(--dur-base) var(--ease-out-cinema),
+              background var(--dur-base) var(--ease-out-cinema);
+}
+.site-nav__links a.site-nav__cta:hover::after,
+.site-nav__links a.site-nav__cta:focus-visible::after {
+  block-size: 3.5px;
+  background: var(--brass-deep);
+}
 
 /* Hamburger toggle --------------------------------------------------------- */
 .site-nav__toggle {

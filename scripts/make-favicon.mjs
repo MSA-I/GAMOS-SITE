@@ -46,6 +46,7 @@ async function tile(size) {
 
 // 2. PNG icon set.
 const sizes = {
+  "favicon-16.png": 16, // added 2026-07-13 (conversion pass — full icon set)
   "favicon-32.png": 32,
   "apple-touch-icon.png": 180,
   "icon-192.png": 192,
@@ -55,6 +56,40 @@ for (const [name, size] of Object.entries(sizes)) {
   await sharp(await tile(size)).toFile(resolve(ASSETS, name));
   console.log("wrote", name, `${size}x${size}`);
 }
+
+// 2b. /favicon.ico at the repo ROOT (added 2026-07-13) — legacy clients and
+// some crawlers request it blindly. ICO container with embedded PNG entries
+// (valid since Vista); hand-rolled ~20 lines so we add no dependency (§2).
+async function buildIco(pngSizes) {
+  const images = [];
+  for (const s of pngSizes) images.push({ size: s, buf: await tile(s) });
+  const HEADER = 6;
+  const DIR = 16;
+  let offset = HEADER + DIR * images.length;
+  const header = Buffer.alloc(HEADER);
+  header.writeUInt16LE(0, 0); // reserved
+  header.writeUInt16LE(1, 2); // type: icon
+  header.writeUInt16LE(images.length, 4);
+  const parts = [header];
+  const blobs = [];
+  for (const { size, buf } of images) {
+    const entry = Buffer.alloc(DIR);
+    entry.writeUInt8(size >= 256 ? 0 : size, 0); // width
+    entry.writeUInt8(size >= 256 ? 0 : size, 1); // height
+    entry.writeUInt8(0, 2);       // palette colors
+    entry.writeUInt8(0, 3);       // reserved
+    entry.writeUInt16LE(1, 4);    // color planes
+    entry.writeUInt16LE(32, 6);   // bits per pixel
+    entry.writeUInt32LE(buf.length, 8);
+    entry.writeUInt32LE(offset, 12);
+    offset += buf.length;
+    parts.push(entry);
+    blobs.push(buf);
+  }
+  return Buffer.concat([...parts, ...blobs]);
+}
+await writeFile(resolve(ROOT, "favicon.ico"), await buildIco([16, 32, 48]));
+console.log("wrote favicon.ico (16+32+48 PNG-in-ICO) at repo root");
 
 // 3. favicon.svg — emblem embedded as a 64px base64 PNG on transparent bg so the
 //    primary <link rel="icon" type="image/svg+xml"> matches the PNG set. No HTML edits.

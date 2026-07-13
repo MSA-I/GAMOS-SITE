@@ -104,8 +104,15 @@
 - אם בעתיד תרצו "טופס → תיבת דואר" צד-שרת: Resend (3k/חודש חינם) או Formspree (50/חודש חינם) דרך Cloudflare Pages Function.
 
 ### 8. אנליטיקה (Analytics)
-- **בשימוש:** **לא נמצא בקוד** (אין beacon ב-`index.html`).
-- **המלצה:** **Cloudflare Web Analytics (חינם, פרטיות-תחילה, בלי באנר עוגיות)** — drop-in כשהאתר כבר על Cloudflare. או Plausible ($9/חודש hosted).
+- **בשימוש (עודכן 2026-07-13, conversion pass):** בלוק beacon של **Cloudflare Web
+  Analytics** קיים ב-`index.html` (בלוק `CF-ANALYTICS`) אך **מוערם עם placeholder** —
+  צעד הדיפלוי: ליצור אתר Web Analytics בדשבורד CF, להדביק את ה-token ולהסיר את
+  ההערה. `scripts/deploy-cloudflare.mjs` מזהיר על `--prod` אם עוד לא בוצע. **$0.**
+- בנוסף: `js/analytics.js` (וניל, ללא צד-שלישי) אוסף אירועי המרה — `cta_click`
+  (טלפון/וואטסאפ/`data-cta`), `lead_submit`, `section_reach` — לתור מקומי
+  `window.gamosAnalyticsQueue`. ל-beacon של CF **אין** API לאירועים מותאמים; כשיוחלט
+  על יעד (GA4 / CF Zaraz / Plausible) מפנים את `flush` אליו. **$0.**
+- **המלצה:** Cloudflare Web Analytics (חינם, פרטיות-תחילה, בלי באנר עוגיות). או Plausible ($9/חודש hosted).
 
 ### 9. אימות (Authentication)
 - **בשימוש:** **אין.** אין התחברות, אין חשבונות. **$0.**

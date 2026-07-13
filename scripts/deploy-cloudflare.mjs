@@ -53,6 +53,7 @@ import {
   mkdirSync,
   cpSync,
   readdirSync,
+  readFileSync,
   statSync,
 } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -93,6 +94,7 @@ const ROOT_FILES = [
   "_headers", // Cloudflare cache + security headers (already correct)
   "robots.txt",
   "sitemap.xml",
+  "favicon.ico", // 2026-07-13 conversion pass — legacy clients request it blindly
 ];
 
 /* Allow-list of root directories (copied wholesale). ──────────────────────── */
@@ -115,6 +117,20 @@ const ASSETS_EXCLUDE = new Set([
 
 /* ── 1. build ────────────────────────────────────────────────────────────── */
 log(`project=${PROJECT}  mode=${PROD ? "PRODUCTION" : STAGE_ONLY ? "STAGE-ONLY (no upload)" : "PREVIEW"}`);
+
+// 2026-07-13 conversion pass: on a PRODUCTION deploy, warn (don't fail) if the
+// Cloudflare Web Analytics beacon is still commented / carries the placeholder
+// token — analytics silently missing in prod is exactly what the marketing
+// critique flagged. See the CF-ANALYTICS block at the end of index.html.
+if (PROD) {
+  const html = readFileSync(join(ROOT, "index.html"), "utf8");
+  if (html.includes("CF_BEACON_TOKEN_PLACEHOLDER")) {
+    log("⚠ WARNING: Cloudflare Web Analytics beacon is not armed (placeholder " +
+        "token / commented out). Create a Web Analytics site in the CF " +
+        "dashboard, paste the token, and uncomment the CF-ANALYTICS block.");
+  }
+}
+
 log("building site (npm run build)…");
 execSync("npm run build", { cwd: ROOT, stdio: "inherit" });
 

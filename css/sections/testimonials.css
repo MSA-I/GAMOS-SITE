@@ -96,7 +96,14 @@
 .testimonials__btn { font-size: var(--text-lg); }
 
 /* Slider dots (rendered programmatically by js/slider.js) ---------------- */
-.testimonials__dots {
+/* Double selector: motion-slider.css's [data-slider-dots] default is
+   position:absolute (dots overlaying the slider) AND it loads after this file,
+   so a bare .testimonials__dots ties and loses. Here the dots sit IN the
+   controls row — the absolute default collapsed the row to 0 height and
+   spilled the dots over the content below it (user report 2026-07-13). */
+.testimonials__dots[data-slider-dots] {
+  position: static;
+  inset: auto;
   display: flex;
   align-items: center;
   gap: var(--space-2);

@@ -163,6 +163,22 @@ npx serve . -l 5050
 
 ---
 
+## Fixed bottom CTA bar (2026-07-13, conversion pass)
+
+בעקבות הביקורת השיווקית (ההמרה חיה רק בסקציה 13/14) נוסף **בר פעולה תחתון קבוע**
+ב-≤768px: שיחה (`tel:`) · **תיאום סיור** (primary, `#contact`) · וואטסאפ (`wa.me`).
+
+- **הזרקה:** `injectCtaBar()` ב-`loader.js`, נקרא ב-`domReady()` **לפני**
+  `injectLangFab()` ולפני bootstrap של `main.js` — כך `js/i18n.js` מתרגם את
+  התוויות ו-`js/scrollytelling.js` קושר את עוגן ה-`#contact` בחינם.
+- **עיצוב:** `mobile/css/cta-bar.css` (media-query בלבד, טוקנים, safe-area,
+  z-index 120 — מעל ההירו, מתחת ל-nav overlay ול-lightbox). ה-body מקבל
+  `padding-block-end` כדי שהתוכן האחרון לא ייחסם.
+- **מדידה:** לכל פעולה `data-cta="bar-*"` — נאסף ע"י `js/analytics.js`.
+- ה-lang FAB יושב למעלה-בפינה — אין התנגשות.
+
+---
+
 ## Roadmap (ידוע / open)
 
 - ✅ Self-contained loader.js (single entry point).

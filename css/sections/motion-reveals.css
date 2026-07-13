@@ -72,12 +72,34 @@
   transition-duration: 800ms;
 }
 
-/* clip-reveal — top→bottom wipe via clip-path */
+/* clip-reveal — top→bottom wipe.
+   REBUILT 2026-07-13: originally clip-path on the element itself, but modern
+   Chromium's IntersectionObserver applies the TARGET'S OWN clip-path when
+   computing intersection — a fully-clipped hidden state is an empty box, the
+   observer never reports intersecting, reveals.js never fires, and the
+   section stays invisible forever (user report: #testimonials). The wipe is
+   now a page-surface curtain (::after) that shrinks toward the bottom edge —
+   the observed element is never clipped, the visual over the flat surface is
+   identical. (The unused "mask" variant above still carries the old pattern —
+   rebuild it the same way before using it on anything.) */
 [data-reveal="clip-reveal"] {
-  clip-path: inset(0 0 100% 0);
   transform: none;
   opacity: 0.8;
   transition-duration: var(--dur-cinema, 1000ms);
+  position: relative;
+}
+[data-reveal="clip-reveal"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 20;                       /* above the section's own content */
+  background: var(--bg);             /* the page surface the old clip exposed */
+  transform-origin: bottom center;   /* shrink downward → content appears top-first */
+  pointer-events: none;
+  transition: transform var(--dur-cinema, 1000ms) var(--ease-out-cinema, cubic-bezier(0.2, 0.8, 0.2, 1)) var(--reveal-delay, 0ms);
+}
+[data-reveal="clip-reveal"].is-visible::after {
+  transform: scaleY(0);
 }
 
 /* rotate-in — subtle 3deg tilt + scale + fade (calm "stamp") */
@@ -115,5 +137,9 @@
     clip-path: none !important;
     transition: none !important;
     will-change: auto;
+  }
+  /* The clip-reveal curtain must vanish instantly too. */
+  [data-reveal="clip-reveal"]::after {
+    content: none !important;
   }
 }

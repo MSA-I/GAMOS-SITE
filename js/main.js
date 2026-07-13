@@ -41,6 +41,7 @@ import * as shabbatGallery     from "./shabbat-gallery.js";// 2026-06-09 — GSA
 import * as directionsMap      from "./directions-map.js";  // 2026-06-10 — #routes branded Leaflet map + origin tabs
 import * as contactMapCue      from "./contact-map-cue.js"; // 2026-06-22 — #contact cue → reveal #routes map (sticky-reveal aware)
 import * as interactionHint    from "./interaction-hint.js";// 2026-06-30 — brass affordance cues (drag #lounge / scroll #culinary)
+import * as analytics          from "./analytics.js";       // 2026-07-13 — conversion events → window.gamosAnalyticsQueue (no PII, no 3rd-party)
 
 // Order matters:
 // - scroll-orchestrator MUST init before any scene (hero or non-hero) that
@@ -85,6 +86,7 @@ const MODULES = [
   ["gallery-lightbox",    galleryLightbox],// #gallery — click/tap → fullscreen viewer + mobile swipe
   ["scroll-spy",          scrollSpy],     // .site-nav — aria-current highlighting
   ["interaction-hint",    interactionHint],// brass drag/scroll affordance cues (after the sections they annotate exist)
+  ["analytics",           analytics],     // 2026-07-13: conversion pass — LAST (observes; must never affect the modules above)
 ];
 
 function safeInit(name, mod) {

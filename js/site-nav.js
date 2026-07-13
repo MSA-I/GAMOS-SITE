@@ -210,7 +210,11 @@ function onToggleClick(event) {
  */
 function onOverlayClick(event) {
   const target = event.target;
-  if (!(target instanceof HTMLElement)) return;
+  // Element (not HTMLElement): a tap on the X lands on the inline <svg>/<path>,
+  // which is an SVGElement — the old HTMLElement guard silently swallowed those
+  // taps and the close button "didn't work" (user report 2026-07-13). SVG
+  // elements have .closest()/.classList too, so the checks below are safe.
+  if (!(target instanceof Element)) return;
   // Closing on link click is handled by onLinkClick (event bubbles up but
   // we close there directly so the anchor still navigates).
   if (target.tagName === "A") return;

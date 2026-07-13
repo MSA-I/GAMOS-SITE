@@ -1,53 +1,63 @@
 # Section Order
 
 > **חוק.** סדר הסקציות ב-`index.html` הוא הסדר ההגיוני. שינוי דורש עדכון
-> הקובץ הזה תחילה.
+> הקובץ הזה תחילה. (Constitution §10.1)
 
-**Status:** Provisional — ינעל אחרי Phase 1 (Agent 1 sitemap audit ל-gamos.co.il).
+**Status:** LOCKED 2026-07-13 — שוכתב מהמצב-בפועל של `index.html` (הגרסה הקודמת
+הייתה Provisional מ-2026-05-28 ולא שיקפה את האתר הבנוי). באותו תאריך נוספה
+סקציית `#why-gamos` (conversion pass — `PLANS/next-steps/2026-07-13_conversion-pass.md`).
 
 ---
 
 ## Order (top → bottom)
 
-1. **Top Navigation** — sticky, RTL, with nav items מ-full-tab-inventory + lang toggle (אם נדרש)
-2. **Hero** — scroll-driven cinematic video (sticky over 5×100vh spacer)
-3. **Portal Reveal** — שתי בועות (אולם / ריזורט) ב-progress ≈ 0.92
-4. **Hall: אולם** (event hall section)
-5. **Hall: ריזורט** (resort section)
-6. **Lounge** (teaser section)
-7. **חדרי נופש** (rooms gallery)
-8. **קולינריה** (dish gallery, NOT a hall)
-9. **אודות / מי אנחנו**
-10. **המלצות** (testimonials slider)
-11. **גלריה** (mixed media gallery — אם יש כזו)
-12. **אירועים** (events sub-categories accordion: חתונות / בר-מצווה / אירועי חברה)
-13. **כשרות / רבנות** (compliance text)
-14. **צור קשר** (form + Waze + map + phones)
-15. **Footer** — social links, legal, copyright
+0. **Top Navigation** — `.site-nav`, sticky, RTL, מוסתר במצב hero; כולל כפתור CTA
+   "תיאום סיור ובדיקת תאריך" (`#contact`) — הפעולה הראשית של האתר.
+1. **`#hero`** — cinematic scroll-pinned scene, 500vh (§3 LOCKED). כולל H1 + שורת
+   נתוני אמון + שני CTAs (תיאום סיור / וואטסאפ) בשכבת `.hero_content`.
+2. **`#hall-portal`** — קומפוזר EVENTS / RESORT (כניסות ל-sub-apps).
+3. **`#why-gamos`** — *(NEW 2026-07-13)* נקודות אמון מוקדמות: צילום אמיתי של המתחם,
+   3–4 מונים, ציטוטי המלצות, CTA band. עונה לביקורת השיווקית (מוצר + אמון + המרה
+   מוקדם).
+4. **`#lounge`** — מתחם קבלת פנים (טבעת תלת-ממד בגרירה).
+5. **`#culinary`** — scroll-scrub קולינרי (canvas frames) + גריד מנות.
+6. **`#buffet`** — רצועות פרלקסה.
+7. **`#shabbat-chatan`** — pinned mask-reveal.
+8. **`#rooms`** — דלת כניסה ל-sub-app חדרי האירוח.
+9. **`#about`** — אודות + מונים.
+10. **`#testimonials`** — קרוסלת המלצות + CTA band בסיום.
+11. **`#gallery`** — masonry + lightbox משותף.
+12. **`#events`** — סוגי אירועים.
+13. **`#kosher`** — כשרות.
+14. **`#contact`** — טופס + טלפונים + וואטסאפ (יעד ה-CTA הראשי).
+15. **`#routes`** — מסלולי הגעה + מפה (reveal-pair עם contact).
 
 ---
 
 ## Anchor IDs (locked)
 
-`#hero`, `#portals`, `#hall-venue`, `#hall-resort`, `#lounge`, `#rooms`,
-`#culinary`, `#about`, `#testimonials`, `#gallery`, `#events`, `#kosher`,
-`#contact`, `#footer`.
+`#hero`, `#hall-portal`, `#why-gamos`, `#lounge`, `#culinary`, `#buffet`,
+`#shabbat-chatan`, `#rooms`, `#about`, `#testimonials`, `#gallery`, `#events`,
+`#kosher`, `#contact`, `#routes`.
 
 ---
 
 ## Justification
 
-- Hero ראשון = wow factor cinematic.
-- Portal reveal מוקדם = הזמנה לחקור.
-- Halls מיד אחרי = משלים את הסיפור של הבועות.
-- Lounge / rooms / culinary = supporting content.
-- About + testimonials = trust building.
-- Contact בסוף = conversion point לפני footer.
+- Hero ראשון = wow קולנועי; מכיל כעת גם הצעת ערך + CTA (ביקורת 2026-07: "המרה
+  מהמסך הראשון").
+- hall-portal מיד אחרי = בחירת מתחם.
+- **why-gamos שלישי = צילום אמיתי + אמון + CTA לפני מסע החוויות** — היררכיה עסקית:
+  מהו גאמוס → למה → חוויה.
+- lounge / culinary / buffet / shabbat / rooms = חוויות המתחם.
+- about + testimonials = העמקת אמון; CTA אחרי המלצות.
+- gallery / events / kosher = תוכן משלים.
+- contact לפני routes = נקודת ההמרה; routes סוגר עם הגעה.
 
 ---
 
-## Pending (אחרי Agent 1 sitemap audit)
+## הערת CTA (2026-07-13)
 
-- האם יש דף "אירועי חברה" נפרד ב-gamos.co.il שדורש דף נפרד?
-- האם יש בלוג? (אם כן — לינק לפוטר, לא סקציה).
-- מספר ה-halls בפועל (אולם 1 בלבד? או יש מס' אולמות?).
+הפעולה הראשית של האתר: **"תיאום סיור ובדיקת תאריך" → גלילה חלקה ל-`#contact`**.
+נקודות הופעה: ניווט (כפתור), הירו, סוף why-gamos, סוף testimonials, בר תחתון קבוע
+במובייל (`/mobile/`). פעולה משנית: וואטסאפ ישיר.

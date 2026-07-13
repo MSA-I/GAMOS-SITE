@@ -1,11 +1,45 @@
 # GAMOS-SITE — מצב נוכחי
 
-**עודכן:** 2026-06-16 (FOUC fix: nav + text flash; hero mobile-stability pass)
+**עודכן:** 2026-07-13 (Conversion pass — יישום הביקורת השיווקית)
 **Branch:** `main` — מסונכרן עם `origin/main` (https://github.com/MSA-I/GAMOS-SITE)
 **מקור-אמת לתוכנית הראשית:** [`PLANS/research/2026-05-28_master-rebuild-plan.md`](PLANS/research/2026-05-28_master-rebuild-plan.md)
 **מקור-אמת לחוקה:** [`CLAUDE.md`](CLAUDE.md)
 
 ---
+
+## ⭐ NEW (2026-07-13) — Conversion pass (הביקורת השיווקית)
+
+יושמה תוכנית `PLANS/next-steps/2026-07-13_conversion-pass.md` (מקור: `GAMOS-DOCS/ביקורת
+שיווקית ומסקנות לשיפור אתר GAMOS.txt`). עיקרי השינוי — שכבת המרה מבלי לגעת בכוריאוגרפיה:
+
+- **CTA ראשי "תיאום סיור ובדיקת תאריך"** (גלילה ל-`#contact`) + משני וואטסאפ: בהירו
+  (תוספת אדיטיבית ל-`.hero_content`, §3 amendment), בניווט (`.site-nav__cta` — היפוך
+  מתועד של הסרת 2026-06-02), ב-cta-band אחרי `#why-gamos` ואחרי `#testimonials`, ובר
+  תחתון קבוע במובייל (`mobile/css/cta-bar.css` + `injectCtaBar()`).
+- **שורת נתוני אמון בהירו** + **סקציה חדשה `#why-gamos`** (סקציה 3): צילום אמיתי, 4
+  מונים, 2 ציטוטים, CTA. `architecture/section-order.md` שוכתב ל-15 סקציות.
+- **איחוד שפת אינטראקציה:** מנוע lightbox משותף `js/lightbox.js` (lounge + gallery
+  הפכו צרכנים רזים); רמזי ix-hint חדשים ל-`#gallery` (tap) ו-`#shabbat-chatan` (scroll).
+- **מיתוג/שיתוף:** favicon-16 + `/favicon.ico` (הסמל הרשמי — היה כבר המקור); תמונת
+  Social Preview ייעודית 1200×630 (`npm run build:brand`) + og:image מעודכן.
+- **אנליטיקה:** `js/analytics.js` (cta_click / lead_submit / section_reach →
+  `window.gamosAnalyticsQueue`) + בלוק beacon של Cloudflare מוערם (צעד דיפלוי: token).
+- **אומת:** Playwright 28/28 (דסקטופ + מובייל + i18n EN + reduced-motion, אפס שגיאות
+  קונסול). כל המחרוזות החדשות ב-PAIRS (he/en/fr).
+- **ממתין למשתמש:** אישור ויזואלי להירו, ליטוש קופי (`TODO copy-refine`), token ל-beacon.
+
+**סבב פידבק (2026-07-13, אותו יום):** חמישה תיקונים לפי הערות המשתמש —
+(1) כותרת why-gamos עברה ל-`section-header--center` (הייתה קופסה 64ch צמודת-ימין
+עם 3 שורות); (2) זוג ה-CTA בהירו הוסתר במובייל (`mobile/css/hero-scene.css` —
+כפול לבר התחתון ולא-קריא על המדבר); (3) ה-X ב-overlay: תוקן guard של
+`instanceof HTMLElement` שבלע הקשות על ה-SVG (`js/site-nav.js`); (4) toggle שפות
+קבוע ב-navbar במובייל (`injectNavbarLang()` ב-loader + ה-FAB מוצג עכשיו רק
+בהירו); (5) **באג עומק בהמלצות:** ל-Chromium מודרני IntersectionObserver מחשיב
+את ה-clip-path של האלמנט עצמו → מצב-הפתיחה של `clip-reveal` (חיתוך מלא) יצר
+deadlock והסקציה לא נחשפה כלל (דסקטופ ומובייל!). נבנה מחדש כווילון `::after`
+(`motion-reveals.css`); בנוסף הנקודות חזרו ל-static בשורת ה-controls (ברחו
+מ-absolute של motion-slider) וה-`data-reveal` הוסר מכרטיסי הקרוסלה (ה-track
+המוסט החוצה מנע reveal). אומת Playwright 13/13 + צילומי מסך.
 
 ## ⭐ NEW (2026-06-16) — FOUC fix (nav + text flash) + hero mobile-stability pass
 

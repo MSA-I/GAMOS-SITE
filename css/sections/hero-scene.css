@@ -319,3 +319,31 @@ html:not([data-hero-mode="true"]) .hero_top .gamos-cue {
   .gamos-hero__cta img, .gamos-hero__cta { transition: none; }
   .gamos-hero__cta:hover img, .gamos-hero__cta:focus-visible img { transform: none; }
 }
+
+/* ------------------------------------------------ CONVERSION ADDITIONS ----- */
+/* 2026-07-13 (§3 amendment, marketing-critique conversion pass): trust line +
+   CTA pair appended INSIDE .hero_content. Additive only — the children inherit
+   the existing content scrub tween; no timeline/scrub changes. Buttons use the
+   canonical buttons.css line-language (on-light roles: the hero text sits on
+   the bright sky/desert), scaled with the scene's --rem so proportions hold. */
+.hero_stats {
+  margin: calc(1.4 * var(--rem)) 0 0; text-align: center;
+  font-family: var(--font-body); font-weight: var(--fw-medium);
+  font-size: calc(1.4 * var(--rem)); letter-spacing: 0.08em; color: var(--fg-muted);
+  max-inline-size: none; /* the global <p> measure cap would shrink+right-pin it in the grid (like .hero_text, which also overrides it) */
+}
+@media (min-width: 768px) {
+  .hero_stats { margin-top: calc(2 * var(--rem)); font-size: calc(2.2 * var(--rem)); }
+}
+.hero_ctas {
+  margin: calc(2 * var(--rem)) 0 0;
+  display: flex; justify-content: center; align-items: center;
+  gap: calc(2.4 * var(--rem)); flex-wrap: wrap;
+}
+@media (min-width: 768px) { .hero_ctas { margin-top: calc(2.8 * var(--rem)); gap: calc(4 * var(--rem)); } }
+/* Scale the editorial labels with the scene (base .btn is a fixed 13px). */
+.hero_ctas .btn { font-size: calc(1.5 * var(--rem)); }
+@media (min-width: 768px) {
+  .hero_ctas .btn { font-size: calc(1.8 * var(--rem)); }
+  .hero_ctas .btn--primary-lg { font-size: calc(2.2 * var(--rem)); }
+}

@@ -153,4 +153,11 @@
      gone — js/hero-scene.js now fits the composite mask to each logo's viewBox
      ratio inside the measured .hero_logo box at every breakpoint (EN/FR/HE), so
      no per-language, per-breakpoint mask-size is needed. */
+
+  /* ----- CONVERSION PASS (2026-07-13): no CTA pair inside the mobile hero ---
+     User feedback: on phones the hero CTA pair lands on the dark desert layer
+     (unreadable) AND duplicates the fixed bottom CTA bar (tour + WhatsApp are
+     always one tap away). The trust line (.hero_stats) stays; the buttons are
+     desktop-only. */
+  #hero .hero_ctas { display: none; }
 }

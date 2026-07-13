@@ -58,10 +58,27 @@
   stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
 }
 
-/* Drag → icon sways left↔right (⟷). Scroll → icon bobs downward. */
+/* Drag → icon sways left↔right (⟷). Scroll → icon bobs downward.
+   Tap → icon breathes (concentric circles pulse). */
 .ix-hint--drag   .ix-hint__icon { animation: ix-hint-sway 2200ms ease-in-out 1600ms infinite; }
 .ix-hint--scroll .ix-hint__icon { animation: ix-hint-bob  2000ms ease-in-out 1400ms infinite; }
+.ix-hint--tap    .ix-hint__icon { animation: ix-hint-tap  2200ms ease-in-out 1600ms infinite; }
 .ix-hint__text { animation: ix-hint-pulse 3200ms ease-in-out 1600ms infinite; }
+
+/* Static-flow placement (2026-07-13, #gallery): sits in normal flow between the
+   section header and the grid — the absolute bottom-center grammar would land
+   on the photos. Own entry keyframes (no translateX(-50%)). */
+.ix-hint--static {
+  position: static;
+  display: flex;
+  justify-content: center;
+  transform: none;
+  animation-name: ix-hint-in-static;
+}
+.ix-hint--static[data-dismissed] {
+  animation: none;
+  transform: translateY(10px);
+}
 
 /* Dismissed after first gesture / timeout → fade up and out. animation:none
    cancels the forwards fill of ix-hint-in so the opacity:0 + transition apply. */
@@ -72,8 +89,10 @@
 }
 
 @keyframes ix-hint-in    { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+@keyframes ix-hint-in-static { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes ix-hint-sway  { 0%, 100% { transform: translateX(-3px); } 50% { transform: translateX(3px); } }
 @keyframes ix-hint-bob   { 0%, 100% { transform: translateY(0); }    50% { transform: translateY(4px); } }
+@keyframes ix-hint-tap   { 0%, 100% { transform: scale(1); }          50% { transform: scale(1.15); } }
 @keyframes ix-hint-pulse { 0%, 100% { opacity: 1; }                  50% { opacity: .6; } }
 
 /* §8/§9 — reduced motion: cue is shown static, all loops frozen.
