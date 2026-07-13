@@ -1495,17 +1495,16 @@
     </section>
 
     <!-- ====================================================================
-         #events — סוגי אירועים · mouse-image-distortion gallery (2026-07-13 v2)
-         1:1 vanilla port of olivierlarose/mouse-image-distortion (user-chosen
-         reference; the original is Next.js + R3F): full-width bordered rows of
-         large event-type titles; hovering a row fades in a WebGL image plane
-         that FOLLOWS the mouse with a jelly distortion driven by pointer
-         velocity (verbatim shaders — sin(uv*PI) * delta * amplitude — lerp
-         0.1, alpha 0.2s). Raw WebGL1, zero deps (§2 shader clause, path א).
-         On coarse pointers the plane tracks the scroll-activated center-band
-         row instead of the mouse (§13 rule 8). Rows stay links to #contact.
-         Images swap via data-image on each <li>. The previous hover-list
-         (bg swap + ScrambleText) was replaced by this look — see git history.
+         #events — סוגי אירועים · editorial fixed-preview gallery (2026-07-13 v3)
+         User-chosen redesign (replaces the mouse-image-distortion port, see
+         git history): RTL two-column stage — event-name rows on the
+         inline-start side, a framed sticky preview panel on the inline-end
+         side. Hovering / focusing a row (desktop) or scrolling it through
+         the center band (coarse pointers, IO in js/events-gallery.js) swaps
+         the panel image with a soft clip-path wipe + settle-scale. Row 1 is
+         active by default so the panel is never empty; leaving the list
+         keeps the last image (calm, no flicker). Rows are links to #contact
+         with full aria-labels; images swap via data-image on each <li>.
     ==================================================================== -->
     <section id="events" class="events" data-bg="dark" aria-labelledby="events-title">
       <div class="events__inner" data-stagger>
@@ -1520,7 +1519,11 @@
         </header>
 
         <div class="events__stage" data-events-stage>
-          <canvas class="events__canvas" data-events-canvas aria-hidden="true"></canvas>
+          <figure class="events__preview" data-events-preview aria-hidden="true"
+                  data-reveal="fade-up" style="--reveal-delay: 200ms;">
+            <div class="events__preview-img" data-events-img></div>
+            <div class="events__preview-img" data-events-img></div>
+          </figure>
 
           <ul class="events__list" role="list" data-events-list>
             <li class="events__row" data-image="/assets/images/gallery/03.full.webp"

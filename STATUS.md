@@ -28,15 +28,15 @@
   "בופה"); `buffet-parallax` הוסר מ-MODULES.
 - **`#shabbat-chatan` בוטל** — מיוצג כפריט בגלריית `#events`; בניווט "סוגי אירועים"
   תפס את מקומו (הוסרה הכפילות "אירועים").
-- **`#events` חדש** — **mouse-image-distortion gallery** (בחירת משתמש: פורט
-  וונילה 1:1 של `olivierlarose/mouse-image-distortion`; המקור Next.js+R3F):
-  שורות שמות-אירוע ענקיות עם borders + mix-blend-difference, ו-plane של WebGL
-  (raw WebGL1, אפס תלות — §2 clause WebGL מסלול א) שעוקב אחרי העכבר עם עיוות-
-  ג'לי לפי מהירות (השיידרים המקוריים מילולית, lerp 0.1, fade 0.2s); במובייל/
-  מסכי-מגע ה-plane עוקב אחרי השורה הפעילה בגלילה (IO center-band) + rewire על
-  שינוי breakpoint. `js/events-gallery.js` + `css/sections/events.css` (שכתוב)
-  + `mobile/css/events.css`. (גרסת-ביניים באותו יום — hover-list עם ScrambleText
-  — הוחלפה; הפלאגין הוסר מה-vendor.)
+- **`#events` חדש (v3)** — **editorial fixed-preview gallery** (בחירת משתמש
+  אחרי סקירת דפוסי hover-image menus): גריד RTL — שורות שמות-אירוע מימין, פאנל
+  תצוגה ממוסגר sticky משמאל; הפעלת שורה (hover/focus בדסקטופ, IO center-band
+  בגלילה במגע) מחליפה את תמונת הפאנל ב-wipe עדין של clip-path + settle-scale.
+  שורה 1 פעילה כברירת מחדל (הפאנל לעולם לא ריק); יציאה מהרשימה משאירה את
+  התמונה האחרונה. DOM+CSS טהור — אפס WebGL/GSAP. במובייל הפאנל sticky מעל
+  הרשימה. `js/events-gallery.js` (רזה) + `css/sections/events.css` +
+  `mobile/css/events.css`. (שתי גרסאות-ביניים באותו יום — hover-list עם
+  ScrambleText ופורט mouse-image-distortion ב-raw WebGL — הוחלפו; ראה git.)
 - **סטטים של `#why-gamos`** — טקסטורת typo-on-light (כמו about).
 - **ביקורת קוד (8 זוויות) יושמה:** שימור זהות text-nodes מול i18n, strip של
   data-reveal אחרי entrance (מונע קונפליקט transitions), טעינת תמונות עצלה

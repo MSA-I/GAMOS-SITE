@@ -1,16 +1,16 @@
 /* ===========================================================================
-   events.css — #events "סוגי אירועים" mouse-image-distortion gallery
-   (2026-07-13 v2 — replaces the hover-list look; see git history)
+   events.css — #events "סוגי אירועים" editorial fixed-preview gallery
+   (2026-07-13 v3 — user-chosen redesign; replaces the mouse-distortion look,
+   see git history)
 
-   1:1 vanilla skin of olivierlarose/mouse-image-distortion: full-width
-   bordered rows of large event-type titles (template: text-[4vw] p-5
-   border-t, ul border-b, mix-blend-difference) over a WebGL canvas where
-   the hovered row's image follows the mouse with a jelly distortion
-   (js/events-gallery.js — raw WebGL1, verbatim template shaders).
+   RTL two-column stage: event-name rows on the inline-start (right) side, a
+   framed sticky preview panel on the inline-end (left) side. Activating a
+   row (hover/focus on desktop, scroll center-band on coarse pointers — see
+   js/events-gallery.js) swaps the panel image with a soft top→down
+   clip-path wipe + settle-scale. Row 1 is active by default; the panel is
+   never empty. Calm, fashion-house editorial — nothing chases the cursor.
 
-   The list sits ABOVE the canvas with mix-blend-mode: difference, exactly
-   like the template (text inverts over the bright image, stays ivory-ish
-   on the ink-deep ground). RTL: logical properties only.
+   RTL: grid-template-areas + logical properties only.
    ========================================================================= */
 
 .events {
@@ -28,42 +28,72 @@
    as culinary.css (plain --brass is too dim on this background). */
 .events .section-header__eyebrow { color: var(--brass-glow); }
 
-/* ---- Stage ---- */
+/* ---- Stage: rows (inline-start) | preview panel (inline-end) ---- */
 .events__stage {
-  position: relative;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  grid-template-areas: "list panel";
+  gap: clamp(var(--space-8), 5vw, var(--space-16));
+  align-items: start;
   margin-block-start: var(--space-12);
 }
 
-/* The distortion plane. Decorative; never intercepts the pointer. */
-.events__canvas {
-  position: absolute;
-  inset: 0;
+/* ---- Preview panel — framed, sticky beside the list ---- */
+.events__preview {
+  grid-area: panel;
+  position: sticky;
+  inset-block-start: var(--space-24);
+  margin: 0;
+  aspect-ratio: 4 / 5;
+  max-block-size: 70vh;
   inline-size: 100%;
-  block-size: 100%;
-  pointer-events: none;
-  z-index: 1;
+  border: 1px solid color-mix(in srgb, var(--brass) 30%, transparent);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: color-mix(in srgb, var(--ivory) 4%, transparent);
 }
 
-/* ---- Row list (template: ul border-b > li text-[4vw] p-5 border-t) ---- */
+.events__preview-img {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  clip-path: inset(0 0 100% 0);
+  transform: scale(1.06);
+  transition:
+    clip-path 700ms var(--ease-out-cinema),
+    transform 900ms var(--ease-out-cinema);
+}
+
+.events__preview-img.is-shown {
+  clip-path: inset(0);
+  transform: scale(1);
+}
+
+/* JS toggles this while resetting the outgoing layer beneath the fresh one —
+   prevents a reverse-wipe flash. */
+.events__preview-img.no-transition { transition: none; }
+
+/* ---- Row list ---- */
 .events__list {
+  grid-area: list;
   list-style: none;
   margin: 0;
   padding: 0;
-  position: relative;
-  z-index: 2;
-  mix-blend-mode: difference;
-  border-block-end: 1px solid color-mix(in srgb, var(--ivory) 40%, transparent);
+  border-block-end: 1px solid color-mix(in srgb, var(--ivory) 25%, transparent);
 }
 
 .events__row {
-  border-block-start: 1px solid color-mix(in srgb, var(--ivory) 40%, transparent);
+  border-block-start: 1px solid color-mix(in srgb, var(--ivory) 25%, transparent);
 }
 
 .events__link {
   display: block;
-  padding: var(--space-5);
+  position: relative;
+  padding-block: var(--space-5);
+  padding-inline: var(--space-2);
   text-decoration: none;
-  color: var(--ivory);
+  color: var(--fg-on-dark);
 }
 
 .events__link:focus-visible {
@@ -73,8 +103,44 @@
 }
 
 .events__name {
+  display: inline-block;
   font-family: var(--font-display-he);
   font-weight: var(--fw-medium);
-  font-size: clamp(2rem, 4vw, 4.25rem); /* template: text-[4vw] */
-  line-height: 1.15;
+  font-size: clamp(1.8rem, 2.6vw, 3rem);
+  line-height: 1.2;
+  color: color-mix(in srgb, var(--ivory) 72%, transparent);
+  transition: color var(--dur-slow) var(--ease-out-cinema);
+}
+
+/* Active row: brass name + a short brass rule sliding in from the start,
+   with the link text making room (logical padding shift — RTL-safe). */
+.events__row.is-active .events__name { color: var(--brass-glow); }
+
+.events__row .events__link::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 50%;
+  translate: 0 -50%;
+  inline-size: 0;
+  block-size: 1px;
+  background: var(--brass-glow);
+  transition: inline-size var(--dur-slow) var(--ease-out-cinema);
+}
+.events__row.is-active .events__link::before { inline-size: var(--space-8); }
+.events__row.is-active .events__link { padding-inline-start: var(--space-12); }
+.events__link { transition: padding var(--dur-slow) var(--ease-out-cinema); }
+
+/* ---- Reduced motion: instant swap, no wipe/scale/slide ---- */
+@media (prefers-reduced-motion: reduce) {
+  .events__preview-img {
+    clip-path: inset(0);
+    transform: none;
+    opacity: 0;
+    transition: opacity 0.01ms;
+  }
+  .events__preview-img.is-shown { opacity: 1; }
+  .events__link,
+  .events__link::before,
+  .events__name { transition: none; }
 }

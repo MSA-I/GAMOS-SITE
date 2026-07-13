@@ -1,26 +1,41 @@
 /* ===========================================================================
-   mobile/css/events.css — #events mouse-image-distortion gallery, phone fit
-   (2026-07-13 v2 — companion to js/events-gallery.js)
+   mobile/css/events.css — #events editorial fixed-preview gallery, phone fit
+   (2026-07-13 v3 — companion to js/events-gallery.js)
 
-   On ≤768px activation is scroll-driven (center-band IO in the core module;
-   the WebGL plane tracks the active row). This file only reshapes the rows:
-   phone type scale, ≥44px touch targets, and a brass tint on the active row
-   name so the scroll-activation state is legible without hover.
+   The two-column stage collapses to one column: the framed preview panel
+   becomes sticky just below the top bar, and the rows scroll beneath it —
+   the center-band IO in the core module swaps the panel image while
+   scrolling (§13 rule 8: equivalent experience). Rows keep ≥44px targets;
+   the active row is already brass via the core is-active rule.
 
    §13: @media rules only. No desktop leakage.
    ========================================================================= */
 
 @media (max-width: 768px) {
+  .events__stage {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "panel"
+      "list";
+    gap: var(--space-6);
+  }
+
+  .events__preview {
+    /* Sticky under the top bar so the image stays in view while the rows
+       scroll through the activation band. Wider than tall on phones —
+       leaves room for the list. */
+    inset-block-start: var(--space-20);
+    aspect-ratio: 3 / 2;
+    max-block-size: 42vh;
+    z-index: 1;
+  }
+
   .events__name {
-    font-size: clamp(1.6rem, 7vw, 2.2rem);
+    font-size: clamp(1.5rem, 6.5vw, 2rem);
   }
 
   .events__link {
     padding-block: var(--space-5);
     min-block-size: 44px;
-  }
-
-  .events__row.is-active .events__name {
-    color: var(--brass-glow);
   }
 }

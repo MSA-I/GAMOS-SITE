@@ -56,25 +56,21 @@
 - ~~**Three.js core**~~ — **REMOVED 2026-06-08**. הסיבה: ההירו עבר לתמונה
   סטטית ולא היה צרכן נוסף. אם בעתיד יידרש shader-based effect — להחזיר את ההגדרה
   ולתעד את השינוי ב-git.
-- **WebGL shaders** (ADDED 2026-06-10, AMENDED 2026-06-10; AMENDED 2026-07-13 —
-  צרכן שני) — מותר ככלי-פלטפורמה (לא framework) ל-shader self-contained. מותרים
-  שני מסלולים: (א) **raw WebGL1/WebGL2 vanilla** דרך `WebGLRenderingContext`;
-  (ב) **ספריית-shader self-hosted, zero-dependency** — כרגע `@paper-design/shaders`
-  (vanilla core, לא ה-React wrapper) שמקודקת-מראש ל-`assets/vendor/paper-shaders.module.js`
-  (~21KB, tree-shaken ל-MeshGradient בלבד; PolyForm Shield license). זו אותה לוגיקה
-  כמו GSAP/Leaflet: self-hosting פותר offline בלי תלות-runtime ב-CDN ובלי framework.
-  **שני צרכנים:**
-  1. `js/press-shader.js` — רקע MeshGradient (מסלול ב) לסקציית ה-closer של `/press/`
-     בלבד (לפי `GAMOS-DOCS/SHADER-2.txt`, נצבע לפלטת §5).
-  2. `js/events-gallery.js` (ADDED 2026-07-13, בחירת משתמש) — **mouse-image-distortion**
-     לגלריית `#events`: פורט וונילה 1:1 של `olivierlarose/mouse-image-distortion`
-     (המקור Next.js+R3F — אסור; הפורט הוא **מסלול א, raw WebGL1**, אפס תלות): plane
-     ממורקם 15×15 שעוקב אחרי העכבר עם עיוות-ג'לי לפי מהירות (השיידרים המקוריים
-     מילולית), fade 0.2s. במובייל/מגע ה-plane עוקב אחרי השורה הפעילה בגלילה (§13).
-  זה מקיים את תנאי ה-Three.js-removal clause ("אם יידרש shader-based effect")
-  **בלי** להחזיר את Three.js — אפס תלות-runtime, אפס מודלים תלת-ממדיים. אסור
-  להשתמש בכלי-shader זה במקום אחר באתר, ואסור להוסיף ספריית-shader אחרת, ללא
-  הרחבת clause זה.
+- **WebGL shader לרקע ה-closer של `/press/`** (ADDED 2026-06-10, AMENDED 2026-06-10)
+  — מותר ככלי-פלטפורמה (לא framework) ל-shader self-contained. מותרים שני מסלולים:
+  (א) **raw WebGL1/WebGL2 vanilla** דרך `WebGLRenderingContext`; (ב) **ספריית-shader
+  self-hosted, zero-dependency** — כרגע `@paper-design/shaders` (vanilla core, לא ה-React
+  wrapper) שמקודקת-מראש ל-`assets/vendor/paper-shaders.module.js` (~21KB, tree-shaken
+  ל-MeshGradient בלבד; PolyForm Shield license). זו אותה לוגיקה כמו GSAP/Leaflet:
+  self-hosting פותר offline בלי תלות-runtime ב-CDN ובלי framework. **כרגע צרכן יחיד:**
+  `js/press-shader.js` — רקע MeshGradient מונפש לסקציית ה-closer של `/press/` בלבד
+  (לפי `GAMOS-DOCS/SHADER-2.txt`, נצבע לפלטת §5 במקום הניאון של המקור). זה מקיים את
+  תנאי ה-Three.js-removal clause ("אם יידרש shader-based effect") **בלי** להחזיר את
+  Three.js — אפס תלות-runtime, אפס מודלים תלת-ממדיים. אסור להשתמש בכלי-shader זה במקום
+  אחר באתר, ואסור להוסיף ספריית-shader אחרת, ללא הרחבת clause זה.
+  *(הערה היסטורית: ב-2026-07-13 גלריית `#events` הריצה לכמה שעות פורט raw-WebGL של
+  mouse-image-distortion כצרכן שני; הוחלף באותו יום, לבקשת המשתמש, בפאנל-תצוגה
+  editorial ב-DOM+CSS טהור — ה-clause חזר לצרכן יחיד.)*
 - **Cloudflare Web Analytics beacon** (ADDED 2026-07-13, conversion pass —
   `PLANS/next-steps/2026-07-13_conversion-pass.md`) — סקריפט הצד-שלישי **היחיד**
   המותר ב-runtime: `static.cloudflareinsights.com/beacon.min.js` (keyless מלבד token,
@@ -266,7 +262,7 @@ class-agnostic, ו-`js/site-nav-hover-reveal.js` משתמש בסלקטור `#her
 lounge, culinary, rooms, about, testimonials, gallery, events, kosher,
 contact, routes. *(AMENDED 2026-07-13, החלטת משתמש: `#buffet` נטמעה כ-6 כרטיסים
 בגריד המנות של culinary; `#shabbat-chatan` בוטלה — מיוצגת כפריט בגלריית `#events`
-החדשה (mouse-image-distortion, ראה §2 clause WebGL), וקישור הניווט הוחלף ב"סוגי אירועים".)*
+החדשה (פאנל-תצוגה editorial), וקישור הניווט הוחלף ב"סוגי אירועים".)*
 
 ---
 
