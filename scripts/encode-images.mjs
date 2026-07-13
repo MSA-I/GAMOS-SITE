@@ -73,7 +73,7 @@ const MAPPINGS = [
   { srcDir: "השראות/תמונות מרחפות/אולם",   outDir: "assets/images/corridor/venue",  exts: [".png", ".jpg", ".jpeg"] },
   { srcDir: "השראות/תמונות מרחפות/ריזורט", outDir: "assets/images/corridor/resort", exts: [".png", ".jpg", ".jpeg"] },
   // 2026-07-13: #events fixed-preview gallery — user-supplied per-event-type
-  // images (01 = בר/בת מצווה; staged from Desktop/"תמונות לסוגי אירועים").
+  // images (01 = בר/בת מצווה, 03 = אירועי חברה; staged from Desktop/"תמונות לסוגי אירועים").
   // NOTE: the user's שבתות-חתן photo turned out hash-identical to the existing
   // assets/images/shabbat-chatan/01.* (also used by #why-gamos), so that row
   // references the existing files instead of a duplicate encode here.
