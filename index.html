@@ -1501,10 +1501,13 @@
          inline-start side, a framed sticky preview panel on the inline-end
          side. Hovering / focusing a row (desktop) or scrolling it through
          the center band (coarse pointers, IO in js/events-gallery.js) swaps
-         the panel image with a soft clip-path wipe + settle-scale. Row 1 is
-         active by default so the panel is never empty; leaving the list
-         keeps the last image (calm, no flicker). Rows are links to #contact
-         with full aria-labels; images swap via data-image on each <li>.
+         the panel image with a soft clip-path wipe + settle-scale AND
+         expands the row's original full description beneath its name. Row 1
+         is active by default so the panel is never empty; leaving the list
+         keeps the last state (calm, no flicker). Rows are links to
+         #contact; images swap via data-image on each <li>. The section
+         background eases from #gallery's --bg-alt into --ink-deep and back
+         out to ivory (token-defined gradients, §5) — no hard dark cut.
     ==================================================================== -->
     <section id="events" class="events" data-bg="dark" aria-labelledby="events-title">
       <div class="events__inner" data-stagger>
@@ -1525,47 +1528,52 @@
             <div class="events__preview-img" data-events-img></div>
           </figure>
 
+          <!-- Each row carries the ORIGINAL full description (restored
+               2026-07-13 per user request — the copy from the retired
+               accordion). The active row's description expands beneath its
+               name (pure-CSS 0fr→1fr grid). No aria-label needed: the link
+               text itself now reads name + description. -->
           <ul class="events__list" role="list" data-events-list>
             <li class="events__row" data-image="/assets/images/gallery/03.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 160ms;">
-              <a class="events__link" href="#contact" data-cta="events-wedding"
-                 aria-label="חתונות — באולם, בגן או במתחם כולו, עד 1000 מוזמנים — לתיאום סיור">
+              <a class="events__link" href="#contact" data-cta="events-wedding">
                 <span class="events__name">חתונות</span>
+                <span class="events__desc-wrap"><span class="events__desc">חתונה אינטימית / ממוצעת / גדולה במיוחד, בגן, באולם, בריזורט או במתחם כולו, אנו ערוכים לכל סוגי האירוע צוות מקצועי שילווה אתכם לכל אורך הדרך ויספק לכם מעטפת רחבה ומיטבית.</span></span>
               </a>
             </li>
             <li class="events__row" data-image="/assets/images/gallery/07.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 240ms;">
-              <a class="events__link" href="#contact" data-cta="events-mitzvah"
-                 aria-label="בר ובת מצווה — חגיגה שמרגשת את כל הדורות, תוכן ואטרקציות — לתיאום סיור">
+              <a class="events__link" href="#contact" data-cta="events-mitzvah">
                 <span class="events__name">בר ובת מצווה</span>
+                <span class="events__desc-wrap"><span class="events__desc">חגיגה בלתי נשכחת לילדים ולמשפחה, עם מתחמים מותאמים, תוכן, אטרקציות ואווירה שמרגשת את כל הדורות.</span></span>
               </a>
             </li>
             <li class="events__row" data-image="/assets/images/gallery/11.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 320ms;">
-              <a class="events__link" href="#contact" data-cta="events-brit"
-                 aria-label="ברית ובריתה — אירוע משפחתי באווירה אלגנטית, קולינריה איכותית — לתיאום סיור">
+              <a class="events__link" href="#contact" data-cta="events-brit">
                 <span class="events__name">ברית ובריתה</span>
+                <span class="events__desc-wrap"><span class="events__desc">אירוע משפחתי באווירה אלגנטית ונעימה, עם אירוח מוקפד, קולינריה איכותית וליווי אישי מהרגע הראשון.</span></span>
               </a>
             </li>
             <li class="events__row" data-image="/assets/images/gallery/15.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 400ms;">
-              <a class="events__link" href="#contact" data-cta="events-corporate"
-                 aria-label="אירועי חברה — כנסים, השקות וערבי גיבוש, הפקה מלאה — לתיאום סיור">
+              <a class="events__link" href="#contact" data-cta="events-corporate">
                 <span class="events__name">אירועי חברה</span>
+                <span class="events__desc-wrap"><span class="events__desc">כנסים, השקות, ערבי גיבוש ואירועי יוקרה, עם פתרונות מותאמים, שירות מקצועי והפקה ברמה הגבוהה ביותר.</span></span>
               </a>
             </li>
             <li class="events__row" data-image="/assets/images/gallery/19.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 480ms;">
-              <a class="events__link" href="#contact" data-cta="events-private"
-                 aria-label="אירועים פרטיים — ימי הולדת וחגיגות משפחתיות, במה מרשימה — לתיאום סיור">
+              <a class="events__link" href="#contact" data-cta="events-private">
                 <span class="events__name">אירועים פרטיים</span>
+                <span class="events__desc-wrap"><span class="events__desc">ימי הולדת, ימי נישואין, חגיגות משפחתיות וכל אירוע פרטי שמקבל אצלנו במה מרשימה וחוויה בלתי נשכחת.</span></span>
               </a>
             </li>
             <li class="events__row" data-image="/assets/images/shabbat-chatan/03.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 560ms;">
-              <a class="events__link" href="#contact" data-cta="events-shabbat"
-                 aria-label="שבתות חתן — המתחם כולו שמור רק לכם, סוויטות ובריכה, סוף שבוע מלא — לתיאום סיור">
+              <a class="events__link" href="#contact" data-cta="events-shabbat">
                 <span class="events__name">שבתות חתן</span>
+                <span class="events__desc-wrap"><span class="events__desc">אירוח מלא במתחם הריזורט השמור רק לכם, עם סוויטות, בית כנסת, בריכה מחוממת וקולינריה שמעניקים לכם סוף שבוע שלם במקום אחד.</span></span>
               </a>
             </li>
           </ul>

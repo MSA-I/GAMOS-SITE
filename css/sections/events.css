@@ -13,9 +13,23 @@
    RTL: grid-template-areas + logical properties only.
    ========================================================================= */
 
+/* The section sits between two light sections (#gallery on --bg-alt above,
+   #kosher on the ivory body below). Instead of a hard cut into ink-deep,
+   long token-defined gradients ease in and out of the dark ground (§5:
+   gradients must be mathematically defined from tokens — they are). The
+   content padding clears the fade zones so text always sits on solid ink. */
 .events {
-  padding-block: var(--section-pad);
-  background: var(--ink-deep);
+  --events-fade-in: clamp(220px, 32vh, 380px);
+  --events-fade-out: clamp(160px, 24vh, 300px);
+  padding-block-start: calc(var(--events-fade-in) + var(--space-12));
+  padding-block-end: calc(var(--events-fade-out) + var(--space-12));
+  background: linear-gradient(
+    to bottom,
+    var(--bg-alt) 0,
+    var(--ink-deep) var(--events-fade-in),
+    var(--ink-deep) calc(100% - var(--events-fade-out)),
+    var(--bg) 100%
+  );
 }
 
 .events__inner {
@@ -112,6 +126,37 @@
   transition: color var(--dur-slow) var(--ease-out-cinema);
 }
 
+/* ---- Original per-event description (restored 2026-07-13) ----
+   Expands under the active row's name via the pure-CSS 0fr→1fr grid trick;
+   collapsed rows keep it hidden without measuring heights in JS. */
+.events__desc-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--dur-deluxe) var(--ease-out-cinema);
+}
+
+.events__desc {
+  display: block;
+  overflow: hidden;
+  min-block-size: 0;
+  max-inline-size: 56ch;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  color: var(--fg-on-dark-muted);
+  opacity: 0;
+  transition:
+    opacity var(--dur-slow) var(--ease-out-cinema),
+    padding var(--dur-deluxe) var(--ease-out-cinema);
+}
+
+.events__row.is-active .events__desc-wrap { grid-template-rows: 1fr; }
+.events__row.is-active .events__desc {
+  opacity: 1;
+  padding-block-start: var(--space-3);
+  transition-delay: 120ms, 0ms;
+}
+
 /* Active row: brass name + a short brass rule sliding in from the start,
    with the link text making room (logical padding shift — RTL-safe). */
 .events__row.is-active .events__name { color: var(--brass-glow); }
@@ -142,5 +187,7 @@
   .events__preview-img.is-shown { opacity: 1; }
   .events__link,
   .events__link::before,
-  .events__name { transition: none; }
+  .events__name,
+  .events__desc-wrap,
+  .events__desc { transition: none; }
 }
