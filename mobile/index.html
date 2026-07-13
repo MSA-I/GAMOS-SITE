@@ -1480,19 +1480,23 @@
     </section>
 
     <!-- ====================================================================
-         #events — סוגי אירועים · editorial fixed-preview gallery (2026-07-13 v3)
+         #events — סוגי אירועים · editorial fixed-preview gallery (2026-07-13 v4)
          User-chosen redesign (replaces the mouse-image-distortion port, see
          git history): RTL two-column stage — event-name rows on the
          inline-start side, a framed sticky preview panel on the inline-end
-         side. Hovering / focusing a row (desktop) or scrolling it through
-         the center band (coarse pointers, IO in js/events-gallery.js) swaps
-         the panel image with a soft clip-path wipe + settle-scale AND
-         expands the row's original full description beneath its name. Row 1
-         is active by default so the panel is never empty; leaving the list
-         keeps the last state (calm, no flicker). Rows are links to
-         #contact; images swap via data-image on each <li>. The section
-         background eases from #gallery's --bg-alt into --ink-deep and back
-         out to ivory (token-defined gradients, §5) — no hard dark cut.
+         side. Hovering / focusing a row (desktop) swaps the panel image
+         with a soft clip-path wipe + settle-scale AND expands the row's
+         original full description beneath its name. Row 1 is active by
+         default so the panel is never empty; leaving the list keeps the
+         last state (calm, no flicker). Rows are links to #contact; the
+         desktop panel reads data-image on each <li>. On ≤768px the section
+         becomes stacked CARDS (mobile/css/events.css): each row's own
+         <picture> (events__media, native lazy, .half.webp source) with the
+         description always visible — no sticky panel, no scroll-driven
+         state (v3's sticky panel overlapped and clipped row titles). The
+         ground eases from #gallery's --bg-alt through warm --cocoa into
+         --ink-deep and back out to ivory (token-defined multi-stop
+         gradients, §5) — no hard cut, no muddy gray midpoint.
     ==================================================================== -->
     <section id="events" class="events" data-bg="dark" aria-labelledby="events-title">
       <div class="events__inner" data-stagger>
@@ -1522,6 +1526,13 @@
             <li class="events__row" data-image="/assets/images/gallery/03.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 160ms;">
               <a class="events__link" href="#contact" data-cta="events-wedding">
+                <span class="events__media" aria-hidden="true">
+                  <picture>
+                    <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/gallery/03.half.webp">
+                    <source type="image/webp" srcset="/assets/images/gallery/03.full.webp">
+                    <img src="/assets/images/gallery/03.full.jpg" alt="" width="1024" height="1536" loading="lazy" decoding="async">
+                  </picture>
+                </span>
                 <span class="events__name">חתונות</span>
                 <span class="events__desc-wrap"><span class="events__desc">חתונה אינטימית / ממוצעת / גדולה במיוחד, בגן, באולם, בריזורט או במתחם כולו, אנו ערוכים לכל סוגי האירוע צוות מקצועי שילווה אתכם לכל אורך הדרך ויספק לכם מעטפת רחבה ומיטבית.</span></span>
               </a>
@@ -1529,6 +1540,13 @@
             <li class="events__row" data-image="/assets/images/gallery/07.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 240ms;">
               <a class="events__link" href="#contact" data-cta="events-mitzvah">
+                <span class="events__media" aria-hidden="true">
+                  <picture>
+                    <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/gallery/07.half.webp">
+                    <source type="image/webp" srcset="/assets/images/gallery/07.full.webp">
+                    <img src="/assets/images/gallery/07.full.jpg" alt="" width="1600" height="2137" loading="lazy" decoding="async">
+                  </picture>
+                </span>
                 <span class="events__name">בר ובת מצווה</span>
                 <span class="events__desc-wrap"><span class="events__desc">חגיגה בלתי נשכחת לילדים ולמשפחה, עם מתחמים מותאמים, תוכן, אטרקציות ואווירה שמרגשת את כל הדורות.</span></span>
               </a>
@@ -1536,6 +1554,13 @@
             <li class="events__row" data-image="/assets/images/gallery/11.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 320ms;">
               <a class="events__link" href="#contact" data-cta="events-brit">
+                <span class="events__media" aria-hidden="true">
+                  <picture>
+                    <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/gallery/11.half.webp">
+                    <source type="image/webp" srcset="/assets/images/gallery/11.full.webp">
+                    <img src="/assets/images/gallery/11.full.jpg" alt="" width="1024" height="1536" loading="lazy" decoding="async">
+                  </picture>
+                </span>
                 <span class="events__name">ברית ובריתה</span>
                 <span class="events__desc-wrap"><span class="events__desc">אירוע משפחתי באווירה אלגנטית ונעימה, עם אירוח מוקפד, קולינריה איכותית וליווי אישי מהרגע הראשון.</span></span>
               </a>
@@ -1543,6 +1568,13 @@
             <li class="events__row" data-image="/assets/images/gallery/15.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 400ms;">
               <a class="events__link" href="#contact" data-cta="events-corporate">
+                <span class="events__media" aria-hidden="true">
+                  <picture>
+                    <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/gallery/15.half.webp">
+                    <source type="image/webp" srcset="/assets/images/gallery/15.full.webp">
+                    <img src="/assets/images/gallery/15.full.jpg" alt="" width="1024" height="1536" loading="lazy" decoding="async">
+                  </picture>
+                </span>
                 <span class="events__name">אירועי חברה</span>
                 <span class="events__desc-wrap"><span class="events__desc">כנסים, השקות, ערבי גיבוש ואירועי יוקרה, עם פתרונות מותאמים, שירות מקצועי והפקה ברמה הגבוהה ביותר.</span></span>
               </a>
@@ -1550,6 +1582,13 @@
             <li class="events__row" data-image="/assets/images/gallery/19.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 480ms;">
               <a class="events__link" href="#contact" data-cta="events-private">
+                <span class="events__media" aria-hidden="true">
+                  <picture>
+                    <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/gallery/19.half.webp">
+                    <source type="image/webp" srcset="/assets/images/gallery/19.full.webp">
+                    <img src="/assets/images/gallery/19.full.jpg" alt="" width="1023" height="1537" loading="lazy" decoding="async">
+                  </picture>
+                </span>
                 <span class="events__name">אירועים פרטיים</span>
                 <span class="events__desc-wrap"><span class="events__desc">ימי הולדת, ימי נישואין, חגיגות משפחתיות וכל אירוע פרטי שמקבל אצלנו במה מרשימה וחוויה בלתי נשכחת.</span></span>
               </a>
@@ -1557,6 +1596,13 @@
             <li class="events__row" data-image="/assets/images/shabbat-chatan/03.full.webp"
                 data-reveal="slide-left" style="--reveal-delay: 560ms;">
               <a class="events__link" href="#contact" data-cta="events-shabbat">
+                <span class="events__media" aria-hidden="true">
+                  <picture>
+                    <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/03.half.webp">
+                    <source type="image/webp" srcset="/assets/images/shabbat-chatan/03.full.webp">
+                    <img src="/assets/images/shabbat-chatan/03.full.jpg" alt="" width="1448" height="1086" loading="lazy" decoding="async">
+                  </picture>
+                </span>
                 <span class="events__name">שבתות חתן</span>
                 <span class="events__desc-wrap"><span class="events__desc">אירוח מלא במתחם הריזורט השמור רק לכם, עם סוויטות, בית כנסת, בריכה מחוממת וקולינריה שמעניקים לכם סוף שבוע שלם במקום אחד.</span></span>
               </a>

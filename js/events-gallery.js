@@ -11,14 +11,15 @@
  *
  * Activation:
  *   - Fine pointers: pointerover / keyboard focusin on a row.
- *   - Coarse pointers / ≤768px (§13 rule 8): center-band IntersectionObserver
- *     activates the row crossing mid-viewport while scrolling; the sticky
- *     panel (mobile/css/events.css) swaps in view. matchMedia change
- *     listeners re-wire the branch on rotation/resize.
+ *   - Coarse pointers / ≤768px: the module does NOTHING — the phone layout
+ *     is stacked cards (mobile/css/events.css): each row shows its own
+ *     <picture> (native lazy, .half.webp source) with the description
+ *     always visible. No sticky panel, no scroll-driven state (§13 rule 8
+ *     is met by the card layout itself). matchMedia change listeners
+ *     re-wire on rotation/resize.
  *
- * Perf (§8): images warm one viewport ahead (one-shot IO; nothing at boot),
- * coarse viewports use the .half.webp variants. Reduced motion (live
- * subscription): the wipe collapses to an instant swap (CSS handles it).
+ * Perf (§8): desktop images warm one viewport ahead (one-shot IO; nothing
+ * at boot). Reduced motion: the wipe collapses to an instant swap (CSS).
  *
  * Contract: ES2022 module, init()/destroy(), self-no-ops without
  * [data-events-stage]. No globals. §9: rows are native links with stable
@@ -37,7 +38,6 @@ let _active = null;
 let _coarse = false;
 
 let _preIO = null;
-let _rowIO = null;
 let _listeners = [];
 let _mqlWidth = null;
 let _mqlHover = null;
@@ -48,10 +48,8 @@ function on(target, type, handler, opts) {
   _listeners.push([target, type, handler, opts]);
 }
 
-/* Coarse viewports get the .half variant (mobile/loader.js convention). */
 function imageUrl(row) {
-  const src = row.dataset.image || "";
-  return _coarse ? src.replace(".full.", ".half.") : src;
+  return row.dataset.image || "";
 }
 
 function warmImages() {
@@ -131,6 +129,12 @@ export function init() {
   // Reduced motion is handled entirely in CSS (the wipe/scale transitions
   // collapse under prefers-reduced-motion) — no JS subscription needed.
 
+  // Coarse pointers get the stacked-card layout (mobile/css/events.css) —
+  // the panel is hidden, every card shows its own natively-lazy <picture>,
+  // and there is no activation state at all. Only the re-wire listeners
+  // above stay armed so a rotation to desktop boots the panel behavior.
+  if (_coarse) return;
+
   // Row 1 active from the start (class only — the image itself paints in
   // warmImages, one viewport before the section, so nothing loads at boot).
   setActive(_rows[0], true);
@@ -145,20 +149,9 @@ export function init() {
   }, { rootMargin: "100% 0px" });
   _preIO.observe(_stage);
 
-  if (_coarse) {
-    // Scroll-driven activation: the row crossing the viewport's center band
-    // becomes active. Tap = plain link navigation to #contact (no trap).
-    _rowIO = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) setActive(entry.target);
-      }
-    }, { rootMargin: "-40% 0px -40% 0px", threshold: 0 });
-    for (const row of _rows) _rowIO.observe(row);
-  } else {
-    on(_list, "pointerover", activateFrom);
-    on(_list, "focusin", activateFrom);
-    // Deliberately no pointerleave clear — the last image stays (calm).
-  }
+  on(_list, "pointerover", activateFrom);
+  on(_list, "focusin", activateFrom);
+  // Deliberately no pointerleave clear — the last image stays (calm).
 }
 
 export function destroy() {
@@ -167,7 +160,6 @@ export function destroy() {
   if (_mqlWidth) { _mqlWidth.removeEventListener("change", onBreakpointChange); _mqlWidth = null; }
   if (_mqlHover) { _mqlHover.removeEventListener("change", onBreakpointChange); _mqlHover = null; }
   if (_preIO) { _preIO.disconnect(); _preIO = null; }
-  if (_rowIO) { _rowIO.disconnect(); _rowIO = null; }
   for (const layer of _layers) {
     layer.classList.remove("is-shown", "no-transition");
     layer.style.backgroundImage = "";

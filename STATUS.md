@@ -28,13 +28,16 @@
   "בופה"); `buffet-parallax` הוסר מ-MODULES.
 - **`#shabbat-chatan` בוטל** — מיוצג כפריט בגלריית `#events`; בניווט "סוגי אירועים"
   תפס את מקומו (הוסרה הכפילות "אירועים").
-- **`#events` חדש (v3)** — **editorial fixed-preview gallery** (בחירת משתמש
-  אחרי סקירת דפוסי hover-image menus): גריד RTL — שורות שמות-אירוע מימין, פאנל
-  תצוגה ממוסגר sticky משמאל; הפעלת שורה (hover/focus בדסקטופ, IO center-band
-  בגלילה במגע) מחליפה את תמונת הפאנל ב-wipe עדין של clip-path + settle-scale.
-  שורה 1 פעילה כברירת מחדל (הפאנל לעולם לא ריק); יציאה מהרשימה משאירה את
-  התמונה האחרונה. DOM+CSS טהור — אפס WebGL/GSAP. במובייל הפאנל sticky מעל
-  הרשימה. `js/events-gallery.js` (רזה) + `css/sections/events.css` +
+- **`#events` חדש (v4)** — **editorial fixed-preview gallery** (בחירת משתמש
+  אחרי סקירת דפוסי hover-image menus): גריד RTL — שורות שמות-אירוע מימין (עם
+  הפירוט המקורי שנפתח מתחת לשורה הפעילה), פאנל תצוגה ממוסגר sticky משמאל;
+  hover/focus מחליף את תמונת הפאנל ב-wipe עדין של clip-path + settle-scale.
+  שורה 1 פעילה כברירת מחדל (הפאנל לעולם לא ריק). DOM+CSS טהור — אפס WebGL/GSAP.
+  **מובייל (v4): כרטיסים נערמים** — הפאנל מוסתר; לכל שורה `<picture>` משלה
+  (native lazy, half.webp) + הפירוט גלוי תמיד; אפס sticky/מצבי-גלילה (v3 הדביק
+  חפף וחתך כותרות). **המעבר מהגלריה הבהירה** עובר דרך `--cocoa` חם במדרגות
+  easing (גרדיאנט טוקנים, §5) בשני קצוות הסקציה — בלי חיתוך קשה ובלי אמצע בוצי.
+  `js/events-gallery.js` (רזה) + `css/sections/events.css` +
   `mobile/css/events.css`. (שתי גרסאות-ביניים באותו יום — hover-list עם
   ScrambleText ופורט mouse-image-distortion ב-raw WebGL — הוחלפו; ראה git.)
 - **סטטים של `#why-gamos`** — טקסטורת typo-on-light (כמו about).

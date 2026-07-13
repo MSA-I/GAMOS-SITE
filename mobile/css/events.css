@@ -1,41 +1,75 @@
 /* ===========================================================================
-   mobile/css/events.css — #events editorial fixed-preview gallery, phone fit
-   (2026-07-13 v3 — companion to js/events-gallery.js)
+   mobile/css/events.css — #events editorial gallery, phone layout (§13)
+   (2026-07-13 v4 — stacked cards, user-chosen after the sticky panel
+   overlapped rows and clipped their titles on phones)
 
-   The two-column stage collapses to one column: the framed preview panel
-   becomes sticky just below the top bar, and the rows scroll beneath it —
-   the center-band IO in the core module swaps the panel image while
-   scrolling (§13 rule 8: equivalent experience). Rows keep ≥44px targets;
-   the active row is already brass via the core is-active rule.
+   On ≤768px the section becomes a calm stacked catalog: each event is a
+   self-contained card — framed image, name, and the full description always
+   visible. No sticky panel, no scroll-driven activation, no moving state
+   (the core module skips its coarse branch entirely). The desktop preview
+   panel is hidden; each row's own <picture> (events__media) shows instead,
+   loaded by native lazy-loading with the .half.webp source.
 
    §13: @media rules only. No desktop leakage.
    ========================================================================= */
 
 @media (max-width: 768px) {
-  .events__stage {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "panel"
-      "list";
-    gap: var(--space-6);
+  /* Shorter, snappier cocoa fades on small screens. */
+  .events {
+    --events-fade-in: 120px;
+    --events-fade-out: 90px;
   }
 
-  .events__preview {
-    /* Sticky under the top bar so the image stays in view while the rows
-       scroll through the activation band. Wider than tall on phones —
-       leaves room for the list. */
-    inset-block-start: var(--space-20);
+  /* The desktop preview panel is replaced by per-card images. */
+  .events__preview { display: none; }
+
+  .events__stage {
+    grid-template-columns: 1fr;
+    grid-template-areas: "list";
+  }
+
+  /* Cards instead of hairline rows. */
+  .events__list { border-block-end: none; }
+  .events__row { border-block-start: none; }
+  .events__row + .events__row { margin-block-start: var(--space-10); }
+
+  .events__link {
+    padding: 0;
+    min-block-size: 44px;
+  }
+
+  /* Framed card image — same frame language as the desktop panel. */
+  .events__media {
+    display: block;
     aspect-ratio: 3 / 2;
-    max-block-size: 42vh;
-    z-index: 1;
+    border: 1px solid color-mix(in srgb, var(--brass) 30%, transparent);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-block-end: var(--space-4);
+  }
+
+  .events__media picture,
+  .events__media img {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
   }
 
   .events__name {
     font-size: clamp(1.5rem, 6.5vw, 2rem);
+    color: var(--brass-glow);
   }
 
-  .events__link {
-    padding-block: var(--space-5);
-    min-block-size: 44px;
+  /* Description always visible — no expand/collapse state on phones. */
+  .events__desc-wrap { grid-template-rows: 1fr; }
+  .events__desc {
+    opacity: 1;
+    padding-block-start: var(--space-3);
+    transition: none;
   }
+
+  /* No active-state chrome on phones (no hover, no activation). */
+  .events__row .events__link::before { display: none; }
+  .events__row.is-active .events__link { padding-inline-start: 0; }
 }

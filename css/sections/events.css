@@ -15,19 +15,24 @@
 
 /* The section sits between two light sections (#gallery on --bg-alt above,
    #kosher on the ivory body below). Instead of a hard cut into ink-deep,
-   long token-defined gradients ease in and out of the dark ground (§5:
-   gradients must be mathematically defined from tokens — they are). The
-   content padding clears the fade zones so text always sits on solid ink. */
+   the ground eases in and out through the brand's warm cocoa — multi-stop
+   token-defined gradients (§5) approximating an ease curve, so the middle
+   reads as a falling warm shadow rather than muddy gray. Content padding
+   clears the fade zones so text always sits on solid ink. */
 .events {
-  --events-fade-in: clamp(220px, 32vh, 380px);
-  --events-fade-out: clamp(160px, 24vh, 300px);
+  --events-fade-in: clamp(160px, 24vh, 300px);
+  --events-fade-out: clamp(120px, 18vh, 240px);
   padding-block-start: calc(var(--events-fade-in) + var(--space-12));
   padding-block-end: calc(var(--events-fade-out) + var(--space-12));
   background: linear-gradient(
     to bottom,
     var(--bg-alt) 0,
+    color-mix(in srgb, var(--cocoa) 40%, var(--bg-alt)) calc(var(--events-fade-in) * 0.45),
+    color-mix(in srgb, var(--cocoa) 80%, var(--ink-deep)) calc(var(--events-fade-in) * 0.72),
     var(--ink-deep) var(--events-fade-in),
     var(--ink-deep) calc(100% - var(--events-fade-out)),
+    color-mix(in srgb, var(--cocoa) 75%, var(--ink-deep)) calc(100% - var(--events-fade-out) * 0.7),
+    color-mix(in srgb, var(--cocoa) 35%, var(--bg)) calc(100% - var(--events-fade-out) * 0.4),
     var(--bg) 100%
   );
 }
@@ -109,6 +114,11 @@
   text-decoration: none;
   color: var(--fg-on-dark);
 }
+
+/* Per-row <picture> — mobile-only cards (mobile/css/events.css shows it).
+   display:none keeps the lazy images unfetched on desktop, where the
+   preview panel owns the imagery. */
+.events__media { display: none; }
 
 .events__link:focus-visible {
   outline: none;
