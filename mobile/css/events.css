@@ -1,0 +1,44 @@
+/* ===========================================================================
+   mobile/css/events.css — #events hover-list gallery, phone layout (§13)
+
+   2026-07-13: companion to js/events-gallery.js. On ≤768px the activation is
+   scroll-driven (IntersectionObserver center band — see the module); this
+   file only reshapes the rows for narrow screens:
+     - link collapses to a 2-column grid (idx + name; desc under the name)
+     - tag/meta cells hidden (their copy stays in the stable aria-label)
+     - background image sized for the phone viewport
+     - rows keep ≥44px touch targets (touch-targets convention)
+
+   §13: @media rules only. No desktop leakage.
+   ========================================================================= */
+
+@media (max-width: 768px) {
+  .events__link {
+    grid-template-columns: 3ch 1fr;
+    grid-template-areas:
+      "idx name"
+      ".   desc";
+    row-gap: var(--space-2);
+    column-gap: var(--space-4);
+    padding-block: var(--space-6);
+    min-block-size: 44px;
+  }
+
+  .events__cell--idx  { grid-area: idx; }
+  .events__cell--name { grid-area: name; font-size: clamp(1.35rem, 6vw, 1.75rem); }
+  .events__cell--desc { grid-area: desc; }
+
+  .events__cell--tag,
+  .events__cell--meta { display: none; }
+
+  .events__bg-img {
+    inline-size: min(80vw, 420px);
+  }
+
+  /* Scroll-driven activation makes the dim a RESTING state on phones —
+     0.25 would leave link text far below AA (§9). 0.6 over --ink-deep keeps
+     the active-row emphasis while staying comfortably readable. */
+  .events__list.has-active .events__row:not(.is-active):not([data-reveal]) {
+    opacity: 0.6;
+  }
+}

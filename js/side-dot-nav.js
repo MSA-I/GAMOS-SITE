@@ -50,12 +50,11 @@ const SECTIONS = [
   { id: "why-gamos",    label: "למה גאמוס" },   // conversion pass 2026-07-13
   { id: "lounge",       label: "לאונג'" },
   { id: "culinary",     label: "קולינריה" },
-  { id: "shabbat-chatan", label: "שבתות חתן" },
   { id: "rooms",        label: "חדרים" },
   { id: "about",        label: "אודות" },
   { id: "testimonials", label: "המלצות" },
   { id: "gallery",      label: "גלריה" },
-  { id: "events",       label: "אירועים" },
+  { id: "events",       label: "סוגי אירועים" },
   { id: "kosher",       label: "כשרות" },
   { id: "contact",      label: "צור קשר" },
 ];

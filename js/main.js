@@ -19,8 +19,7 @@ import * as heroScene           from "./hero-scene.js";     // 2026-06-15 — v1
 import * as scrollScene         from "./scroll-scene.js";
 import * as portals             from "./portals.js";
 import * as reveals             from "./reveals.js";
-import * as buffetParallax      from "./buffet-parallax.js"; // 2026-06-25 — #buffet bands subtle image parallax
-import * as accordions          from "./accordions.js";
+import * as eventsGallery       from "./events-gallery.js"; // 2026-07-13 — #events hover-list gallery (bg swap + Hebrew scramble); replaced accordions.js (kept as legacy)
 import * as slider              from "./slider.js";
 import * as loadingOverlay      from "./loading-overlay.js";
 import * as sideDotNav          from "./side-dot-nav.js";
@@ -37,7 +36,6 @@ import * as galleryMasonry      from "./gallery-masonry.js";  // 2026-07-01 — 
 import * as galleryLightbox     from "./gallery-lightbox.js";// 2026-07-01 — #gallery click/tap → fullscreen viewer + mobile swipe (reuses .lounge-lightbox CSS)
 import * as siteNavHoverReveal  from "./site-nav-hover-reveal.js"; // 2026-06-04 — hide site-nav while in hero
 import * as scrollSpy           from "./scroll-spy.js";     // .site-nav — aria-current scroll-spy
-import * as shabbatGallery     from "./shabbat-gallery.js";// 2026-06-09 — GSAP pinned mask-reveal; 2026-06-11 — pin now runs at all widths (mobile-fidelity)
 import * as directionsMap      from "./directions-map.js";  // 2026-06-10 — #routes branded Leaflet map + origin tabs
 import * as contactMapCue      from "./contact-map-cue.js"; // 2026-06-22 — #contact cue → reveal #routes map (sticky-reveal aware)
 import * as interactionHint    from "./interaction-hint.js";// 2026-06-30 — brass affordance cues (drag #lounge / scroll #culinary)
@@ -58,21 +56,19 @@ import * as analytics          from "./analytics.js";       // 2026-07-13 — co
 // - side-dot-nav inits AFTER hero so its hero progress hook attaches cleanly.
 const MODULES = [
   ["i18n",                i18n],             // 2026-07-01: HE⇄EN + geo detect. Runs before site-nav so the mobile overlay clones the correct-language link list, and before scene modules so dir/lang is settled
-  ["smooth-scroll",       smoothScroll],     // 2026-07-01: Lenis (desktop-only). FIRST — wires gsap.ticker + lenis.on("scroll", ScrollTrigger.update) before hero/shabbat build their ScrollTriggers
+  ["smooth-scroll",       smoothScroll],     // 2026-07-01: Lenis (desktop-only). FIRST — wires gsap.ticker + lenis.on("scroll", ScrollTrigger.update) before hero/scroll-scene build their ScrollTriggers
   ["scroll-orchestrator", scrollOrchestrator],
   ["loading-overlay",     loadingOverlay],   // window.gamosLoading must be ready before hero hotspot clicks
   ["hero-scene",          heroScene],        // 2026-06-15: v10 scroll hero — GSAP timeline + gamosHero progress stub (over 500vh) + #hall-portal CTA routing
   ["site-nav-hover-reveal", siteNavHoverReveal], // 2026-06-04: hide site-nav while in hero (revealed only on cursor in top band)
-  ["shabbat-gallery",     shabbatGallery],   // 2026-06-09: GSAP pinned mask-reveal; 2026-06-11: pin runs at all widths (mobile-fidelity)
   ["scroll-scene",        scrollScene],
   ["portals",             portals],
   ["side-dot-nav",        sideDotNav],
   ["gallery-masonry",     galleryMasonry], // #gallery — row-span masonry sizing (before reveals so spans are set first)
   ["reveals",             reveals],
-  ["buffet-parallax",     buffetParallax], // 2026-06-25: #buffet bands image parallax (after reveals)
+  ["events-gallery",      eventsGallery], // 2026-07-13: #events hover-list gallery (after reveals; needs GSAP global + settled DOM)
   ["directions-map",      directionsMap], // 2026-06-10: #routes Leaflet map (after reveals so [data-reveal] is set up)
   ["contact-map-cue",     contactMapCue], // 2026-06-22: #contact scroll-cue → reveal the #routes map (both desktop + mobile)
-  ["accordions",          accordions],
   ["slider",              slider],
   ["marquee",             marquee],       // Agent 20 — weblove-motion marquee bands
   ["counters",            counters],      // Agent 20 — animated stat numbers

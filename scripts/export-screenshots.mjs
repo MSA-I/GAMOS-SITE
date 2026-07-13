@@ -26,23 +26,24 @@ const W = 1440;
 const H = 900;
 const PORT = 9222;
 
+// 2026-07-13: #buffet + #shabbat-chatan retired (buffet folded into the
+// culinary grid; shabbat represented in the #events hover-list gallery).
 const SECTION_TARGETS = [
   { name: "01-hero",            scrollTo: "top" },
   { name: "02-hall-portal",     scrollTo: "#hall-portal" },
-  { name: "03-lounge",          scrollTo: "#lounge" },
-  { name: "04-culinary",        scrollTo: "#culinary" },
-  { name: "05-buffet",          scrollTo: "#buffet" },
-  { name: "06-shabbat-chatan",  scrollTo: "#shabbat-chatan" },
-  { name: "07-rooms",           scrollTo: "#rooms" },
-  { name: "08-marquee",         scrollTo: ".marquee" },
-  { name: "09-about",           scrollTo: "#about" },
-  { name: "10-testimonials",    scrollTo: "#testimonials" },
-  { name: "11-gallery",         scrollTo: "#gallery" },
-  { name: "12-events",          scrollTo: "#events" },
-  { name: "13-kosher",          scrollTo: "#kosher" },
-  { name: "14-contact",         scrollTo: "#contact" },
-  { name: "15-routes",          scrollTo: "#routes" },
-  { name: "16-site-footer",     scrollTo: "footer.site-footer" },
+  { name: "03-why-gamos",       scrollTo: "#why-gamos" },
+  { name: "04-lounge",          scrollTo: "#lounge" },
+  { name: "05-culinary",        scrollTo: "#culinary" },
+  { name: "06-rooms",           scrollTo: "#rooms" },
+  { name: "07-marquee",         scrollTo: ".marquee" },
+  { name: "08-about",           scrollTo: "#about" },
+  { name: "09-testimonials",    scrollTo: "#testimonials" },
+  { name: "10-gallery",         scrollTo: "#gallery" },
+  { name: "11-events",          scrollTo: "#events" },
+  { name: "12-kosher",          scrollTo: "#kosher" },
+  { name: "13-contact",         scrollTo: "#contact" },
+  { name: "14-routes",          scrollTo: "#routes" },
+  { name: "15-site-footer",     scrollTo: "footer.site-footer" },
 ];
 
 const LEGAL_TARGETS = [

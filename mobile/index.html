@@ -74,13 +74,10 @@
         imagesizes="100vw"
         href="/assets/images/hero-scene/subject-1920.webp">
 
-  <!-- Performance: preload shabbat-chatan panel-1 image (visible at section enter) -->
-  <link rel="preload" as="image" type="image/webp"
-        href="/assets/images/shabbat-chatan/01.full.webp"
-        media="(min-width: 769px)">
-  <link rel="preload" as="image" type="image/webp"
-        href="/assets/images/shabbat-chatan/01.half.webp"
-        media="(max-width: 768px)">
+  <!-- (2026-07-13 review) The shabbat-chatan/01 preload pair was removed:
+       its consumer (#why-gamos, loading="lazy") sits below the 500vh hero,
+       and the ~380KB preload competed with the hero LCP assets on Slow 4G.
+       Lazy-loading fetches it long before the user scrolls there. -->
 
   <!-- Performance: preload the texture-fill images for background-clip:text
        headings (the lounge title sits just below the hero and is TRANSPARENT
@@ -174,8 +171,6 @@
   <link rel="stylesheet" href="/css/sections/lounge.css">
   <link rel="stylesheet" href="/css/sections/rooms.css">
   <link rel="stylesheet" href="/css/sections/culinary.css">
-  <link rel="stylesheet" href="/css/sections/buffet.css">
-  <link rel="stylesheet" href="/css/sections/shabbat-chatan.css">
   <link rel="stylesheet" href="/css/sections/about.css">
   <link rel="stylesheet" href="/css/sections/testimonials.css">
   <link rel="stylesheet" href="/css/sections/contact.css">
@@ -187,7 +182,6 @@
   <link rel="stylesheet" href="/css/sections/site-footer.css">
   <link rel="stylesheet" href="/css/sections/section-header.css">
   <link rel="stylesheet" href="/css/sections/motion-reveals.css">
-  <link rel="stylesheet" href="/css/sections/motion-accordions.css">
   <link rel="stylesheet" href="/css/sections/motion-slider.css">
 
   <!-- Stylesheets: chrome components (overlay, side-dot-nav, marquee, loader) -->
@@ -222,15 +216,17 @@
   <link rel="stylesheet" href="/css/components/interaction-hint.css">
 
   <!-- GSAP 3.15.0 (self-hosted; powers cinematic scroll + parallax in
-       js/scrollytelling.js, the pinned mask-reveal in js/shabbat-gallery.js,
-       AND the scroll-pinned hero in js/hero-scene.js).
+       js/scrollytelling.js AND the scroll-pinned hero in js/hero-scene.js).
        DrawSVGPlugin + SplitText (now-free GSAP plugins) drive the hero's
-       letter-stroke-on + title word-stagger, exactly as the sandbox source. -->
+       letter-stroke-on + title word-stagger, exactly as the sandbox source.
+       ScrambleTextPlugin (2026-07-13) drives the #events hover-list gallery
+       Hebrew text scramble (js/events-gallery.js). -->
   <script defer src="/assets/vendor/gsap.min.js"></script>
   <script defer src="/assets/vendor/ScrollToPlugin.min.js"></script>
   <script defer src="/assets/vendor/ScrollTrigger.min.js"></script>
   <script defer src="/assets/vendor/DrawSVGPlugin.min.js"></script>
   <script defer src="/assets/vendor/SplitText.min.js"></script>
+  <script defer src="/assets/vendor/ScrambleTextPlugin.min.js"></script>
 
   <!-- Lenis (self-hosted, ~18KB; Constitution §2 — DESKTOP-ONLY smooth scroll).
        Powers js/smooth-scroll.js. defer → window.Lenis is ready before main.js.
@@ -276,12 +272,11 @@
         <li><a href="/halls/dist/events/">אולם</a></li>
         <li><a href="/halls/dist/resort/">ריזורט</a></li>
         <li><a href="#culinary">קולינריה</a></li>
-        <li><a href="#shabbat-chatan">שבתות חתן</a></li>
+        <li><a href="#events">סוגי אירועים</a></li>
         <li><a href="#rooms">חדרי נופש</a></li>
         <li><a href="#about" data-secondary>אודות</a></li>
         <li><a href="#testimonials" data-secondary>המלצות</a></li>
         <li><a href="#gallery">גלריה</a></li>
-        <li><a href="#events" data-secondary>אירועים</a></li>
         <li><a href="#kosher" data-secondary>כשרות</a></li>
         <li><a href="/press/">מן העיתונות</a></li>
         <li><a href="#lounge" data-secondary>מתחם קבלת פנים</a></li>
@@ -837,272 +832,80 @@
               <p class="media-caption__body culinary__item-desc">פרוסות דקות בשמן זית, רוקט, שום ובלסמי.</p>
             </figcaption>
           </li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- ====================================================================
-         #buffet — בופה
-         Food gallery (stills from the reel "Gamos 1.m4v.mp4", user-curated +
-         edited). Captioned abundant grid via shared .media-caption. Reveal by
-         reveals.js ([data-reveal="scale-up"] + [data-stagger]). See buffet.css.
-    ==================================================================== -->
-    <section id="buffet" class="buffet" data-bg="dark" aria-labelledby="buffet-title">
-      <header class="section-header">
-        <p class="section-header__eyebrow"
-           data-reveal="slide-right" style="--reveal-delay: 0ms;">בופה</p>
-        <h2 id="buffet-title" class="section-header__title texture-text texture-text--dark"
-            data-reveal="slide-right" style="--reveal-delay: 80ms;">שולחן שכולו שפע</h2>
-        <p class="section-header__lede"
-           data-reveal="slide-right" style="--reveal-delay: 160ms;">בופה עשיר ומעוצב — מעמדות שף חיות, סושי-בר, על האש ומאפים מהטאבון, הכל בעבודת יד מול האורחים.</p>
-      </header>
-
-      <div class="bands">
-        <div class="band">
-          <figure class="band__fig">
+          <!-- Buffet continuation (2026-07-13): the standalone #buffet section
+               was folded into this grid per user decision — 6 curated buffet
+               stills carry on the menu grid with a "בופה" tag. Source images
+               stay in /assets/images/buffet/. -->
+          <li class="culinary__item">
             <picture>
               <source type="image/webp" srcset="/assets/images/buffet/02.full.webp?v=20260625">
               <img src="/assets/images/buffet/02.full.jpg?v=20260625" width="1024" height="1536" loading="lazy" decoding="async" alt="פיצה אישית נאפית בתנור אבן לוהט עם להבות אש מאחור">
             </picture>
-            <figcaption class="band__cap">פיצה נאפוליטנית</figcaption>
-          </figure>
-          <div class="band__text" data-reveal="fade-up">
-            <div class="band__num">01</div>
-            <h3 class="band__name">פיצה נאפוליטנית</h3>
-          </div>
-        </div>
-        <div class="band">
-          <figure class="band__fig">
+            <figcaption class="media-caption culinary__item-caption">
+              <span class="media-caption__tag culinary__item-tag">בופה</span>
+              <h3 class="media-caption__title culinary__item-name">פיצה נאפוליטנית</h3>
+              <p class="media-caption__body culinary__item-desc">נאפית בתנור אבן לוהט מול האורחים.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
             <picture>
               <source type="image/webp" srcset="/assets/images/buffet/08.full.webp?v=20260625">
               <img src="/assets/images/buffet/08.full.jpg?v=20260625" width="1024" height="1536" loading="lazy" decoding="async" alt="מגש סושי בצורת סירת עץ עם שורות רולים צבעוניים בסלמון, טונה ואבוקדו">
             </picture>
-            <figcaption class="band__cap">מגש סושי קשת</figcaption>
-          </figure>
-          <div class="band__text" data-reveal="fade-up">
-            <div class="band__num">02</div>
-            <h3 class="band__name">מגש סושי קשת</h3>
-          </div>
-        </div>
-        <div class="band">
-          <figure class="band__fig">
+            <figcaption class="media-caption culinary__item-caption">
+              <span class="media-caption__tag culinary__item-tag">בופה</span>
+              <h3 class="media-caption__title culinary__item-name">מגש סושי קשת</h3>
+              <p class="media-caption__body culinary__item-desc">סושי-בר עשיר בעבודת יד.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
             <picture>
               <source type="image/webp" srcset="/assets/images/buffet/10.full.webp?v=20260625">
               <img src="/assets/images/buffet/10.full.jpg?v=20260625" width="941" height="1672" loading="lazy" decoding="async" alt="שף בכפפות מזליף שמן עשבים על פוקאצ'ה חמה על קרש עץ, סינר גאמוס">
             </picture>
-            <figcaption class="band__cap">פוקאצ'ה ופסטו בזיליקום</figcaption>
-          </figure>
-          <div class="band__text" data-reveal="fade-up">
-            <div class="band__num">03</div>
-            <h3 class="band__name">פוקאצ'ה ופסטו בזיליקום</h3>
-          </div>
-        </div>
-        <div class="band">
-          <figure class="band__fig">
+            <figcaption class="media-caption culinary__item-caption">
+              <span class="media-caption__tag culinary__item-tag">בופה</span>
+              <h3 class="media-caption__title culinary__item-name">פוקאצ'ה ופסטו בזיליקום</h3>
+              <p class="media-caption__body culinary__item-desc">חמה מהטאבון, בהזלפת שמן עשבים.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
             <picture>
               <source type="image/webp" srcset="/assets/images/buffet/06.full.webp?v=20260625">
               <img src="/assets/images/buffet/06.full.jpg?v=20260625" width="941" height="1672" loading="lazy" decoding="async" alt="שיפוד שווארמת פרגית גדול מסתובב מעל גחלים לוהטות בגריל">
             </picture>
-            <figcaption class="band__cap">שווארמת פרגית על האש</figcaption>
-          </figure>
-          <div class="band__text" data-reveal="fade-up">
-            <div class="band__num">04</div>
-            <h3 class="band__name">שווארמת פרגית על האש</h3>
-          </div>
-        </div>
-        <div class="band">
-          <figure class="band__fig">
-            <picture>
-              <source type="image/webp" srcset="/assets/images/buffet/11.full.webp?v=20260625">
-              <img src="/assets/images/buffet/11.full.jpg?v=20260625" width="1024" height="1536" loading="lazy" decoding="async" alt="מגש פלפלים אדומים קלויים ומבריקים מקושטים במיקרו עשבים ושום">
-            </picture>
-            <figcaption class="band__cap">פלפלים קלויים בשמן ושום</figcaption>
-          </figure>
-          <div class="band__text" data-reveal="fade-up">
-            <div class="band__num">05</div>
-            <h3 class="band__name">פלפלים קלויים בשמן ושום</h3>
-          </div>
-        </div>
-        <div class="band">
-          <figure class="band__fig">
-            <picture>
-              <source type="image/webp" srcset="/assets/images/buffet/04.full.webp?v=20260625">
-              <img src="/assets/images/buffet/04.full.jpg?v=20260625" width="1024" height="1536" loading="lazy" decoding="async" alt="ריבועי קרוסטיני פריכים עם קוביות טרטר סלמון כתום">
-            </picture>
-            <figcaption class="band__cap">טרטר סלמון על קרוסטיני</figcaption>
-          </figure>
-          <div class="band__text" data-reveal="fade-up">
-            <div class="band__num">06</div>
-            <h3 class="band__name">טרטר סלמון על קרוסטיני</h3>
-          </div>
-        </div>
-        <div class="band">
-          <figure class="band__fig">
+            <figcaption class="media-caption culinary__item-caption">
+              <span class="media-caption__tag culinary__item-tag">בופה</span>
+              <h3 class="media-caption__title culinary__item-name">שווארמת פרגית על האש</h3>
+              <p class="media-caption__body culinary__item-desc">שיפוד מסתובב מעל גחלים לוהטות.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
             <picture>
               <source type="image/webp" srcset="/assets/images/buffet/13.full.webp?v=20260625">
               <img src="/assets/images/buffet/13.full.jpg?v=20260625" width="941" height="1672" loading="lazy" decoding="async" alt="שף בכפפות שחורות מרכיב ביס טרטר טרי מקערת נתח קצוץ מול האורחים">
             </picture>
-            <figcaption class="band__cap">טרטר בהרכבה חיה</figcaption>
-          </figure>
-          <div class="band__text" data-reveal="fade-up">
-            <div class="band__num">07</div>
-            <h3 class="band__name">טרטר בהרכבה חיה</h3>
-          </div>
-        </div>
-        <div class="band">
-          <figure class="band__fig">
+            <figcaption class="media-caption culinary__item-caption">
+              <span class="media-caption__tag culinary__item-tag">בופה</span>
+              <h3 class="media-caption__title culinary__item-name">טרטר בהרכבה חיה</h3>
+              <p class="media-caption__body culinary__item-desc">עמדת שף חיה מול האורחים.</p>
+            </figcaption>
+          </li>
+          <li class="culinary__item">
             <picture>
               <source type="image/webp" srcset="/assets/images/buffet/12.full.webp?v=20260625">
               <img src="/assets/images/buffet/12.full.jpg?v=20260625" width="941" height="1672" loading="lazy" decoding="async" alt="מאפים אפויים מוזהבים על מעמדי עץ מדורגים באווירה חמה">
             </picture>
-            <figcaption class="band__cap">מאפי בוטיק מהטאבון</figcaption>
-          </figure>
-          <div class="band__text" data-reveal="fade-up">
-            <div class="band__num">08</div>
-            <h3 class="band__name">מאפי בוטיק מהטאבון</h3>
-          </div>
-        </div>
-        <div class="band">
-          <figure class="band__fig">
-            <picture>
-              <source type="image/webp" srcset="/assets/images/buffet/03.full.webp?v=20260625">
-              <img src="/assets/images/buffet/03.full.jpg?v=20260625" width="1024" height="1536" loading="lazy" decoding="async" alt="באנים רכים ממולאים בבשר בריסקט פולד, כרוב סגול וכוסברה על צלחת לבנה">
-            </picture>
-            <figcaption class="band__cap">באו בריסקט פולד</figcaption>
-          </figure>
-          <div class="band__text" data-reveal="fade-up">
-            <div class="band__num">09</div>
-            <h3 class="band__name">באו בריסקט פולד</h3>
-          </div>
-        </div>
-        <div class="band">
-          <figure class="band__fig">
-            <picture>
-              <source type="image/webp" srcset="/assets/images/buffet/09.full.webp?v=20260625">
-              <img src="/assets/images/buffet/09.full.jpg?v=20260625" width="1024" height="1536" loading="lazy" decoding="async" alt="כוסות זכוכית קטנות עם סביצה צבעוני מסודרות על מעמד מדורג">
-            </picture>
-            <figcaption class="band__cap">סביצ'ה לבן בהדרים</figcaption>
-          </figure>
-          <div class="band__text" data-reveal="fade-up">
-            <div class="band__num">10</div>
-            <h3 class="band__name">סביצ'ה לבן בהדרים</h3>
-          </div>
-        </div>
+            <figcaption class="media-caption culinary__item-caption">
+              <span class="media-caption__tag culinary__item-tag">בופה</span>
+              <h3 class="media-caption__title culinary__item-name">מאפי בוטיק מהטאבון</h3>
+              <p class="media-caption__body culinary__item-desc">מאפים מוזהבים על מעמדי עץ, ישר מהטאבון.</p>
+            </figcaption>
+          </li>
+        </ul>
       </div>
     </section>
 
-    <!-- ====================================================================
-         #shabbat-chatan — שבתות חתן
-         GSAP pinned mask-reveal (port of CodePen WbQPRwv by gridmorphic,
-         "GSAP pinned image mask reveal on scroll"). 5 panels of headline
-         text scroll naturally; the image stack is pinned and each image
-         wipes upward via clip-path: inset(0 0 100%) to reveal the next
-         image stacked beneath. Body tint cycles per panel. RTL-safe (only
-         object-position Y axis is animated). Section drops out of the
-         site scroll-orchestrator — ScrollTrigger owns timing.
-    ==================================================================== -->
-    <section id="shabbat-chatan" class="shabbat" aria-labelledby="shabbat-title">
-      <div class="shabbat__container">
-
-        <header class="section-header section-header--center shabbat__header">
-          <p class="section-header__eyebrow"
-             data-reveal="fade-up" style="--reveal-delay: 0ms;">שבתות חתן</p>
-          <h2 id="shabbat-title" class="section-header__title texture-text texture-text--dark"
-              data-reveal="fade-up" style="--reveal-delay: 120ms;">שבת חתן בניחוח של חוץ לארץ</h2>
-        </header>
-
-        <div class="shabbat__layout">
-
-        <div class="shabbat__panels" role="presentation">
-          <article class="shabbat__panel">
-            <h2 class="shabbat__heading texture-text texture-text--dark">שבת חתן שלמה — הכול במתחם אחד</h2>
-            <p class="shabbat__sub">מרגע קבלת השבת ועד לסיומה, כל שלבי האירוח מתקיימים במתחם אחד, המשלב לינה, סעודות, תפילות וזמן משפחתי באווירה ייחודית.</p>
-          </article>
-          <article class="shabbat__panel">
-            <h2 class="shabbat__heading texture-text texture-text--dark">מרחב נפתח אל המדבר</h2>
-            <p class="shabbat__sub">חלל רחב ומואר המשתלב עם הנוף הפתוח המאפשר לארח את יקיריכם במתחם פרטי, בנוחות ובתחושת מרחב יוצאת דופן.</p>
-          </article>
-          <article class="shabbat__panel">
-            <h2 class="shabbat__heading texture-text texture-text--dark">שלווה ונחת</h2>
-            <p class="shabbat__sub">האור הטבעי, הקווים הנקיים והמרחב הפתוח יוצרים סביבת אירוח נעימה, אלגנטית ומזמינה לכל רגע במהלך השבת.</p>
-          </article>
-          <article class="shabbat__panel">
-            <h2 class="shabbat__heading texture-text texture-text--dark">מתכנסים סביב שולחן אחד</h2>
-            <p class="shabbat__sub">מערך שולחנות נקי ומוקפד שנפתח אל המדבר. ישיבה משותפת שמחברת את כל המשפחה סביב שולחן אחד.</p>
-          </article>
-          <article class="shabbat__panel">
-            <h2 class="shabbat__heading texture-text texture-text--dark">שולחן החתן ערוך בפרחי שדה</h2>
-            <p class="shabbat__sub">סידור מוקפד המאפשר לכל בני המשפחה והאורחים להתכנס סביב שולחן אחד, באווירה המחברת בין אנשים, עיצוב ומרחב פתוח.</p>
-          </article>
-          <article class="shabbat__panel">
-            <h2 class="shabbat__heading texture-text texture-text--dark">תשומת לב לכל פרט</h2>
-            <p class="shabbat__sub">מהעמדת הכלים ועד סידורי השולחן, כל פרט זוכה לתשומת לב מירבית, מתוך תפיסה שאירוח מתחיל בפרטים הקטנים.</p>
-          </article>
-        </div>
-
-        <!-- Stack order: data-index sets z-index. Last figure in DOM has the
-             LOWEST z-index, so the FIRST panel pairs with the visually-topmost
-             image (data-index=8, last in DOM). The mask wipe reveals deeper
-             images stacked beneath, in panel order. -->
-        <div class="shabbat__stage" role="presentation">
-          <!-- Brass scroll affordance (2026-07-13 unification pass): the pinned
-               mask-reveal had no cue; same auto-fading scroll hint as #culinary.
-               Lives inside the pinned stage so it stays on-screen during the pin. -->
-          <div class="ix-hint ix-hint--scroll ix-hint--on-dark" data-ix-hint data-ix-dismiss="auto"
-               aria-hidden="true">
-            <span class="ix-hint__icon">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6"/></svg>
-            </span>
-            <span class="ix-hint__text">המשיכו לגלול</span>
-          </div>
-          <figure class="shabbat__media" data-index="8">
-            <picture>
-              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/01.half.webp">
-              <source type="image/webp" srcset="/assets/images/shabbat-chatan/01.full.webp">
-              <img src="/assets/images/shabbat-chatan/01.full.jpg" alt="מבט-על על מתחם שבת חתן, שולחנות עגולים לצד בריכת האינסוף מול המדבר" width="1920" height="1440" loading="eager" fetchpriority="high" decoding="async" draggable="false">
-            </picture>
-          </figure>
-          <figure class="shabbat__media" data-index="7">
-            <picture>
-              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/02.half.webp">
-              <source type="image/webp" srcset="/assets/images/shabbat-chatan/02.full.webp">
-              <img src="/assets/images/shabbat-chatan/02.full.jpg" alt="אולם הסעודות הפתוח עם שולחנות עגולים ערוכים ונוף מדברי" width="1920" height="1440" loading="lazy" decoding="async" draggable="false">
-            </picture>
-          </figure>
-          <figure class="shabbat__media" data-index="6">
-            <picture>
-              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/03.half.webp">
-              <source type="image/webp" srcset="/assets/images/shabbat-chatan/03.full.webp">
-              <img src="/assets/images/shabbat-chatan/03.full.jpg" alt="שולחנות שבת חתן ערוכים תחת יריעות בד לבנות מול המדבר" width="1920" height="1280" loading="lazy" decoding="async" draggable="false">
-            </picture>
-          </figure>
-          <figure class="shabbat__media" data-index="5">
-            <picture>
-              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/04.half.webp">
-              <source type="image/webp" srcset="/assets/images/shabbat-chatan/04.full.webp">
-              <img src="/assets/images/shabbat-chatan/04.full.jpg" alt="שולחנות לבנים ארוכים ערוכים מול קו האופק הפתוח" width="1920" height="1440" loading="lazy" decoding="async" draggable="false">
-            </picture>
-          </figure>
-          <figure class="shabbat__media" data-index="4">
-            <picture>
-              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/05.half.webp">
-              <source type="image/webp" srcset="/assets/images/shabbat-chatan/05.full.webp">
-              <img src="/assets/images/shabbat-chatan/05.full.jpg" alt="שולחן החתן הארוך ערוך בפרחי שדה וכלי זכוכית" width="1920" height="1440" loading="lazy" decoding="async" draggable="false">
-            </picture>
-          </figure>
-          <figure class="shabbat__media" data-index="3">
-            <picture>
-              <source type="image/webp" media="(max-width: 768px)" srcset="/assets/images/shabbat-chatan/06.half.webp">
-              <source type="image/webp" srcset="/assets/images/shabbat-chatan/06.full.webp">
-              <img src="/assets/images/shabbat-chatan/06.full.jpg" alt="פרטי שולחן עם זרי חמניות ונרות לכבוד שבת חתן" width="1920" height="1440" loading="lazy" decoding="async" draggable="false">
-            </picture>
-          </figure>
-        </div>
-
-        </div>
-
-      </div>
-    </section>
 
     <!-- ====================================================================
          #rooms — חדרי נופש
@@ -1680,86 +1483,102 @@
     </section>
 
     <!-- ====================================================================
-         #events — accordion of event categories
-         Agent 20 choreography: slide-left entrance (mirror to about's
-         slide-right), .section-rail--start (text in outer 40% on the
-         inline-start side), accordion items stagger 100ms apart.
+         #events — סוגי אירועים · hover-list gallery (2026-07-13)
+         Vanilla port of the "Music Portfolio" hover-list template: rows of
+         event types; hovering (desktop) / scrolling through the center band
+         (mobile, IO in js/events-gallery.js) swaps a scale-in background
+         image, dims siblings, and scrambles the row text with Hebrew glyphs
+         (GSAP ScrambleTextPlugin). Rows are links to #contact — single tap
+         always navigates; stable aria-label so screen readers never hear
+         mid-scramble glyphs. Images swap via data-image on each <li>.
+         Replaced the <details> accordion (js/accordions.js +
+         css/sections/motion-accordions.css kept on disk as legacy).
     ==================================================================== -->
-    <section id="events" class="events" aria-labelledby="events-title">
-      <div class="section-rail--start" data-stagger>
-        <header class="section-header">
+    <section id="events" class="events" data-bg="dark" aria-labelledby="events-title">
+      <div class="events__inner" data-stagger>
+        <!-- --on-dark: solid --fg-on-dark fallback so the title stays visible
+             in browsers without background-clip:text (texture-text.css
+             graceful-degradation path). -->
+        <header class="section-header section-header--on-dark">
           <p class="section-header__eyebrow"
              data-reveal="slide-left" style="--reveal-delay: 0ms;">אירועים</p>
-          <h2 id="events-title" class="section-header__title texture-text texture-text--dark"
+          <h2 id="events-title" class="section-header__title texture-text texture-text--light"
               data-reveal="slide-left" style="--reveal-delay: 80ms;">סוגי אירועים</h2>
         </header>
 
-        <div class="events__accordion" data-accordion data-stagger>
-          <details class="events__item" name="events-accordion" open
-                   data-reveal="slide-left" style="--reveal-delay: 160ms;">
-            <summary class="events__summary">
-              <span>חתונות</span>
-              <span class="events__chevron" aria-hidden="true">›</span>
-            </summary>
-            <div class="events__content">
-              <p>חתונה אינטימית / ממוצעת / גדולה במיוחד, בגן, באולם, בריזורט או במתחם כולו, אנו ערוכים לכל סוגי האירוע צוות מקצועי שילווה אתכם לכל אורך הדרך ויספק לכם מעטפת רחבה ומיטבית.</p>
-            </div>
-          </details>
+        <div class="events__stage" data-events-stage>
+          <div class="events__bg" aria-hidden="true">
+            <div class="events__bg-img" data-events-bg></div>
+          </div>
 
-          <details class="events__item" name="events-accordion"
-                   data-reveal="slide-left" style="--reveal-delay: 260ms;">
-            <summary class="events__summary">
-              <span>בר ובת מצווה</span>
-              <span class="events__chevron" aria-hidden="true">›</span>
-            </summary>
-            <div class="events__content">
-              <p>חגיגה בלתי נשכחת לילדים ולמשפחה, עם מתחמים מותאמים, תוכן, אטרקציות ואווירה שמרגשת את כל הדורות.</p>
-            </div>
-          </details>
-
-          <details class="events__item" name="events-accordion"
-                   data-reveal="slide-left" style="--reveal-delay: 360ms;">
-            <summary class="events__summary">
-              <span>ברית ובריתה</span>
-              <span class="events__chevron" aria-hidden="true">›</span>
-            </summary>
-            <div class="events__content">
-              <p>אירוע משפחתי באווירה אלגנטית ונעימה, עם אירוח מוקפד, קולינריה איכותית וליווי אישי מהרגע הראשון.</p>
-            </div>
-          </details>
-
-          <details class="events__item" name="events-accordion"
-                   data-reveal="slide-left" style="--reveal-delay: 460ms;">
-            <summary class="events__summary">
-              <span>אירועי חברה</span>
-              <span class="events__chevron" aria-hidden="true">›</span>
-            </summary>
-            <div class="events__content">
-              <p>כנסים, השקות, ערבי גיבוש ואירועי יוקרה, עם פתרונות מותאמים, שירות מקצועי והפקה ברמה הגבוהה ביותר.</p>
-            </div>
-          </details>
-
-          <details class="events__item" name="events-accordion"
-                   data-reveal="slide-left" style="--reveal-delay: 460ms;">
-            <summary class="events__summary">
-              <span>אירועים פרטיים</span>
-              <span class="events__chevron" aria-hidden="true">›</span>
-            </summary>
-            <div class="events__content">
-              <p>ימי הולדת, ימי נישואין, חגיגות משפחתיות וכל אירוע פרטי שמקבל אצלנו במה מרשימה וחוויה בלתי נשכחת.</p>
-            </div>
-          </details>
-
-          <details class="events__item" name="events-accordion"
-                   data-reveal="slide-left" style="--reveal-delay: 560ms;">
-            <summary class="events__summary">
-              <span>שבתות חתן</span>
-              <span class="events__chevron" aria-hidden="true">›</span>
-            </summary>
-            <div class="events__content">
-              <p>אירוח מלא במתחם הריזורט השמור רק לכם, עם סוויטות, בית כנסת, בריכה מחוממת וקולינריה שמעניקים לכם סוף שבוע שלם במקום אחד.</p>
-            </div>
-          </details>
+          <ul class="events__list" role="list" data-events-list>
+            <li class="events__row" data-image="/assets/images/gallery/03.full.webp"
+                data-reveal="slide-left" style="--reveal-delay: 160ms;">
+              <a class="events__link" href="#contact" data-cta="events-wedding"
+                 aria-label="חתונות — באולם, בגן או במתחם כולו, עד 1000 מוזמנים — לתיאום סיור">
+                <span class="events__cell events__cell--idx" aria-hidden="true"><bdi>01</bdi></span>
+                <span class="events__cell events__cell--name">חתונות</span>
+                <span class="events__cell events__cell--desc">באולם, בגן או במתחם כולו</span>
+                <span class="events__cell events__cell--tag">ליווי אישי</span>
+                <span class="events__cell events__cell--meta">עד 1000 מוזמנים</span>
+              </a>
+            </li>
+            <li class="events__row" data-image="/assets/images/gallery/07.full.webp"
+                data-reveal="slide-left" style="--reveal-delay: 240ms;">
+              <a class="events__link" href="#contact" data-cta="events-mitzvah"
+                 aria-label="בר ובת מצווה — חגיגה שמרגשת את כל הדורות, תוכן ואטרקציות — לתיאום סיור">
+                <span class="events__cell events__cell--idx" aria-hidden="true"><bdi>02</bdi></span>
+                <span class="events__cell events__cell--name">בר ובת מצווה</span>
+                <span class="events__cell events__cell--desc">חגיגה שמרגשת את כל הדורות</span>
+                <span class="events__cell events__cell--tag">תוכן ואטרקציות</span>
+                <span class="events__cell events__cell--meta">מתחמים מותאמים</span>
+              </a>
+            </li>
+            <li class="events__row" data-image="/assets/images/gallery/11.full.webp"
+                data-reveal="slide-left" style="--reveal-delay: 320ms;">
+              <a class="events__link" href="#contact" data-cta="events-brit"
+                 aria-label="ברית ובריתה — אירוע משפחתי באווירה אלגנטית, קולינריה איכותית — לתיאום סיור">
+                <span class="events__cell events__cell--idx" aria-hidden="true"><bdi>03</bdi></span>
+                <span class="events__cell events__cell--name">ברית ובריתה</span>
+                <span class="events__cell events__cell--desc">אירוע משפחתי באווירה אלגנטית</span>
+                <span class="events__cell events__cell--tag">אירוח מוקפד</span>
+                <span class="events__cell events__cell--meta">קולינריה איכותית</span>
+              </a>
+            </li>
+            <li class="events__row" data-image="/assets/images/gallery/15.full.webp"
+                data-reveal="slide-left" style="--reveal-delay: 400ms;">
+              <a class="events__link" href="#contact" data-cta="events-corporate"
+                 aria-label="אירועי חברה — כנסים, השקות וערבי גיבוש, הפקה מלאה — לתיאום סיור">
+                <span class="events__cell events__cell--idx" aria-hidden="true"><bdi>04</bdi></span>
+                <span class="events__cell events__cell--name">אירועי חברה</span>
+                <span class="events__cell events__cell--desc">כנסים, השקות וערבי גיבוש</span>
+                <span class="events__cell events__cell--tag">הפקה מלאה</span>
+                <span class="events__cell events__cell--meta">פתרונות מותאמים</span>
+              </a>
+            </li>
+            <li class="events__row" data-image="/assets/images/gallery/19.full.webp"
+                data-reveal="slide-left" style="--reveal-delay: 480ms;">
+              <a class="events__link" href="#contact" data-cta="events-private"
+                 aria-label="אירועים פרטיים — ימי הולדת וחגיגות משפחתיות, במה מרשימה — לתיאום סיור">
+                <span class="events__cell events__cell--idx" aria-hidden="true"><bdi>05</bdi></span>
+                <span class="events__cell events__cell--name">אירועים פרטיים</span>
+                <span class="events__cell events__cell--desc">ימי הולדת וחגיגות משפחתיות</span>
+                <span class="events__cell events__cell--tag">במה מרשימה</span>
+                <span class="events__cell events__cell--meta">כל קונספט</span>
+              </a>
+            </li>
+            <li class="events__row" data-image="/assets/images/shabbat-chatan/03.full.webp"
+                data-reveal="slide-left" style="--reveal-delay: 560ms;">
+              <a class="events__link" href="#contact" data-cta="events-shabbat"
+                 aria-label="שבתות חתן — המתחם כולו שמור רק לכם, סוויטות ובריכה, סוף שבוע מלא — לתיאום סיור">
+                <span class="events__cell events__cell--idx" aria-hidden="true"><bdi>06</bdi></span>
+                <span class="events__cell events__cell--name">שבתות חתן</span>
+                <span class="events__cell events__cell--desc">המתחם כולו שמור רק לכם</span>
+                <span class="events__cell events__cell--tag">סוויטות ובריכה</span>
+                <span class="events__cell events__cell--meta">סוף שבוע מלא</span>
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
     </section>

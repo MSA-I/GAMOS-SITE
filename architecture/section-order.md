@@ -7,6 +7,12 @@
 הייתה Provisional מ-2026-05-28 ולא שיקפה את האתר הבנוי). באותו תאריך נוספה
 סקציית `#why-gamos` (conversion pass — `PLANS/next-steps/2026-07-13_conversion-pass.md`).
 
+**AMENDED 2026-07-13 (החלטת משתמש, צמצום גלריות):** `#buffet` בוטלה — 6 כרטיסי
+בופה נבחרים נטמעו בגריד המנות של `#culinary` (תג "בופה"); `#shabbat-chatan`
+בוטלה — התוכן מיוצג כפריט בגלריית `#events` החדשה (hover-list), וקישור הניווט
+שלה הוחלף ב"סוגי אירועים" → `#events`. קבצי ה-CSS/JS של שתי הסקציות נשארים
+בדיסק כ-legacy לא-מקושר (תקדים §2.1 כלל 6).
+
 ---
 
 ## Order (top → bottom)
@@ -20,25 +26,25 @@
    3–4 מונים, ציטוטי המלצות, CTA band. עונה לביקורת השיווקית (מוצר + אמון + המרה
    מוקדם).
 4. **`#lounge`** — מתחם קבלת פנים (טבעת תלת-ממד בגרירה).
-5. **`#culinary`** — scroll-scrub קולינרי (canvas frames) + גריד מנות.
-6. **`#buffet`** — רצועות פרלקסה.
-7. **`#shabbat-chatan`** — pinned mask-reveal.
-8. **`#rooms`** — דלת כניסה ל-sub-app חדרי האירוח.
-9. **`#about`** — אודות + מונים.
-10. **`#testimonials`** — קרוסלת המלצות + CTA band בסיום.
-11. **`#gallery`** — masonry + lightbox משותף.
-12. **`#events`** — סוגי אירועים.
-13. **`#kosher`** — כשרות.
-14. **`#contact`** — טופס + טלפונים + וואטסאפ (יעד ה-CTA הראשי).
-15. **`#routes`** — מסלולי הגעה + מפה (reveal-pair עם contact).
+5. **`#culinary`** — scroll-scrub קולינרי (canvas frames) + גריד מנות
+   (כולל 6 כרטיסי בופה — המשך הגריד, תג "בופה").
+6. **`#rooms`** — דלת כניסה ל-sub-app חדרי האירוח.
+7. **`#about`** — אודות + מונים.
+8. **`#testimonials`** — קרוסלת המלצות + CTA band בסיום.
+9. **`#gallery`** — masonry + lightbox משותף.
+10. **`#events`** — סוגי אירועים: hover-list gallery (רקע מתחלף + scramble עברי;
+    במובייל הפעלה בגלילה). כולל פריט "שבתות חתן".
+11. **`#kosher`** — כשרות.
+12. **`#contact`** — טופס + טלפונים + וואטסאפ (יעד ה-CTA הראשי).
+13. **`#routes`** — מסלולי הגעה + מפה (reveal-pair עם contact).
 
 ---
 
 ## Anchor IDs (locked)
 
-`#hero`, `#hall-portal`, `#why-gamos`, `#lounge`, `#culinary`, `#buffet`,
-`#shabbat-chatan`, `#rooms`, `#about`, `#testimonials`, `#gallery`, `#events`,
-`#kosher`, `#contact`, `#routes`.
+`#hero`, `#hall-portal`, `#why-gamos`, `#lounge`, `#culinary`, `#rooms`,
+`#about`, `#testimonials`, `#gallery`, `#events`, `#kosher`, `#contact`,
+`#routes`. *(`#buffet` + `#shabbat-chatan` הוסרו 2026-07-13 — ראה AMENDED למעלה.)*
 
 ---
 
@@ -49,7 +55,7 @@
 - hall-portal מיד אחרי = בחירת מתחם.
 - **why-gamos שלישי = צילום אמיתי + אמון + CTA לפני מסע החוויות** — היררכיה עסקית:
   מהו גאמוס → למה → חוויה.
-- lounge / culinary / buffet / shabbat / rooms = חוויות המתחם.
+- lounge / culinary / rooms = חוויות המתחם (בופה בתוך culinary מ-2026-07-13).
 - about + testimonials = העמקת אמון; CTA אחרי המלצות.
 - gallery / events / kosher = תוכן משלים.
 - contact לפני routes = נקודת ההמרה; routes סוגר עם הגעה.

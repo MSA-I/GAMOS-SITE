@@ -40,7 +40,8 @@ mobile/
 ├── loader.js                       ← entry point יחיד שטוען את הכל
 ├── css/                            ← @media overrides בלבד
 │   ├── lounge.css                    coverflow carousel ל-≤768px
-│   ├── shabbat-chatan.css            snap carousel ל-≤640px
+│   ├── shabbat-chatan.css            legacy (הסקציה בוטלה 2026-07-13; לא מוזרק)
+│   ├── events.css                    hover-list gallery — פריסת טלפון (2026-07-13)
 │   ├── culinary.css                  2-col grid ל-≤559px
 │   ├── hero-static.css               pill CTA buttons ל-≤768px
 │   ├── responsive-images.css         (placeholder; עיבוד עתידי)
@@ -184,7 +185,7 @@ npx serve . -l 5050
 - ✅ Self-contained loader.js (single entry point).
 - ✅ Phase 1: responsive `<picture>` + Heebo preload.
 - ✅ Phase 2A: lounge coverflow carousel.
-- ✅ Phase 2B: shabbat snap carousel.
+- ✅ Phase 2B: shabbat snap carousel. (retired 2026-07-13 — הסקציה בוטלה)
 - ✅ Phase 2C: culinary mobile-frames manifest swap (encoder + runtime).
 - ✅ Phase 3A: hero pill CTA buttons.
 - ✅ Phase 3B: WCAG ≥44×44 touch-targets + Hebrew descender clearance + kosher heading fix.

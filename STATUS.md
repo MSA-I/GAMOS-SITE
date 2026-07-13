@@ -19,7 +19,25 @@
 - **שורת נתוני אמון בהירו** + **סקציה חדשה `#why-gamos`** (סקציה 3): צילום אמיתי, 4
   מונים, 2 ציטוטים, CTA. `architecture/section-order.md` שוכתב ל-15 סקציות.
 - **איחוד שפת אינטראקציה:** מנוע lightbox משותף `js/lightbox.js` (lounge + gallery
-  הפכו צרכנים רזים); רמזי ix-hint חדשים ל-`#gallery` (tap) ו-`#shabbat-chatan` (scroll).
+  הפכו צרכנים רזים); רמז ix-hint חדש ל-`#gallery` (tap). (רמז ה-scroll של
+  `#shabbat-chatan` הוסר באותו יום עם ביטול הסקציה — ראה NEW למטה.)
+
+## ⭐ NEW (2026-07-13, מאוחר יותר) — צמצום גלריות + גלריית סוגי-אירועים
+
+- **`#buffet` בוטל** — 6 כרטיסי בופה נבחרים נטמעו בגריד המנות של `#culinary` (תג
+  "בופה"); `buffet-parallax` הוסר מ-MODULES.
+- **`#shabbat-chatan` בוטל** — מיוצג כפריט בגלריית `#events`; בניווט "סוגי אירועים"
+  תפס את מקומו (הוסרה הכפילות "אירועים").
+- **`#events` חדש** — hover-list gallery (פורט וונילה של תבנית Music Portfolio):
+  רקע scale-in מתחלף, dim-siblings, scramble עברי (ScrambleTextPlugin 3.15.0,
+  vendor חדש), idle flicker; במובייל/מסכי-מגע הפעלה בגלילה (IO center-band) +
+  rewire על שינוי breakpoint. `js/events-gallery.js` + `css/sections/events.css`
+  (שכתוב) + `mobile/css/events.css`.
+- **סטטים של `#why-gamos`** — טקסטורת typo-on-light (כמו about).
+- **ביקורת קוד (8 זוויות) יושמה:** שימור זהות text-nodes מול i18n, strip של
+  data-reveal אחרי entrance (מונע קונפליקט transitions), טעינת תמונות עצלה
+  (IO viewport-ahead) + half.webp במגע, הסרת preload של why-gamos מה-head,
+  רצפת dim 0.6 במובייל (AA), תווית nav קצרה ב-EN/FR, עדכון export-screenshots.
 - **מיתוג/שיתוף:** favicon-16 + `/favicon.ico` (הסמל הרשמי — היה כבר המקור); תמונת
   Social Preview ייעודית 1200×630 (`npm run build:brand`) + og:image מעודכן.
 - **אנליטיקה:** `js/analytics.js` (cta_click / lead_submit / section_reach →
@@ -262,9 +280,9 @@ HTML5 + CSS3 (custom properties, container queries, logical props)
 ❌ אין framework / bundler / 3D / Tailwind runtime
 ```
 
-**JS modules (32):** `accordions, audio, canvas-frame-renderer, contact-form, corridor, corridor-page, counters, directions-map, hero-scene, hero-static, loading-overlay, lounge-lightbox, lounge-selector, main, main-press, marquee, portals, press-shader, project-drawer, projects-data, reveals, rooms-door, rooms-gallery, scroll-orchestrator, scroll-scene, scroll-spy, scrollytelling, shabbat-gallery, side-dot-nav, site-nav, site-nav-hover-reveal, slider` (+ `utils/media-query`). `hero-static` נשאר כ-seam מנותק (§3). `lenis`/`hero-video-scrub` נמחקו מזמן.
+**JS modules (רשומים ב-MODULES):** `audio, canvas-frame-renderer, contact-form, corridor, corridor-page, counters, directions-map, events-gallery, hero-scene, loading-overlay, lounge-lightbox, lounge-selector, main, main-press, marquee, portals, press-shader, project-drawer, projects-data, reveals, rooms-door, rooms-gallery, scroll-orchestrator, scroll-scene, scroll-spy, scrollytelling, side-dot-nav, site-nav, site-nav-hover-reveal, slider` (+ `utils/media-query`). `hero-static` נשאר כ-seam מנותק (§3). **2026-07-13:** `shabbat-gallery`, `buffet-parallax`, `accordions` הוסרו מ-MODULES (הקבצים בדיסק כ-legacy) — `#shabbat-chatan`/`#buffet` בוטלו ו-`#events` הפך לגלריית hover-list חדשה (`js/events-gallery.js`).
 
-**CSS sections (23):** `about, contact, corridor, culinary, directions, events, gallery, hero, hero-scene, hero-static, kosher, lounge, motion-accordions, motion-reveals, motion-slider, portals, rooms, scroll-scene, section-header, shabbat-chatan, site-footer, site-nav, testimonials`. `hall-venue`/`hall-resort` נמחקו 2026-06-15 (יתומים — האולמות עברו ל-sub-app React §2.1).
+**CSS sections (מקושרים ב-head):** `about, contact, corridor, culinary, directions, events, gallery, hero, hero-scene, hero-static, kosher, lounge, motion-reveals, motion-slider, portals, rooms, scroll-scene, section-header, site-footer, site-nav, testimonials`. `hall-venue`/`hall-resort` נמחקו 2026-06-15; `buffet.css`/`shabbat-chatan.css`/`motion-accordions.css` נותקו 2026-07-13 (legacy בדיסק).
 
 **CSS components (10):** `buttons, loading-overlay, lounge-lightbox, marquee, media-caption, project-drawer, scrollytelling-loader, side-dot-nav, site-nav-hover, texture-text`
 

@@ -51,7 +51,8 @@
   .feature h3,
   .marquee__text,
   .band__num,
-  .about__stat dd {
+  .about__stat dd,
+  .why-gamos__stat dd {
     background-repeat: no-repeat;
     background-size: 100% 100%;
     background-position: center;
@@ -79,7 +80,8 @@
   .gallery .section-header__title,
   .kosher .section-header__title,
   .band__num,
-  .about__stat dd {
+  .about__stat dd,
+  .why-gamos__stat dd {
     background-image: var(--typo-on-light);
   }
 

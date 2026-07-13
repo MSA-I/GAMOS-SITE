@@ -60,7 +60,6 @@
   // rules just don't fire.
   const MOBILE_CSS = [
     "/mobile/css/lounge.css",
-    "/mobile/css/shabbat-chatan.css",
     "/mobile/css/culinary.css",
     "/mobile/css/hero-scene.css",   // 2026-06-15: v10 scroll hero (replaces hero-static.css; that file kept as legacy)
     "/mobile/css/responsive-images.css",
@@ -74,6 +73,7 @@
     "/mobile/css/buttons.css",           // 2026-07-02: wrap long EN/FR CTAs so they don't clip off-screen
     "/mobile/css/why-gamos.css",         // 2026-07-13: conversion pass — trust section fit ≤768px
     "/mobile/css/cta-bar.css",           // 2026-07-13: conversion pass — fixed bottom action bar
+    "/mobile/css/events.css",            // 2026-07-13: #events hover-list gallery — phone layout (scroll-driven activation lives in js/events-gallery.js)
   ];
 
   function injectStylesheets () {
