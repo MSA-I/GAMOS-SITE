@@ -1,40 +1,32 @@
 /* ===========================================================================
    events.css — #events "סוגי אירועים" editorial fixed-preview gallery
-   (2026-07-13 v3 — user-chosen redesign; replaces the mouse-distortion look,
+   (2026-07-13 v4 — user-chosen redesign; replaces the mouse-distortion look,
    see git history)
 
    RTL two-column stage: event-name rows on the inline-start (right) side, a
    framed sticky preview panel on the inline-end (left) side. Activating a
-   row (hover/focus on desktop, scroll center-band on coarse pointers — see
-   js/events-gallery.js) swaps the panel image with a soft top→down
-   clip-path wipe + settle-scale. Row 1 is active by default; the panel is
-   never empty. Calm, fashion-house editorial — nothing chases the cursor.
+   row (hover/focus on desktop — js/events-gallery.js) swaps the panel image
+   with a soft top→down clip-path wipe + settle-scale. Row 1 is active by
+   default; the panel is never empty. Calm, fashion-house editorial —
+   nothing chases the cursor. ≤768px = stacked cards (mobile/css/events.css).
 
    RTL: grid-template-areas + logical properties only.
    ========================================================================= */
 
-/* The section sits between two light sections (#gallery on --bg-alt above,
-   #kosher on the ivory body below). Instead of a hard cut into ink-deep,
-   the ground eases in and out through the brand's warm cocoa — multi-stop
-   token-defined gradients (§5) approximating an ease curve, so the middle
-   reads as a falling warm shadow rather than muddy gray. Content padding
-   clears the fade zones so text always sits on solid ink. */
+/* Seam design (v4.1 — after two gradient attempts read as muddy/banded,
+   especially at phone widths): the dark block is a SHAPE, not a color
+   smear. Its TOP edge is a gentle full-width elliptical arch (border-radius
+   dome) echoing the brand arc ornaments right above this section in
+   #gallery's GAMOS EVENTS mark; the ivory above shows through the rounded
+   corners. The bottom edge is a straight cut (user decision). */
 .events {
-  --events-fade-in: clamp(160px, 24vh, 300px);
-  --events-fade-out: clamp(120px, 18vh, 240px);
-  padding-block-start: calc(var(--events-fade-in) + var(--space-12));
-  padding-block-end: calc(var(--events-fade-out) + var(--space-12));
-  background: linear-gradient(
-    to bottom,
-    var(--bg-alt) 0,
-    color-mix(in srgb, var(--cocoa) 40%, var(--bg-alt)) calc(var(--events-fade-in) * 0.45),
-    color-mix(in srgb, var(--cocoa) 80%, var(--ink-deep)) calc(var(--events-fade-in) * 0.72),
-    var(--ink-deep) var(--events-fade-in),
-    var(--ink-deep) calc(100% - var(--events-fade-out)),
-    color-mix(in srgb, var(--cocoa) 75%, var(--ink-deep)) calc(100% - var(--events-fade-out) * 0.7),
-    color-mix(in srgb, var(--cocoa) 35%, var(--bg)) calc(100% - var(--events-fade-out) * 0.4),
-    var(--bg) 100%
-  );
+  --events-arch: clamp(28px, 6vw, 72px);
+  padding-block-start: calc(var(--section-pad) + var(--events-arch));
+  padding-block-end: var(--section-pad);
+  background: var(--ink-deep);
+  /* Arch on the TOP edge only — the bottom stays a clean straight cut
+     into #kosher (user decision). */
+  border-radius: 50% 50% 0 0 / var(--events-arch) var(--events-arch) 0 0;
 }
 
 .events__inner {

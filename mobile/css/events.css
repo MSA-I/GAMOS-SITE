@@ -14,12 +14,6 @@
    ========================================================================= */
 
 @media (max-width: 768px) {
-  /* Shorter, snappier cocoa fades on small screens. */
-  .events {
-    --events-fade-in: 120px;
-    --events-fade-out: 90px;
-  }
-
   /* The desktop preview panel is replaced by per-card images. */
   .events__preview { display: none; }
 
