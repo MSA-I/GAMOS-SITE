@@ -177,7 +177,6 @@
   <link rel="stylesheet" href="/css/sections/directions.css">
   <link rel="stylesheet" href="/css/sections/gallery.css">
   <link rel="stylesheet" href="/css/sections/events.css">
-  <link rel="stylesheet" href="/css/sections/kosher.css">
   <link rel="stylesheet" href="/css/sections/site-nav.css">
   <link rel="stylesheet" href="/css/sections/site-footer.css">
   <link rel="stylesheet" href="/css/sections/section-header.css">
@@ -269,12 +268,11 @@
         <li><a href="/halls/dist/events/">אולם</a></li>
         <li><a href="/halls/dist/resort/">ריזורט</a></li>
         <li><a href="#culinary">קולינריה</a></li>
-        <li><a href="#events">סוגי אירועים</a></li>
         <li><a href="#rooms">חדרי נופש</a></li>
         <li><a href="#about" data-secondary>אודות</a></li>
         <li><a href="#testimonials" data-secondary>המלצות</a></li>
         <li><a href="#gallery">גלריה</a></li>
-        <li><a href="#kosher" data-secondary>כשרות</a></li>
+        <li><a href="#events">סוגי אירועים</a></li>
         <li><a href="/press/">מן העיתונות</a></li>
         <li><a href="#lounge" data-secondary>מתחם קבלת פנים</a></li>
         <!-- Conversion pass 2026-07-13: the contact link is the ONE distinct
@@ -1614,31 +1612,8 @@
       </div>
     </section>
 
-    <!-- ====================================================================
-         #kosher — כשרות / רבנות (2026-06-09 revised)
-         Static centered logo row, transparent background. Original Hebrew
-         copy (eyebrow + title + body) restored; the 5 kashrut-authority
-         logos sit between the title and the body paragraph. No marquee,
-         no animation beyond the standard fade-up reveal.
-    ==================================================================== -->
-    <section id="kosher" class="kosher" aria-labelledby="kosher-title">
-      <div class="kosher__container" data-stagger>
-        <header class="section-header section-header--center">
-          <p class="section-header__eyebrow"
-             data-reveal="fade-up" style="--reveal-delay: 0ms;">כשרות</p>
-          <h2 id="kosher-title"
-              class="section-header__title texture-text texture-text--dark"
-              data-reveal="fade-up" style="--reveal-delay: 120ms;">כשרות ורבנות</h2>
-        </header>
-
-        <p class="kosher__body"
-           data-reveal="fade-up" style="--reveal-delay: 240ms;">
-          בגאמוס מקפידים על סטנדרט כשרות גבוה, בפיקוח הרבנות, עם אפשרות להתאמת
-          רמת הכשרות לצורכי האירוע. כך כל אורח נהנה מחוויה קולינרית מוקפדת,
-          בראש שקט ובביטחון מלא.
-        </p>
-      </div>
-    </section>
+    <!-- (2026-07-13) #kosher retired per user decision — its copy lives as a
+         simple detail block under the accessibility note in #contact. -->
 
     <!-- ====================================================================
          #contact — form + Waze + map + phones
@@ -1798,6 +1773,16 @@
               <h4 class="contact__access-title">נגישות מלאה (100% נגיש)</h4>
               <p class="contact__access-text">
                 המתחם כולו תוכנן ונבנה על פי תקני הנגישות המחמירים ביותר. כל החללים, מהחנייה ושערי הכניסה, דרך גן האירועים והאולם הראשי ועד תאי השירותים, מונגשים באופן מלא ומכבד. יציאות חירום מסומנות ומוארות פרוסות בכל רחבי המתחם.
+              </p>
+            </div>
+
+            <!-- Kashrut detail (2026-07-13): the standalone #kosher section was
+                 retired per user decision — its copy lives here as a simple
+                 detail block, same grammar as the accessibility note above. -->
+            <div class="contact__access" data-reveal="slide-right" style="--reveal-delay: 380ms;">
+              <h4 class="contact__access-title">כשרות ורבנות</h4>
+              <p class="contact__access-text">
+                בגאמוס מקפידים על סטנדרט כשרות גבוה, בפיקוח הרבנות, עם אפשרות להתאמת רמת הכשרות לצורכי האירוע. כך כל אורח נהנה מחוויה קולינרית מוקפדת, בראש שקט ובביטחון מלא.
               </p>
             </div>
 

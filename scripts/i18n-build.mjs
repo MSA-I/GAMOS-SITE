@@ -37,7 +37,6 @@ const PAIRS = [
   ["המלצות", "Testimonials", "Témoignages"],
   ["גלריה", "Gallery", "Galerie"],
   ["אירועים", "Events", "Événements"],
-  ["כשרות", "Kashrut", "Cacherout"],
   ["מן העיתונות", "Press", "Presse"],
   ["מתחם קבלת פנים", "Reception Lounge", "Salon de réception"],
   ["צור קשר", "Contact", "Contact"],

@@ -23,9 +23,12 @@
   --events-arch: clamp(28px, 6vw, 72px);
   padding-block-start: calc(var(--section-pad) + var(--events-arch));
   padding-block-end: var(--section-pad);
-  background: var(--ink-deep);
+  /* Warm taupe ground (user-picked from the retired kosher circle) — cocoa
+     at 82% over the ivory body, same single-token §5 mix kosher.css used.
+     Replaces the previous ink-deep black. */
+  background: color-mix(in srgb, var(--cocoa) 82%, var(--bg));
   /* Arch on the TOP edge only — the bottom stays a clean straight cut
-     into #kosher (user decision). */
+     (user decision). */
   border-radius: 50% 50% 0 0 / var(--events-arch) var(--events-arch) 0 0;
 }
 

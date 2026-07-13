@@ -259,8 +259,8 @@ class-agnostic, ו-`js/site-nav-hover-reveal.js` משתמש בסלקטור `#her
 
 **Sections after `#hero`:** hall-portal, **why-gamos** (ADDED 2026-07-13 — נקודות
 אמון מוקדמות: צילום אמיתי, מונים, ציטוטים, CTA; ראה `architecture/section-order.md`),
-lounge, culinary, rooms, about, testimonials, gallery, events, kosher,
-contact, routes. *(AMENDED 2026-07-13, החלטת משתמש: `#buffet` נטמעה כ-6 כרטיסים
+lounge, culinary, rooms, about, testimonials, gallery, events,
+contact, routes. *(kosher בוטלה 2026-07-13 — התוכן כבלוק פירוט ב-#contact.)* *(AMENDED 2026-07-13, החלטת משתמש: `#buffet` נטמעה כ-6 כרטיסים
 בגריד המנות של culinary; `#shabbat-chatan` בוטלה — מיוצגת כפריט בגלריית `#events`
 החדשה (פאנל-תצוגה editorial), וקישור הניווט הוחלף ב"סוגי אירועים".)*
 

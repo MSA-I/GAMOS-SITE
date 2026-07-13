@@ -40,10 +40,9 @@ const SECTION_TARGETS = [
   { name: "09-testimonials",    scrollTo: "#testimonials" },
   { name: "10-gallery",         scrollTo: "#gallery" },
   { name: "11-events",          scrollTo: "#events" },
-  { name: "12-kosher",          scrollTo: "#kosher" },
-  { name: "13-contact",         scrollTo: "#contact" },
-  { name: "14-routes",          scrollTo: "#routes" },
-  { name: "15-site-footer",     scrollTo: "footer.site-footer" },
+  { name: "12-contact",         scrollTo: "#contact" },
+  { name: "13-routes",          scrollTo: "#routes" },
+  { name: "14-site-footer",     scrollTo: "footer.site-footer" },
 ];
 
 const LEGAL_TARGETS = [

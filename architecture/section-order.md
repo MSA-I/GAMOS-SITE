@@ -32,19 +32,21 @@
 7. **`#about`** — אודות + מונים.
 8. **`#testimonials`** — קרוסלת המלצות + CTA band בסיום.
 9. **`#gallery`** — masonry + lightbox משותף.
-10. **`#events`** — סוגי אירועים: hover-list gallery (רקע מתחלף + scramble עברי;
-    במובייל הפעלה בגלילה). כולל פריט "שבתות חתן".
-11. **`#kosher`** — כשרות.
-12. **`#contact`** — טופס + טלפונים + וואטסאפ (יעד ה-CTA הראשי).
-13. **`#routes`** — מסלולי הגעה + מפה (reveal-pair עם contact).
+10. **`#events`** — סוגי אירועים: פאנל תצוגה editorial (שורות + פירוט נפתח;
+    במובייל כרטיסים נערמים). כולל פריט "שבתות חתן". רקע taupe חם (cocoa-82%)
+    עם קשת עליונה.
+11. **`#contact`** — טופס + טלפונים + וואטסאפ (יעד ה-CTA הראשי). כולל בלוקי
+    פירוט נגישות + כשרות-ורבנות (#kosher בוטלה 2026-07-13 — הועברה לכאן).
+12. **`#routes`** — מסלולי הגעה + מפה (reveal-pair עם contact).
 
 ---
 
 ## Anchor IDs (locked)
 
 `#hero`, `#hall-portal`, `#why-gamos`, `#lounge`, `#culinary`, `#rooms`,
-`#about`, `#testimonials`, `#gallery`, `#events`, `#kosher`, `#contact`,
-`#routes`. *(`#buffet` + `#shabbat-chatan` הוסרו 2026-07-13 — ראה AMENDED למעלה.)*
+`#about`, `#testimonials`, `#gallery`, `#events`, `#contact`, `#routes`.
+*(`#buffet` + `#shabbat-chatan` + `#kosher` הוסרו 2026-07-13 — ראה AMENDED למעלה;
+הכשרות חיה כבלוק פירוט ב-#contact.)*
 
 ---
 
@@ -57,7 +59,7 @@
   מהו גאמוס → למה → חוויה.
 - lounge / culinary / rooms = חוויות המתחם (בופה בתוך culinary מ-2026-07-13).
 - about + testimonials = העמקת אמון; CTA אחרי המלצות.
-- gallery / events / kosher = תוכן משלים.
+- gallery / events = תוכן משלים (כשרות = בלוק פירוט ב-contact מ-2026-07-13).
 - contact לפני routes = נקודת ההמרה; routes סוגר עם הגעה.
 
 ---

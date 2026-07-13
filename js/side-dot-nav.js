@@ -55,7 +55,6 @@ const SECTIONS = [
   { id: "testimonials", label: "המלצות" },
   { id: "gallery",      label: "גלריה" },
   { id: "events",       label: "סוגי אירועים" },
-  { id: "kosher",       label: "כשרות" },
   { id: "contact",      label: "צור קשר" },
 ];
 

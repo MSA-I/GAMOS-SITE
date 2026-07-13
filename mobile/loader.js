@@ -65,7 +65,6 @@
     "/mobile/css/responsive-images.css",
     "/mobile/css/touch-targets.css",
     "/mobile/css/headings.css",
-    "/mobile/css/kosher.css",
     "/mobile/css/directions.css",
     "/mobile/css/testimonials.css",
     "/mobile/css/interaction-hint.css", // 2026-06-30: phone tuning for brass affordance cues
