@@ -94,15 +94,12 @@
        and the ~380KB preload competed with the hero LCP assets on Slow 4G.
        Lazy-loading fetches it long before the user scrolls there. -->
 
-  <!-- Performance: preload the texture-fill images for background-clip:text
-       headings (the lounge title sits just below the hero and is TRANSPARENT
-       until its fill image loads → it pops in without these). The ?v= query
-       MUST stay in lockstep with css/tokens.css --typo-on-light/--typo-on-dark
-       (lines ~185-186) or the preload won't match the CSS request and is wasted. -->
-  <link rel="preload" as="image" type="image/webp"
-        href="/assets/images/brand/typo-on-light.webp?v=2026-06-15-brown">
-  <link rel="preload" as="image" type="image/webp"
-        href="/assets/images/brand/typo-on-dark.webp?v=2026-06-15-brown">
+  <!-- (2026-07-21 perf pass) The texture-fill preloads (typo-on-light 908KB +
+       typo-on-dark 423KB) were removed: the first texture-filled heading sits
+       BELOW the 500vh hero, so at high priority they competed with the hero LCP
+       assets (subject + sky) above the fold. css/tokens.css still requests them
+       (lazily, when the first heading paints); the textures were also re-encoded
+       slim (~198KB / ~115KB) — see css/tokens.css ?v=2026-07-21-slim. -->
 
   <!-- Performance: preload critical fonts (Rubik display, Hebrew + Latin) -->
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -244,11 +241,12 @@
        Loaded after GSAP so the ticker/ScrollTrigger handshake can wire up. -->
   <script defer src="/assets/vendor/lenis.min.js"></script>
 
-  <!-- Leaflet (self-hosted, ~42KB; Constitution §2 — directions map ONLY).
-       Powers the branded interactive #routes "מסלולי הגעה" map in
-       js/directions-map.js. defer → window.L is ready before main.js runs. -->
-  <link rel="stylesheet" href="/assets/vendor/leaflet.css">
-  <script defer src="/assets/vendor/leaflet.js"></script>
+  <!-- Leaflet (self-hosted, ~42KB + 15KB CSS; Constitution §2 — directions map
+       ONLY). (2026-07-21 perf pass) The static <link>/<script> were removed:
+       #routes is the LAST section, so eager-loading ~62KB on every visit was
+       waste. js/directions-map.js now injects the CSS + script on demand via an
+       IntersectionObserver on #routes (rootMargin ~1000px ahead), then builds
+       the map on script onload (classic UMD → window.L). -->
 
   <!-- Mobile pass — single self-contained entry. The loader injects
        /mobile/css/*.css link tags, picture half.webp sources, hero CTA
@@ -378,10 +376,10 @@
 
           <div class="hero_clouds">
             <div class="hero_cloud">
-              <img src="/assets/images/hero-scene/clouds.png" alt="" decoding="async">
+              <img src="/assets/images/hero-scene/clouds.webp" alt="" decoding="async">
             </div>
             <div class="hero_cloud">
-              <img src="/assets/images/hero-scene/clouds.png" alt="" decoding="async">
+              <img src="/assets/images/hero-scene/clouds.webp" alt="" decoding="async">
             </div>
           </div>
 
@@ -389,16 +387,16 @@
           <div class="hero_logo"></div>
 
           <div class="hero_smoke">
-            <img src="/assets/images/hero-scene/smoke.png" alt="" decoding="async">
+            <img src="/assets/images/hero-scene/smoke.webp" alt="" decoding="async">
           </div>
         </div>
 
         <div class="hero_content">
-          <p class="hero_eyebrow">בין השמיים למדבר</p>
+          <p class="hero_eyebrow">האירוע והחופשה — במקום אחד</p>
           <div class="hero_title" dir="rtl">
             <h1>המקום שבו האירועים מקבלים<br><span class="accent">תפאורה יחודית.</span></h1>
           </div>
-          <p class="hero_text">גן אירועים, אולם, ריזורט וחדרי אירוח, מול נוף פתוח ועוצר נשימה של מדבר יהודה</p>
+          <p class="hero_text">גן אירועים, אולם וריזורט עם 33 סוויטות — האורחים נשארים ללון, והאירוע הופך לחוויה של יממה מול נוף מדבר יהודה.</p>
           <!-- Conversion additions (2026-07-13, §3 amendment): trust line + CTA
                pair. Additive only — they ride the existing .hero_content scrub
                tween (fade on scroll); zero hero-scene.js changes.
@@ -426,7 +424,7 @@
       <!-- off-screen smoke/overlay overlap (mirrors the sandbox hero_overlap) -->
       <div class="hero_overlap">
         <div class="hero_smoke">
-          <img src="/assets/images/hero-scene/smoke.png" alt="" decoding="async">
+          <img src="/assets/images/hero-scene/smoke.webp" alt="" decoding="async">
         </div>
         <div class="hero_overlay"></div>
       </div>
@@ -521,6 +519,10 @@
             <dd><bdi><span class="stat-number" data-value="30" data-decimals="0">0</span>+</bdi></dd>
           </div>
         </dl>
+
+        <p class="why-gamos__trust" data-reveal="fade-up" style="--reveal-delay: 230ms;">
+          כשרות בפיקוח הרבנות · אפשרות להתאמת הרמה לצורכי האירוע
+        </p>
 
         <ul class="why-gamos__quotes" role="list" data-reveal="fade-up" style="--reveal-delay: 260ms;">
           <li class="why-gamos__quote">
@@ -1666,10 +1668,38 @@
           <form class="contact__form" novalidate
                 data-wa-number="972779972343"
                 data-email="office@gamos.co.il"
-                aria-describedby="contact-form-help" data-stagger>
+                aria-describedby="contact-form-help contact-response-time" data-stagger>
             <p id="contact-form-help" class="sr-only">
-              שדות חובה: שם, טלפון, דוא"ל וסוג אירוע. נחזור אליכם בתוך יום עסקים.
+              שדות חובה: שם, טלפון, דוא"ל וסוג אירוע.
             </p>
+
+            <!-- Runtime feedback strings live in the DOM so the canonical i18n
+                 text-node pipeline translates them before contact-form.js reads
+                 them. The module re-renders active feedback on lang changes. -->
+            <div class="contact__runtime-copy" hidden aria-hidden="true">
+              <span data-contact-copy="required-name">אנא הזינו שם מלא.</span>
+              <span data-contact-copy="required-phone">אנא הזינו מספר טלפון.</span>
+              <span data-contact-copy="invalid-phone">מספר הטלפון אינו בפורמט המתאים. נסו 050-1234567 או 077-9972343.</span>
+              <span data-contact-copy="required-email">אנא הזינו כתובת דוא"ל.</span>
+              <span data-contact-copy="invalid-email">כתובת הדוא"ל צריכה לכלול @ ודומיין. לדוגמה: name@example.com.</span>
+              <span data-contact-copy="required-event">אנא בחרו סוג אירוע.</span>
+              <span data-contact-copy="invalid-summary">בדקו את השדות המסומנים ונסו שוב.</span>
+              <span data-contact-copy="missing-whatsapp">לא הצלחנו להכין טיוטת WhatsApp. אפשר לשלוח את הפרטים בדוא"ל.</span>
+              <span data-contact-copy="missing-channel">לא הצלחנו לפתוח ערוץ שליחה. נסו שוב או התקשרו אלינו.</span>
+              <span data-contact-copy="whatsapp-ready">פתחנו טיוטת הודעה ב-WhatsApp. בדקו את הפרטים ולחצו שם על שליחה.</span>
+              <span data-contact-copy="whatsapp-blocked">לא הצלחנו לפתוח את WhatsApp אוטומטית. לחצו על הקישור כדי לפתוח את טיוטת ההודעה.</span>
+              <span data-contact-copy="open-whatsapp">פתחו טיוטה ב-WhatsApp</span>
+              <span data-contact-copy="email-fallback">שלחו את הפרטים בדוא"ל</span>
+              <span data-contact-copy="message-intro">שלום, הגעתי דרך האתר.</span>
+              <span data-contact-copy="message-name">שם מלא</span>
+              <span data-contact-copy="message-company">שם החברה</span>
+              <span data-contact-copy="message-phone">טלפון</span>
+              <span data-contact-copy="message-email">דוא"ל</span>
+              <span data-contact-copy="message-event">סוג אירוע</span>
+              <span data-contact-copy="message-date">תאריך מועדף</span>
+              <span data-contact-copy="message-body">הודעה</span>
+              <span data-contact-copy="email-subject">פנייה מהאתר — גאמוס</span>
+            </div>
 
             <div class="contact__field"
                  data-reveal="slide-right" style="--reveal-delay: 160ms;">
@@ -1731,6 +1761,7 @@
 
             <div class="contact__submit-wrap"
                  data-reveal="slide-right" style="--reveal-delay: 480ms;">
+              <p id="contact-response-time" class="contact__response-time">נחזור אליכם בתוך יום עסקים.</p>
               <button type="submit" class="btn btn--filled btn--primary-lg contact__submit">שליחת פרטים ותיאום סיור במתחם</button>
               <p class="contact__feedback" role="status" aria-live="polite"></p>
             </div>
@@ -1927,6 +1958,125 @@
     </div><!-- /.reveal-pair -->
 
   </main>
+
+  <!-- ====================================================================
+       Site footer — the closing "engraved-invitation" beat (2026-07-21).
+       Lives OUTSIDE <main> as the page's contentinfo landmark. A brand
+       CLOSE, not a sitemap: a peak-end CTA, concierge contact, labelled
+       social, legal + back-to-top. CSS: css/sections/site-footer.css
+       (desktop) + mobile/css/site-footer.css (§13). Back-to-top JS:
+       js/footer.js. See architecture/section-order.md.
+  ==================================================================== -->
+  <footer class="site-footer" role="contentinfo" aria-labelledby="footer-heading">
+    <!-- No-JS safety: the reveal system starts content at opacity:0 and needs
+         js/reveals.js to show it. If scripting is off, force the footer's
+         reveal targets to their final visible state (scoped to the footer). -->
+    <noscript><style>.site-footer [data-reveal]{opacity:1 !important;transform:none !important;}</style></noscript>
+
+    <div class="site-footer__inner">
+
+      <!-- 1. Emotional close -->
+      <div class="site-footer__close" data-stagger>
+        <p class="site-footer__eyebrow" data-reveal="fade-up">האירוע והחופשה — במקום אחד</p>
+        <h2 id="footer-heading" class="site-footer__claim texture-text--light" data-reveal="fade-up">
+          נשמח לארח את האירוע שלכם.
+        </h2>
+        <p class="site-footer__lede" data-reveal="fade-up">
+          בואו נבדוק יחד תאריך פנוי, נסייר במתחם, ונתכנן חוויה שנשארת הרבה אחרי שהערב נגמר.
+        </p>
+        <div class="site-footer__cta-row" data-reveal="fade-up">
+          <a class="btn btn--glass btn--primary-lg site-footer__cta--primary" href="#contact"
+             data-cta="footer-primary">תיאום סיור ובדיקת תאריך</a>
+          <a class="btn btn--glass"
+             href="https://wa.me/972779972343?text=%D7%A9%D7%9C%D7%95%D7%9D%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%2F%D7%AA%20%D7%9C%D7%A7%D7%91%D7%9C%20%D7%A4%D7%A8%D7%98%D7%99%D7%9D%20%D7%A2%D7%9C%20%D7%90%D7%99%D7%A8%D7%95%D7%A2%20%D7%91%D7%92%D7%90%D7%9E%D7%95%D7%A1."
+             target="_blank" rel="noopener noreferrer"
+             data-cta="footer-whatsapp">דברו איתנו בוואטסאפ</a>
+        </div>
+      </div>
+
+      <!-- 2. Concierge contact + labelled social -->
+      <div class="site-footer__meta" data-reveal="fade-up">
+        <div class="site-footer__col site-footer__col--contact">
+          <h3 class="site-footer__col-title">ליצירת קשר</h3>
+          <ul class="site-footer__contact" role="list">
+            <li class="site-footer__contact-row">
+              <span class="site-footer__contact-label">כתובת</span>
+              <span class="site-footer__contact-value">די זהב 7, פארק ישראל, מעלה אדומים</span>
+            </li>
+            <li class="site-footer__contact-row">
+              <span class="site-footer__contact-label">טלפון</span>
+              <a class="site-footer__contact-value" href="tel:+972779972343" dir="ltr"><bdi>077-9972343</bdi></a>
+            </li>
+            <li class="site-footer__contact-row">
+              <span class="site-footer__contact-label">טלפון נוסף</span>
+              <a class="site-footer__contact-value" href="tel:+972778036482" dir="ltr"><bdi>077-8036482</bdi></a>
+            </li>
+            <li class="site-footer__contact-row">
+              <span class="site-footer__contact-label">וואטסאפ</span>
+              <a class="site-footer__contact-value"
+                 href="https://wa.me/972779972343?text=%D7%A9%D7%9C%D7%95%D7%9D%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%2F%D7%AA%20%D7%9C%D7%A7%D7%91%D7%9C%20%D7%A4%D7%A8%D7%98%D7%99%D7%9D%20%D7%A2%D7%9C%20%D7%90%D7%99%D7%A8%D7%95%D7%A2%20%D7%91%D7%92%D7%90%D7%9E%D7%95%D7%A1."
+                 dir="ltr" target="_blank" rel="noopener noreferrer"><bdi>077-9972343</bdi></a>
+            </li>
+            <li class="site-footer__contact-row">
+              <span class="site-footer__contact-label">דוא"ל</span>
+              <a class="site-footer__contact-value" href="mailto:office@gamos.co.il?subject=%D7%A4%D7%A0%D7%99%D7%99%D7%94%20%D7%9C%D7%90%D7%99%D7%A8%D7%95%D7%A2%20%D7%91%D7%92%D7%90%D7%9E%D7%95%D7%A1" dir="ltr">office@gamos.co.il</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="site-footer__col site-footer__col--social">
+          <h3 class="site-footer__col-title">עקבו אחרינו</h3>
+          <ul class="site-footer__social" role="list">
+            <li>
+              <a class="site-footer__social-link" href="https://www.instagram.com/gamos__event/"
+                 target="_blank" rel="noopener noreferrer">
+                <span class="site-footer__social-glyph" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2.2c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.42.56.22.96.48 1.38.9.42.42.68.82.9 1.38.17.42.37 1.06.42 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.42 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.17-1.06.37-2.23.42-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.42a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.17-.42-.37-1.06-.42-2.23C2.21 15.58 2.2 15.2 2.2 12s.01-3.58.07-4.85c.05-1.17.25-1.8.42-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.17 1.06-.37 2.23-.42C8.42 2.21 8.8 2.2 12 2.2zm0 1.8c-3.15 0-3.5.01-4.75.07-.9.04-1.4.2-1.72.32-.43.17-.74.37-1.06.7-.32.32-.53.63-.7 1.06-.12.32-.28.82-.32 1.72C3.19 8.5 3.18 8.85 3.18 12s.01 3.5.07 4.75c.04.9.2 1.4.32 1.72.17.43.38.74.7 1.06.32.32.63.53 1.06.7.32.12.82.28 1.72.32 1.25.06 1.6.07 4.75.07s3.5-.01 4.75-.07c.9-.04 1.4-.2 1.72-.32.43-.17.74-.38 1.06-.7.32-.32.53-.63.7-1.06.12-.32.28-.82.32-1.72.06-1.25.07-1.6.07-4.75s-.01-3.5-.07-4.75c-.04-.9-.2-1.4-.32-1.72a2.85 2.85 0 0 0-.7-1.06 2.85 2.85 0 0 0-1.06-.7c-.32-.12-.82-.28-1.72-.32C15.5 4.01 15.15 4 12 4zm0 3.05A4.95 4.95 0 1 1 12 16.95 4.95 4.95 0 0 1 12 7.05zm0 1.8a3.15 3.15 0 1 0 0 6.3 3.15 3.15 0 0 0 0-6.3zm5.35-3.15a1.15 1.15 0 1 1 0 2.3 1.15 1.15 0 0 1 0-2.3z"/>
+                  </svg>
+                </span>
+                <span class="site-footer__social-text">אינסטגרם</span>
+              </a>
+            </li>
+            <li>
+              <a class="site-footer__social-link" href="https://www.facebook.com/Pavilionevetns"
+                 target="_blank" rel="noopener noreferrer">
+                <span class="site-footer__social-glyph" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"/>
+                  </svg>
+                </span>
+                <span class="site-footer__social-text">פייסבוק</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 3. Copyright · legal · back-to-top -->
+      <div class="site-footer__base" data-reveal="fade">
+        <p class="site-footer__copyright">© <bdi>2026</bdi> <span>גאמוס · כל הזכויות שמורות</span></p>
+
+        <nav class="site-footer__legal" aria-label="קישורים משפטיים">
+          <a href="/legal/privacy.html">מדיניות פרטיות</a>
+          <a href="/legal/terms.html">תנאי שימוש</a>
+          <a href="/legal/accessibility.html">הצהרת נגישות</a>
+        </nav>
+
+        <button type="button" class="site-footer__totop" data-footer-totop>
+          <span class="site-footer__totop-label">חזרה לראש העמוד</span>
+          <span class="site-footer__totop-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 19V5"></path>
+              <path d="M5 12l7-7 7 7"></path>
+            </svg>
+          </span>
+        </button>
+      </div>
+
+    </div>
+  </footer>
 
   <!-- CF-ANALYTICS:START — Cloudflare Web Analytics beacon (§2 amendment
        2026-07-13). Free, cookieless, no PII; pageviews + Core Web Vitals only

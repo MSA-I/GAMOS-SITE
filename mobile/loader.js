@@ -73,6 +73,7 @@
     "/mobile/css/why-gamos.css",         // 2026-07-13: conversion pass — trust section fit ≤768px
     "/mobile/css/cta-bar.css",           // 2026-07-13: conversion pass — fixed bottom action bar
     "/mobile/css/events.css",            // 2026-07-13: #events hover-list gallery — phone layout (scroll-driven activation lives in js/events-gallery.js)
+    "/mobile/css/site-footer.css",       // 2026-07-21: closing footer — narrow stack + CTA-bar clearance
   ];
 
   function injectStylesheets () {

@@ -232,7 +232,7 @@
   filter: brightness(1.10) drop-shadow(0 0 28px color-mix(in srgb, var(--brass) 55%, transparent));
 }
 .gamos-hero__cta:active img { transform: scale(0.98); }
-.gamos-hero__cta:focus-visible { outline: 3px solid var(--brass); outline-offset: 6px; border-radius: var(--radius-md); }
+.gamos-hero__cta:focus-visible { outline: none; box-shadow: var(--focus-ring-offset); border-radius: var(--radius-md); }
 .gamos-hero:has(.gamos-hero__cta:hover) .gamos-hero__cta:not(:hover),
 .gamos-hero:has(.gamos-hero__cta:focus-visible) .gamos-hero__cta:not(:focus-visible) {
   opacity: .55; filter: brightness(.92);
@@ -277,7 +277,7 @@
   transition: border-color 240ms cubic-bezier(.2,.8,.2,1);
 }
 .gamos-cue:hover, .gamos-cue:focus-visible { border-color: var(--brass-deep); }
-.gamos-cue:focus-visible { outline: 3px solid var(--brass); outline-offset: 4px; }
+.gamos-cue:focus-visible { outline: none; box-shadow: var(--focus-ring-offset); }
 
 /* Single-cue invariant. The hero's `margin-bottom:-100vh` (+ z-index:110) tucks
    the #hall-portal composer under the hero's last pinned frame, so the HERO cue

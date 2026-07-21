@@ -109,10 +109,13 @@
   box-shadow: 0 0 12px var(--brass-glow);
 }
 
-/* Focus ring per Constitution §9 — 3px brass, sits OUTSIDE the dot. */
+/* Focus ring per Constitution §9. Was a flat 3px brass outline, but the dots
+   are fixed and overlay EVERY section — brass fails on the light ones (1.83:1).
+   The two-tone --focus-ring token (ivory gap + brass-deep) clears 3:1 on light
+   AND on the dark/cocoa sections the dots also cross. (a11y pass 2026-07-21) */
 .side-dot-nav__dot:focus-visible {
-  outline: 3px solid var(--brass);
-  outline-offset: 4px;
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 

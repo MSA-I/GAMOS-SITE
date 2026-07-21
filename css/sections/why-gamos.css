@@ -75,6 +75,23 @@
   margin: 0;
 }
 
+/* Early trust signal: this repeats only the kashrut claims already documented
+   in #contact, bringing an important decision factor above the long journey. */
+.why-gamos__trust {
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  margin: var(--space-6) auto 0;
+  padding-block: var(--space-3);
+  border-block: 1px solid var(--border);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-medium);
+  line-height: 1.6;
+  color: var(--cocoa);
+  text-align: center;
+  text-wrap: pretty;
+}
+
 /* ---- Two short quotes — quiet editorial cards, no slider chrome. ---- */
 .why-gamos__quotes {
   list-style: none;

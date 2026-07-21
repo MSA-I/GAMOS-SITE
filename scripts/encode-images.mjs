@@ -124,8 +124,12 @@ const SINGLE_WEBP = [
       "תמונות לאנימציית האתר/פונט/טקסטורה לטיפוגרפיה בהירה.png",
     ],
     out: "assets/images/brand/typo-on-light.webp",
-    width: 2000,
-    quality: 92,
+    // 2026-07-21 perf pass: 2000/q92 (~908KB) → 1400/q82 (~198KB). These are
+    // background-clip:text fills stretched to each heading box (100% 100%), so
+    // 2000px detail + q92 were wasted; 1400/q82 is visually identical through
+    // the glyphs and stays well under the §8 budget. Luma unchanged (55 < 112).
+    width: 1400,
+    quality: 82,
   },
   // 2026-06-15: the LIGHT-text texture (fills cream headings on DARK
   // surfaces — hero/halls/kosher/culinary/footer/lounge + every `.texture-text--light`)
@@ -143,8 +147,12 @@ const SINGLE_WEBP = [
       "תמונות לאנימציית האתר/פונט/טקסטורה לטיפוגרפיה בהירה.png",
     ],
     out: "assets/images/brand/typo-on-dark.webp",
-    width: 2000,
-    quality: 92,
+    // 2026-07-21 perf pass: 2000/q92 (~423KB) → 1400/q82 (~115KB). Same
+    // rationale as typo-on-light above — a stretched text fill needs neither
+    // 2000px nor q92. Luma unchanged (221 > 153, clears the §4.1 dark-surface
+    // invariant).
+    width: 1400,
+    quality: 82,
   },
   {
     srcCandidates: [

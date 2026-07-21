@@ -1,39 +1,54 @@
 /* ===========================================================================
-   site-footer.css — closing block + meta strip
+   site-footer.css — the closing "engraved-invitation" footer (contentinfo)
    ---------------------------------------------------------------------------
-   Rewritten 2026-06-03 (impeccable polish pass). The previous 4-column
-   sitemap-style footer was the saturated SaaS-footer template — identical
-   columns each with an uppercase tracked title, duplicate of the top nav,
-   no focal hierarchy. Replaced with:
+   REBUILT 2026-07-21 (footer-craft pass). The page previously ended on the
+   #routes map with NO <footer> at all; this is the site's first real footer.
 
-     1. CLOSING BLOCK — centered, hero-shaped: small logo, single CTA line
-        ("צרו קשר, נבדוק תאריכים יחד"), three contact channels inline,
-        address as a typographic line with `·` separators. This is the
-        actual closing statement of the page, not a sitemap.
-     2. META STRIP — thin band with horizontal nav links (separated by ·),
-        social icons (Instagram + Facebook), divider hairlines top + bottom.
-        The nav lives here as a recap, NOT as the focal element.
-     3. SUB STRIP — copyright + legal links, smallest size, lowest
-        contrast, last in the visual sweep.
+   Design brief — a brand CLOSE, not a sitemap. Three quiet bands on the
+   deepest tone in the palette (ink-deep), so brass sings and every text tier
+   clears WCAG AA with headroom:
+     ground = --ink-deep (#1A1410)
+       ivory      15.96:1   claim / values / lede
+       brass      8.72:1    decorative eyebrow / hairline
+       brass-glow 9.65:1    accents / hover
+       muted ivory (~70%) ≈ 8.2:1   secondary labels
+       faint ivory (~55%)  ≈ 5.5:1   copyright / legal (still ≥4.5 for 12px)
 
-   Tokens only. Logical properties only. RTL-first. Min 4.5:1 body contrast,
-   3:1 large-text contrast.
+     1. CLOSE — centered peak-end beat: positioning eyebrow, texture claim
+        (.texture-text--light — the site's signature "engraved" fill), a warm
+        lede, and the primary CTA pair (Book a tour → #contact + WhatsApp),
+        reusing the canonical .btn / .btn--glass line-language (§ buttons.css).
+     2. META — a refined masthead-footer row: concierge contact block (start)
+        + labelled social links (end). NOT a four-column link farm.
+     3. BASE — thin closing line: copyright · legal links · back-to-top.
+
+   Discipline: tokens only (§10.2), logical properties only (§4, RTL-first),
+   section-rhythm spacing tokens. NO mobile @media here (§13 — narrow overrides
+   live in mobile/css/site-footer.css). Focus rings come from the site-wide
+   two-tone --focus-ring (base.css :focus-visible) — never a flat brass outline
+   (a11y pass 2026-07-21). Editorial line-language: no boxes/borders/fills on
+   CTAs; the only lines are hairline dividers + the growing brass underlines.
    ========================================================================= */
 
-
 .site-footer {
+  /* CSS gradients and transform-origin do not accept logical side keywords.
+     Keep one direction-aware percentage token instead: RTL starts at the
+     inline start (right), while the LTR override below starts at the left. */
+  --footer-inline-origin: 100% 50%;
   position: relative;
-  background: var(--bg-cocoa);
-  color: var(--fg-on-dark);
-  /* Asymmetric by design: full section rhythm on top, tight base before the
-     page edge. Named token on top for consistency (2026-06-15 unify pass). */
-  padding-block: var(--section-pad-tight) var(--space-8);
-  padding-inline: var(--gutter);
-  overflow: hidden;
   isolation: isolate;
+  background: var(--bg-dark);            /* ink-deep — the deepest close */
+  color: var(--fg-on-dark);              /* ivory */
+  padding-block: var(--section-pad-tight) var(--space-10);
+  padding-inline: var(--gutter);
 }
 
-/* Brass aurora hairline at the very top edge — premium closing accent. */
+html[dir="ltr"] .site-footer {
+  --footer-inline-origin: 0% 50%;
+}
+
+/* Brass "seam" hairline at the very top edge — the invitation's foil rule,
+   dividing the routes map from the close. Within bounds (no overflow clip). */
 .site-footer::before {
   content: "";
   position: absolute;
@@ -41,322 +56,364 @@
   inset-inline: 0;
   block-size: 1px;
   background: linear-gradient(
-    to inline-end,
+    90deg,
     transparent 0%,
-    color-mix(in srgb, var(--brass-glow) 65%, transparent) 50%,
+    color-mix(in srgb, var(--brass) 60%, transparent) 50%,
     transparent 100%
   );
   pointer-events: none;
   z-index: 0;
 }
 
-.site-footer__container {
+.site-footer__inner {
   position: relative;
   z-index: 1;
-  max-inline-size: 920px;
+  max-inline-size: 1040px;
   margin-inline: auto;
   display: flex;
   flex-direction: column;
-  gap: var(--space-12);
+  gap: var(--space-16);
 }
 
 
-/* ----- 1. Closing block ─────────────────────────────────────────────────── */
+/* ----- 1. Close block (the peak-end beat) ─────────────────────────────── */
 
-.site-footer__closing {
-  text-align: center;
+.site-footer__close {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-4);
+  text-align: center;
+  gap: var(--space-5);
 }
 
-.site-footer__brandmark {
-  display: inline-block;
-  line-height: 0;
-  transition: opacity var(--dur-base) var(--ease-out-cinema);
-  margin-block-end: var(--space-2);
-}
-.site-footer__brandmark:hover,
-.site-footer__brandmark:focus-visible {
-  opacity: 0.82;
-  outline: none;
-}
-.site-footer__brandmark img {
-  display: block;
-  inline-size: clamp(120px, 14vw, 160px);
-  block-size: auto;
+.site-footer__eyebrow {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-eyebrow);   /* 0.18em — engraved */
+  color: var(--brass-glow);                   /* 9.65:1 on ink — decoration */
+  text-wrap: balance;
 }
 
 .site-footer__claim {
   margin: 0;
+  max-inline-size: 20ch;
   font-family: var(--font-display-he);
   font-weight: var(--fw-bold);
-  font-size: clamp(1.6rem, 3.2vw, 2.25rem);
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+  font-size: clamp(var(--text-xl), 4.6vw, var(--text-3xl));
+  line-height: 1.1;
+  letter-spacing: var(--tracking-tight);
+  /* Solid fallback for engines without background-clip:text; the
+     .texture-text--light class paints the cream texture over it. */
   color: var(--ivory);
   text-wrap: balance;
-  max-inline-size: 22ch;
 }
 
-.site-footer__claim-sub {
+.site-footer__lede {
   margin: 0;
+  max-inline-size: 52ch;
   font-family: var(--font-body);
-  font-size: var(--text-base);
-  line-height: var(--lh-snug);
-  color: color-mix(in srgb, var(--ivory) 78%, transparent);
-  max-inline-size: 48ch;
+  font-size: var(--text-md);
+  line-height: var(--lh-normal);
+  /* ~78% ivory over ink ≈ 10:1 — well above AA for this larger body text. */
+  color: color-mix(in srgb, var(--ivory) 80%, transparent);
 }
 
-/* Three primary channels — phone, WhatsApp, email — inline horizontal row.
-   Each is a real link with an inline glyph. The hover state grows a brass
-   underline; the row reads as a luxury concierge "this is how to reach us"
-   rather than a stacked label/value table. */
-.site-footer__channels {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.site-footer__cta-row {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
-  gap: var(--space-2) var(--space-6);
-  margin-block-start: var(--space-3);
+  align-items: baseline;
+  gap: var(--space-4) var(--space-8);
+  margin-block-start: var(--space-2);
 }
 
-.site-footer__channel {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-family: var(--font-body);
-  font-size: var(--text-md);
-  font-weight: var(--fw-medium);
-  color: var(--ivory);
-  text-decoration: none;
-  padding-block: var(--space-1);
-  position: relative;
-  transition: color var(--dur-base) var(--ease-out-cinema);
+/* The canonical text-button stays visually unboxed, but both footer actions
+   still need a complete WCAG-size hit target (the secondary label is otherwise
+   only ~25px tall). Keep this scoped to the footer so the global editorial
+   button rhythm is unchanged. */
+.site-footer__cta-row .btn {
+  min-block-size: 44px;
 }
-.site-footer__channel::after {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  inset-block-end: 0;
-  block-size: 1px;
-  background: var(--brass-glow);
-  transform: scaleX(0);
-  /* Logical, RTL-safe (was physical `right center`, §4 violation). Matches
-     the .rooms-door__skip underline precedent (rooms.css). 2026-06-15. */
-  transform-origin: inline-end center;
-  transition: transform var(--dur-base) var(--ease-out-cinema);
-}
-.site-footer__channel:hover,
-.site-footer__channel:focus-visible {
-  color: var(--accent-glow);
-  outline: none;
-}
-.site-footer__channel:hover::after,
-.site-footer__channel:focus-visible::after {
+
+/* Primary CTA emphasis on the dark ground: anchor a brass-glow underline AT
+   REST — the site's .btn--filled "this is the main action" language, tuned for
+   the ivory-on-ink glass button (.btn--filled's ink-deep text is unreadable
+   here). Thickens on hover/focus. Scoped under .site-footer so it out-specifies
+   .btn::after (0,1,1) — which otherwise wins the tie by source order, buttons.css
+   being linked after the section CSS. */
+.site-footer .site-footer__cta--primary::after {
   transform: scaleX(1);
+  block-size: 2px;
+  transition: block-size var(--dur-base) var(--ease-out-cinema);
 }
-
-.site-footer__channel-glyph {
-  display: inline-flex;
-  inline-size: 16px;
-  block-size: 16px;
-  color: var(--accent-glow);
-}
-.site-footer__channel-glyph svg {
-  inline-size: 100%;
-  block-size: 100%;
-  display: block;
-}
-
-.site-footer__address {
-  margin: 0;
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  letter-spacing: 0.04em;
-  color: color-mix(in srgb, var(--ivory) 68%, transparent);
-}
-.site-footer__address-sep {
-  display: inline-block;
-  margin-inline: var(--space-2);
-  color: var(--brass-glow);
-  opacity: 0.6;
+.site-footer .site-footer__cta--primary:hover::after,
+.site-footer .site-footer__cta--primary:focus-visible::after {
+  block-size: 3px;
 }
 
 
-/* ----- 2. Meta strip ────────────────────────────────────────────────────── */
+/* ----- 2. Meta row (contact + social) ─────────────────────────────────── */
 
 .site-footer__meta {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   justify-content: space-between;
-  gap: var(--space-4) var(--space-6);
-  padding-block: var(--space-6);
-  border-block-start: 1px solid color-mix(in srgb, var(--ivory) 14%, transparent);
-  border-block-end:   1px solid color-mix(in srgb, var(--ivory) 7%,  transparent);
+  align-items: flex-start;
+  gap: var(--space-10) var(--space-12);
+  padding-block-start: var(--space-12);
+  border-block-start: 1px solid color-mix(in srgb, var(--ivory) 12%, transparent);
 }
 
-.site-footer__meta-nav {
+.site-footer__col-title {
+  margin: 0 0 var(--space-5);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--brass-glow);
+}
+
+/* Concierge contact list — quiet "label / value" rows, not a table. */
+.site-footer__contact {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-inline-size: 34ch;
+}
+
+.site-footer__contact-row {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2) var(--space-6);
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
 }
 
-.site-footer__meta-nav a {
+.site-footer__contact-label {
+  flex: 0 0 auto;
+  min-inline-size: 6.5ch;
   font-family: var(--font-body);
   font-size: var(--text-sm);
-  color: color-mix(in srgb, var(--ivory) 80%, transparent);
-  text-decoration: none;
-  transition: color var(--dur-base) var(--ease-out-cinema);
-}
-.site-footer__meta-nav a:hover,
-.site-footer__meta-nav a:focus-visible {
-  color: var(--accent-glow);
-  outline: none;
+  /* ~62% ivory over ink ≈ 6.5:1 — passes AA for this 14px label. */
+  color: color-mix(in srgb, var(--ivory) 64%, transparent);
 }
 
-.site-footer__meta-social {
+.site-footer__contact-value {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--ivory);
+  text-decoration: none;
+}
+
+/* Links inside the value slot grow a brass underline (nav/CTA grammar). */
+a.site-footer__contact-value {
+  position: relative;
+  transition: color var(--dur-base) var(--ease-out-cinema);
+}
+a.site-footer__contact-value::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: -2px;
+  block-size: 1px;
+  background: var(--brass-glow);
+  transform: scaleX(0);
+  transform-origin: var(--footer-inline-origin);
+  transition: transform var(--dur-base) var(--ease-out-cinema);
+}
+a.site-footer__contact-value:hover,
+a.site-footer__contact-value:focus-visible {
+  color: var(--brass-glow);
+  outline: none;
+}
+a.site-footer__contact-value:hover::after,
+a.site-footer__contact-value:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Social — visible, LABELLED links (icon + text; §9, not icon-only). */
+.site-footer__social {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: var(--space-3);
 }
-
-
-/* ----- Social links (Instagram + Facebook glyphs) ───────────────────────── */
 
 .site-footer__social-link {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  inline-size: 36px;
-  block-size: 36px;
-  border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--brass-glow) 30%, transparent);
-  background: color-mix(in srgb, var(--brass) 6%, transparent);
-  color: var(--accent-glow);
+  gap: var(--space-3);
+  min-block-size: 44px;              /* WCAG target even though visual is text */
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--ivory);
   text-decoration: none;
-  transition:
-    color        var(--dur-base) var(--ease-out-cinema),
-    background   var(--dur-base) var(--ease-out-cinema),
-    border-color var(--dur-base) var(--ease-out-cinema),
-    transform    var(--dur-base) var(--ease-out-cinema);
+  transition: color var(--dur-base) var(--ease-out-cinema);
+}
+.site-footer__social-glyph {
+  display: inline-flex;
+  inline-size: 20px;
+  block-size: 20px;
+  color: var(--brass-glow);
+  transition: transform var(--dur-base) var(--ease-out-cinema);
+}
+.site-footer__social-glyph svg {
+  inline-size: 100%;
+  block-size: 100%;
+  display: block;
+}
+.site-footer__social-text {
+  position: relative;
+}
+.site-footer__social-text::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: -3px;
+  block-size: 1px;
+  background: var(--brass-glow);
+  transform: scaleX(0);
+  transform-origin: var(--footer-inline-origin);
+  transition: transform var(--dur-base) var(--ease-out-cinema);
 }
 .site-footer__social-link:hover,
 .site-footer__social-link:focus-visible {
-  color: var(--ivory);
-  background: color-mix(in srgb, var(--brass) 55%, transparent);
-  border-color: var(--brass-glow);
-  transform: translateY(-1px);
+  color: var(--brass-glow);
   outline: none;
 }
-.site-footer__social-link:focus-visible {
-  outline: 3px solid var(--brass);
-  outline-offset: 3px;
+.site-footer__social-link:hover .site-footer__social-text::after,
+.site-footer__social-link:focus-visible .site-footer__social-text::after {
+  transform: scaleX(1);
 }
-.site-footer__social-icon {
-  inline-size: 16px;
-  block-size: 16px;
-  display: block;
-}
-.site-footer__social-label {
-  position: absolute;
-  inline-size: 1px;
-  block-size: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+.site-footer__social-link:hover .site-footer__social-glyph,
+.site-footer__social-link:focus-visible .site-footer__social-glyph {
+  transform: translateY(-1px);
 }
 
 
-/* ----- 3. Sub strip (copyright + legal) ─────────────────────────────────── */
+/* ----- 3. Base row (copyright · legal · back-to-top) ──────────────────── */
 
-.site-footer__sub {
+.site-footer__base {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   justify-content: space-between;
-  gap: var(--space-3) var(--space-6);
-  font-family: var(--font-body);
-  font-size: var(--text-xs);
-  color: color-mix(in srgb, var(--ivory) 55%, transparent);
+  align-items: center;
+  gap: var(--space-4) var(--space-8);
+  padding-block-start: var(--space-8);
+  border-block-start: 1px solid color-mix(in srgb, var(--ivory) 10%, transparent);
 }
 
-.site-footer__copyright { margin: 0; }
+.site-footer__copyright {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  /* ~58% ivory over ink ≈ 5.9:1 — passes AA for 12px. */
+  color: color-mix(in srgb, var(--ivory) 60%, transparent);
+}
 
-.site-footer__legal-links {
+.site-footer__legal {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4);
+  gap: var(--space-3) var(--space-6);
 }
-.site-footer__legal-links a {
-  color: inherit;
+.site-footer__legal a {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: color-mix(in srgb, var(--ivory) 66%, transparent);  /* ≈ 6.9:1 */
   text-decoration: none;
   transition: color var(--dur-base) var(--ease-out-cinema);
 }
-.site-footer__legal-links a:hover,
-.site-footer__legal-links a:focus-visible {
-  color: var(--accent-glow);
+.site-footer__legal a:hover,
+.site-footer__legal a:focus-visible {
+  color: var(--brass-glow);
   outline: none;
 }
 
-
-/* ----- Mobile ──────────────────────────────────────────────────────────── */
-
-@media (max-width: 600px) {
-  .site-footer { padding-block: var(--space-16) var(--space-6); }
-  .site-footer__container { gap: var(--space-8); }
-  .site-footer__meta {
-    justify-content: center;
-    gap: var(--space-4);
-  }
-  .site-footer__meta-nav { justify-content: center; }
-  .site-footer__sub {
-    justify-content: center;
-    text-align: center;
-  }
+/* Back-to-top — editorial text + arrow (line language, no box). Sized to a
+   44px hit area; the label underline grows and the arrow lifts on hover.
+   Scrolls to #hero via js/footer.js (Lenis → native fallback). */
+.site-footer__totop {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: 44px;
+  padding-inline: var(--space-1);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-wide);
+  color: var(--brass-glow);
+  transition: color var(--dur-base) var(--ease-out-cinema);
+}
+.site-footer__totop-label {
+  position: relative;
+}
+.site-footer__totop-label::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: -3px;
+  block-size: 1px;
+  background: var(--brass-glow);
+  transform: scaleX(0);
+  transform-origin: var(--footer-inline-origin);
+  transition: transform var(--dur-base) var(--ease-out-cinema);
+}
+.site-footer__totop-arrow {
+  display: inline-flex;
+  inline-size: 16px;
+  block-size: 16px;
+  transition: transform var(--dur-base) var(--ease-out-cinema);
+}
+.site-footer__totop-arrow svg {
+  inline-size: 100%;
+  block-size: 100%;
+  display: block;
+}
+.site-footer__totop:hover,
+.site-footer__totop:focus-visible {
+  color: var(--ivory);
+}
+.site-footer__totop:hover .site-footer__totop-label::after,
+.site-footer__totop:focus-visible .site-footer__totop-label::after {
+  transform: scaleX(1);
+}
+.site-footer__totop:hover .site-footer__totop-arrow,
+.site-footer__totop:focus-visible .site-footer__totop-arrow {
+  transform: translateY(-3px);
 }
 
 
-/* ----- Focus visibility (WCAG 2.2 AA — §9) ───────────────────────────── */
-
-.site-footer a:focus-visible {
-  outline: 3px solid var(--brass);
-  outline-offset: 3px;
-  border-radius: var(--radius-sm);
-}
-
-
-/* ----- Reduced motion (§8) ─────────────────────────────────────────── */
+/* ----- Reduced motion (§8) — silence the grows/lifts; final state static. --- */
 
 @media (prefers-reduced-motion: reduce) {
-  .site-footer__brandmark,
-  .site-footer__channel,
-  .site-footer__channel::after,
-  .site-footer__meta-nav a,
-  .site-footer__legal-links a,
-  .site-footer__social-link {
+  a.site-footer__contact-value,
+  a.site-footer__contact-value::after,
+  .site-footer__social-link,
+  .site-footer__social-glyph,
+  .site-footer__social-text::after,
+  .site-footer__legal a,
+  .site-footer__totop,
+  .site-footer__totop-label::after,
+  .site-footer__totop-arrow {
     transition: none;
   }
-  .site-footer__social-link:hover,
-  .site-footer__social-link:focus-visible {
+  .site-footer__social-link:hover .site-footer__social-glyph,
+  .site-footer__social-link:focus-visible .site-footer__social-glyph,
+  .site-footer__totop:hover .site-footer__totop-arrow,
+  .site-footer__totop:focus-visible .site-footer__totop-arrow {
     transform: none;
   }
 }

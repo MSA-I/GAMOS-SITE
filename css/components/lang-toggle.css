@@ -55,14 +55,17 @@
 }
 
 .site-nav__lang-opt.is-active {
-  color: var(--ivory);
+  /* Was --ivory on --brass = 1.83:1 (WCAG AA fail). --ink-deep on --brass is
+     8.72:1 and matches the .btn--filled grammar (ink text on the brass anchor).
+     a11y pass 2026-07-21. */
+  color: var(--ink-deep);
   background: var(--brass);
   cursor: default;
 }
 
 .site-nav__lang-opt:focus-visible {
-  outline: 3px solid var(--brass);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--focus-ring);   /* two-tone ring (a11y pass 2026-07-21) */
 }
 
 .site-nav__lang-sep {

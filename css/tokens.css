@@ -170,7 +170,11 @@ html:not([lang="he"]) {
   --bg-dark:        var(--ink-deep);
   --bg-cocoa:       var(--cocoa);
   --fg:             var(--ink-deep);
-  --fg-muted:       #6B6B68;
+  /* Darkened #6B6B68 → #5E5E5B on 2026-07-21 (a11y pass): the old value passed
+     on --ivory (4.68) but FAILED WCAG AA on the warmer light surfaces it also
+     lands on — 4.20 on --ivory-warm (gallery), 4.05 on --mist (testimonials).
+     #5E5E5B clears 4.5 on all three (ivory 5.69 / ivory-warm 5.11 / mist 4.93). */
+  --fg-muted:       #5E5E5B;
   --fg-on-dark:     var(--ivory);
   --accent:         var(--brass);
   --accent-hover:   var(--brass-deep);
@@ -181,7 +185,17 @@ html:not([lang="he"]) {
   --shadow-soft:    0 8px 24px rgba(26, 20, 16, 0.06);
   --shadow-strong:  0 24px 60px rgba(26, 20, 16, 0.16);
   --shadow-image:   0 30px 80px -40px rgba(26, 20, 16, 0.45); /* deep lift for large image cards (shabbat) */
-  --focus-ring:     0 0 0 3px var(--brass);
+  /* Two-tone focus ring (AMENDED 2026-07-21, a11y pass). Was a single 3px
+     --brass box-shadow, but brass-on-ivory = 1.83:1 fails WCAG 1.4.11 (≥3:1
+     for a non-text indicator) on every light surface. No single flat token
+     clears 3:1 everywhere: brass fails on light, brass-deep fails on cocoa
+     (2.05). A two-tone ring is bulletproof because at least ONE band always
+     contrasts ≥3:1 with the surface — the ivory gap carries dark surfaces
+     (ivory↔cocoa 8.46, ivory↔ink-deep ~15) and the brass-deep band carries
+     light surfaces (brass-deep↔ivory 4.12 / ivory-warm 3.70 / mist 3.57).
+     Inner tone is hard --ivory (not --bg) so the gap is guaranteed LIGHT even
+     if a section rescopes --bg. */
+  --focus-ring:     0 0 0 2px var(--ivory), 0 0 0 5px var(--brass-deep);
   /* Offset focus ring for image/hotspot CTAs (hero CTAs, portals, hero cue,
      rooms door). A double box-shadow gives the "outline + gap" look that the
      bespoke `outline: 3px … ; outline-offset: 4-6px` rules used to fake, but
@@ -224,8 +238,8 @@ html:not([lang="he"]) {
                          culinary, footer).
      Legacy --typo-light/--typo-dark aliases removed; texture-text.css now
      references the new names directly. */
-  --typo-on-light:  url("/assets/images/brand/typo-on-light.webp?v=2026-06-15-brown");
-  --typo-on-dark:   url("/assets/images/brand/typo-on-dark.webp?v=2026-06-15-brown");
+  --typo-on-light:  url("/assets/images/brand/typo-on-light.webp?v=2026-07-21-slim");
+  --typo-on-dark:   url("/assets/images/brand/typo-on-dark.webp?v=2026-07-21-slim");
   --texture-light:  url("/assets/images/brand/texture-light.webp");
   --texture-dark:   url("/assets/images/brand/texture-dark.webp");
 

@@ -1,0 +1,67 @@
+/* =========================================================================
+   mobile/css/site-footer.css — narrow-viewport fit for the closing footer
+   (footer-craft pass 2026-07-21). §13: media-query overrides ONLY; the
+   desktop-first rules live in css/sections/site-footer.css. Injected by
+   mobile/loader.js (MOBILE_CSS array) AFTER the desktop CSS, so these win
+   ties without !important.
+
+   CTA-bar clearance: the fixed bottom action bar (mobile/css/cta-bar.css,
+   z-120) already reserves its own height via the global rule
+   `html[data-view="mobile"] body { padding-block-end: calc(52px + safe-area) }`
+   — that reservation sits BELOW the footer, so the fixed bar floats over
+   empty space and never covers the legal links / back-to-top. We add a
+   little extra bottom breathing room + safe-area here so the closing line
+   is never flush against that bar on notched phones.
+   ========================================================================= */
+
+@media (max-width: 768px) {
+  .site-footer {
+    padding-block: var(--space-16) var(--space-12);
+    padding-block-end: calc(var(--space-12) + env(safe-area-inset-bottom));
+  }
+
+  .site-footer__inner {
+    gap: var(--space-12);
+  }
+
+  .site-footer__close {
+    gap: var(--space-4);
+  }
+
+  .site-footer__cta-row {
+    /* Stack the CTA pair so long EN/FR labels never clip off-screen. */
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  /* Contact + social stack into a single readable column. */
+  .site-footer__meta {
+    flex-direction: column;
+    gap: var(--space-10);
+    padding-block-start: var(--space-10);
+  }
+
+  .site-footer__contact {
+    max-inline-size: none;
+  }
+
+  /* Copyright / legal / back-to-top stack and centre — no cramped row. */
+  .site-footer__base {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-5);
+    padding-block-start: var(--space-8);
+  }
+
+  .site-footer__legal {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .site-footer__claim {
+    font-size: clamp(1.75rem, 8vw, 2.25rem);
+  }
+}

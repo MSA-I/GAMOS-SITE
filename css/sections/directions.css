@@ -137,8 +137,8 @@
 
 /* Visible keyboard focus ring on the active radio (§9). */
 .directions__tab input:focus-visible ~ .directions__tab-label {
-  outline: 3px solid var(--brass);
-  outline-offset: 4px;
+  outline: none;
+  box-shadow: var(--focus-ring);
   border-radius: var(--radius-sm);
 }
 @media (prefers-reduced-motion: reduce) {

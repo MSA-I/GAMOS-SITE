@@ -22,7 +22,17 @@
   font-weight: var(--fw-semibold);
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
-  color: var(--accent);
+  /* Was var(--accent) (brass) — brass-as-text on ivory = 1.83:1, a systematic
+     WCAG AA fail across the light sections (2026-07-21 a11y pass). Per the
+     Brass Decoration Rule (DESIGN.md §2) brass is decoration/underline/on-dark
+     only; a text eyebrow on a LIGHT surface uses --cocoa (8.46:1). This is the
+     DEFAULT — every dark/on-dark section already re-colors its own eyebrow with
+     higher specificity (events → --ivory in events.css; culinary → --brass in
+     scroll-scene.css), so their look is untouched. Do NOT add a broad
+     :has(.texture-text--light) override here: it would out-specify and clobber
+     the events section's deliberate ivory eyebrow (brass = 2.88:1 on the taupe
+     ground there, which is exactly why events chose ivory). */
+  color: var(--cocoa);
   margin: 0 0 var(--space-4) 0;
 }
 

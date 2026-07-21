@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-21T08:21:15Z",
+  "title": "Design System: GAMOS",
+  "extensions": {
+    "colorMeta": {
+      "brass-engraved": { "role": "primary", "displayName": "פליז חקוק / Engraved Brass", "canonical": "#CFAE83", "tonalRamp": ["#2E2415", "#4A3A22", "#685231", "#8B6F46", "#A98B5F", "#CFAE83", "#E2C9A4", "#F2E3CC"] },
+      "brass-deep": { "role": "primary", "displayName": "פליז עמוק / Deep Brass", "canonical": "#8B6F46", "tonalRamp": ["#241C10", "#3B2E1C", "#54422A", "#6F5837", "#8B6F46", "#A98B5F", "#C7AC85", "#E2CFAF"] },
+      "cocoa": { "role": "secondary", "displayName": "קקאו / Cocoa", "canonical": "#534133", "tonalRamp": ["#1B1510", "#2C221A", "#3F3226", "#534133", "#6E5846", "#8A715C", "#AE957E", "#D3BFA9"] },
+      "wine-rose": { "role": "tertiary", "displayName": "ורד-יין / Wine Rose", "canonical": "#B8576F", "tonalRamp": ["#2E1219", "#4A1F2B", "#68303F", "#874254", "#A34C63", "#B8576F", "#D08398", "#E7B5C2"] },
+      "warm-ivory": { "role": "neutral", "displayName": "שנהב חמים / Warm Ivory", "canonical": "#F5EFE6", "tonalRamp": ["#3A342B", "#5C5344", "#7E7260", "#A19381", "#C0B3A0", "#D9CEBD", "#EAE2D4", "#F5EFE6"] },
+      "desert-ink": { "role": "neutral", "displayName": "דיו-מדבר / Desert Ink", "canonical": "#1A1410", "tonalRamp": ["#1A1410", "#2A211A", "#3D3128", "#544539", "#6E5D4E", "#8B7A69", "#AB9A89", "#CCBEB0"] },
+      "stone-muted": { "role": "neutral", "displayName": "אבן עמומה / Muted Stone", "canonical": "#5E5E5B", "tonalRamp": ["#1B1B1A", "#2B2B2A", "#3E3E3C", "#50504D", "#5E5E5B", "#7E7E7A", "#A3A39F", "#CACAC6"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "כותרת הירו בלבד — לרוב עם מילוי טקסטורת מותג (background-clip: text)." },
+      "headline": { "displayName": "Headline", "purpose": "כותרות סקציה." },
+      "title": { "displayName": "Title", "purpose": "תתי-כותרות וכותרות כרטיסים." },
+      "body": { "displayName": "Body", "purpose": "טקסט רץ — משקל 350 מוקל, מקסימום 65–75ch." },
+      "label": { "displayName": "Label", "purpose": "CTAs, eyebrows, chips — tracking 0.18em; uppercase ללטינית בלבד, לעולם לא לעברית." }
+    },
+    "shadows": [
+      { "name": "soft", "value": "0 8px 24px rgba(26,20,16,0.06)", "purpose": "ריחוף עדין נדיר למשטחים בהירים." },
+      { "name": "strong", "value": "0 24px 60px rgba(26,20,16,0.16)", "purpose": "הרמה דרמטית — overlays בלבד." },
+      { "name": "image-lift", "value": "0 30px 80px -40px rgba(26,20,16,0.45)", "purpose": "כרטיסי תמונה גדולים בלבד — The Image-Only Shadow Rule." }
+    ],
+    "motion": [
+      { "name": "dur-fast", "value": "160ms", "purpose": "מיקרו-פידבק." },
+      { "name": "dur-base", "value": "240ms", "purpose": "מעברי מצב סטנדרטיים (קווי CTA, tints)." },
+      { "name": "dur-slow", "value": "360ms", "purpose": "מעברי משטח." },
+      { "name": "dur-deluxe", "value": "600ms", "purpose": "reveals." },
+      { "name": "dur-cinema", "value": "1000ms", "purpose": "כוריאוגרפיה קולנועית (הירו, wipes)." },
+      { "name": "ease-out-cinema", "value": "cubic-bezier(0.2, 0.8, 0.2, 1)", "purpose": "ה-easing הקנוני לכל מעבר." },
+      { "name": "ease-cue", "value": "cubic-bezier(0.55, 0, 0.55, 1)", "purpose": "לולאות scroll-cue סימטריות." }
+    ],
+    "breakpoints": [
+      { "name": "mobile-max", "value": "768px" },
+      { "name": "mobile-sm", "value": "640px" },
+      { "name": "mobile-xs", "value": "480px" },
+      { "name": "desktop-min", "value": "769px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary CTA",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "הפעולה הראשית — קו פליז עבה גלוי במנוחה, מתעבה ב-hover. בלי קופסה.",
+      "html": "<button class=\"ds-btn-primary\" dir=\"rtl\" lang=\"he\">תיאום סיור ובדיקת תאריך</button>",
+      "css": ".ds-btn-primary { position: relative; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6em 0; border: none; background: transparent; color: var(--ink-deep, #1A1410); font-family: var(--font-body, 'Heebo', Arial, sans-serif); font-size: 0.9375rem; font-weight: 500; line-height: 1; letter-spacing: 0.18em; white-space: nowrap; cursor: pointer; transition: color 240ms cubic-bezier(0.2,0.8,0.2,1); } .ds-btn-primary::after { content: ''; position: absolute; inset-block-end: 0; inset-inline: 0; height: 2.5px; background: var(--brass, #CFAE83); transition: height 240ms cubic-bezier(0.2,0.8,0.2,1), background 240ms cubic-bezier(0.2,0.8,0.2,1); } .ds-btn-primary:hover, .ds-btn-primary:focus-visible { color: var(--cocoa, #534133); } .ds-btn-primary:hover::after, .ds-btn-primary:focus-visible::after { height: 3.5px; background: var(--brass-deep, #8B6F46); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--ivory, #F5EFE6), 0 0 0 5px var(--brass-deep, #8B6F46); border-radius: 4px; } .ds-btn-primary:active { transform: scale(0.98); }"
+    },
+    {
+      "name": "Secondary CTA",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "CTA משני — טקסט קקאו, קו פליז שצומח מימין (RTL) ב-hover.",
+      "html": "<button class=\"ds-btn-secondary\" dir=\"rtl\" lang=\"he\">לגלריה המלאה</button>",
+      "css": ".ds-btn-secondary { position: relative; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.45em 0; border: none; background: transparent; color: var(--cocoa, #534133); font-family: var(--font-body, 'Heebo', Arial, sans-serif); font-size: 0.8125rem; font-weight: 500; line-height: 1; letter-spacing: 0.18em; white-space: nowrap; cursor: pointer; transition: color 240ms cubic-bezier(0.2,0.8,0.2,1); } .ds-btn-secondary::after { content: ''; position: absolute; inset-block-end: 0; inset-inline: 0; height: 1.5px; background: var(--brass, #CFAE83); transform: scaleX(0); transform-origin: right center; transition: transform 240ms cubic-bezier(0.2,0.8,0.2,1); } .ds-btn-secondary:hover, .ds-btn-secondary:focus-visible { color: var(--cocoa, #534133); } .ds-btn-secondary:hover::after, .ds-btn-secondary:focus-visible::after { transform: scaleX(1); } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--ivory, #F5EFE6), 0 0 0 5px var(--brass-deep, #8B6F46); border-radius: 4px; } .ds-btn-secondary:active { transform: scale(0.98); }"
+    },
+    {
+      "name": "On-Image CTA (Glass)",
+      "kind": "button",
+      "refersTo": "button-glass",
+      "description": "CTA מעל צילום/רקע כהה — שנהב + text-shadow, hover לזוהר-פליז.",
+      "html": "<div class=\"ds-glass-stage\"><button class=\"ds-btn-glass\" dir=\"rtl\" lang=\"he\">שריינו תאריך</button></div>",
+      "css": ".ds-glass-stage { background: #1A1410; padding: 24px 32px; display: inline-block; } .ds-btn-glass { position: relative; display: inline-flex; align-items: center; padding: 0.45em 0; border: none; background: transparent; color: var(--ivory, #F5EFE6); text-shadow: 0 1px 8px rgba(26,20,16,0.55); font-family: var(--font-body, 'Heebo', Arial, sans-serif); font-size: 0.8125rem; font-weight: 500; line-height: 1; letter-spacing: 0.18em; white-space: nowrap; cursor: pointer; transition: color 240ms cubic-bezier(0.2,0.8,0.2,1); } .ds-btn-glass::after { content: ''; position: absolute; inset-block-end: 0; inset-inline: 0; height: 1.5px; background: var(--brass-glow, #D4B98A); transform: scaleX(0); transform-origin: right center; transition: transform 240ms cubic-bezier(0.2,0.8,0.2,1); } .ds-btn-glass:hover, .ds-btn-glass:focus-visible { color: var(--brass-glow, #D4B98A); } .ds-btn-glass:hover::after, .ds-btn-glass:focus-visible::after { transform: scaleX(1); } .ds-btn-glass:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--ivory, #F5EFE6), 0 0 0 5px var(--brass-deep, #8B6F46); border-radius: 4px; }"
+    },
+    {
+      "name": "Editorial Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "תג אדיטוריאלי — small caps + קו דק. בלי רקע ובלי מסגרת.",
+      "html": "<span class=\"ds-chip\" dir=\"rtl\" lang=\"he\">בופה</span>",
+      "css": ".ds-chip { position: relative; display: inline-flex; align-items: center; padding: 0.45em 0; color: var(--cocoa, #534133); font-family: var(--font-body, 'Heebo', Arial, sans-serif); font-size: 0.75rem; font-weight: 500; line-height: 1; letter-spacing: 0.14em; white-space: nowrap; } .ds-chip::after { content: ''; position: absolute; inset-block-end: 0; inset-inline: 0; height: 1px; background: var(--brass, #CFAE83); }"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "nav",
+      "refersTo": "button-secondary",
+      "description": "קישור ניווט — אותה גרמטיקת קו-צומח כמו ה-CTAs; זו שפה אחת.",
+      "html": "<nav class=\"ds-nav\" dir=\"rtl\"><a class=\"ds-nav-link\" href=\"#\" lang=\"he\">סוגי אירועים</a><a class=\"ds-nav-link\" href=\"#\" lang=\"he\">קולינריה</a><a class=\"ds-nav-link\" href=\"#\" lang=\"he\">חדרי אירוח</a></nav>",
+      "css": ".ds-nav { display: inline-flex; gap: 28px; } .ds-nav-link { position: relative; padding: 0.45em 0; color: var(--ink-deep, #1A1410); font-family: var(--font-body, 'Heebo', Arial, sans-serif); font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.18em; text-decoration: none; white-space: nowrap; transition: color 240ms cubic-bezier(0.2,0.8,0.2,1); } .ds-nav-link::after { content: ''; position: absolute; inset-block-end: 0; inset-inline: 0; height: 1.5px; background: var(--brass, #CFAE83); transform: scaleX(0); transform-origin: right center; transition: transform 240ms cubic-bezier(0.2,0.8,0.2,1); } .ds-nav-link:hover { color: var(--brass-deep, #8B6F46); } .ds-nav-link:hover::after { transform: scaleX(1); } .ds-nav-link:focus-visible { outline: 3px solid var(--brass, #CFAE83); outline-offset: 4px; }"
+    },
+    {
+      "name": "Texture Headline",
+      "kind": "custom",
+      "refersTo": "display",
+      "description": "חתימת המערכת — כותרת ממולאת טקסטורת המותג (ההטבעה של ההזמנה החקוקה).",
+      "html": "<h2 class=\"ds-texture-headline\" dir=\"rtl\" lang=\"he\">האירוע והחופשה — במקום אחד</h2>",
+      "css": ".ds-texture-headline { margin: 0; font-family: var(--font-display-he, 'Rubik', 'Heebo', sans-serif); font-size: clamp(var(--text-xl, 1.953rem), 5vw, var(--text-3xl, 3.052rem)); font-weight: 600; line-height: 1.2; background-image: var(--typo-on-light, url('/assets/images/brand/typo-on-light.webp')), linear-gradient(#534133, #534133); background-size: cover; -webkit-background-clip: text; background-clip: text; color: transparent; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "ההזמנה החקוקה",
+    "overview": "האתר הוא הזמנת יוקרה מודפסת בהטבעת-זהב שקמה לחיים: פליז חקוק על שנהב חמים, אותיות מרווחות שנחקקו במכבש, קווים דקים במקום קופסאות, וצילום קולנועי מלא-מסך במקום איור. כמו בהזמנה אמיתית — הנייר (השנהב), ההטבעה (הפליז הממורקם) והצילום עושים את הרושם; הכרום שותק. הדפדוף בהזמנה הוא הגלילה: כוריאוגרפיה איטית ובטוחה שמייצרת \"וואו — יוקרה קולנועית\" בעשר השניות הראשונות.",
+    "keyCharacteristics": [
+      "RTL-first עברית; logical properties בלבד, מספרים ב-<bdi>",
+      "צילום ווידאו של המתחם נושאים את המסר; טיפוגרפיה ממורקמת מעליהם",
+      "כרום \"מאופק וחקוק\": טקסט + קו פליז שצומח — אפס קופסאות, אפס מילויים",
+      "מקסימום 5 צבעים פעילים בו-זמנית; אקסנט אחד בלבד",
+      "כל אנימציה מכבדת prefers-reduced-motion (מצב סופי סטטי)"
+    ],
+    "rules": [
+      { "name": "The Five Voices Rule", "body": "מקסימום 5 צבעים פעילים בכל רגע נתון (§5). צבע שישי = באג.", "section": "colors" },
+      { "name": "The Single Accent Rule", "body": "ורד-היין מופיע אך ורק ב-hover של ה-CTA הראשי. כל שימוש אחר אסור.", "section": "colors" },
+      { "name": "The Brass Decoration Rule", "body": "פליז הוא דקורציה בלבד על משטח בהיר; טקסט קטן משתמש בקקאו וטבעת פוקוס משתמשת בטבעת הדו-גונית שנהב + פליז-עמוק.", "section": "colors" },
+      { "name": "The No Raw Hex Rule", "body": "כל ערך צבע נמשך מ-css/tokens.css דרך var(...). hex מוקלד = באג (§10.2).", "section": "colors" },
+      { "name": "The No Gradient Rule", "body": "אין גרדיאנטים אלא אם מוגדרים מתמטית מהטוקנים (סקרימים בלבד).", "section": "colors" },
+      { "name": "The Engraved Tracking Rule", "body": "תוויות ו-CTAs נושאים tracking של 0.18em — תחושת חקיקה. גוף הטקסט לעולם לא.", "section": "typography" },
+      { "name": "The Texture Fill Rule", "body": "מילויי טקסט ממורקמים נמשכים אך ורק מהתיקייה הקנונית (§4.1) דרך הטוקנים — המצאת טקסטורה = הפרת חוקה.", "section": "typography" },
+      { "name": "The Image-Only Shadow Rule", "body": "צל מופיע רק תחת מדיה. כפתור או שדה עם צל = הפרת שפה.", "section": "elevation" },
+      { "name": "The Token Scrim Rule", "body": "קריאוּת מעל תמונה נפתרת אך ורק בסקרימים הטוקניים — לעולם לא בגרדיאנט אד-הוק.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do למשוך כל ערך ויזואלי מ-css/tokens.css — צבע, מרווח, צל, easing, z-index (§10.2)",
+      "Do לבנות כל CTA בשפת הקו: טקסט + ::after פליז שצומח מימין (RTL)",
+      "Do לשמור hit-area של ≥44px לכל אינטראקטיב, גם כשהוויזואל הוא טקסט דק",
+      "Do לתת לצילום לנשום: full-bleed, סקרימים טוקניים, טקסט מעל רק כשיש סקרים",
+      "Do לספק מצב prefers-reduced-motion לכל אנימציה: מצב סופי סטטי",
+      "Do לכתוב RTL-first עם logical properties בלבד; מספרים עטופים <bdi>"
+    ],
+    "donts": [
+      "Don't ורוד #CC3366 או כל ניאון — \"אתר היכרויות משנות ה-90\"; ורד-היין #B8576F הוא התחליף, ורק ב-hover של CTA ראשי",
+      "Don't לבן #FFFFFF או שחור #000000 טהורים — תמיד שנהב חמים ודיו-מדבר",
+      "Don't קופסאות/מסגרות/מילויים/pill ל-CTAs — NO boxes, NO borders, NO fills, NO pill radius",
+      "Don't צל על כרום (כפתור, שדה, nav) — צל שייך לתמונות בלבד",
+      "Don't תבניות אולמות גנריות: קרוסלת סטוק, רשימת יתרונות עם אייקונים, פופ-אפ השאירו-פרטים",
+      "Don't uppercase על עברית; אין faux-bold על Canela",
+      "Don't טקסטורת טקסט ממקור שאינו התיקייה הקנונית של §4.1",
+      "Don't גרדיאנט דקורטיבי, glassmorphism, או gradient-text"
+    ]
+  }
+}

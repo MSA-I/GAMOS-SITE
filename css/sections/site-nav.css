@@ -111,8 +111,8 @@
 
 .site-nav__brand:hover .site-nav__brand-logo { opacity: 0.85; }
 .site-nav__brand:focus-visible {
-  outline: 3px solid var(--brass);
-  outline-offset: 4px;
+  outline: none;
+  box-shadow: var(--focus-ring);   /* two-tone ring (a11y pass 2026-07-21) */
   border-radius: var(--radius-sm);
 }
 
@@ -168,8 +168,9 @@
 }
 
 .site-nav__links a:focus-visible {
-  outline: 3px solid var(--brass);
-  outline-offset: 4px;
+  outline: none;
+  box-shadow: var(--focus-ring);   /* two-tone ring — visible on the light bar
+                                      and when the hero reveals it (a11y 2026-07-21) */
   border-radius: var(--radius-sm);
 }
 
@@ -336,7 +337,7 @@
 }
 .site-nav__mobile__close:hover,
 .site-nav__mobile__close:focus-visible { color: var(--brass-deep); }
-.site-nav__mobile__close:focus-visible { outline: 3px solid var(--brass); outline-offset: 3px; }
+.site-nav__mobile__close:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 .site-nav__mobile__close:active { transform: scale(0.94); }
 
 .site-nav__mobile__inner {

@@ -36,6 +36,23 @@ html[data-hero-mode="true"][data-nav-revealed="true"] .site-nav {
   box-shadow: 0 12px 40px -16px rgba(26, 20, 16, 0.45);
 }
 
+/* Keyboard-focus reveal (WCAG 2.4.7, a11y pass 2026-07-21).
+   In hero-mode the bar is translated off-screen and only the CURSOR band reveals
+   it (js/site-nav-hover-reveal.js). A keyboard user tabbing off the skip-link
+   lands on nav links that sit at y≈-100% — focused but invisible. `:focus-within`
+   pulls the bar on-screen the moment any nav link takes focus, mirroring the
+   revealed treatment. Specificity (0,3,1) with :focus-within beats the hidden
+   base rule (0,2,1) and ties the revealed rule, and it's later in source order,
+   so it wins whenever focus is inside the nav. */
+html[data-hero-mode="true"] .site-nav:focus-within {
+  transform: translateY(0);
+  pointer-events: auto;
+  background: color-mix(in srgb, var(--ivory) 92%, transparent);
+  backdrop-filter: saturate(140%) blur(12px);
+  -webkit-backdrop-filter: saturate(140%) blur(12px);
+  box-shadow: 0 12px 40px -16px rgba(26, 20, 16, 0.45);
+}
+
 /* Tiny invisible trigger band at the top of the viewport — keeps the bar
    reachable even before the cursor crosses the (hidden) bar's bounding box.
    pointer-events:none on the band itself; the band is just a "tripwire"
@@ -59,5 +76,12 @@ html[data-hero-mode="true"][data-nav-revealed="true"] .site-nav {
   }
   html[data-hero-mode="true"][data-nav-revealed="true"] .site-nav {
     opacity: 1;
+  }
+  /* Keyboard reveal in the reduced-motion branch: the hidden state here is
+     opacity:0 (not a transform), so focus-within must restore opacity +
+     pointer-events for the tabbed link to become visible. (a11y 2026-07-21) */
+  html[data-hero-mode="true"] .site-nav:focus-within {
+    opacity: 1;
+    pointer-events: auto;
   }
 }

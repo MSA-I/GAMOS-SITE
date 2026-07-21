@@ -1,9 +1,32 @@
 # GAMOS-SITE — מצב נוכחי
 
-**עודכן:** 2026-07-13 (Conversion pass — יישום הביקורת השיווקית)
+**עודכן:** 2026-07-21 (המשך וסגירת סשן Impeccable שנקטע)
 **Branch:** `main` — מסונכרן עם `origin/main` (https://github.com/MSA-I/GAMOS-SITE)
 **מקור-אמת לתוכנית הראשית:** [`PLANS/research/2026-05-28_master-rebuild-plan.md`](PLANS/research/2026-05-28_master-rebuild-plan.md)
 **מקור-אמת לחוקה:** [`CLAUDE.md`](CLAUDE.md)
+
+---
+
+## ⭐ NEW (2026-07-21) — סגירת ביקורת Impeccable ושער קבלה משולב
+
+שוחזר והושלם סשן Claude `0c632749-d5b9-4d78-b0fa-7982acfb4051` ללא redesign:
+
+- ההירו מציג את המיצוב "האירוע והחופשה — במקום אחד" ואת בידול הלינה; מידע
+  הכשרות הוקדם ל-`#why-gamos` בלי לשנות את timeline של `js/hero-scene.js`.
+- טופס הקשר כולל הבטחת מענה גלויה, שגיאות inline מקושרות ב-ARIA, משוב WhatsApp
+  כן, fallback למייל וגוף הודעה מותאם ל-HE/EN/FR. תוקנה אבחנת popup חסום כך
+  שלשונית שנפתחה עם ניתוק `opener` אינה מדווחת בטעות ככשל.
+- נוסף פוטר רגשי מלא עם CTA, פרטי קשר, social/legal וחזרה למעלה; כל יעדי המגע
+  המרכזיים 44px לפחות. טבעות focus הוחזרו לטוקנים הדו-גוניים.
+- Leaflet נשאר lazy וממתין ל-CSS+JS לפני בניית המפה; שכבות hero וטקסטורות עברו
+  אופטימיזציה במסגרת הסשן המשוחזר.
+- `npm run build:i18n`: ‏348 מפתחות בכל שפה, 0 conflicts. `npm run build:mobile`
+  עבר ונוצר מחדש מהמקור הקנוני.
+- אימות Playwright משולב: **197/197** בדיקות עברו בדסקטופ, מובייל ו-reduced-motion;
+  0 console/page/asset errors, 0 overflow, ניגודיות שגיאות 8.46:1. צילומי
+  hero/contact/footer נבדקו חזותית.
+- critique חוזר: **32/40** (baseline 30); audit טכני: **17/20** (baseline 15).
+  תוכנית סגירה: `PLANS/fixes/2026-07-21_resume-impeccable-session.md`.
 
 ---
 

@@ -46,14 +46,6 @@ const EMAIL_VALID_REGEX     = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const ERROR_CLASS = "contact__field-error";
 const FIELD_INVALID_CLASS = "is-invalid";
 
-const EVENT_TYPE_LABELS = {
-  wedding:      "חתונה",
-  "bar-mitzvah":"בר/בת מצווה",
-  company:      "אירוע חברה",
-  private:      "אירוע פרטי",
-  other:        "אחר",
-};
-
 // ----------------------------------------------------------------------------
 // Module-scoped state
 // ----------------------------------------------------------------------------
@@ -64,10 +56,14 @@ const state = {
   feedback:     null,
   submitBtn:    null,
   mailtoLink:   null,
+  feedbackKey:  "",
+  feedbackKind: "",
+  feedbackWaUrl:"",
   errorEls:     [],     // injected error <span>s tracked for destroy().
   bound: {
     onSubmit:   null,
     onInput:    null,
+    onLangChange: null,
   },
 };
 
@@ -89,26 +85,57 @@ function isValidEmail(raw) {
 }
 
 /**
+ * Runtime messages live as hidden DOM text nodes inside the form. That lets the
+ * site's canonical i18n module translate them with the rest of the page; this
+ * module only reads the currently active language.
+ */
+function getCopy(key) {
+  if (!state.form || !key) return "";
+  const el = state.form.querySelector(`[data-contact-copy="${key}"]`);
+  return el ? el.textContent.trim() : "";
+}
+
+function errorIdFor(field) {
+  return `${field.id || `contact-${field.name || "field"}`}-error`;
+}
+
+function addDescriptionReference(field, id) {
+  const ids = new Set((field.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean));
+  ids.add(id);
+  field.setAttribute("aria-describedby", [...ids].join(" "));
+}
+
+function removeDescriptionReference(field, id) {
+  const ids = (field.getAttribute("aria-describedby") || "")
+    .split(/\s+/)
+    .filter((candidate) => candidate && candidate !== id);
+  if (ids.length) field.setAttribute("aria-describedby", ids.join(" "));
+  else field.removeAttribute("aria-describedby");
+}
+
+/**
  * Inject a Hebrew error message under a field. Idempotent — replaces existing.
  * Uses role="alert" so screen readers announce the error live.
  */
-function setFieldError(field, message) {
+function setFieldError(field, copyKey) {
   if (!field) return;
   const fieldWrap = field.closest(".contact__field") || field.parentElement;
   if (!fieldWrap) return;
 
-  // Remove existing error first (idempotent).
-  const existing = fieldWrap.querySelector(`.${ERROR_CLASS}`);
-  if (existing) existing.remove();
+  // Remove existing error first (idempotent), including its ARIA reference.
+  clearFieldError(field);
 
   field.classList.add(FIELD_INVALID_CLASS);
   field.setAttribute("aria-invalid", "true");
 
   const span = document.createElement("span");
   span.className = ERROR_CLASS;
+  span.id = errorIdFor(field);
   span.setAttribute("role", "alert");
-  span.textContent = message;
+  span.dataset.copyKey = copyKey;
+  span.textContent = getCopy(copyKey);
   fieldWrap.appendChild(span);
+  addDescriptionReference(field, span.id);
   state.errorEls.push(span);
 }
 
@@ -118,6 +145,7 @@ function clearFieldError(field) {
   if (!fieldWrap) return;
   const existing = fieldWrap.querySelector(`.${ERROR_CLASS}`);
   if (existing) {
+    removeDescriptionReference(field, existing.id);
     existing.remove();
     const i = state.errorEls.indexOf(existing);
     if (i >= 0) state.errorEls.splice(i, 1);
@@ -127,13 +155,12 @@ function clearFieldError(field) {
 }
 
 function clearAllErrors() {
+  if (state.form) {
+    [...state.form.querySelectorAll(`.${FIELD_INVALID_CLASS}`)].forEach(clearFieldError);
+  }
+  // Defensive cleanup for any orphaned node that was not attached to a field.
   state.errorEls.forEach((el) => el.remove());
   state.errorEls = [];
-  if (!state.form) return;
-  state.form.querySelectorAll(`.${FIELD_INVALID_CLASS}`).forEach((el) => {
-    el.classList.remove(FIELD_INVALID_CLASS);
-    el.removeAttribute("aria-invalid");
-  });
 }
 
 /**
@@ -156,36 +183,60 @@ function readFormValues() {
 }
 
 /**
- * Convert "wedding" → "חתונה", etc. Falls back to the raw value.
+ * Read the active option text so the outgoing message follows the current locale.
  */
 function eventTypeLabel(raw) {
-  return EVENT_TYPE_LABELS[raw] || raw || "—";
+  const select = state.form?.querySelector('[name="eventType"]');
+  const option = select ? [...select.options].find((candidate) => candidate.value === raw) : null;
+  return option?.textContent.trim() || raw || "—";
 }
 
 /**
- * Build the Hebrew message body.
- *  שלום, הגעתי דרך האתר.
- *  שם: ...
- *  ...
+ * Build the message body from the currently translated hidden copy bank.
  */
 function buildMessageBody(values) {
   const lines = [
-    "שלום, הגעתי דרך האתר.",
-    `שם: ${values.name || "—"}`,
+    getCopy("message-intro"),
+    `${getCopy("message-name")}: ${values.name || "—"}`,
   ];
-  if (values.company) lines.push(`שם החברה: ${values.company}`);
-  lines.push(`טלפון: ${values.phone || "—"}`);
-  if (values.email) lines.push(`דוא"ל: ${values.email}`);
-  lines.push(`סוג אירוע: ${eventTypeLabel(values.eventType)}`);
-  if (values.date)    lines.push(`תאריך מועדף: ${values.date}`);
-  if (values.message) lines.push(`הודעה: ${values.message}`);
+  if (values.company) lines.push(`${getCopy("message-company")}: ${values.company}`);
+  lines.push(`${getCopy("message-phone")}: ${values.phone || "—"}`);
+  if (values.email) lines.push(`${getCopy("message-email")}: ${values.email}`);
+  lines.push(`${getCopy("message-event")}: ${eventTypeLabel(values.eventType)}`);
+  if (values.date)    lines.push(`${getCopy("message-date")}: ${values.date}`);
+  if (values.message) lines.push(`${getCopy("message-body")}: ${values.message}`);
   return lines.join("\n");
 }
 
-function setFeedback(message, kind /* "ok" | "err" | "" */) {
+function renderFeedback() {
   if (!state.feedback) return;
-  state.feedback.textContent = message || "";
-  state.feedback.dataset.kind = kind || "";
+  state.feedback.replaceChildren();
+
+  if (!state.feedbackKey) {
+    delete state.feedback.dataset.kind;
+    return;
+  }
+
+  state.feedback.appendChild(document.createTextNode(getCopy(state.feedbackKey)));
+  state.feedback.dataset.kind = state.feedbackKind;
+
+  if (state.feedbackWaUrl) {
+    const link = document.createElement("a");
+    link.href = state.feedbackWaUrl;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = getCopy("open-whatsapp");
+    link.className = "contact__wa-fallback";
+    state.feedback.appendChild(document.createTextNode(" "));
+    state.feedback.appendChild(link);
+  }
+}
+
+function setFeedback(copyKey, kind /* "ok" | "err" | "" */, waUrl = "") {
+  state.feedbackKey = copyKey || "";
+  state.feedbackKind = kind || "";
+  state.feedbackWaUrl = waUrl || "";
+  renderFeedback();
 }
 
 /**
@@ -200,12 +251,13 @@ function renderMailtoFallback(email, body) {
   const wrap = state.submitBtn ? state.submitBtn.closest(".contact__submit-wrap") : null;
   if (!wrap) return;
 
-  const subject = encodeURIComponent("פנייה מהאתר — גאמוס");
+  const subject = encodeURIComponent(getCopy("email-subject"));
   const encodedBody = encodeURIComponent(body);
   const href = `mailto:${email}?subject=${subject}&body=${encodedBody}`;
 
   if (state.mailtoLink && state.mailtoLink.parentNode) {
     state.mailtoLink.href = href;
+    state.mailtoLink.textContent = getCopy("email-fallback");
     state.mailtoLink.hidden = false;
     return;
   }
@@ -213,7 +265,7 @@ function renderMailtoFallback(email, body) {
   const link = document.createElement("a");
   link.className = "contact__mailto-fallback";
   link.href = href;
-  link.textContent = "שלחו במייל במקום";
+  link.textContent = getCopy("email-fallback");
   wrap.appendChild(link);
   state.mailtoLink = link;
 }
@@ -228,6 +280,7 @@ function onSubmit(event) {
 
   clearAllErrors();
   setFeedback("", "");
+  if (state.mailtoLink) state.mailtoLink.hidden = true;
 
   const values = readFormValues();
   let firstInvalid = null;
@@ -235,40 +288,40 @@ function onSubmit(event) {
   // 1. Validation
   if (!values.name) {
     const f = state.form.querySelector('[name="name"]');
-    setFieldError(f, "אנא הזינו שם מלא.");
+    setFieldError(f, "required-name");
     firstInvalid = firstInvalid || f;
   }
 
   if (!values.phone) {
     const f = state.form.querySelector('[name="phone"]');
-    setFieldError(f, "אנא הזינו מספר טלפון.");
+    setFieldError(f, "required-phone");
     firstInvalid = firstInvalid || f;
   } else if (!isValidPhone(values.phone)) {
     const f = state.form.querySelector('[name="phone"]');
-    setFieldError(f, "טלפון לא תקין. דוגמה: 050-1234567 או 077-9972343.");
+    setFieldError(f, "invalid-phone");
     firstInvalid = firstInvalid || f;
   }
 
   if (!values.email) {
     const f = state.form.querySelector('[name="email"]');
-    setFieldError(f, "אנא הזינו כתובת דוא\"ל.");
+    setFieldError(f, "required-email");
     firstInvalid = firstInvalid || f;
   } else if (!isValidEmail(values.email)) {
     const f = state.form.querySelector('[name="email"]');
-    setFieldError(f, "כתובת דוא\"ל לא תקינה.");
+    setFieldError(f, "invalid-email");
     firstInvalid = firstInvalid || f;
   }
 
   if (!values.eventType) {
     const f = state.form.querySelector('[name="eventType"]');
-    setFieldError(f, "אנא בחרו סוג אירוע.");
+    setFieldError(f, "required-event");
     firstInvalid = firstInvalid || f;
   }
 
   if (firstInvalid) {
     // Move focus to the first invalid field — keyboard users get there fast.
     try { firstInvalid.focus({ preventScroll: false }); } catch { /* ignore */ }
-    setFeedback("יש שדות שדורשים תיקון.", "err");
+    setFeedback("invalid-summary", "err");
     return;
   }
 
@@ -281,9 +334,9 @@ function onSubmit(event) {
     // Defensive: HTML didn't supply a number. Still allow mailto fallback.
     if (email) {
       renderMailtoFallback(email, body);
-      setFeedback("ההודעה לא נשלחה (חסר מספר ווטסאפ). השתמשו בקישור הדוא\"ל.", "err");
+      setFeedback("missing-whatsapp", "err");
     } else {
-      setFeedback("שגיאה: לא הוגדרו פרטי שליחה.", "err");
+      setFeedback("missing-channel", "err");
     }
     return;
   }
@@ -296,25 +349,24 @@ function onSubmit(event) {
 
   let opened = null;
   try {
-    opened = window.open(waUrl, "_blank", "noopener,noreferrer");
+    // Open synchronously while the submit gesture is active. Supplying
+    // `noopener` as a window feature can make browsers return null even when
+    // they successfully opened the tab, which produced a false failure state.
+    opened = window.open("", "_blank");
+    if (opened) {
+      try { opened.opener = null; } catch { /* cross-browser hardening */ }
+      opened.location.replace(waUrl);
+    }
   } catch {
-    /* popup blocked — fall through */
+    try { opened?.close(); } catch { /* ignore incomplete popup handles */ }
+    opened = null;
   }
 
   if (opened) {
-    setFeedback("ההודעה נפתחה ב-WhatsApp. ניתן לסגור את החלון הזה.", "ok");
+    setFeedback("whatsapp-ready", "ok");
   } else {
     // Popup blocked — give the user a direct link.
-    setFeedback("נחסמה פתיחת חלון. לחצו על הקישור לפתוח את ווטסאפ.", "err");
-    // Inject a fallback anchor to wa.me link inside feedback.
-    const a = document.createElement("a");
-    a.href = waUrl;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    a.textContent = "פתחו ב-WhatsApp";
-    a.className = "contact__wa-fallback";
-    state.feedback.appendChild(document.createTextNode(" "));
-    state.feedback.appendChild(a);
+    setFeedback("whatsapp-blocked", "err", waUrl);
   }
 
   // 4. Always render the mailto fallback after a valid submit so the user
@@ -334,6 +386,16 @@ function onInput(event) {
   if (target.classList.contains(FIELD_INVALID_CLASS)) {
     clearFieldError(target);
   }
+}
+
+/** Keep already-rendered runtime feedback in sync with the active locale. */
+function onLangChange() {
+  state.errorEls.forEach((el) => {
+    const key = el.dataset.copyKey || "";
+    if (key) el.textContent = getCopy(key);
+  });
+  if (state.feedbackKey) renderFeedback();
+  if (state.mailtoLink) state.mailtoLink.textContent = getCopy("email-fallback");
 }
 
 // ----------------------------------------------------------------------------
@@ -361,8 +423,10 @@ export function init() {
   // 2. Wire listeners.
   state.bound.onSubmit = onSubmit;
   state.bound.onInput  = onInput;
+  state.bound.onLangChange = onLangChange;
   state.form.addEventListener("submit", state.bound.onSubmit);
   state.form.addEventListener("input",  state.bound.onInput);
+  document.addEventListener("gamos:langchange", state.bound.onLangChange);
 
   state.initialised = true;
 }
@@ -373,6 +437,9 @@ export function destroy() {
   if (state.form && state.bound.onSubmit) {
     state.form.removeEventListener("submit", state.bound.onSubmit);
     state.form.removeEventListener("input",  state.bound.onInput);
+  }
+  if (state.bound.onLangChange) {
+    document.removeEventListener("gamos:langchange", state.bound.onLangChange);
   }
 
   // Remove any error elements we injected.
@@ -394,7 +461,11 @@ export function destroy() {
   state.feedback    = null;
   state.submitBtn   = null;
   state.mailtoLink  = null;
+  state.feedbackKey = "";
+  state.feedbackKind = "";
+  state.feedbackWaUrl = "";
   state.errorEls    = [];
   state.bound.onSubmit = null;
   state.bound.onInput  = null;
+  state.bound.onLangChange = null;
 }

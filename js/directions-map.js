@@ -396,6 +396,9 @@ const state = {
   langHandler: null,     // gamos:langchange listener (added in init, removed in destroy)
   active: "jerusalem",
   built: false,          // Leaflet map constructed yet?
+  leafletPromise: null,  // shared promise keeps concurrent callers idempotent
+  leafletAttempt: 0,     // invalidates an in-flight promise during destroy()
+  leafletCbs: [],        // callbacks queued until BOTH CSS and window.L are ready
 };
 
 // ---------------------------------------------------------------------------
@@ -937,6 +940,129 @@ function applyLang() {
 // Map construction (deferred until first reveal)
 // ---------------------------------------------------------------------------
 
+/**
+ * Lazy-load the self-hosted Leaflet vendor (CSS + classic UMD script) the first
+ * time the map is needed, then run `cb` once BOTH the stylesheet and window.L
+ * exist. (2026-07-21 perf pass — the vendor was removed from index.html
+ * <head>; #routes is the last
+ * section, so ~62KB eager on every visit was waste.) Idempotent: concurrent
+ * callers share one promise and queue on state.leafletCbs. A failed resource is
+ * removed and the callbacks stay queued, so a later call can retry cleanly. The
+ * tabs/CTAs remain functional while the map degrades gracefully.
+ */
+const LEAFLET_CSS_SELECTOR =
+  'link[data-leaflet-css], link[rel="stylesheet"][href="/assets/vendor/leaflet.css"]';
+const LEAFLET_JS_SELECTOR =
+  'script[data-leaflet-js], script[src="/assets/vendor/leaflet.js"]';
+
+function stylesheetReady(link) {
+  if (!link) return false;
+  if (link.dataset.leafletState === "loading") return false;
+  if (link.dataset.leafletState === "ready") return true;
+  try {
+    return Boolean(link.sheet);
+  } catch {
+    // A loaded cross-origin stylesheet may deny sheet inspection. Leaflet is
+    // self-hosted today, but treating that case as ready keeps this robust.
+    return true;
+  }
+}
+
+function loadLeafletCss() {
+  let link = document.querySelector(LEAFLET_CSS_SELECTOR);
+  if (stylesheetReady(link)) return Promise.resolve();
+
+  // A prior failed or interrupted attempt can leave a dead node whose load/error
+  // event has already fired. Replace it so the next attempt is genuinely new.
+  if (link) link.remove();
+  link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "/assets/vendor/leaflet.css";
+  link.setAttribute("data-leaflet-css", "");
+  link.dataset.leafletState = "loading";
+
+  return new Promise((resolve, reject) => {
+    link.addEventListener("load", () => {
+      link.dataset.leafletState = "ready";
+      resolve();
+    }, { once: true });
+    link.addEventListener("error", () => {
+      link.remove();
+      reject(new Error("Leaflet stylesheet failed to load"));
+    }, { once: true });
+    document.head.appendChild(link);
+  });
+}
+
+function loadLeafletJs() {
+  if (typeof window.L !== "undefined") return Promise.resolve();
+
+  // Without window.L an existing node is either failed or from an interrupted
+  // attempt. Replacing it prevents a retry from waiting on an event already lost.
+  const existing = document.querySelector(LEAFLET_JS_SELECTOR);
+  if (existing) existing.remove();
+
+  const script = document.createElement("script");
+  script.src = "/assets/vendor/leaflet.js";
+  script.async = true;
+  script.setAttribute("data-leaflet-js", "");
+
+  return new Promise((resolve, reject) => {
+    script.addEventListener("load", () => {
+      if (typeof window.L !== "undefined") {
+        resolve();
+      } else {
+        script.remove();
+        reject(new Error("Leaflet script loaded without exposing window.L"));
+      }
+    }, { once: true });
+    script.addEventListener("error", () => {
+      script.remove();
+      reject(new Error("Leaflet script failed to load"));
+    }, { once: true });
+    document.head.appendChild(script);
+  });
+}
+
+function runLeafletCallbacks() {
+  const cbs = state.leafletCbs.splice(0);
+  for (const fn of cbs) fn();
+}
+
+function ensureLeaflet(cb) {
+  if (typeof cb === "function" && !state.leafletCbs.includes(cb)) {
+    state.leafletCbs.push(cb);
+  }
+  if (state.leafletPromise) return state.leafletPromise;
+
+  const existingCss = document.querySelector(LEAFLET_CSS_SELECTOR);
+  if (typeof window.L !== "undefined" && stylesheetReady(existingCss)) {
+    runLeafletCallbacks();
+    return Promise.resolve(true);
+  }
+
+  const attempt = ++state.leafletAttempt;
+  const promise = Promise.all([loadLeafletCss(), loadLeafletJs()])
+    .then(() => {
+      if (attempt !== state.leafletAttempt) return false;
+      runLeafletCallbacks();
+      return true;
+    })
+    .catch(() => {
+      // Resource helpers remove only the failed node. Keep callbacks queued and
+      // reset the shared promise in finally, allowing the next call to retry.
+      return false;
+    })
+    .finally(() => {
+      if (attempt === state.leafletAttempt) {
+        state.leafletPromise = null;
+      }
+    });
+
+  state.leafletPromise = promise;
+  return promise;
+}
+
 function buildMap() {
   if (state.built) return;
   const L = window.L;
@@ -1044,30 +1170,44 @@ export function init() {
   state.langHandler = () => applyLang();
   document.addEventListener("gamos:langchange", state.langHandler);
 
-  // If window.L isn't present (vendor script failed), leave the noscript-style
-  // fallback content: tabs still re-point CTAs, just no map. Never throw.
-  if (typeof window.L === "undefined") return;
+  // Leaflet vendor is NO LONGER in index.html <head> (2026-07-21 perf pass —
+  // ~62KB was eager-loaded on every visit for a last-section map). Load it on
+  // demand: when #routes approaches the viewport, inject the CSS + script, then
+  // build the map once BOTH resources resolve (ensureLeaflet). This preserves
+  // the original deferred-build intent — the section is hidden under #contact
+  // (.reveal-pair)
+  // at load, so an early 0×0 measure would paint grey gaps — while taking the
+  // vendor off the critical path. If loading fails, ensureLeaflet degrades
+  // gracefully (tabs still re-point CTAs, just no map). Never throws.
+  const startMap = () => ensureLeaflet(buildMap);
 
-  // Defer Leaflet construction until the section first scrolls into view —
-  // it's hidden under #contact (.reveal-pair) at load, so a 0×0 measure
-  // would paint grey gaps.
   if (typeof IntersectionObserver === "function") {
     state.io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            buildMap();
-            state.io.disconnect();
-            state.io = null;
+            const io = state.io;
+            startMap().then((ready) => {
+              // Disconnect only after success. On failure the observer remains
+              // available, so leaving/re-entering the reveal zone can retry.
+              if (ready && state.io === io) {
+                state.io.disconnect();
+                state.io = null;
+              }
+            });
             break;
           }
         }
       },
-      { rootMargin: "200px 0px" }
+      // ~1000px ahead so the vendor + tiles finish loading before #routes is
+      // actually on-screen (was 200px when the vendor was already in <head>).
+      { rootMargin: "1000px 0px" }
     );
     state.io.observe(root);
   } else {
-    buildMap();
+    // No IntersectionObserver → load + build immediately (still off the
+    // critical path: init() runs from the deferred ESM module entry).
+    startMap();
   }
 }
 
@@ -1097,6 +1237,9 @@ export function destroy() {
   state.inputs = [];
   state.onInput = null;
   state.built = false;
+  state.leafletAttempt += 1;
+  state.leafletPromise = null;
+  state.leafletCbs = [];
   state.initialised = false;
 }
 

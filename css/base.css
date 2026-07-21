@@ -243,15 +243,21 @@
     color: var(--ink-deep);
   }
 
-  /* ----- Focus visible (3px brass ring) ----- */
+  /* ----- Focus visible (two-tone ivory+brass-deep ring) -----
+     Site-wide default. Switched from `outline: 3px solid brass` to the
+     token box-shadow on 2026-07-21 (a11y pass): a flat brass ring is 1.83:1
+     on ivory, failing WCAG 1.4.11. The --focus-ring token is a two-tone
+     box-shadow that clears 3:1 on every surface (see tokens.css). Elements
+     with their own :focus-visible rule (buttons, side-dot, nav, lang) reuse
+     the same token, so the ring is uniform across the site. */
 
   :focus {
     outline: none;
   }
 
   :focus-visible {
-    outline: 3px solid var(--brass);
-    outline-offset: 4px;
+    outline: none;
+    box-shadow: var(--focus-ring);
     border-radius: var(--radius-sm);
   }
 

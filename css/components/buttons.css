@@ -70,13 +70,16 @@
   transform-origin: right center;  /* RTL: grow from the reading start */
   transition: transform var(--dur-base) var(--ease-out-cinema);
 }
+/* Hover/focus text was --brass-deep = 4.12:1 on ivory — below 4.5 for this
+   13px label (a11y pass 2026-07-21). The growing brass underline IS the hover
+   affordance, so the text simply stays --cocoa (8.46:1); no color flash needed. */
 .btn:hover,
-.btn:focus-visible { color: var(--brass-deep); }
+.btn:focus-visible { color: var(--cocoa); }
 .btn:hover::after,
 .btn:focus-visible::after { transform: scaleX(1); }
 .btn:focus-visible {
-  outline: 3px solid var(--brass);
-  outline-offset: 4px;
+  outline: none;
+  box-shadow: var(--focus-ring);   /* two-tone ring (a11y pass 2026-07-21) */
   border-radius: var(--radius-sm);
 }
 
@@ -124,8 +127,11 @@
   transition: block-size var(--dur-base) var(--ease-out-cinema),
               background var(--dur-base) var(--ease-out-cinema);
 }
+/* Hover text was --brass-deep (4.12:1, fails at 13px). Base is --ink-deep;
+   on hover it warms to --cocoa (8.46:1) while the underline thickens+darkens
+   to brass-deep — the affordance stays on the line, not the text. (a11y 2026-07-21) */
 .btn--filled:hover,
-.btn--filled:focus-visible { color: var(--brass-deep); }
+.btn--filled:focus-visible { color: var(--cocoa); }
 .btn--filled:hover::after,
 .btn--filled:focus-visible::after { block-size: 3.5px; background: var(--brass-deep); }
 

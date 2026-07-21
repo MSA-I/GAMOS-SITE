@@ -459,7 +459,9 @@ contact, routes. *(kosher בוטלה 2026-07-13 — התוכן כבלוק פיר
 
 ## §9 Accessibility (WCAG 2.2 AA)
 
-- Visible focus rings 3px brass.
+- Visible focus rings — טבעת דו-גונית `--focus-ring` (gap שנהב + פליז-עמוק), token-driven.
+  (AMENDED 2026-07-21, a11y pass — טבעת פליז שטוחה נכשלה ב-WCAG 1.4.11: 1.83:1 על שנהב;
+  brass-deep לבדו נכשל על קקאו 2.05:1. הטבעת הדו-גונית עוברת ≥3:1 על כל משטח.)
 - Skip-link כ-first focusable.
 - Alt text עברי לכל תמונה משמעותית.
 - ARIA roles ל-portals (`role="button"` + `aria-label`).
